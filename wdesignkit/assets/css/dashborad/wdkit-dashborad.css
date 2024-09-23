@@ -1,0 +1,13 @@
+/**
+* Admin manu css for wdesignkit Icon
+*/
+#adminmenu .toplevel_page_wdesign-kit .wp-menu-image.dashicons-before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#adminmenu .toplevel_page_wdesign-kit .wp-menu-image img {
+    max-width: 25px;
+    padding: 0;
+}

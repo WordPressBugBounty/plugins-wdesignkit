@@ -1,0 +1,776 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-02 10:27+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: includes/admin/class-api.php:127
+msgid "Insufficient permissions."
+msgstr ""
+
+#: includes/admin/class-api.php:132
+msgid "Something went wrong."
+msgstr ""
+
+#: includes/admin/class-api.php:274
+msgid "API Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:290
+#, php-format
+msgid "API request error: %s"
+msgstr ""
+
+#: includes/admin/class-api.php:303
+msgid "Success"
+msgstr ""
+
+#: includes/admin/class-api.php:514
+msgid "Success! Login successful."
+msgstr ""
+
+#: includes/admin/class-api.php:515
+msgid "Login successful. Keep it up!"
+msgstr ""
+
+#: includes/admin/class-api.php:658
+msgid "Server Error"
+msgstr ""
+
+#: includes/admin/class-api.php:659
+msgid "Server Error, Data Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:882 includes/admin/class-api.php:2117
+msgid "Data Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:883
+msgid "Widget List Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:1169
+msgid "Theme activated successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:1170
+msgid "Theme successfully activated"
+msgstr ""
+
+#: includes/admin/class-api.php:1177
+msgid "Theme Not Activated !"
+msgstr ""
+
+#: includes/admin/class-api.php:1185
+msgid "Theme Name not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:1186
+msgid "Can Not Found Theme Name you Enterd."
+msgstr ""
+
+#: includes/admin/class-api.php:1234 includes/admin/class-api.php:1542
+#: includes/admin/class-api.php:1599
+msgid "Invalid import"
+msgstr ""
+
+#: includes/admin/class-api.php:1235 includes/admin/class-api.php:1543
+#: includes/admin/class-api.php:1600
+msgid "Invalid import: Check your details and try again."
+msgstr ""
+
+#: includes/admin/class-api.php:1838
+msgid "Relevant Page Builder not installed or activated"
+msgstr ""
+
+#: includes/admin/class-api.php:2118 includes/admin/class-api.php:2156
+#: includes/admin/class-api.php:2518
+msgid "something went wrong! please try again later."
+msgstr ""
+
+#: includes/admin/class-api.php:2155
+msgid "Builder Type not found"
+msgstr ""
+
+#: includes/admin/class-api.php:2318
+msgid "Update Saved Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2319
+msgid "Success! Update Saved"
+msgstr ""
+
+#: includes/admin/class-api.php:2404
+msgid "Widget Not imported"
+msgstr ""
+
+#: includes/admin/class-api.php:2405
+msgid "Widget alreday exist!"
+msgstr ""
+
+#: includes/admin/class-api.php:2424
+msgid "Widget imported"
+msgstr ""
+
+#: includes/admin/class-api.php:2425
+msgid "Widget imported successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2435
+msgid "Operation Fial!"
+msgstr ""
+
+#: includes/admin/class-api.php:2436
+msgid "Widget can not imported"
+msgstr ""
+
+#: includes/admin/class-api.php:2478
+msgid "Widget Type Fail"
+msgstr ""
+
+#: includes/admin/class-api.php:2479
+msgid "Widget Type Not Exists"
+msgstr ""
+
+#: includes/admin/class-api.php:2507
+msgid "Widget Exported"
+msgstr ""
+
+#: includes/admin/class-api.php:2508
+msgid "Widget Exported successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2517
+msgid "Widget Exported Fail"
+msgstr ""
+
+#: includes/admin/class-api.php:2550 includes/admin/class-api.php:2607
+#: includes/admin/class-api.php:2709 includes/admin/class-api.php:2807
+#: includes/admin/class-api.php:2863
+msgid "server error"
+msgstr ""
+
+#: includes/admin/class-api.php:2554 includes/admin/class-api.php:2555
+msgid "Widget Not Deleted"
+msgstr ""
+
+#: includes/admin/class-api.php:2578
+msgid "widget deleted"
+msgstr ""
+
+#: includes/admin/class-api.php:2579
+msgid "Widget deleted successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2611
+msgid " Widget not Downloaded"
+msgstr ""
+
+#: includes/admin/class-api.php:2640
+msgid "No Response Found"
+msgstr ""
+
+#: includes/admin/class-api.php:2641 includes/admin/class-api.php:2714
+msgid "Widget not Downloaded"
+msgstr ""
+
+#: includes/admin/class-api.php:2678
+msgid "no message"
+msgstr ""
+
+#: includes/admin/class-api.php:2812
+msgid "Widget Not Added"
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:137
+msgid "Unable to connect to the filesystem. Please confirm your credentials."
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:179
+msgid "Plugin not installed."
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:193
+#: includes/admin/class-wdkit-depends-installer.php:194
+#: includes/admin/class-wdkit-depends-installer.php:206
+#: includes/admin/class-wdkit-depends-installer.php:207
+msgid "Failed to retrieve plugin information."
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:216
+#: includes/admin/class-wdkit-depends-installer.php:217
+msgid "Plugin is already up to date."
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:231
+#: includes/admin/class-wdkit-depends-installer.php:232
+msgid "Failed to install the plugin update."
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:246
+#: includes/admin/class-wdkit-depends-installer.php:247
+msgid "Successfully updated WDesignKit"
+msgstr ""
+
+#: includes/admin/class-wdkit-depends-installer.php:250
+#: includes/admin/class-wdkit-depends-installer.php:251
+msgid "Failed to activate WDesignKit"
+msgstr ""
+
+#: includes/admin/class-wdkit-enqueue.php:232
+msgid "WDesignKit"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:109
+msgid "Quick Feedback"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:115
+msgid ""
+"If you have a moment, please let us know why you're deactivating Wdesignkit :"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:127
+msgid "This is a temporary deactivation."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:130
+msgid "Facing technical issues/bugs with the plugin."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:133
+msgid "Performance Issues."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:136
+msgid "Found an alternative plugin."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:139
+msgid "No more planning to use."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:142
+msgid "Dont want to use any wordpress plugin."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:145
+msgid "Its missing the feature i require."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:148
+msgid "Other"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:163
+msgid "Please share the reason"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:169
+msgid "Submit & Deactivate"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:172
+msgid "Skip & Deactivate"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:178
+msgid "If you require any help , "
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:181
+msgid "please add a ticket "
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:182
+msgid "We reply within 24 working hours."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:184
+msgid "Read"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
+msgid "Documentation."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:84
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:85
+msgid "Upgrade PRO"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:86
+msgid "Need Help?"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:111
+msgid "Official Website"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:112
+msgid "docs"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:113
+msgid "Video Tutorials"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:114
+msgid "Join Community"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:115
+msgid "What`s New?"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:116
+msgid "Request Feature"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-plugin-page.php:117
+msgid "Rate 5 Stars"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:282
+msgid "Rate your Experience with WDesignKit"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:283
+msgid ""
+"Your feedback is important to us and helps us improve WDesignKit further."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:287
+msgid "Give Review"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:288
+msgid "Need Help ?"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:333
+msgid "You are not allowed to do this action"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-rating.php:345
+msgid "Success Fully Close Rating Notice"
+msgstr ""
+
+#: includes/widget-load/elementor/wb-controller.php:88
+msgid "You Haven't Saved Templates Yet."
+msgstr ""
+
+#: includes/widget-load/elementor/wb-controller.php:92
+msgid "Select Template"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/test_gyp.py:216
+msgid "({test}) {fmt}"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:53
+msgid "\n"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:82
+msgid "<"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:88
+msgid " {at}=\"{_XmlEscape(val, attr=True)}\""
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:91
+msgid ">"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:105
+msgid "</{name}>{new_line}"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/easy_xml.py:107
+#, python-format
+msgid "/>%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/input.py:1999
+#: node_modules/node-gyp/gyp/pylib/gyp/input.py:2061
+#, python-format
+msgid "Cycle: %s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:407
+msgid "_MBCS"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:476
+msgid "/safeseh"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:552
+msgid "/FS"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:633
+#, python-format
+msgid "/DEF:\"%s\""
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:682
+msgid "/OUT:"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:685
+msgid "/PDB:"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:688
+msgid "/PGD:"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:717
+msgid "/STACK:{stack_reserve_size}{stack_commit_size}"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:755
+msgid "/DYNAMICBASE"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:762
+msgid "/NXCOMPAT"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:813
+msgid "/MANIFESTUAC:NO"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:868
+msgid "/ALLOWISOLATION"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.py:916
+msgid "/I"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/ninja_syntax.py:84
+msgid "|"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/ninja_syntax.py:88
+msgid "||"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcodeproj_file.py:275
+#, python-format
+msgid "\\U%04x"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcodeproj_file.py:1046
+msgid ".name"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcodeproj_file.py:1057
+msgid ".path"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcodeproj_file.py:1130
+msgid "$("
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:582
+#, python-format
+msgid "-isysroot %s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:585
+#, python-format
+msgid "-I%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:588
+msgid "-Wconstant-conversion"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:591
+msgid "-funsigned-char"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:594
+msgid "-fasm-blocks"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:598
+msgid "-mdynamic-no-pic"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:606
+msgid "-mpascal-strings"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:613
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:617
+msgid "-gdwarf-2"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:622
+msgid "-fstrict-aliasing"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:624
+msgid "-fno-strict-aliasing"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:627
+msgid "-fvisibility=hidden"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:630
+msgid "-Werror"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:633
+msgid "-Wnewline-eof"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:640
+msgid "-flto"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:667
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:952
+msgid "-arch "
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:671
+msgid "-msse3"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:675
+msgid "-mssse3"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:677
+msgid "-msse4.1"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:679
+msgid "-msse4.2"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:686
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:695
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:971
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:976
+msgid "-F"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:705
+msgid "-ansi"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:723
+#, python-format
+msgid "-std=%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:728
+msgid "-fno-rtti"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:730
+msgid "-fno-exceptions"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:732
+msgid "-fvisibility-inlines-hidden"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:734
+msgid "-fno-threadsafe-statics"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:737
+msgid "-Wno-invalid-offsetof"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:757
+msgid "-fobjc-gc"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:759
+msgid "-fobjc-gc-only"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:763
+msgid "-fobjc-arc"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:769
+msgid "-Wobjc-missing-property-synthesis"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:789
+msgid "-fobjc-call-cxx-cdtors"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:917
+msgid "-Wl,-dead_strip"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:920
+msgid "-Wl,-prebind"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:930
+msgid "-isysroot "
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:933
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:956
+msgid "-L"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:937
+msgid "-Wl,-order_file "
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:960
+msgid "-install_name "
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:963
+msgid "-Wl,-rpath,"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:977
+msgid "-framework XCTest"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:987
+msgid "-lpkstart"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:990
+msgid "/System/Library/PrivateFrameworks/PlugInKit.framework/PlugInKit"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:993
+msgid "-e _NSExtensionMain"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:994
+msgid "-fapplication-extension"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:1087
+#, python-format
+msgid "echo STRIP\\(%s\\)"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:1088
+msgid "strip {strip_flags} {output_binary}"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:1109
+#, python-format
+msgid "echo DSYMUTIL\\(%s\\)"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:1110
+msgid "dsymutil {} -o {}"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.py:1901
+#, python-format
+msgid "echo POSTBUILD\\(%s\\) %s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/__init__.py:470
+msgid "USERPROFILE"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/analyzer.py:716
+msgid "all"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/android.py:498
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1027
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1169
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1213
+#, python-format
+msgid "$(%s)"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/cmake.py:387
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/cmake.py:388
+msgid "${"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/eclipse.py:230
+msgid "1"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1373
+msgid "$(OBJS)"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1626
+msgid "-Wl,-rpath=\\$$ORIGIN/"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1627
+msgid "-Wl,-rpath-link=\\$(builddir)/"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:1660
+msgid "$(TARGET_POSTBUILDS_$(BUILDTYPE))"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/make.py:2225
+msgid "BUILDTYPE="
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/msvs.py:3271
+msgid "Label"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/msvs.py:3454
+#, python-format
+msgid "%%(%s)"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/ninja.py:1471
+#, python-format
+msgid "-Wl,-rpath=\\$$ORIGIN/%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/ninja.py:1473
+#, python-format
+msgid "-Wl,-rpath=%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/ninja.py:1474
+#, python-format
+msgid "-Wl,-rpath-link=%s"
+msgstr ""
+
+#: node_modules/node-gyp/gyp/pylib/gyp/generator/ninja.py:1778
+#, python-format
+msgid "export %s=%s;"
+msgstr ""
