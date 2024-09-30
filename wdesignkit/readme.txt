@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 5.7.0
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 1.0.38
+Stable tag: 1.0.39
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -88,6 +88,14 @@ WDesignKit does not have any direct dependency on any Elementor Addon, but some 
 You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/wdesignkit)
 
 == Changelog ==
+
+1.0.39 – 25 September 2024
+
+New : Post Listing Controller
+New : Product Listing Controller
+Fix : Import Websitekit Error From My Template
+Fix : Icon Controller Debug log Error in Brick Widget Builder
+Fix : Minor Bugs & Improvements
 
 1.0.38 – 07 September 2024
 

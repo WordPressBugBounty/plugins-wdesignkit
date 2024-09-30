@@ -162,6 +162,7 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			require_once WDKIT_INCLUDES . 'admin/class-api.php';
 
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
+			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';
 		}
 
 	}

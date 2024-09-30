@@ -177,6 +177,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_enqueue_scripts( $hook ) {
 			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.js', array( 'wp-i18n', 'wp-element', 'wp-components' ), WDKIT_VERSION, true );
+			wp_set_script_translations( 'wdkit-editor-js', 'wdesignkit' );
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );
 

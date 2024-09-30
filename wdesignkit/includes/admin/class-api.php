@@ -216,6 +216,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wkit_export_widget':
 					$data = $this->wdkit_export_widget();
 					break;
+				case 'wkit_widget_json':
+					$data = $this->wkit_widget_json();
+					break;
 				case 'wkit_import_widget':
 					$data = $this->wdkit_import_widget();
 					break;
@@ -2521,6 +2524,43 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				wp_send_json( $result );
 				wp_die();
 			}
+		}
+
+		/**
+		 *
+		 * It is Use for delete widget from server
+		 *
+		 * @since 1.0.0
+		 */
+		protected function wkit_widget_json() {
+			$json_path = isset( $_POST['json_path'] ) ? ( wp_unslash( $_POST['json_path'] ) ) : '';
+			
+			if ( empty($json_path) ){
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget JSON not found', 'wdesignkit' ),
+					'description' => esc_html__( 'widget JSON file not found.', 'wdesignkit' ),
+				);
+			}
+
+			$json_data = wp_remote_get( $json_path );
+			if ( !empty($json_data['body']) ) {
+				$result = (object) array(
+					'success'     => true,
+					'data'         => $json_data['body'],
+					'message'     => esc_html__( 'Widget get Successfully', 'wdesignkit' ),
+					'description' => esc_html__( 'Widget JSON get Successfully', 'wdesignkit' ),
+				);
+			} else { 
+				$result = (object) array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget not get', 'wdesignkit' ),
+					'description' => esc_html__( 'Widget JSON not get', 'wdesignkit' ),
+				);
+			}
+
+			wp_send_json( $result );
+			wp_die();
 		}
 
 		/**
