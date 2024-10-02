@@ -46,7 +46,7 @@ License URI: https://opensource.org/licenses/GPL-3.0
 
 
 ###🔍 OUR PRODUCTS
-<strong>[🥇 The Plus Addons for Elementor](https://theplusblocks.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
+<strong>[🥇 The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
 
 <strong>[🥇 NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks. 
 
