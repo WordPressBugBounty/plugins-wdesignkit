@@ -46,7 +46,7 @@ License URI: https://opensource.org/licenses/GPL-3.0
 
 
 ###🔍 OUR PRODUCTS
-<strong>[🥇 The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
+<strong>[🥇 The Plus Addons for Elementor](https://theplusblocks.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
 
 <strong>[🥇 NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks. 
 
@@ -89,11 +89,18 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.0.39 – 25 September 2024
+1.0.40 – 17 October 2024
+
+Improvement : Drag & Drop Event of section in Widget Builder.
+Improvement : Browse Template page Filter Functionality. 
+Improvement : Browse Widget page Filter Functionality. 
+Fix : Minor Bugs & Improvements
+
+1.0.39 – 20 September 2024
 
 New : Post Listing Controller
 New : Product Listing Controller
-Fix : Import Websitekit Error From My Template
+Fix : Import Website-kit Error From My Template
 Fix : Icon Controller Debug log Error in Brick Widget Builder
 Fix : Minor Bugs & Improvements
 
@@ -118,7 +125,7 @@ Fix : Minor Bug Fixes & Improvements
 1.0.35 - 13 August 2024
 
 New : Popup for Incorrect Login Details
-New : Popup for Incorrect Login Api Key
+New : Popup for Incorrect Login API Key
 Fix : Page Kit Single Page Template Type error
 Fix : Template Browse Page Filter error
 Fix : Solve Gutenberg Widget Background Controller error
@@ -174,7 +181,7 @@ Fix : Minor Bug Fixes & Improvements
 
 1.0.28 - 19 July 2024
 
-Fix : Brick Builder Load Js In Backend  
+Fix : Brick Builder Load JS In Backend  
 Fix : Minor Bug Fixes & Improvements
 
 1.0.26 - 18 July 2024
@@ -192,7 +199,7 @@ Fix : Minor Bug Fixes & Improvements
 
 1.0.24 - 10 July 2024
 
-Improve : Onboarding Image Css Improve
+Improve : Onboarding Image CSS Improve
 Fix : Minor Bug Fixes & Improvements
 
 1.0.23 - 10 July 2024
@@ -203,14 +210,14 @@ Improve : Kit Page Design and Download Functionality Improve.
 Improve : Code Optimization.
 Fix : Install plugin from Onboarding Popup.
 Fix : Convert Widget Feature While Convert Into Bricks Builder.
-Fix : Login Functionality In Wdesignkit Popup.
+Fix : Login Functionality In WDesignKit Popup.
 Fix : Manage Licence Page Loader for Sync Licence key.
 Fix : Controller Error from Bricks Builder While use in html.
 Fix : Individually Install Plugin from Plugin Missing Popup of Import Template.
 Fix : Minor Bug Fixes & Improvements
 
 1.0.22 - 4 July 2024
-Fix : Onbording Bug Fixed
+Fix : Onboarding Bug Fixed
 Fix : Minor Bug Fixes & Improvements
 
 1.0.21 - 29 June 2024
@@ -283,25 +290,25 @@ Fix : Minor Bug Fixes & Improvements
 Add : UiChemy licence key Feature in Manage Licence Page
 Improvement : Widget Builder : New Design
 Improvement : Setting Panel Page Switcher Smooth Effect
-Improvement : Give Access to Load JQuery While Convert Widget
+Improvement : Give Access to Load jQuery While Convert Widget
 Fixed : Filter Error in Template and Widget Browse Page.
 Fix : Widget Builder : HTML Access of Normal/Hover Controller
 Fix : Minor Bug Fixes & Improvements
 
 1.0.13 – 02 May 2024
 
-Add : Widegt Builder : Conver Widget Feature 
-Add : Manage License : Wdesignkit Extra Credit Option
+Add : Widget Builder : Convert Widget Feature 
+Add : Manage License : WDesignKit Extra Credit Option
 Improvement : Browse Template Page Filter Improve
 Improvement : Browse Widget Page Filter Improve
 Improvement : Setting Panel Option and Design Improve
 Fix : Manage License Chart Calculation
-Fix : Onbording Bug fixed
+Fix : Onboarding Bug fixed
 Fix : Minor Bug Fixes & Improvements
 
 1.0.12 – 17 March 2024
 
-Add : Option to Enable & Disbale Design Templates
+Add : Option to Enable & Disable Design Templates
 Add : Multiple Language Support
 Improvement : Onboarding Design
 Fix : Fixed Security Issue
@@ -314,15 +321,15 @@ Fix : Minor Bug Fixes & Improvements
 
 1.0.10 – 21 March 2024
 
-Fix : Widget Builder : Multipul Repeater Bug
+Fix : Widget Builder : Multiple Repeater Bug
 Fix : Widget Builder : Rename Widget Bug
 Fix : Minor Bug Fixes & Improvements
 
 1.0.9 – 13 March 2024
 
 Add : WDesignKit Settings : On Boarding Process
-Add : HeadingTag Controller in Gutenberg Widget Builder.
-Add : HeadingTag Controller in Gutenberg Bricks Builder.
+Add : Heading-Tag Controller in Gutenberg Widget Builder.
+Add : Heading-Tag Controller in Gutenberg Bricks Builder.
 Fix : Manage Licence Page Error Solve.
 Fix : Widget Browse Pager Filter Design Issue.
 Fix : Widget Builder : Design Controller Not Working Properly in Repeater controller.
@@ -390,7 +397,7 @@ Fix : Minor Bug Fixes & Improvements
 
 1.0.3 – 7 FEBRUARY 2024
 
-Improvement : Widegt Builder Font Famliy
+Improvement : Widget Builder Font Family
 Improvement : All Template Card Design
 Improvement : Import Template Tooltip Font
 Fix : After Login * Redirect to 404 page.
@@ -424,4 +431,3 @@ Fix : Minor Bug Fixes & Improvements
 Initial Release
 
 == Upgrade Notice ==
-
