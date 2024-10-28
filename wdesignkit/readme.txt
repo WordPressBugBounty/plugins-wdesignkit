@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 5.7.0
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 1.0.39
+Stable tag: 1.0.40
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -18,7 +18,7 @@ License URI: https://opensource.org/licenses/GPL-3.0
 <strong> [ VISIT WDESIGNKIT WEBSITE](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> 
 ### <strong> Quick Navigation Links</strong>
 
-[ Visit Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials]( https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1)| [Documentations](https://learn.wdesignkit.com/docs/) | [Roadmap](https://roadmap.wdesignkit.com/) | [Join Facebook Community](https://www.facebook.com/groups/884892449594153) | [Free Support](https://wordpress.org/support/plugin/wdesignkit) | [Premium Support](https://store.posimyth.com/helpdesk/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [AI Chat (Instant Answers)](https://wdesignkit.com/chat/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)
+[ Visit Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials]( https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1)| [Documentations](https://learn.wdesignkit.com/docs/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Roadmap](https://roadmap.wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Join Facebook Community](https://www.facebook.com/groups/884892449594153) | [Free Support](https://wordpress.org/support/plugin/wdesignkit) | [Premium Support](https://store.posimyth.com/helpdesk/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [AI Chat (Instant Answers)](https://wdesignkit.com/chat/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)
 
 ## What is WDesignKit ?
 * <strong>[1000+ Elementor Page Templates, Kit & Sections](https://wdesignkit.com/browse/template?builder=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
@@ -33,7 +33,7 @@ License URI: https://opensource.org/licenses/GPL-3.0
 * <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> — Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud 
 * <strong>[200+ Figma Designed Websites](https://wdesignkit.com/browse/figma?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
 
-### WDesignKit Replace Mulitple Plugins & Tools for You
+### WDesignKit Replace Multiple Plugins & Tools for You
 
 * Starter Templates — Elementor, WordPress & Beaver Builder Templates
 * AI Powered Starter Templates by Kadence WP
@@ -41,12 +41,13 @@ License URI: https://opensource.org/licenses/GPL-3.0
 * Templately – Gutenberg & Elementor Template Library: 5000+ Free & Pro Ready Templates & Cloud!
 * Unlimited Elements for Elementor
 * Envato & Themeforest Marketplace
-* Templete Monster
+* Template Monster
 * And Much More
 
 
 ###🔍 OUR PRODUCTS
-<strong>[🥇 The Plus Addons for Elementor](https://theplusblocks.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
+
+<strong>[🥇 The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
 
 <strong>[🥇 NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks. 
 
@@ -68,24 +69,28 @@ License URI: https://opensource.org/licenses/GPL-3.0
 
 == Frequently Asked Questions ==
 
-= Does with Work with Any WordPress Theme? =
-Yes this works with all the Theme, but it works best in sync with our Nexter WordPress Theme.
+= Does it Work with Any WordPress Theme? =
+
+Yes this works with all the Themes, but it works best in sync with our Nexter WordPress Theme.
 
 = Is Widget Builder free to use? =
+
 Yes. Our Elementor Widget Builder, & Bricks Elements Builder & Upcoming Gutenberg Blocks builder and future Builders will be 100% free to use. There are some limitations on the number of widgets you can create in the free plan.
 
 = Can I save templates from both Elementor Free and Pro using WDesignKit? =
+
 Yes, You can save and use Elementor Free and Pro both templates.
 
 = What page builders are currently supported with WDesignKit?=
-Currently, for Templates, We are having support for Elementor and Gutenberg. In Widget builder & Ready made widgets, We are supporting Elementor. Gutenberg, Bricks, and more coming very soon.
+Currently, for Templates, We are having support for Elementor and Gutenberg. In Widget builder & Ready made widgets, We are supporting Elementor. Gutenberg, Bricks, and more are coming very soon.
 
 = Do i Need any Elementor Addon to use the Plugin?=
-WDesignKit does not have any direct dependency on any Elementor Addon, but some Elementor Templates & Gutenberg Blocks required The Plus Addons for Elementor or Nexter Blocks for full import of website.
+
+WDesignKit does not have any direct dependency on any Elementor Addon, but some Elementor Templates & Gutenberg Blocks require The Plus Addons for Elementor or Nexter Blocks for full import of website.
 
 = How can I report security bugs?
 
-You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/wdesignkit)
+You can report security bugs through the Patchstack Vulnerability Disclosure Program.The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/wdesignkit)
 
 == Changelog ==
 
