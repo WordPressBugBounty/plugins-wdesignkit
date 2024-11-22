@@ -276,16 +276,16 @@ if ( ! class_exists( 'Wdkit_Rating' ) ) {
 
 			echo '<div class="wkit-review-container">';
 				echo '<div class="wkit-main-header">';
-				echo '<div class="wkit-notice-left-container">';
-					echo '<img class="wkit-notice" draggable="false" src="' . WDKIT_ASSETS . 'images/jpg/review-banner-image.png">';
-					echo '<div class="wkit-review-text">';
-						echo '<span class="wkit-experience-text">' . esc_html__( 'Rate your Experience with WDesignKit', 'wdesignkit' ) . '</span>';
-						echo '<span class="wkit-ratings">' . esc_html__( 'Your feedback is important to us and helps us improve WDesignKit further.', 'wdesignkit' ) . '</span>';
+					echo '<div class="wkit-notice-left-container">';
+						echo '<img class="wkit-notice" draggable="false" src="' . esc_url(WDKIT_ASSETS . 'images/jpg/review-banner-image.png') . '">';
+						echo '<div class="wkit-review-text">';
+							echo '<span class="wkit-experience-text">' . esc_html__('Rate your Experience with WDesignKit', 'wdesignkit') . '</span>';
+							echo '<span class="wkit-ratings">' . esc_html__('Your feedback is important to us and helps us improve WDesignKit further.', 'wdesignkit') . '</span>';
+						echo '</div>';
 					echo '</div>';
-				echo '</div>';
 					echo '<div class="wkit-btns">';
-						echo '<a class="wkit-review-btn" href="https://wordpress.org/support/plugin/wdesignkit/reviews/#new-post" target="_blank">' . esc_html__( 'Give Review', 'wdesignkit' ) . '</a>';
-						echo '<a class="wkit-help-btn" href="https://wordpress.org/support/plugin/wdesignkit/" target="_blank">' . esc_html__( 'Need Help ?', 'wdesignkit' ) . '</a>';
+						echo '<a class="wkit-review-btn" href="' . esc_url('https://wordpress.org/support/plugin/wdesignkit/reviews/#new-post') . '" target="_blank">' . esc_html__('Give Review', 'wdesignkit') . '</a>';
+						echo '<a class="wkit-help-btn" href="' . esc_url('https://wordpress.org/support/plugin/wdesignkit/') . '" target="_blank">' . esc_html__('Need Help ?', 'wdesignkit') . '</a>';
 					echo '</div>';
 					echo '<span class="wkit-close">';
 						echo '<svg width="10" height="10" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.40091 15.2558C1.66182 15.5169 2.01481 15.6637 2.38274 15.6637C2.75067 15.6637 3.10366 15.5169 3.36456 15.2558L8.29499 10.2193L13.2254 15.2558C13.5884 15.6217 14.118 15.7645 14.6141 15.6306C15.1103 15.4967 15.4981 15.1062 15.6309 14.6064C15.7639 14.1067 15.6221 13.5733 15.2588 13.2076L10.2587 8.24141L15.2588 3.27521C15.5659 2.91424 15.6703 2.42082 15.5365 1.96497C15.4027 1.50913 15.0485 1.15236 14.5959 1.01757C14.1431 0.882762 13.6535 0.987976 13.2949 1.29727L8.29499 6.26348L3.36455 1.29727C3.00619 0.987976 2.51632 0.882762 2.06375 1.01757C1.61119 1.15237 1.257 1.50911 1.12317 1.96497C0.989339 2.42082 1.0938 2.91424 1.40087 3.27521L6.3313 8.24141L1.40087 13.2076C1.11968 13.4728 0.959961 13.8436 0.959961 14.2316C0.959961 14.6198 1.11968 14.9904 1.40087 15.2557L1.40091 15.2558Z" fill="black"></path></svg>';

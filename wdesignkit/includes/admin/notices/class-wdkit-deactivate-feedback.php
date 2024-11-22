@@ -181,7 +181,7 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 								<?php echo esc_html__( 'please add a ticket ', 'wdesignkit' ); ?> </a> . 
 								<?php echo esc_html__( 'We reply within 24 working hours.', 'wdesignkit' ); ?></span>
 
-								<span> <?php echo esc_html__( 'Read' ); ?> 
+								<span> <?php echo esc_html__( 'Read', 'wdesignkit' ); ?> 
 
 								<a href="<?php echo esc_url( 'https://theplusblocks.com/docs/?utm_source=wpbackend&utm_medium=admin&utm_campaign=links' ); ?>" target="_blank" rel="noopener noreferrer">
 
