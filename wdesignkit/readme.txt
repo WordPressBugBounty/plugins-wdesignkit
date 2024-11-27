@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 5.7.0
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -37,16 +37,6 @@ https://www.youtube.com/watch?v=Bw5IHPxr0Nc
 * <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> — Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud 
 * <strong>[200+ Figma Designed Websites](https://wdesignkit.com/browse/figma?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
 
-### WDesignKit Replace Multiple Plugins & Tools for You
-
-* Starter Templates — Elementor, WordPress & Beaver Builder Templates
-* AI Powered Starter Templates by Kadence WP
-* Toolkit for Block Theme (Starter Templates, Portfolio, Gutenberg Blocks, Patterns) – Twentig
-* Templately – Gutenberg & Elementor Template Library: 5000+ Free & Pro Ready Templates & Cloud!
-* Unlimited Elements for Elementor
-* Envato & Themeforest Marketplace
-* Template Monster
-* And Much More
 
 
 ###🔍 OUR PRODUCTS
@@ -106,7 +96,10 @@ This plugin relies on external services to enhance its functionality and user ex
 
 == Changelog ==
 
-1.1.2 – 22 November 2024
+1.1.3 – 26 November 2024
+Fix: Minor Bugs and Improvements.
+
+1.1.2 – 21 November 2024
 Fix: Minor Bugs and Improvements.
 
 1.1.1 – 21 November 2024
