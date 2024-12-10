@@ -156,10 +156,11 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			 */
 			require_once WDKIT_INCLUDES . 'admin/notices/class-wdkit-notice-main.php';
 
+			require_once WDKIT_INCLUDES . 'admin/hooks/class-wdkit-dashboard-main.php';
+
 			require_once WDKIT_INCLUDES . 'admin/class-wdkit-enqueue.php';
 			require_once WDKIT_INCLUDES . 'admin/class-wdesignkit-data-query.php';
 			require_once WDKIT_INCLUDES . 'admin/class-wdkit-depends-installer.php';
-			require_once WDKIT_INCLUDES . 'admin/class-wdkit-dashboard-main.php';
 
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';

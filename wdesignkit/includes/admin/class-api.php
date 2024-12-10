@@ -99,6 +99,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @param array  $data give array.
 		 * @param string $status api code number.
+		 * 
+		 * @since 1.0.0
 		 * */
 		public function wdkit_error_msg( $data = null, $status = null ) {
 			wp_send_json_error( $data );
@@ -110,6 +112,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @param array  $data give array.
 		 * @param string $status api code number.
+		 * 
+		 * @since 1.0.0
 		 * */
 		public function wdkit_success_msg( $data = null, $status = null ) {
 			wp_send_json_success( $data, $status );
@@ -137,26 +141,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					$data = $this->wdkit_onboarding_handler();
 					break;
 				case 'wkit_login':
-					$data = $this->wdkit_login();
+					$data = apply_filters( 'wp_wdkit_login_ajax', 'wkit_login' );
 					break;
 				case 'api_login':
-					$data = $this->wdkit_api_login();
+					$data = apply_filters( 'wp_wdkit_login_ajax', 'api_login' );
 					break;
 				case 'social_login':
-					$data = $this->wdkit_social_login();
+					$data = apply_filters( 'wp_wdkit_login_ajax', 'social_login' );
 					break;
 				case 'wkit_meta_data':
 					$data = $this->wdkit_meta_data();
 					break;
 				case 'get_user_info':
-					$id   = isset( $_POST['id'] ) ? strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) : false;
 					$data = $this->wdkit_get_user_info();
 					break;
 				case 'browse_page':
 					$data = $this->wdkit_browse_page();
 					break;
 				case 'kit_template':
-					$id   = isset( $_POST['id'] ) ? strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) : false;
 					$data = $this->wdkit_template();
 					break;
 				case 'template_remove':
@@ -198,6 +200,21 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'manage_workspace':
 					$data = $this->wdkit_manage_workspace();
 					break;
+				case 'widget_browse_page':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'widget_browse_page' );
+					break;
+				case 'wkit_create_widget':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_create_widget' );
+					break;
+				case 'wkit_import_widget':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_import_widget' );
+					break;
+				case 'wkit_export_widget':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_export_widget' );
+					break;
+				case 'wkit_delete_widget':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_delete_widget' );
+					break;
 				case 'wkit_manage_widget_workspace':
 					$data = $this->wdkit_manage_widget_workspace();
 					break;
@@ -214,7 +231,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					$data = $this->wdkit_download_widget();
 					break;
 				case 'wkit_public_download_widget':
-					$data = $this->wdkit_public_download_widget();
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_public_download_widget' );
 					break;
 				case 'wkit_add_widget':
 					$data = $this->wdkit_add_widget();
@@ -312,38 +329,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'status'  => $status_code,
 				'success' => false,
 			);
-		}
-
-		/**
-		 * This Function is used for API call
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string $user_key   Dynamic key.
-		 * @param string $user_email User email.
-		 * @param string $token      User token.
-		 */
-		protected function wdkit_set_time_out( $user_key, $user_email, $token, $login_type = '' ) {
-
-			if ( 'normal' === $login_type ) {
-				set_transient(
-					'wdkit_auth_' . $user_key,
-					array(
-						'user_email' => sanitize_email( $user_email ),
-						'token'      => $token,
-					),
-					7776000
-				);
-			} else {
-				set_transient(
-					'wdkit_auth_' . $user_key,
-					array(
-						'user_email' => sanitize_email( $user_email ),
-						'token'      => $token,
-					),
-					86400
-				);
-			}
 		}
 
 		/**
@@ -463,167 +448,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			wp_die();
-		}
-
-		/**
-		 *
-		 * It is Use for user login with email and password.
-		 *
-		 * @since 1.0.0
-		 */
-		protected function wdkit_login() {
-			$user_email    = isset( $_POST['user_email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['user_email'] ) ) ) : false;
-			$user_password = isset( $_POST['user_password'] ) ? sanitize_text_field( wp_unslash( $_POST['user_password'] ) ) : false;
-			$login_type    = isset( $_POST['login_type'] ) ? sanitize_text_field( wp_unslash( $_POST['login_type'] ) ) : false;
-			$site_url      = isset( $_POST['site_url'] ) ? esc_url_raw( wp_unslash( $_POST['site_url'] ) ) : '';
-
-			$user_key = strstr( $user_email, '@', true );
-			$response = '';
-
-			delete_transient( 'wdkit_auth_' . $user_key );
-
-			$get_login = get_transient( 'wdkit_auth_' . $user_key );
-
-			if ( ! empty( $user_email ) && ! empty( $user_password ) && false === $get_login ) {
-				$response = WDesignKit_Data_Query::get_data(
-					'login',
-					array(
-						'user_email' => $user_email,
-						'password'   => $user_password,
-						'site_url'   => $site_url,
-					)
-				);
-
-				if ( ! empty( $response ) && ! empty( $response['success'] ) ) {
-					if ( ! empty( $response['message'] ) && ! empty( $response['token'] ) ) {
-						if ( false === get_transient( 'wdkit_auth_' . $user_key ) ) {
-							$this->wdkit_set_time_out( $user_key, $user_email, $response['token'], $login_type );
-						}
-					}
-				}
-			} elseif ( ! empty( $get_login ) && ! empty( $get_login['token'] ) ) {
-				$response = array_merge(
-					array(
-						'success'     => true,
-						'message'     => esc_html__( 'Success! Login successful.', 'wdesignkit' ),
-						'description' => esc_html__( 'Login successful. Keep it up!', 'wdesignkit' ),
-					),
-					$get_login
-				);
-			}
-
-			wp_send_json( $response );
-			wp_die();
-		}
-
-		/**
-		 *
-		 * This Function is used for Login with Api (token)
-		 *
-		 * @version 1.0.0
-		 */
-		protected function wdkit_api_login() {
-			$user_token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
-			$login_type = isset( $_POST['login_type'] ) ? sanitize_text_field( wp_unslash( $_POST['login_type'] ) ) : '';
-
-			$site_url = isset( $_POST['site_url'] ) ? esc_url_raw( wp_unslash( $_POST['site_url'] ) ) : '';
-
-			if ( empty( $user_token ) ) {
-				$result = array(
-					'success' => false,
-					'token'   => '',
-					'data'    => array(
-						'message'     => $this->e_msg_login,
-						'description' => $this->e_desc_login,
-					),
-				);
-
-				wp_send_json( $result );
-				wp_die();
-			}
-
-			$array_data = array(
-				'token'    => $user_token,
-				'site_url' => $site_url,
-			);
-
-			$response = $this->wkit_api_call( $array_data, 'login/api' );
-
-			$success = ! empty( $response['success'] ) ? is_bool( $response['success'] ) : false;
-
-			if ( empty( $success ) ) {
-				$result = array(
-					'data'    => $response,
-					'token'   => '',
-					'success' => false,
-				);
-
-				wp_send_json( $result );
-				wp_die();
-			}
-
-			$response   = json_decode( wp_json_encode( $response['data'] ), true );
-			$user_email = ! empty( $response['user']['user_email'] ) ? sanitize_email( $response['user']['user_email'] ) : '';
-			$user_key   = strstr( $user_email, '@', true );
-
-			$this->wdkit_set_time_out( $user_key, $user_email, $user_token, $login_type );
-
-			$result = array(
-				'success' => true,
-				'data'    => $response,
-				'token'   => $user_token,
-			);
-
-			wp_send_json( $result );
-			wp_die();
-		}
-
-		/**
-		 *
-		 * This Function is used for social Login
-		 *
-		 * @version 1.0.0
-		 */
-		protected function wdkit_social_login() {
-			$user_state = isset( $_POST['state'] ) ? sanitize_text_field( wp_unslash( $_POST['state'] ) ) : '';
-			$login_type = isset( $_POST['login_type'] ) ? sanitize_text_field( wp_unslash( $_POST['login_type'] ) ) : '';
-
-			$site_url = isset( $_POST['site_url'] ) ? esc_url_raw( wp_unslash( $_POST['site_url'] ) ) : '';
-
-			$array_data = array(
-				'state'    => $user_state,
-				'site_url' => $site_url,
-			);
-
-			$response = $this->wkit_api_call( $array_data, 'login/ip' );
-			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
-
-			if ( empty( $success ) ) {
-				$result = array(
-					'data'    => $response,
-					'success' => false,
-				);
-
-				wp_send_json( $result );
-				wp_die();
-			}
-
-			$response   = json_decode( wp_json_encode( $response['data'] ), true );
-			$user_email = ! empty( $response['user']['user_email'] ) ? sanitize_email( $response['user']['user_email'] ) : '';
-			$user_token = ! empty( $response['token'] ) ? sanitize_text_field( $response['token'] ) : '';
-			$user_key   = strstr( $user_email, '@', true );
-
-			if ( ! empty( $response ) && ! empty( $user_token ) ) {
-				$this->wdkit_set_time_out( $user_key, $user_email, $user_token, $login_type );
-			}
-
-			$result = array(
-				'data'  => $response,
-				'token' => $user_token,
-			);
-
-			wp_send_json( $result );
 			wp_die();
 		}
 
@@ -2183,87 +2007,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 		/**
 		 *
-		 * It is Use for download widget from browse page.
-		 *
-		 * @since 1.0.0
-		 */
-		protected function wdkit_public_download_widget() {
-			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'widget_info', 'none' ) : '';
-			$data = json_decode( stripslashes( $data ) );
-
-			$api_type = isset( $data->api_type ) ? sanitize_text_field( $data->api_type ) : 'widget/download';
-
-			$array_data = array(
-				'id'   => isset( $data->w_uniq ) ? sanitize_text_field( $data->w_uniq ) : '',
-				'u_id' => isset( $data->u_id ) ? sanitize_text_field( $data->u_id ) : '',
-				'type' => isset( $data->d_type ) ? sanitize_text_field( $data->d_type ) : '',
-			);
-
-			$response = $this->wkit_api_call( $array_data, $api_type );
-			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
-
-			if ( empty( $success ) ) {
-				$massage = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'server error', 'wdesignkit' );
-
-				$result = (object) array(
-					'success'     => false,
-					'message'     => $massage,
-					'description' => esc_html__( 'Widget not Downloaded', 'wdesignkit' ),
-				);
-
-				wp_send_json( $result );
-				wp_die();
-			}
-
-			$response = json_decode( wp_json_encode( $response['data'] ), true );
-			if ( ! empty( $response ) && ! empty( $response['data'] ) ) {
-				$img_url = ! empty( $response['data']['image'] ) ? esc_url_raw( $response['data']['image'] ) : '';
-				$json    = ! empty( $response['data']['json'] ) ? wp_json_encode( $response['data']['json'] ) : '';
-
-				if ( ! empty( $json ) ) {
-					include_once ABSPATH . 'wp-admin/includes/file.php';
-					\WP_Filesystem();
-					global $wp_filesystem;
-
-					$json_data = json_decode( $json );
-					$json_data = json_decode( $json_data );
-					$title     = ! empty( $json_data->widget_data->widgetdata->name ) ? sanitize_text_field( $json_data->widget_data->widgetdata->name ) : '';
-					$builder   = ! empty( $json_data->widget_data->widgetdata->type ) ? sanitize_text_field( $json_data->widget_data->widgetdata->type ) : '';
-					$widget_id = ! empty( $json_data->widget_data->widgetdata->widget_id ) ? sanitize_text_field( $json_data->widget_data->widgetdata->widget_id ) : '';
-
-					$folder_name = str_replace( ' ', '-', $title ) . '_' . $widget_id;
-					$file_name   = str_replace( ' ', '_', $title ) . '_' . $widget_id;
-
-					$builder_type_path = WDKIT_BUILDER_PATH . "/{$builder}/";
-
-					if ( ! is_dir( $builder_type_path . $folder_name ) ) {
-						wp_mkdir_p( $builder_type_path . $folder_name );
-					}
-
-					if ( ! empty( $img_url ) ) {
-						$img_body = wp_remote_get( $img_url );
-						$img_ext  = pathinfo( $img_url )['extension'];
-						$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
-
-						$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
-					}
-
-					$response = (object) array(
-						'message'     => ! empty( $response['message'] ) ? $response['message'] : '',
-						'description' => ! empty( $response['description'] ) ? $response['description'] : '',
-						'success'     => ! empty( $response['success'] ) ? $response['success'] : false,
-						'r_id'        => ! empty( $response['data']['rid'] ) ? $response['data']['rid'] : 0,
-						'json'        => wp_json_encode( $json_data ),
-					);
-				}
-			}
-
-			wp_send_json( $response );
-			wp_die();
-		}
-
-		/**
-		 *
 		 * It is Use for sync widget to server
 		 *
 		 * @since 1.0.0
@@ -2401,7 +2144,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected static function wkit_get_settings_panel() {
-
+			$new_version = '';
 			$current_version = WDKIT_VERSION;
 			$response        = wp_remote_get( 'https://api.wordpress.org/plugins/info/1.0/wdesignkit.json' );
 

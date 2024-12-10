@@ -190,6 +190,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'WDKIT_URL'           => WDKIT_URL,
 					'WDKIT_ASSETS'        => WDKIT_ASSETS,
 					'wdkit_server_url'    => WDKIT_SERVER_SITE_URL,
+					'wdkit_wp_version'    => get_bloginfo( 'version' ),
 					'home_url'            => esc_url( home_url( '/' ) ),
 					'kit_nonce'           => wp_create_nonce( 'wdkit_nonce' ),
 					'post_id'             => get_the_ID(),

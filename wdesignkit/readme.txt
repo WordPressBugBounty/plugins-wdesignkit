@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 5.7.0
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -36,8 +36,6 @@ https://www.youtube.com/watch?v=Bw5IHPxr0Nc
 * <strong>[1- Click Widget Convertor](https://wdesignkit.com/widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks#wkit-one-click-convert)</strong> — Easily Convert Elementor Widgets to Gutenberg Blocks or Bricks Elements & Vice Versa 
 * <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> — Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud 
 * <strong>[200+ Figma Designed Websites](https://wdesignkit.com/browse/figma?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-
-
 
 ###🔍 OUR PRODUCTS
 
@@ -88,15 +86,20 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == External services ==
 
-This plugin relies on external services to enhance its functionality and user experience. Below is a detailed description of the external services used by this plugin:
-
 1. wdesignkit.com API : This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 2. api.wordpress.org : This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the [Privacy Policy](https://wordpress.org/about/privacy/) and [Terms of Service](https://wordpress.org/tos/).
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
 
-1.1.3 – 26 November 2024
+1.1.4 – 06 December 2024
+New: Added Support Button.
+Improvement: Optimized Code for Improved Performance.
+Fix: Resolved language Translation Errors.
+Fix: Resolved Image Height Error from Share With Me Page.
+Fix: Minor Bugs and Improvements.
+
+1.1.3 – 23 November 2024
 Fix: Minor Bugs and Improvements.
 
 1.1.2 – 21 November 2024
