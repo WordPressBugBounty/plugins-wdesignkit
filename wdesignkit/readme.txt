@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 5.7.0
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,12 +91,14 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+1.1.5 – 12 December 2024
+Fix: Minor Bugs and Improvements.
 
 1.1.4 – 06 December 2024
 New: Added Support Button.
 Improvement: Optimized Code for Improved Performance.
-Fix: Resolved language Translation Errors.
-Fix: Resolved Image Height Error from Share With Me Page.
+Fix: Resolved language translation errors.
+Fix: Resolved Image Height error from share-with-me page.
 Fix: Minor Bugs and Improvements.
 
 1.1.3 – 23 November 2024
