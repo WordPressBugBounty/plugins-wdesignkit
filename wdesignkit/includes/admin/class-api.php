@@ -501,6 +501,33 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 		/**
 		 *
+		 * It is Use for get activate license key data from tpae and nexter blocks.
+		 *
+		 * @since 1.1.6
+		 */
+		protected function wkit_manage_license_data() {
+				$manage_licence = array();
+				$theplus_active_check = is_plugin_active('the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php');
+				$nexter_active_check = is_plugin_active('the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php');
+
+				$theplus_licence = get_option('tpaep_licence_data', []);
+				if ( ! empty( $theplus_active_check ) &&! empty( $theplus_licence ) ) {
+					$manage_licence['tpae'] = $theplus_licence;
+				}
+	
+				$nexter_licence = get_option('tpgb_activate', []);
+
+				if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && !empty( $nexter_licence['tpgb_activate_key'] ) ) {
+					$tpgb_license_status = get_option('tpgbp_license_status', []);
+					$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
+					$manage_licence['tpag'] = $tpgb_license_status;
+				}
+				return $manage_licence;
+	
+		}
+
+		/**
+		 *
 		 * It is Use for get all info of user.
 		 *
 		 * @since 1.0.0
@@ -540,8 +567,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				delete_transient( 'wdkit_auth_' . $email );
 			}
 
-			$response['Setting']     = $this->wkit_get_settings_panel();
-			$response['widget_list'] = $this->wkit_manage_widget_sequence( $response );
+            $response['Setting']     = $this->wkit_get_settings_panel();
+            $response['widget_list'] = $this->wkit_manage_widget_sequence( $response );
+			$response['manage_licence'] = $this->wkit_manage_license_data();
 
 			$response = array(
 				'data'    => $response,
@@ -2171,17 +2199,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$get_setting = get_option( 'wkit_settings_panel', false );
 
-			return array(
+			$setting_data = array(
 				'builder'            => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
 				'template'           => isset( $get_setting['template'] ) ? $get_setting['template'] : true,
 				'gutenberg_builder'  => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
 				'elementor_builder'  => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
 				'bricks_builder'     => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
-				'debugger_mode'      => isset( $get_setting['debugger_mode'] ) ? $get_setting['debugger_mode'] : false,
 				'gutenberg_template' => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
 				'elementor_template' => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
 				'plugin_version'     => $version_check,
 			);
+
+			if(isset( $get_setting['remove_db'] )){
+				$setting_data['remove_db'] =  $get_setting['remove_db'];
+			}
+
+			if(isset( $get_setting['debugger_mode'] )){
+				$setting_data['debugger_mode'] =  $get_setting['debugger_mode'];
+			}
+
+			return $setting_data;
 		}
 
 		/**

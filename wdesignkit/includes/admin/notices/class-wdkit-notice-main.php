@@ -71,7 +71,7 @@ if ( ! class_exists( 'Wdkit_Notice_Main' ) ) {
 			require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
 
 			/**Add Banner For Reating after 3 day*/
-			require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-rating.php';
+			// require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-rating.php';
 		}
 	}
 

@@ -2,10 +2,10 @@
 Contributors: posimyththemes, devangvachheta, sagarpatel124
 Donate link: https://wdesignkit.com/
 Tags: page templates, elementor template, wordpress template, elementor widgets, gutenberg blocks
-Requires at least: 5.7.0
+Requires at least: 6.0
 Tested up to: 6.6
-Requires PHP: 5.6
-Stable tag: 1.1.5
+Requires PHP: 7.0
+Stable tag: 1.1.6
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -86,11 +86,22 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == External services ==
 
-1. wdesignkit.com API : This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
-2. api.wordpress.org : This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the [Privacy Policy](https://wordpress.org/about/privacy/) and [Terms of Service](https://wordpress.org/tos/).
-3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
+This plugin relies on external services to enhance its functionality and user experience. Below is a detailed description of the external services used by this plugin:
+1. wdesignkit.com API
+This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the Privacy Policy [https://wdesignkit.com/privacy-policy] and Terms of Service[https://wdesignkit.com/terms].
+2. api.wordpress.org Plugins Info API
+This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the Privacy Policy[https://wordpress.org/about/privacy/] and Terms of Service[https://wordpress.org/tos/].
+3. api.posimyth.com APIs
+The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the Privacy Policy[https://api.posimyth.com/privacy-policy/] and Terms of Service[https://api.posimyth.com/terms-and-conditions/].
 
 == Changelog ==
+
+1.1.6 – 27 December 2024
+Fix: Disable routing feature error.
+New: Option to remove database values of the plugin.
+New: Users can directly activate the license if already activated in the relevant plugin.
+Fix: Minor Bugs and Improvements.
+
 1.1.5 – 12 December 2024
 Fix: Minor Bugs and Improvements.
 
