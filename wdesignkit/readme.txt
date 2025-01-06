@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -23,6 +23,8 @@ License URI: https://opensource.org/licenses/GPL-3.0
 ### Complete WDesignKit Features Explained Under 4 Mins <a href="https://www.youtube.com/watch?v=Bw5IHPxr0Nc"> Watch Now</a>
 
 https://www.youtube.com/watch?v=Bw5IHPxr0Nc
+
+https://www.youtube.com/watch?v=4RhZwuyFd8k&t=101s
 
 ## What is WDesignKit ?
 * <strong>[1000+ Elementor Page Templates, Kit & Sections](https://wdesignkit.com/browse/template?builder=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
@@ -86,15 +88,16 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == External services ==
 
-This plugin relies on external services to enhance its functionality and user experience. Below is a detailed description of the external services used by this plugin:
-1. wdesignkit.com API
-This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the Privacy Policy [https://wdesignkit.com/privacy-policy] and Terms of Service[https://wdesignkit.com/terms].
-2. api.wordpress.org Plugins Info API
-This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the Privacy Policy[https://wordpress.org/about/privacy/] and Terms of Service[https://wordpress.org/tos/].
-3. api.posimyth.com APIs
-The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the Privacy Policy[https://api.posimyth.com/privacy-policy/] and Terms of Service[https://api.posimyth.com/terms-and-conditions/].
+1. wdesignkit.com API : This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
+2. api.wordpress.org : This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the [Privacy Policy](https://wordpress.org/about/privacy/) and [Terms of Service](https://wordpress.org/tos/).
+3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+1.1.7 – 06 January 2024
+New : Remove Image Feature in Create and Edit Widget Popup.
+Fix : Solve Language Translation Error in Toast message.
+Fix: Minor Bugs and Improvements.
 
 1.1.6 – 27 December 2024
 Fix: Disable routing feature error.

@@ -161,6 +161,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'kit_template':
 					$data = $this->wdkit_template();
 					break;
+				case 'wkit_preset_template':
+					$data = apply_filters( 'wp_wdkit_preset_ajax', 'wdkit_preset_template' );
+					break;
+				case 'wdkit_preset_dwnld_template':	
+					$data = apply_filters( 'wp_wdkit_preset_ajax', 'wdkit_preset_dwnld_template' );
+					break;
 				case 'template_remove':
 					$data = $this->wdkit_template_remove();
 					break;
@@ -506,24 +512,25 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.6
 		 */
 		protected function wkit_manage_license_data() {
-				$manage_licence = array();
-				$theplus_active_check = is_plugin_active('the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php');
-				$nexter_active_check = is_plugin_active('the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php');
+			$manage_licence = array();
+			$theplus_active_check = is_plugin_active('the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php');
+			$nexter_active_check = is_plugin_active('the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php');
 
-				$theplus_licence = get_option('tpaep_licence_data', []);
-				if ( ! empty( $theplus_active_check ) &&! empty( $theplus_licence ) ) {
-					$manage_licence['tpae'] = $theplus_licence;
-				}
-	
-				$nexter_licence = get_option('tpgb_activate', []);
+			$theplus_licence = get_option('tpaep_licence_data', []);
+			
+			if ( ! empty( $theplus_active_check ) &&! empty( $theplus_licence ) ) {
+				$manage_licence['tpae'] = $theplus_licence;
+			}
 
-				if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && !empty( $nexter_licence['tpgb_activate_key'] ) ) {
-					$tpgb_license_status = get_option('tpgbp_license_status', []);
-					$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
-					$manage_licence['tpag'] = $tpgb_license_status;
-				}
-				return $manage_licence;
-	
+			$nexter_licence = get_option('tpgb_activate', []);
+
+			if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && !empty( $nexter_licence['tpgb_activate_key'] ) ) {
+				$tpgb_license_status = get_option('tpgbp_license_status', []);
+				$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
+				$manage_licence['tpag'] = $tpgb_license_status;
+			}
+			
+			return $manage_licence;
 		}
 
 		/**
@@ -1981,7 +1988,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$img_url   = ! empty( $response['data']['image'] ) ? $response['data']['image'] : '';
-			$json_data = ! empty( $response['data']['json'] ) ? json_decode( $response['data']['json'] ) : '';
+			$json_data = ! empty( $response['data']['json'] ) ? json_decode( $response['data']['json'], true ) : '';
+
+			if( empty( $response['success'] ) ){
+				wp_send_json( $responce );
+				wp_die();
+			}
 
 			if ( empty( $img_url ) && empty( $json_data ) ) {
 				$responce = (object) array(
@@ -1998,9 +2010,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			\WP_Filesystem();
 			global $wp_filesystem;
 
-			$title   = ! empty( $json_data->widget_data->widgetdata->name ) ? sanitize_text_field( $json_data->widget_data->widgetdata->name ) : '';
-			$builder = ! empty( $json_data->widget_data->widgetdata->type ) ? sanitize_text_field( $json_data->widget_data->widgetdata->type ) : '';
-			$w_uniq  = ! empty( $json_data->widget_data->widgetdata->widget_id ) ? sanitize_text_field( $json_data->widget_data->widgetdata->widget_id ) : '';
+			if( !is_array($json_data) ){
+				$json_data = json_decode( $json_data, true );
+			}
+			
+			$title   = ! empty( $json_data['widget_data']['widgetdata']['name'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['name'] ) : '';
+			$builder = ! empty( $json_data['widget_data']['widgetdata']['type'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['type'] ) : '';
+			$w_uniq  = ! empty( $json_data['widget_data']['widgetdata']['widget_id'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['widget_id'] ) : '';
 
 			$folder_name       = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
 			$file_name         = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
@@ -2019,7 +2035,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$img_ext  = pathinfo( $img_url )['extension'];
 
 				$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
-				$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+				$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
 			}
 
 			$result = (object) array(

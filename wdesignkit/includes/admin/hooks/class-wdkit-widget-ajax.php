@@ -30,7 +30,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 	 */
 	class Wdkit_Widget_Ajax {
 
-        /**
+		/**
 		 * Member Variable
 		 *
 		 * @var instance
@@ -55,7 +55,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			return self::$instance;
 		}
 
-        /**
+		/**
 		 * Define the core functionality of the plugin.
 		 */
 		public function __construct() {
@@ -64,7 +64,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 		/**
 		 * Get Wdkit Api Call Ajax.
-		 * 
+		 *
 		 * @since 1.1.1
 		 */
 		public function wdkit_widget_ajax_call( $type ) {
@@ -76,7 +76,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			}
 
 			if ( ! $type ) {
-				$this->wdkit_error_msg( __( 'Something went wrong.', 'wdesignkit' ) );
+				$this->wdkit_error_msg( 'Something went wrong.' );
 			}
 
 			switch ( $type ) {
@@ -639,7 +639,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					'description' => esc_html__( 'something went wrong! please try again later.', 'wdesignkit' ),
 				);
 
-			return $result;
+				return $result;
 			}
 		}
 
@@ -797,7 +797,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * @param string $type store text data.
 		 * @param string $condition store text data.
 		 */
-		
+
 		public function wdkit_sanitizer_bypass( $data, $type, $condition = 'none' ) {
 
 			if ( 'none' === $condition ) {
@@ -892,12 +892,11 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		/**
 		 * Error JSON message
 		 *
-		 * @param array  $data give array.
-		 * @param string $status api code number.
-		 * 
+		 * @param array $data give array.
+		 *
 		 * @since 1.1.4
 		 * */
-		public function wdkit_error_msg( $data = null, $status = null ) {
+		public function wdkit_error_msg( $data = null ) {
 			wp_send_json_error( $data );
 			wp_die();
 		}
@@ -913,30 +912,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$hashed_i_d = (int) $unique_i_d % 10000;
 			return str_pad( $hashed_i_d, 4, '0', STR_PAD_LEFT );
 		}
+	}
 
-		/**
-         * Set the response data.
-         *
-         * @since 1.1.4
-         *
-         * @param bool   $success     Indicates whether the operation was successful. Default is false.
-         * @param string $message     The main message to include in the response. Default is an empty string.
-         * @param string $description A more detailed description of the message or error. Default is an empty string.
-         * @param mixed  $data        Optional additional data to include in the response. Default is an empty string.
-         */
-        public function wkit_set_response( $success = false, $message = '', $description = '', $data = '' ) {
-
-            $response = array(
-                'success'     => $success,
-                'message'     => esc_html( $message ),
-                'description' => esc_html( $description ),
-            );
-
-            return $response;
-        }
-
-
-    }
-
-    Wdkit_Widget_Ajax::get_instance();
+	Wdkit_Widget_Ajax::get_instance();
 }

@@ -1,7 +1,5 @@
 (function ($) {
-	const {
-		__,
-	} = wp.i18n;
+	const { __ } = wp.i18n;
 
 	'use strict';
 
@@ -37,6 +35,7 @@
 		}
 		return window.WdkitPopup.show()
 	}
+
 	$("document").ready(function () {
 		if (typeof elementor === "object" && elementor.$preview) {
 			elementor.on("panel:init", (function () {
@@ -50,6 +49,15 @@
 			var e = ["section", "container"],
 				b = [];
 			elementor.on("preview:loaded", function () {
+
+				if (window.location.hash.includes('?wdesignkit=open')) {
+					wkit_load_save_tempalte({}, null);
+
+					setTimeout(() => {
+						window.location.hash = window.location.hash.replaceAll('?wdesignkit=open', '')
+					}, 3000);
+				}
+
 				e.forEach(function (c, f) {
 					elementor.hooks.addFilter("elements/" + e[f] + "/contextMenuGroups", function (c, d) {
 						return (
@@ -86,7 +94,7 @@
 		var eleTempContent = $("#tmpl-elementor-add-section");
 		if (eleTempContent.length > 0) {
 			var actionHtml = eleTempContent.html();
-			actionHtml = actionHtml.replace('<div class="elementor-add-section-drag-title', '<div data-mode="dark" class="elementor-add-section-area-button elementor-action-wdkit-button" title="' + __("WDesignKit") + '"><a href="#" class="wkit-main-logo-div"></a></div><div class="elementor-add-section-drag-title'), eleTempContent.html(actionHtml), elementor.on("preview:loaded", (function () {
+			actionHtml = actionHtml.replace('<div class="elementor-add-section-drag-title', '<div data-mode="dark" class="elementor-add-section-area-button elementor-action-wdkit-button" title="' + __("WDesignKit","wdesignkit") + '"><a href="#" class="wkit-main-logo-div"></a></div><div class="elementor-add-section-drag-title'), eleTempContent.html(actionHtml), elementor.on("preview:loaded", (function () {
 				$(elementor.$previewContents[0].body).on("click", ".elementor-action-wdkit-button", (function (e) {
 					wkit_load_save_tempalte({
 						route: "/dashboard"
