@@ -34,6 +34,16 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		private static $instance;
 
 		/**
+		 * Indicates whether the white label mode is enabled.
+		 *
+		 * When set to true, the application will operate in white label mode,
+		 * hiding branding and other related elements.
+		 *
+		 * @var bool
+		 */
+		// public $white_label;
+
+		/**
 		 * Singleton instance getter method.
 		 *
 		 * @since 1.0.0
@@ -58,6 +68,7 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		 * @since 1.0.0
 		 */
 		public function __construct() {
+			// $this->white_label = get_option( 'wkit_white_label' );
 
 			if ( is_admin() && current_user_can( 'manage_options' ) ) {
 				// Add a filter to include a settings link for the plugin in the WordPress plugins page.
@@ -81,14 +92,21 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		 */
 		public function wdkit_settings_pro_link( $links ) {
 
-			$settings  = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wdesign-kit#/login' ), __( 'Settings', 'wdesignkit' ) );
+			$settings    = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wdesign-kit#/login' ), __( 'Settings', 'wdesignkit' ) );
 			$upgrade_pro = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight: bold;">%s</a>', esc_url( 'https://store.posimyth.com/get-support-wdesignkit' ), __( 'Upgrade PRO', 'wdesignkit' ) );
-			$need_help = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( 'https://store.posimyth.com/get-support-wdesignkit' ), __( 'Need Help?', 'wdesignkit' ) );
+			$need_help   = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( 'https://store.posimyth.com/get-support-wdesignkit' ), __( 'Need Help?', 'wdesignkit' ) );
 
-			$links   = (array) $links;
-			$links[] = $upgrade_pro;
+			$links = (array) $links;
+
+			// if ( isset( $this->white_label['hide_links'] ) ) {
+				$links[] = $upgrade_pro;
+			// }
+
 			$links[] = $settings;
-			$links[] = $need_help;
+
+			// if ( isset( $this->white_label['hide_links'] ) ) {
+				$links[] = $need_help;
+			// }
 
 			return $links;
 		}
@@ -105,16 +123,17 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		 */
 		public function wdkit_extra_links_plugin_row_meta( $plugin_meta = array(), $plugin_file = '' ) {
 
+			// if ( strpos( $plugin_file, WDKIT_PBNAME ) !== false && isset( $this->white_label['hide_links'] ) ) {
 			if ( strpos( $plugin_file, WDKIT_PBNAME ) !== false ) {
 
 				$new_links = array(
 					'official-Website' => '<a href="' . esc_url( 'https://wdesignkit.com/?utm_source=wpbackend&utm_medium=pluginpage&utm_campaign=admin' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Official Website', 'wdesignkit' ) . '</a>',
-					'docs' => '<a href="' . esc_url( 'https://learn.wdesignkit.com/?utm_source=wpbackend&utm_medium=pluginpage&utm_campaign=admin' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'docs', 'wdesignkit' ) . '</a>',
-					'video-tutorials' => '<a href="' . esc_url( 'https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Video Tutorials', 'wdesignkit' ) . '</a>',
-					'join-community' => '<a href="' . esc_url( 'https://www.facebook.com/groups/wdesignkit' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Join Community', 'wdesignkit' ) . '</a>',
-					'whats-new?' => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/updates' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What`s New?', 'wdesignkit' ) . '</a>',
-					'request-feature' => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/boards/feature-requests' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request Feature', 'wdesignkit' ) . '</a>',
-					'rate-stars' => '<a href="' . esc_url( 'https://wordpress.org/support/plugin/wdesignkit/reviews/?filter=5' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Rate 5 Stars', 'wdesignkit' ) . '</a>',
+					'docs'             => '<a href="' . esc_url( 'https://learn.wdesignkit.com/?utm_source=wpbackend&utm_medium=pluginpage&utm_campaign=admin' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'docs', 'wdesignkit' ) . '</a>',
+					'video-tutorials'  => '<a href="' . esc_url( 'https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Video Tutorials', 'wdesignkit' ) . '</a>',
+					'join-community'   => '<a href="' . esc_url( 'https://www.facebook.com/groups/wdesignkit' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Join Community', 'wdesignkit' ) . '</a>',
+					'whats-new?'       => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/updates' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What`s New?', 'wdesignkit' ) . '</a>',
+					'request-feature'  => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/boards/feature-requests' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request Feature', 'wdesignkit' ) . '</a>',
+					'rate-stars'       => '<a href="' . esc_url( 'https://wordpress.org/support/plugin/wdesignkit/reviews/?filter=5' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Rate 5 Stars', 'wdesignkit' ) . '</a>',
 				);
 
 				$plugin_meta = array_merge( $plugin_meta, $new_links );

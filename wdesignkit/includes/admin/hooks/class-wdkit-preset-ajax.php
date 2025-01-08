@@ -179,10 +179,10 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 						wp_die();
 					}
 
-					$license_key    = $theplus_licence['license_key'];
-					$license_status = 'active';
+					$array_data['license'] = 'activate';
+					$array_data['license_key']    = $theplus_licence['license_key'];
 
-				} elseif ( $array_data['builder'] === 'gutenberg' ) {
+				} else if ( $array_data['builder'] === 'gutenberg' ) {
 					$nexter_licence = get_option( 'tpgb_activate', array() );
 
 					if ( empty( $nexter_licence ) || empty( $nexter_licence['tpgb_activate_key'] ) ) {
@@ -192,8 +192,8 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 						wp_die();
 					}
 
-					$license_key    = $nexter_licence['tpgb_activate_key'];
-					$license_status = 'active';
+					$array_data['license'] = 'activate';
+					$array_data['license_key']    = $nexter_licence['tpgb_activate_key'];
 				}
 			}
 

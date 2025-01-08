@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-06T10:14:52+00:00\n"
+"POT-Creation-Date: 2025-01-08T11:49:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: wdesignkit\n"
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/class-api.php:292
+#: includes/admin/class-api.php:298
 #: includes/admin/hooks/class-wdkit-login-ajax.php:270
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:272
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:722
@@ -59,132 +59,145 @@ msgid "API Not Found"
 msgstr ""
 
 #. Translators: %s is a placeholder for the error message
-#: includes/admin/class-api.php:308
+#: includes/admin/class-api.php:314
 #: includes/admin/hooks/class-wdkit-login-ajax.php:286
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:288
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:738
 msgid "API request error: %s"
 msgstr ""
 
-#: includes/admin/class-api.php:321
+#: includes/admin/class-api.php:327
 #: includes/admin/hooks/class-wdkit-login-ajax.php:299
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:301
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:751
-#: build/index.js:34527
-#: build/index.js:34628
-#: src/widget-builder/components-controller/block_edit.js:821
-#: src/widget-builder/components-controller/block_edit.js:869
-#: build/index.js:27021
-#: build/index.js:27069
+#: build/index.js:1
 msgid "Success"
 msgstr ""
 
-#: includes/admin/class-api.php:483
+#: includes/admin/class-api.php:489
 msgid "Server Error"
 msgstr ""
 
-#: includes/admin/class-api.php:484
+#: includes/admin/class-api.php:490
 msgid "Server Error, Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:983
+#: includes/admin/class-api.php:989
 msgid "Theme activated successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:984
+#: includes/admin/class-api.php:990
 msgid "Theme successfully activated"
 msgstr ""
 
-#: includes/admin/class-api.php:991
+#: includes/admin/class-api.php:997
 msgid "Theme Not Activated !"
 msgstr ""
 
-#: includes/admin/class-api.php:999
+#: includes/admin/class-api.php:1005
 msgid "Theme Name not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1000
+#: includes/admin/class-api.php:1006
 msgid "Can Not Found Theme Name you Enterd."
 msgstr ""
 
-#: includes/admin/class-api.php:1048
-#: includes/admin/class-api.php:1356
-#: includes/admin/class-api.php:1413
+#: includes/admin/class-api.php:1054
+#: includes/admin/class-api.php:1362
+#: includes/admin/class-api.php:1419
 msgid "Invalid import"
 msgstr ""
 
-#: includes/admin/class-api.php:1049
-#: includes/admin/class-api.php:1357
-#: includes/admin/class-api.php:1414
+#: includes/admin/class-api.php:1055
+#: includes/admin/class-api.php:1363
+#: includes/admin/class-api.php:1420
 msgid "Invalid import: Check your details and try again."
 msgstr ""
 
-#: includes/admin/class-api.php:1652
+#: includes/admin/class-api.php:1658
 msgid "Relevant Page Builder not installed or activated"
 msgstr ""
 
-#: includes/admin/class-api.php:1918
+#: includes/admin/class-api.php:1924
 msgid "Widget JSON not found"
 msgstr ""
 
-#: includes/admin/class-api.php:1919
+#: includes/admin/class-api.php:1925
 msgid "widget JSON file not found."
 msgstr ""
 
-#: includes/admin/class-api.php:1928
+#: includes/admin/class-api.php:1934
 msgid "Widget get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:1929
+#: includes/admin/class-api.php:1935
 msgid "Widget JSON get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:1934
+#: includes/admin/class-api.php:1940
 msgid "Widget not get"
 msgstr ""
 
-#: includes/admin/class-api.php:1935
+#: includes/admin/class-api.php:1941
 msgid "Widget JSON not get"
 msgstr ""
 
-#: includes/admin/class-api.php:1963
-#: includes/admin/class-api.php:2091
-#: includes/admin/class-api.php:2147
+#: includes/admin/class-api.php:1969
+#: includes/admin/class-api.php:2097
+#: includes/admin/class-api.php:2153
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:168
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:670
 msgid "server error"
 msgstr ""
 
-#: includes/admin/class-api.php:1967
+#: includes/admin/class-api.php:1973
 msgid " Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:2001
+#: includes/admin/class-api.php:2007
 msgid "No Response Found"
 msgstr ""
 
-#: includes/admin/class-api.php:2002
+#: includes/admin/class-api.php:2008
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:173
 msgid "Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:2043
+#: includes/admin/class-api.php:2049
 msgid "no message"
 msgstr ""
 
-#: includes/admin/class-api.php:2096
+#: includes/admin/class-api.php:2102
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:2362
+#: includes/admin/class-api.php:2263
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:111
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:144
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:205
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:219
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:129
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:251
+msgid "Data Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:2280
+msgid "Plugin Name Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:2303
+msgid "Reset White Label Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2433
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2398
+#: includes/admin/class-api.php:2469
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:2407
+#: includes/admin/class-api.php:2478
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
@@ -223,7 +236,7 @@ msgstr ""
 msgid "Failed to activate WDesignKit"
 msgstr ""
 
-#: includes/admin/class-wdkit-enqueue.php:234
+#: includes/admin/class-wdkit-enqueue.php:233
 #: assets/js/main/elementor/elementor-editor.js:97
 msgid "WDesignKit"
 msgstr ""
@@ -234,15 +247,6 @@ msgstr ""
 
 #: includes/admin/hooks/class-wdkit-login-ajax.php:134
 msgid "Login successful. Keep it up!"
-msgstr ""
-
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:111
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:144
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:205
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:219
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:129
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:251
-msgid "Data Not Found"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:112
@@ -276,16 +280,12 @@ msgid "Builder Type not found"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:452
-#: build/index.js:58354
-#: src/widget-builder/wb-setting-panel/setting_panel.js:121
-#: build/index.js:45018
+#: build/index.js:1
 msgid "Update Saved Successfully"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:453
-#: build/index.js:58354
-#: src/widget-builder/wb-setting-panel/setting_panel.js:121
-#: build/index.js:45018
+#: build/index.js:1
 msgid "Success! Update Saved"
 msgstr ""
 
@@ -308,9 +308,7 @@ msgid "Widget can not imported"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:559
-#: build/index.js:29630
-#: src/widget-builder/Listing-panle/listing_popup.js:388
-#: build/index.js:23351
+#: build/index.js:1
 msgid "Widget imported"
 msgstr ""
 
@@ -423,52 +421,45 @@ msgstr ""
 msgid "Documentation."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:84
-#: build/index.js:11620
-#: build/index.js:26116
-#: src/helper/helper-function.js:2975
-#: src/pages/side_menu/main_side_menu.js:160
-#: build/index.js:10130
-#: build/index.js:20722
+#: includes/admin/notices/class-wdkit-plugin-page.php:95
+#: build/index.js:1
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:85
+#: includes/admin/notices/class-wdkit-plugin-page.php:96
 msgid "Upgrade PRO"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:86
-#: build/index.js:26654
-#: src/pages/support/support.js:84
-#: build/index.js:21026
+#: includes/admin/notices/class-wdkit-plugin-page.php:97
+#: build/index.js:1
 msgid "Need Help?"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:111
+#: includes/admin/notices/class-wdkit-plugin-page.php:129
 msgid "Official Website"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:112
+#: includes/admin/notices/class-wdkit-plugin-page.php:130
 msgid "docs"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:113
+#: includes/admin/notices/class-wdkit-plugin-page.php:131
 msgid "Video Tutorials"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:114
+#: includes/admin/notices/class-wdkit-plugin-page.php:132
 msgid "Join Community"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:115
+#: includes/admin/notices/class-wdkit-plugin-page.php:133
 msgid "What`s New?"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:116
+#: includes/admin/notices/class-wdkit-plugin-page.php:134
 msgid "Request Feature"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:117
+#: includes/admin/notices/class-wdkit-plugin-page.php:135
 msgid "Rate 5 Stars"
 msgstr ""
 
@@ -501,15 +492,7 @@ msgid "You Haven't Saved Templates Yet."
 msgstr ""
 
 #: includes/widget-load/elementor/wb-controller.php:92
-#: build/index.js:34817
-#: build/index.js:34825
-#: build/index.js:46365
-#: src/widget-builder/components-controller/block_edit.js:983
-#: src/widget-builder/components-controller/block_edit.js:987
-#: src/widget-builder/components-data/component_layout.js:2182
-#: build/index.js:27183
-#: build/index.js:27187
-#: build/index.js:35523
+#: build/index.js:1
 msgid "Select Template"
 msgstr ""
 
@@ -517,4947 +500,2658 @@ msgstr ""
 msgid "Save Page in WDesignKit"
 msgstr ""
 
-#: build/index.js:7998
-#: build/index.js:18057
-#: build/index.js:23815
-#: src/helper/helper-function.js:359
-#: src/pages/manage_workspace/single_workspace.js:354
-#: src/pages/save_template/main_save_template.js:522
-#: build/index.js:7514
-#: build/index.js:14979
-#: build/index.js:19237
+#: build/index.js:1
 msgid "Please Confirm"
 msgstr ""
 
-#: build/index.js:8003
-#: build/index.js:18062
-#: src/helper/helper-function.js:362
-#: src/pages/manage_workspace/single_workspace.js:357
-#: build/index.js:7517
-#: build/index.js:14982
+#: build/index.js:1
 msgid "Are you sure want to permanently delete"
 msgstr ""
 
-#: build/index.js:8011
-#: build/index.js:12805
-#: build/index.js:23829
-#: src/helper/helper-function.js:366
-#: src/pages/activate/activate.js:355
-#: src/pages/save_template/main_save_template.js:529
-#: build/index.js:7521
-#: build/index.js:11117
-#: build/index.js:19244
+#: build/index.js:1
 msgid "No"
 msgstr ""
 
-#: build/index.js:8016
-#: build/index.js:12810
-#: build/index.js:18073
-#: build/index.js:23841
-#: src/helper/helper-function.js:372
-#: src/pages/activate/activate.js:361
-#: src/pages/manage_workspace/single_workspace.js:367
-#: src/pages/save_template/main_save_template.js:537
-#: build/index.js:7527
-#: build/index.js:11123
-#: build/index.js:14992
-#: build/index.js:19252
+#: build/index.js:1
 msgid "Yes"
 msgstr ""
 
-#: build/index.js:8274
-#: build/index.js:8309
-#: build/index.js:12022
-#: src/helper/helper-function.js:635
-#: src/helper/helper-function.js:676
-#: src/helper/helper-function.js:3307
-#: build/index.js:7790
-#: build/index.js:7831
-#: build/index.js:10462
-msgid "Get Pro Version to Download"
-msgstr ""
-
-#: build/index.js:8279
-#: src/helper/helper-function.js:641
-#: build/index.js:7796
-msgid "Template Deactivate"
-msgstr ""
-
-#: build/index.js:8279
-#: src/helper/helper-function.js:641
-#: build/index.js:7796
-msgid "This Template is Deactivated"
-msgstr ""
-
-#: build/index.js:8322
-#: build/index.js:12129
-#: build/index.js:17552
-#: build/index.js:18315
-#: build/index.js:32146
-#: src/helper/helper-function.js:688
-#: src/helper/helper-function.js:3412
-#: src/pages/manage_workspace/manage_workspace.js:240
-#: src/pages/manage_workspace/single_workspace.js:611
-#: src/widget-builder/Listing-panle/main.js:522
-#: build/index.js:7843
-#: build/index.js:10567
-#: build/index.js:14541
-#: build/index.js:15236
-#: build/index.js:25315
+#: build/index.js:1
 msgid "Credit Limit Reached!"
 msgstr ""
 
-#: build/index.js:8325
-#: build/index.js:12132
-#: build/index.js:17555
-#: build/index.js:18318
-#: src/helper/helper-function.js:689
-#: src/helper/helper-function.js:3413
-#: src/pages/manage_workspace/manage_workspace.js:241
-#: src/pages/manage_workspace/single_workspace.js:612
-#: build/index.js:7844
-#: build/index.js:10568
-#: build/index.js:14542
-#: build/index.js:15237
+#: build/index.js:1
 msgid "This Template got disabled until you have more credits to make it active."
 msgstr ""
 
-#: build/index.js:8331
-#: build/index.js:12138
-#: build/index.js:17561
-#: build/index.js:18324
-#: build/index.js:32155
-#: src/helper/helper-function.js:691
-#: src/helper/helper-function.js:3415
-#: src/pages/manage_workspace/manage_workspace.js:243
-#: src/pages/manage_workspace/single_workspace.js:614
-#: src/widget-builder/Listing-panle/main.js:525
-#: build/index.js:7846
-#: build/index.js:10570
-#: build/index.js:14544
-#: build/index.js:15239
-#: build/index.js:25318
+#: build/index.js:1
 msgid "Buy Credits"
 msgstr ""
 
-#: build/index.js:8426
-#: build/index.js:32341
-#: src/helper/helper-function.js:729
-#: src/widget-builder/Listing-panle/main.js:608
-#: build/index.js:7884
-#: build/index.js:25401
-msgid "Favourite"
-msgstr ""
-
-#: build/index.js:8426
-#: build/index.js:32334
-#: src/helper/helper-function.js:729
-#: src/widget-builder/Listing-panle/main.js:603
-#: build/index.js:7884
-#: build/index.js:25396
+#: build/index.js:1
 msgid "UnFavourite"
 msgstr ""
 
-#: build/index.js:8444
-#: build/index.js:9007
-#: build/index.js:24115
-#: src/helper/helper-function.js:741
-#: src/helper/helper-function.js:1038
-#: src/pages/save_template/main_save_template.js:716
-#: build/index.js:7896
-#: build/index.js:8193
-#: build/index.js:19431
+#: build/index.js:1
+msgid "Favourite"
+msgstr ""
+
+#: build/index.js:1
 msgid "Section"
 msgstr ""
 
-#: build/index.js:8444
-#: src/helper/helper-function.js:741
-#: build/index.js:7896
+#: build/index.js:1
 msgid "Full Page"
 msgstr ""
 
-#: build/index.js:8444
-#: src/helper/helper-function.js:741
-#: build/index.js:7896
+#: build/index.js:1
 msgid "Page Kit"
 msgstr ""
 
-#: build/index.js:8458
-#: build/index.js:12186
-#: build/index.js:18362
-#: build/index.js:32360
-#: src/helper/helper-function.js:752
-#: src/helper/helper-function.js:3439
-#: src/pages/manage_workspace/single_workspace.js:631
-#: src/widget-builder/Listing-panle/main.js:621
-#: build/index.js:7907
-#: build/index.js:10594
-#: build/index.js:15256
-#: build/index.js:25414
+#: build/index.js:1
 msgid "Public"
 msgstr ""
 
-#: build/index.js:8458
-#: build/index.js:12175
-#: build/index.js:18372
-#: build/index.js:32353
-#: src/helper/helper-function.js:752
-#: src/helper/helper-function.js:3433
-#: src/pages/manage_workspace/single_workspace.js:637
-#: src/widget-builder/Listing-panle/main.js:616
-#: build/index.js:7907
-#: build/index.js:10588
-#: build/index.js:15262
-#: build/index.js:25409
+#: build/index.js:1
 msgid "Private"
 msgstr ""
 
-#: build/index.js:8477
-#: build/index.js:12205
-#: build/index.js:12885
-#: build/index.js:14529
-#: build/index.js:15905
-#: build/index.js:18412
-#: build/index.js:27813
-#: build/index.js:28791
-#: build/index.js:32381
-#: src/helper/helper-function.js:759
-#: src/helper/helper-function.js:3446
-#: src/pages/activate/activate.js:411
-#: src/pages/browse/browse.js:541
-#: src/pages/browse/mobile-filter-template.js:417
-#: src/pages/manage_workspace/single_workspace.js:659
-#: src/pages/widget_brows/mobile-filter-widget.js:126
-#: src/pages/widget_brows/widget_brows.js:425
-#: src/widget-builder/Listing-panle/main.js:631
-#: build/index.js:7914
-#: build/index.js:10601
-#: build/index.js:11173
-#: build/index.js:12331
-#: build/index.js:13374
-#: build/index.js:15284
-#: build/index.js:21959
-#: build/index.js:22692
-#: build/index.js:25424
+#: build/index.js:1
 msgid "Pro"
 msgstr ""
 
-#: build/index.js:8646
-#: src/helper/helper-function.js:845
-#: build/index.js:8000
-msgid "Add Favorite"
+#: build/index.js:1
+msgid "Get Pro Version to Download"
 msgstr ""
 
-#: build/index.js:8687
-#: src/helper/helper-function.js:858
-#: build/index.js:8013
+#: build/index.js:1
+msgid "Template Deactivate"
+msgstr ""
+
+#: build/index.js:1
+msgid "This Template is Deactivated"
+msgstr ""
+
+#: build/index.js:1
 msgid "Remove Favorite"
 msgstr ""
 
-#: build/index.js:8709
-#: build/index.js:18538
-#: build/index.js:30766
-#: build/index.js:31224
-#: build/index.js:59344
-#: src/helper/helper-function.js:869
-#: src/pages/manage_workspace/single_workspace.js:713
-#: src/widget-builder/Listing-panle/listing_popup.js:1344
-#: src/widget-builder/Listing-panle/listing_popup.js:1599
-#: src/widget-builder/widget_builder.js:119
-#: build/index.js:8024
-#: build/index.js:15338
-#: build/index.js:24307
-#: build/index.js:24562
-#: build/index.js:45702
+#: build/index.js:1
+msgid "Add Favorite"
+msgstr ""
+
+#: build/index.js:1
 msgid "Edit"
 msgstr ""
 
-#: build/index.js:8747
-#: build/index.js:11878
-#: build/index.js:18582
-#: build/index.js:18722
-#: src/helper/helper-function.js:875
-#: src/helper/helper-function.js:3170
-#: src/pages/manage_workspace/single_workspace.js:725
-#: src/pages/manage_workspace/single_workspace.js:806
-#: build/index.js:8030
-#: build/index.js:10325
-#: build/index.js:15350
-#: build/index.js:15431
+#: build/index.js:1
 msgid "Copy to Workspace"
 msgstr ""
 
-#: build/index.js:8766
-#: build/index.js:17473
-#: build/index.js:32487
-#: src/helper/helper-function.js:880
-#: src/pages/manage_workspace/manage_workspace.js:192
-#: src/widget-builder/Listing-panle/main.js:676
-#: build/index.js:8035
-#: build/index.js:14493
-#: build/index.js:25469
+#: build/index.js:1
 msgid "Delete"
 msgstr ""
 
-#: build/index.js:8786
-#: src/helper/helper-function.js:887
-#: build/index.js:8042
+#: build/index.js:1
 msgid "Move to Workspace"
 msgstr ""
 
-#: build/index.js:8805
-#: build/index.js:18628
-#: src/helper/helper-function.js:891
-#: src/pages/manage_workspace/single_workspace.js:739
-#: build/index.js:8046
-#: build/index.js:15364
+#: build/index.js:1
 msgid "Remove"
 msgstr ""
 
-#: build/index.js:8831
-#: src/helper/helper-function.js:915
-#: build/index.js:8070
+#: build/index.js:1
 msgid "post views"
 msgstr ""
 
-#: build/index.js:8838
-#: src/helper/helper-function.js:917
-#: build/index.js:8072
+#: build/index.js:1
 msgid "post download"
 msgstr ""
 
-#: build/index.js:8847
-#: src/helper/helper-function.js:922
-#: build/index.js:8077
+#: build/index.js:1
 msgid "builder icon"
 msgstr ""
 
-#: build/index.js:8922
-#: src/helper/helper-function.js:990
-#: build/index.js:8145
-msgid "public"
-msgstr ""
-
-#: build/index.js:8926
-#: src/helper/helper-function.js:992
-#: build/index.js:8147
-msgid "private"
-msgstr ""
-
-#: build/index.js:8946
-#: src/helper/helper-function.js:1003
-#: build/index.js:8158
-msgid "View All"
-msgstr ""
-
-#: build/index.js:8970
-#: build/index.js:14446
-#: build/index.js:28835
-#: src/helper/helper-function.js:1025
-#: src/pages/browse/browse.js:476
-#: src/pages/widget_brows/widget_brows.js:449
-#: build/index.js:8180
-#: build/index.js:12266
-#: build/index.js:22716
-msgid "Page Builder"
-msgstr ""
-
-#: build/index.js:8976
-#: build/index.js:8988
-#: build/index.js:9013
-#: build/index.js:9025
-#: build/index.js:9050
-#: build/index.js:9062
-#: build/index.js:9087
-#: build/index.js:9099
-#: build/index.js:9124
-#: build/index.js:9136
-#: src/helper/helper-function.js:1027
-#: src/helper/helper-function.js:1031
-#: src/helper/helper-function.js:1040
-#: src/helper/helper-function.js:1044
-#: src/helper/helper-function.js:1053
-#: src/helper/helper-function.js:1057
-#: src/helper/helper-function.js:1065
-#: src/helper/helper-function.js:1069
-#: src/helper/helper-function.js:1078
-#: src/helper/helper-function.js:1082
-#: build/index.js:8182
-#: build/index.js:8186
-#: build/index.js:8195
-#: build/index.js:8199
-#: build/index.js:8208
-#: build/index.js:8212
-#: build/index.js:8220
-#: build/index.js:8224
-#: build/index.js:8233
-#: build/index.js:8237
-msgid "Option 1"
-msgstr ""
-
-#: build/index.js:8994
-#: build/index.js:9031
-#: build/index.js:9068
-#: build/index.js:9105
-#: build/index.js:9142
-#: src/helper/helper-function.js:1032
-#: src/helper/helper-function.js:1045
-#: src/helper/helper-function.js:1058
-#: src/helper/helper-function.js:1070
-#: src/helper/helper-function.js:1083
-#: build/index.js:8187
-#: build/index.js:8200
-#: build/index.js:8213
-#: build/index.js:8225
-#: build/index.js:8238
-msgid "Option 2"
-msgstr ""
-
-#: build/index.js:9000
-#: build/index.js:9037
-#: build/index.js:9074
-#: build/index.js:9111
-#: build/index.js:9148
-#: src/helper/helper-function.js:1033
-#: src/helper/helper-function.js:1046
-#: src/helper/helper-function.js:1059
-#: src/helper/helper-function.js:1071
-#: src/helper/helper-function.js:1084
-#: build/index.js:8188
-#: build/index.js:8201
-#: build/index.js:8214
-#: build/index.js:8226
-#: build/index.js:8239
-msgid "Option 3"
-msgstr ""
-
-#: build/index.js:9044
-#: src/helper/helper-function.js:1051
-#: build/index.js:8206
-msgid "Page"
-msgstr ""
-
-#: build/index.js:9081
-#: build/index.js:20112
-#: src/helper/helper-function.js:1063
-#: src/pages/myuploaded/myuploaded.js:288
-#: build/index.js:8218
-#: build/index.js:16460
-msgid "Kits"
-msgstr ""
-
-#: build/index.js:9118
-#: src/helper/helper-function.js:1076
-#: build/index.js:8231
-msgid "Plugin Required"
-msgstr ""
-
-#: build/index.js:9161
-#: src/helper/helper-function.js:1095
-#: build/index.js:8250
+#: build/index.js:1
 msgid "Website Upgrade in Progress."
 msgstr ""
 
-#: build/index.js:9164
-#: src/helper/helper-function.js:1096
-#: build/index.js:8251
+#: build/index.js:1
 msgid "Our  website is undergoing a transformation to serve you better."
 msgstr ""
 
-#: build/index.js:9179
-#: src/helper/helper-function.js:1107
-#: build/index.js:8262
-msgid "Upgrade now for the best experience WDesignKit v1.0.15"
-msgstr ""
-
-#: build/index.js:9185
-#: src/helper/helper-function.js:1110
-#: build/index.js:8265
-msgid "Upgrade"
-msgstr ""
-
-#: build/index.js:9210
-#: src/helper/helper-function.js:1124
-#: build/index.js:8279
+#: build/index.js:1
 msgid "You can't access Pro feature,  limit reached with two active sites. To unlock, deactivate one site or upgrade plan for more"
 msgstr ""
 
-#: build/index.js:9221
-#: build/index.js:26211
-#: src/helper/helper-function.js:1140
-#: src/pages/side_menu/main_side_menu.js:217
-#: build/index.js:8295
-#: build/index.js:20779
-msgid "Logged out successfully!"
-msgstr ""
-
-#: build/index.js:9221
-#: build/index.js:26211
-#: src/helper/helper-function.js:1140
-#: src/pages/side_menu/main_side_menu.js:217
-#: build/index.js:8295
-#: build/index.js:20779
-msgid "You're logged out! Remember your login details and sign in again."
-msgstr ""
-
-#: build/index.js:9329
-#: src/helper/helper-function.js:1240
-#: build/index.js:8395
-msgid "Login / SignUp"
-msgstr ""
-
-#: build/index.js:9374
-#: src/helper/helper-function.js:1267
-#: build/index.js:8422
-msgid "Profile"
-msgstr ""
-
-#: build/index.js:9397
-#: build/index.js:11628
-#: build/index.js:26395
-#: src/helper/helper-function.js:1276
-#: src/helper/helper-function.js:2989
-#: src/pages/side_menu/main_side_menu.js:348
-#: build/index.js:8431
-#: build/index.js:10144
-#: build/index.js:20910
-msgid "Logout"
-msgstr ""
-
-#: build/index.js:9605
-#: src/helper/helper-function.js:1459
-#: build/index.js:8614
-msgid "Something wen't wrong"
-msgstr ""
-
-#: build/index.js:9611
-#: src/helper/helper-function.js:1459
-#: build/index.js:8614
-msgid "Try Again"
-msgstr ""
-
-#: build/index.js:9632
-#: src/helper/helper-function.js:1469
-#: build/index.js:8624
-msgid "Install Manually."
-msgstr ""
-
-#: build/index.js:9638
-#: src/helper/helper-function.js:1470
-#: build/index.js:8625
-msgid "Learn How?"
-msgstr ""
-
-#: build/index.js:9864
-#: src/helper/helper-function.js:1719
-#: build/index.js:8874
-msgid "List of Pages "
-msgstr ""
-
-#: build/index.js:9906
-#: src/helper/helper-function.js:1773
-#: build/index.js:8928
-msgid "List of Sections "
-msgstr ""
-
-#: build/index.js:10030
-#: src/helper/helper-function.js:1896
-#: build/index.js:9051
-msgid "No need to install any Plugin."
-msgstr ""
-
-#: build/index.js:10033
-#: src/helper/helper-function.js:1897
-#: build/index.js:9052
-msgid "You have selected design which doesn't need any plugin to install. Press Next."
-msgstr ""
-
-#: build/index.js:10045
-#: src/helper/helper-function.js:1908
-#: build/index.js:9063
-msgid "Continue Anyway"
-msgstr ""
-
-#: build/index.js:10060
-#: src/helper/helper-function.js:1911
-#: build/index.js:9066
-msgid "It will skip plugin installation and your imported page might not look as expected"
-msgstr ""
-
-#: build/index.js:10067
-#: src/helper/helper-function.js:1918
-#: build/index.js:9073
-msgid "Install All"
-msgstr ""
-
-#: build/index.js:10067
-#: src/helper/helper-function.js:1918
-#: build/index.js:9073
-msgid "Installing"
-msgstr ""
-
-#: build/index.js:10076
-#: build/index.js:11299
-#: build/index.js:21430
-#: build/index.js:21438
-#: build/index.js:30918
-#: src/helper/helper-function.js:1924
-#: src/helper/helper-function.js:2783
-#: src/pages/onboarding/onboarding.js:659
-#: src/pages/onboarding/onboarding.js:663
-#: src/widget-builder/Listing-panle/listing_popup.js:1439
-#: build/index.js:9079
-#: build/index.js:9938
-#: build/index.js:17294
-#: build/index.js:17298
-#: build/index.js:24402
-msgid "Next"
-msgstr ""
-
-#: build/index.js:10084
-#: src/helper/helper-function.js:1931
-#: build/index.js:9086
-msgid "To download this template, you will need to install below listed plugins"
-msgstr ""
-
-#: build/index.js:10156
-#: src/helper/helper-function.js:1993
-#: build/index.js:9148
-msgid "Import Templates"
-msgstr ""
-
-#: build/index.js:10187
-#: build/index.js:31585
-#: build/index.js:31590
-#: src/helper/helper-function.js:2010
-#: src/widget-builder/Listing-panle/listing_popup.js:1813
-#: src/widget-builder/Listing-panle/listing_popup.js:1819
-#: build/index.js:9165
-#: build/index.js:24776
-#: build/index.js:24782
-msgid "Import"
-msgstr ""
-
-#: build/index.js:10456
-#: build/index.js:17448
-#: src/helper/helper-function.js:2243
-#: src/pages/manage_workspace/manage_workspace.js:182
-#: build/index.js:9398
-#: build/index.js:14483
-msgid "View"
-msgstr ""
-
-#: build/index.js:10476
-#: build/index.js:10702
-#: src/helper/helper-function.js:2267
-#: src/helper/helper-function.js:2458
-#: build/index.js:9422
-#: build/index.js:9613
+#: build/index.js:1
 msgid "Importing Templates"
 msgstr ""
 
-#: build/index.js:10482
-#: src/helper/helper-function.js:2272
-#: build/index.js:9427
-msgid "Importing..."
-msgstr ""
-
-#: build/index.js:10736
-#: src/helper/helper-function.js:2473
-#: build/index.js:9628
+#: build/index.js:1
 msgid "Yay! Your kit has been successfully imported"
 msgstr ""
 
-#: build/index.js:10763
-#: src/helper/helper-function.js:2486
-#: build/index.js:9641
+#: build/index.js:1
 msgid "Ops! Your templates are failed to import. Please Try Again."
 msgstr ""
 
-#: build/index.js:10771
-#: build/index.js:10807
-#: src/helper/helper-function.js:2487
-#: src/helper/helper-function.js:2502
-#: build/index.js:9642
-#: build/index.js:9657
+#: build/index.js:1
 msgid "Why Failed?"
 msgstr ""
 
-#: build/index.js:10836
-#: src/helper/helper-function.js:2521
-#: build/index.js:9676
+#: build/index.js:1
 msgid "Pages :"
 msgstr ""
 
-#: build/index.js:10855
-#: build/index.js:11011
-#: src/helper/helper-function.js:2526
-#: src/helper/helper-function.js:2597
-#: build/index.js:9681
-#: build/index.js:9752
+#: build/index.js:1
 msgid "Success."
 msgstr ""
 
-#: build/index.js:10876
-#: build/index.js:11032
-#: src/helper/helper-function.js:2530
-#: src/helper/helper-function.js:2601
-#: build/index.js:9685
-#: build/index.js:9756
+#: build/index.js:1
 msgid "Failed."
 msgstr ""
 
-#: build/index.js:10992
-#: src/helper/helper-function.js:2592
-#: build/index.js:9747
+#: build/index.js:1
 msgid "Sections :"
 msgstr ""
 
-#: build/index.js:11168
-#: src/helper/helper-function.js:2676
-#: build/index.js:9831
-msgid "Successfully"
-msgstr ""
-
-#: build/index.js:11191
-#: src/helper/helper-function.js:2691
-#: build/index.js:9846
-msgid "Failed"
-msgstr ""
-
-#: build/index.js:11279
-#: build/index.js:24185
-#: src/helper/helper-function.js:2767
-#: src/pages/save_template/main_save_template.js:751
-#: build/index.js:9922
-#: build/index.js:19466
-msgid "Add New Workspace"
-msgstr ""
-
-#: build/index.js:11284
-#: src/helper/helper-function.js:2769
-#: build/index.js:9924
-msgid "Workspace Name"
-msgstr ""
-
-#: build/index.js:11289
-#: src/helper/helper-function.js:2774
-#: build/index.js:9929
-msgid "Enter Workspace Name"
-msgstr ""
-
-#: build/index.js:11379
-#: src/helper/helper-function.js:2843
-#: build/index.js:9998
+#: build/index.js:1
 msgid "Nothing related found!"
 msgstr ""
 
-#: build/index.js:11479
-#: build/index.js:25930
-#: src/helper/helper-function.js:2921
-#: src/pages/side_menu/main_side_menu.js:74
-#: build/index.js:10076
-#: build/index.js:20636
+#: build/index.js:1
 msgid "Browse Templates"
 msgstr ""
 
-#: build/index.js:11497
-#: build/index.js:24039
-#: build/index.js:24212
-#: build/index.js:26045
-#: src/helper/helper-function.js:2928
-#: src/pages/save_template/main_save_template.js:677
-#: src/pages/save_template/main_save_template.js:771
-#: src/pages/side_menu/main_side_menu.js:124
-#: build/index.js:10083
-#: build/index.js:19392
-#: build/index.js:19486
-#: build/index.js:20686
+#: build/index.js:1
 msgid "Save Template"
 msgstr ""
 
-#: build/index.js:11515
-#: build/index.js:25997
-#: src/helper/helper-function.js:2935
-#: src/pages/side_menu/main_side_menu.js:104
-#: build/index.js:10090
-#: build/index.js:20666
+#: build/index.js:1
 msgid "Browse Widgets"
 msgstr ""
 
-#: build/index.js:11531
-#: build/index.js:20155
-#: build/index.js:25960
-#: src/helper/helper-function.js:2942
-#: src/pages/myuploaded/myuploaded.js:310
-#: src/pages/side_menu/main_side_menu.js:84
-#: build/index.js:10097
-#: build/index.js:16482
-#: build/index.js:20646
+#: build/index.js:1
 msgid "My Templates"
 msgstr ""
 
-#: build/index.js:11548
-#: build/index.js:26098
-#: src/helper/helper-function.js:2951
-#: src/pages/side_menu/main_side_menu.js:150
-#: build/index.js:10106
-#: build/index.js:20712
+#: build/index.js:1
 msgid "Shared with Me"
 msgstr ""
 
-#: build/index.js:11564
-#: build/index.js:17620
-#: build/index.js:26082
-#: src/helper/helper-function.js:2954
-#: src/pages/manage_workspace/manage_workspace.js:286
-#: src/pages/side_menu/main_side_menu.js:142
-#: build/index.js:10109
-#: build/index.js:14587
-#: build/index.js:20704
+#: build/index.js:1
 msgid "Manage Workspace"
 msgstr ""
 
-#: build/index.js:11584
-#: build/index.js:12819
-#: build/index.js:26136
-#: src/helper/helper-function.js:2962
-#: src/pages/activate/activate.js:372
-#: src/pages/side_menu/main_side_menu.js:169
-#: build/index.js:10117
-#: build/index.js:11134
-#: build/index.js:20731
+#: build/index.js:1
 msgid "Manage Licence"
 msgstr ""
 
-#: build/index.js:11602
-#: build/index.js:26027
-#: build/index.js:31985
-#: src/helper/helper-function.js:2968
-#: src/pages/side_menu/main_side_menu.js:114
-#: src/widget-builder/Listing-panle/main.js:423
-#: build/index.js:10123
-#: build/index.js:20676
-#: build/index.js:25216
+#: build/index.js:1
 msgid "My Widgets"
 msgstr ""
 
-#: build/index.js:11633
-#: build/index.js:16593
-#: build/index.js:26430
-#: src/helper/helper-function.js:2991
-#: src/pages/login/login-api.js:143
-#: src/pages/side_menu/main_side_menu.js:367
-#: build/index.js:10146
-#: build/index.js:13858
-#: build/index.js:20929
+#: build/index.js:1
+msgid "Logout"
+msgstr ""
+
+#: build/index.js:1
 msgid "Login"
 msgstr ""
 
-#: build/index.js:11886
-#: build/index.js:18732
-#: build/index.js:24064
-#: src/helper/helper-function.js:3173
-#: src/pages/manage_workspace/single_workspace.js:809
-#: src/pages/save_template/main_save_template.js:692
-#: build/index.js:10328
-#: build/index.js:15434
-#: build/index.js:19407
+#: build/index.js:1
 msgid "Select Workspace"
 msgstr ""
 
-#: build/index.js:11899
-#: src/helper/helper-function.js:3186
-#: build/index.js:10341
+#: build/index.js:1
 msgid "Move"
 msgstr ""
 
-#: build/index.js:11899
-#: src/helper/helper-function.js:3186
-#: build/index.js:10341
+#: build/index.js:1
 msgid "Copy"
 msgstr ""
 
-#: build/index.js:12079
-#: build/index.js:18248
-#: src/helper/helper-function.js:3363
-#: src/pages/manage_workspace/single_workspace.js:537
-#: build/index.js:10518
-#: build/index.js:15162
+#: build/index.js:1
+msgid "Review"
+msgstr ""
+
+#: build/index.js:1
+msgid "Reviews"
+msgstr ""
+
+#: build/index.js:1
 msgid "Downloaded Successfully!"
 msgstr ""
 
-#: build/index.js:12079
-#: build/index.js:18248
-#: src/helper/helper-function.js:3363
-#: src/pages/manage_workspace/single_workspace.js:537
-#: build/index.js:10518
-#: build/index.js:15162
+#: build/index.js:1
 msgid "Start using or editing it further."
 msgstr ""
 
-#: build/index.js:12714
-#: build/index.js:27392
-#: src/pages/activate/activate.js:263
-#: src/pages/theplus_popup/theplus_popup.js:517
-#: build/index.js:11025
-#: build/index.js:21600
-msgid "Invalid key entered"
+#: build/index.js:1
+msgid "public"
 msgstr ""
 
-#: build/index.js:12714
-#: build/index.js:27392
-#: src/pages/activate/activate.js:263
-#: src/pages/theplus_popup/theplus_popup.js:517
-#: build/index.js:11025
-#: build/index.js:21600
-msgid "Key error, check and fix"
+#: build/index.js:1
+msgid "private"
 msgstr ""
 
-#: build/index.js:12799
-#: src/pages/activate/activate.js:351
-#: build/index.js:11113
-msgid "Are you sure you want to deactivate the"
+#: build/index.js:1
+msgid "View All"
 msgstr ""
 
-#: build/index.js:12799
-#: src/pages/activate/activate.js:351
-#: build/index.js:11113
-msgid "Pro License Key ?"
+#: build/index.js:1
+msgid "View"
 msgstr ""
 
-#: build/index.js:12871
-#: build/index.js:14513
-#: build/index.js:15889
-#: build/index.js:27797
-#: build/index.js:28775
-#: src/pages/activate/activate.js:406
-#: src/pages/browse/browse.js:530
-#: src/pages/browse/mobile-filter-template.js:406
-#: src/pages/widget_brows/mobile-filter-widget.js:115
-#: src/pages/widget_brows/widget_brows.js:414
-#: build/index.js:11168
-#: build/index.js:12320
-#: build/index.js:13363
-#: build/index.js:21948
-#: build/index.js:22681
-msgid "Free"
+#: build/index.js:1
+msgid "Importing..."
 msgstr ""
 
-#: build/index.js:12893
-#: build/index.js:13160
-#: src/pages/activate/activate.js:418
-#: src/pages/activate/activate.js:599
-#: build/index.js:11180
-#: build/index.js:11361
-msgid "Credits"
+#: build/index.js:1
+msgid "Something wen't wrong"
 msgstr ""
 
-#: build/index.js:12903
-#: build/index.js:17512
-#: build/index.js:18983
-#: build/index.js:25633
-#: build/index.js:25911
-#: src/pages/activate/activate.js:425
-#: src/pages/manage_workspace/manage_workspace.js:213
-#: src/pages/manage_workspace/single_workspace.js:957
-#: src/pages/share_with_me/main_share_with_me.js:218
-#: src/pages/side_menu/main_side_menu.js:64
-#: build/index.js:11187
-#: build/index.js:14514
-#: build/index.js:15582
-#: build/index.js:20413
-#: build/index.js:20626
-msgid "Templates"
+#: build/index.js:1
+msgid "Try Again"
 msgstr ""
 
-#: build/index.js:12928
-#: build/index.js:17532
-#: build/index.js:19003
-#: build/index.js:25653
-#: build/index.js:25978
-#: src/pages/activate/activate.js:442
-#: src/pages/manage_workspace/manage_workspace.js:220
-#: src/pages/manage_workspace/single_workspace.js:963
-#: src/pages/share_with_me/main_share_with_me.js:224
-#: src/pages/side_menu/main_side_menu.js:94
-#: build/index.js:11204
-#: build/index.js:14521
-#: build/index.js:15588
-#: build/index.js:20419
-#: build/index.js:20656
-msgid "Widgets"
+#: build/index.js:1
+msgid "Install Manually."
 msgstr ""
 
-#: build/index.js:12953
-#: build/index.js:26064
-#: src/pages/activate/activate.js:460
-#: src/pages/side_menu/main_side_menu.js:132
-#: build/index.js:11222
-#: build/index.js:20694
-msgid "Workspace"
+#: build/index.js:1
+msgid "Learn How?"
 msgstr ""
 
-#: build/index.js:12988
-#: src/pages/activate/activate.js:481
-#: build/index.js:11243
-msgid "Go Pro"
+#: build/index.js:1
+msgid "To download this template, you will need to install below listed plugins"
 msgstr ""
 
-#: build/index.js:12991
-#: src/pages/activate/activate.js:486
-#: build/index.js:11248
-msgid "Buy Extra Credits"
+#: build/index.js:1
+msgid "No need to install any Plugin."
 msgstr ""
 
-#: build/index.js:13001
-#: src/pages/activate/activate.js:493
-#: build/index.js:11255
-msgid "Add Licence Key"
+#: build/index.js:1
+msgid "You have selected design which doesn't need any plugin to install. Press Next."
 msgstr ""
 
-#: build/index.js:13016
-#: src/pages/activate/activate.js:507
-#: build/index.js:11269
-msgid "Key:"
+#: build/index.js:1
+msgid "Continue Anyway"
 msgstr ""
 
-#: build/index.js:13018
-#: src/pages/activate/activate.js:508
-#: build/index.js:11270
-msgid "Email:"
+#: build/index.js:1
+msgid "It will skip plugin installation and your imported page might not look as expected"
 msgstr ""
 
-#: build/index.js:13026
-#: src/pages/activate/activate.js:514
-#: build/index.js:11276
-msgid "Apply Key"
+#: build/index.js:1
+msgid "Installing"
 msgstr ""
 
-#: build/index.js:13042
-#: src/pages/activate/activate.js:529
-#: build/index.js:11291
-msgid "Enter Licence Key"
+#: build/index.js:1
+msgid "Install All"
 msgstr ""
 
-#: build/index.js:13128
-#: build/index.js:27473
-#: src/pages/activate/activate.js:581
-#: src/pages/theplus_popup/theplus_popup.js:572
-#: build/index.js:11343
-#: build/index.js:21655
-msgid "Activate"
+#: build/index.js:1
+msgid "Next"
 msgstr ""
 
-#: build/index.js:13135
-#: src/pages/activate/activate.js:583
-#: build/index.js:11345
-msgid "How to get key?"
+#: build/index.js:1
+msgid "Import Templates"
 msgstr ""
 
-#: build/index.js:13144
-#: src/pages/activate/activate.js:590
-#: build/index.js:11352
-msgid "Existing Licence Keys"
+#: build/index.js:1
+msgid "List of Pages "
 msgstr ""
 
-#: build/index.js:13146
-#: src/pages/activate/activate.js:591
-#: build/index.js:11353
-msgid "To utilize the credits associated with this license key, it must be in an 'Active' status. If it has expired, access will be restricted, and you won't be able to use it."
+#: build/index.js:1
+msgid "List of Sections "
 msgstr ""
 
-#: build/index.js:13156
-#: build/index.js:34205
-#: build/index.js:37240
-#: build/index.js:57806
-#: src/pages/activate/activate.js:597
-#: src/widget-builder/components-controller/block_edit.js:675
-#: src/widget-builder/components-controller/block_edit.js:2174
-#: src/widget-builder/wb-setting-panel/popup.js:313
-#: build/index.js:11359
-#: build/index.js:26875
-#: build/index.js:28374
-#: build/index.js:44717
-msgid "Name"
+#: build/index.js:1
+msgid "Import"
 msgstr ""
 
-#: build/index.js:13158
-#: src/pages/activate/activate.js:598
-#: build/index.js:11360
-msgid "Licence Key"
+#: build/index.js:1
+msgid "Page Builder"
 msgstr ""
 
-#: build/index.js:13162
-#: src/pages/activate/activate.js:600
-#: build/index.js:11362
-msgid "Status"
+#: build/index.js:1
+msgid "Option 1"
 msgstr ""
 
-#: build/index.js:13317
-#: src/pages/activate/activate.js:677
-#: build/index.js:11439
-msgid "No licence keys found. Add your WDesignKit, Nexter Blocks, The Plus Addons, UiChemy or other keys to activate and get benefits of pro version."
+#: build/index.js:1
+msgid "Option 2"
 msgstr ""
 
-#: build/index.js:13322
-#: src/pages/activate/activate.js:677
-#: build/index.js:11439
-msgid "How to get a key?"
+#: build/index.js:1
+msgid "Option 3"
 msgstr ""
 
-#: build/index.js:13999
-#: build/index.js:14655
-#: build/index.js:16015
-#: src/pages/browse/browse.js:129
-#: src/pages/browse/browse.js:600
-#: src/pages/browse/mobile-filter-template.js:463
-#: build/index.js:11919
-#: build/index.js:12390
-#: build/index.js:13420
-msgid "Page Kits"
+#: build/index.js:1
+msgid "Page"
 msgstr ""
 
-#: build/index.js:14000
-#: build/index.js:14614
-#: build/index.js:15976
-#: build/index.js:20077
-#: src/pages/browse/browse.js:130
-#: src/pages/browse/browse.js:584
-#: src/pages/browse/mobile-filter-template.js:448
-#: src/pages/myuploaded/myuploaded.js:272
-#: build/index.js:11920
-#: build/index.js:12374
-#: build/index.js:13405
-#: build/index.js:16444
-msgid "Sections"
+#: build/index.js:1
+msgid "Kits"
 msgstr ""
 
-#: build/index.js:14001
-#: build/index.js:14585
-#: build/index.js:15947
-#: src/pages/browse/browse.js:131
-#: src/pages/browse/browse.js:575
-#: src/pages/browse/mobile-filter-template.js:439
-#: build/index.js:11921
-#: build/index.js:12365
-#: build/index.js:13396
-msgid "Full Pages"
+#: build/index.js:1
+msgid "Plugin Required"
 msgstr ""
 
-#: build/index.js:14314
-#: build/index.js:14355
-#: build/index.js:15336
-#: build/index.js:28807
-#: build/index.js:28865
-#: build/index.js:29076
-#: src/pages/browse/browse.js:376
-#: src/pages/browse/browse.js:407
-#: src/pages/browse/browse.js:1101
-#: src/pages/widget_brows/widget_brows.js:439
-#: src/pages/widget_brows/widget_brows.js:468
-#: src/pages/widget_brows/widget_brows.js:605
-#: build/index.js:12166
-#: build/index.js:12197
-#: build/index.js:12891
-#: build/index.js:22706
-#: build/index.js:22735
-#: build/index.js:22872
-msgid "Filters"
+#: build/index.js:1
+msgid "Login / SignUp"
 msgstr ""
 
-#: build/index.js:14377
-#: build/index.js:28829
-#: src/pages/browse/browse.js:429
-#: src/pages/widget_brows/widget_brows.js:444
-#: build/index.js:12219
-#: build/index.js:22711
-msgid "Search"
+#: build/index.js:1
+msgid "Profile"
 msgstr ""
 
-#: build/index.js:14384
-#: build/index.js:15657
-#: src/pages/browse/browse.js:434
-#: src/pages/browse/mobile-filter-template.js:187
-#: build/index.js:12224
-#: build/index.js:13144
-msgid "Search Templates"
+#: build/index.js:1
+msgid "Logged out successfully!"
 msgstr ""
 
-#: build/index.js:14492
-#: build/index.js:28741
-#: src/pages/browse/browse.js:514
-#: src/pages/widget_brows/widget_brows.js:397
-#: build/index.js:12304
-#: build/index.js:22664
-msgid "Free / Pro"
+#: build/index.js:1
+msgid "You're logged out! Remember your login details and sign in again."
 msgstr ""
 
-#: build/index.js:14550
-#: build/index.js:35971
-#: build/index.js:36077
-#: src/pages/browse/browse.js:560
-#: src/widget-builder/components-controller/block_edit.js:1583
-#: src/widget-builder/components-controller/block_edit.js:1649
-#: build/index.js:12350
-#: build/index.js:27783
-#: build/index.js:27849
-msgid "Type"
+#: build/index.js:1
+msgid "Add New Workspace"
 msgstr ""
 
-#: build/index.js:14621
-#: build/index.js:14776
-#: build/index.js:15693
-#: build/index.js:15983
-#: build/index.js:20083
-#: src/pages/browse/browse.js:590
-#: src/pages/browse/browse.js:703
-#: src/pages/browse/mobile-filter-template.js:227
-#: src/pages/browse/mobile-filter-template.js:454
-#: src/pages/myuploaded/myuploaded.js:277
-#: build/index.js:12380
-#: build/index.js:12493
-#: build/index.js:13184
-#: build/index.js:13411
-#: build/index.js:16449
-msgid "Our Pagekits can only be imported from the plugin dashboard,"
+#: build/index.js:1
+msgid "Workspace Name"
 msgstr ""
 
-#: build/index.js:14625
-#: build/index.js:14780
-#: build/index.js:15697
-#: build/index.js:15987
-#: build/index.js:20087
-#: src/pages/browse/browse.js:590
-#: src/pages/browse/browse.js:703
-#: src/pages/browse/mobile-filter-template.js:227
-#: src/pages/browse/mobile-filter-template.js:454
-#: src/pages/myuploaded/myuploaded.js:277
-#: build/index.js:12380
-#: build/index.js:12493
-#: build/index.js:13184
-#: build/index.js:13411
-#: build/index.js:16449
-msgid "click here"
+#: build/index.js:1
+msgid "Enter Workspace Name"
 msgstr ""
 
-#: build/index.js:14626
-#: build/index.js:14781
-#: build/index.js:15698
-#: build/index.js:15988
-#: build/index.js:20088
-#: src/pages/browse/browse.js:590
-#: src/pages/browse/browse.js:703
-#: src/pages/browse/mobile-filter-template.js:227
-#: src/pages/browse/mobile-filter-template.js:454
-#: src/pages/myuploaded/myuploaded.js:277
-#: build/index.js:12380
-#: build/index.js:12493
-#: build/index.js:13184
-#: build/index.js:13411
-#: build/index.js:16449
-msgid "to open the dashboard."
-msgstr ""
-
-#: build/index.js:14673
-#: src/pages/browse/browse.js:616
-#: build/index.js:12406
-msgid "Plugins"
-msgstr ""
-
-#: build/index.js:14830
-#: src/pages/browse/browse.js:742
-#: build/index.js:12532
-msgid "Tags"
-msgstr ""
-
-#: build/index.js:14841
-#: build/index.js:15829
-#: src/pages/browse/browse.js:752
-#: src/pages/browse/mobile-filter-template.js:350
-#: build/index.js:12542
-#: build/index.js:13307
-msgid "Search Tags"
-msgstr ""
-
-#: build/index.js:15142
-#: src/pages/browse/browse.js:987
-#: build/index.js:12777
-msgid "Applied Filter :"
-msgstr ""
-
-#: build/index.js:15309
-#: src/pages/browse/browse.js:1081
-#: build/index.js:12871
-msgid "Clear All"
-msgstr ""
-
-#: build/index.js:16029
-#: build/index.js:27910
-#: src/pages/browse/mobile-filter-template.js:475
-#: src/pages/widget_brows/mobile-filter-widget.js:212
-#: build/index.js:13432
-#: build/index.js:22045
-msgid "Filter by"
-msgstr ""
-
-#: build/index.js:16051
-#: build/index.js:27932
-#: src/pages/browse/mobile-filter-template.js:482
-#: src/pages/widget_brows/mobile-filter-widget.js:219
-#: build/index.js:13439
-#: build/index.js:22052
-msgid "Search :"
-msgstr ""
-
-#: build/index.js:16057
-#: build/index.js:27938
-#: src/pages/browse/mobile-filter-template.js:487
-#: src/pages/widget_brows/mobile-filter-widget.js:224
-#: build/index.js:13444
-#: build/index.js:22057
-msgid "Page Builder :"
-msgstr ""
-
-#: build/index.js:16063
-#: src/pages/browse/mobile-filter-template.js:492
-#: build/index.js:13449
-msgid "Free / Pro :"
-msgstr ""
-
-#: build/index.js:16069
-#: src/pages/browse/mobile-filter-template.js:496
-#: build/index.js:13453
-msgid "Type :"
-msgstr ""
-
-#: build/index.js:16075
-#: src/pages/browse/mobile-filter-template.js:500
-#: build/index.js:13457
-msgid "Plugins :"
-msgstr ""
-
-#: build/index.js:16084
-#: src/pages/browse/mobile-filter-template.js:507
-#: build/index.js:13464
-msgid "Tag :"
-msgstr ""
-
-#: build/index.js:16101
-#: build/index.js:27964
-#: src/pages/browse/mobile-filter-template.js:522
-#: src/pages/widget_brows/mobile-filter-widget.js:245
-#: build/index.js:13479
-#: build/index.js:22078
-msgid "Visit Site"
-msgstr ""
-
-#: build/index.js:16331
-#: build/index.js:30621
-#: build/index.js:30908
-#: build/index.js:31066
-#: src/pages/login/incorrect_login.js:37
-#: src/widget-builder/Listing-panle/listing_popup.js:1281
-#: src/widget-builder/Listing-panle/listing_popup.js:1433
-#: src/widget-builder/Listing-panle/listing_popup.js:1523
-#: build/index.js:13655
-#: build/index.js:24244
-#: build/index.js:24396
-#: build/index.js:24486
+#: build/index.js:1
 msgid "Note :"
 msgstr ""
 
-#: build/index.js:16451
-#: src/pages/login/login-api.js:21
-#: build/index.js:13736
-msgid "Wrong or Expired Login Key"
-msgstr ""
-
-#: build/index.js:16452
-#: build/index.js:16455
-#: src/pages/login/login-api.js:22
-#: src/pages/login/login-api.js:23
-#: build/index.js:13737
-#: build/index.js:13738
-msgid "Your login API key seems to be wrong, Ask your webmaster with main WDesignKit Account access for another Login key."
-msgstr ""
-
-#: build/index.js:16457
-#: src/pages/login/login-api.js:24
-#: build/index.js:13739
-msgid "I know Purchase key and Login Key is different."
-msgstr ""
-
-#: build/index.js:16460
-#: src/pages/login/login-api.js:26
-#: build/index.js:13741
-msgid "This Login key is not your WDesignKit's Pro Licence's Purchase Key. Do you want to know, "
-msgstr ""
-
-#: build/index.js:16463
-#: build/index.js:16635
-#: src/pages/login/login-api.js:27
-#: src/pages/login/login-api.js:157
-#: build/index.js:13742
-#: build/index.js:13872
-msgid "How to get Login Key?"
-msgstr ""
-
-#: build/index.js:16466
-#: src/pages/login/login-api.js:29
-#: build/index.js:13744
-msgid "Let me Try again"
-msgstr ""
-
-#: build/index.js:16469
-#: src/pages/login/login-api.js:32
-#: build/index.js:13747
-msgid "I need to recheck Login Key"
-msgstr ""
-
-#: build/index.js:16551
-#: src/pages/login/login-api.js:117
-#: build/index.js:13832
-msgid "Login With Key"
-msgstr ""
-
-#: build/index.js:16554
-#: src/pages/login/login-api.js:118
-#: build/index.js:13833
-msgid "Enter your Login Key to get access"
-msgstr ""
-
-#: build/index.js:16561
-#: src/pages/login/login-api.js:122
-#: build/index.js:13837
-msgid "Login Key"
-msgstr ""
-
-#: build/index.js:16593
-#: src/pages/login/login-api.js:143
-#: build/index.js:13858
-msgid "Logged In"
-msgstr ""
-
-#: build/index.js:16610
-#: src/pages/login/login-api.js:148
-#: build/index.js:13863
-msgid "Back to Login"
-msgstr ""
-
-#: build/index.js:16615
-#: src/pages/login/login-api.js:152
-#: build/index.js:13867
-msgid "You need existing account to use this method. "
-msgstr ""
-
-#: build/index.js:16623
-#: src/pages/login/login-api.js:153
-#: build/index.js:13868
-msgid "Signup"
-msgstr ""
-
-#: build/index.js:16693
-#: src/pages/login/login.js:22
-#: build/index.js:13908
+#: build/index.js:1
 msgid "Incorrect Login Details"
 msgstr ""
 
-#: build/index.js:16694
-#: build/index.js:16697
-#: src/pages/login/login.js:23
-#: src/pages/login/login.js:24
-#: build/index.js:13909
-#: build/index.js:13910
+#: build/index.js:1
 msgid "Are you first time trying to login at WDesignKit?"
 msgstr ""
 
-#: build/index.js:16701
-#: src/pages/login/login.js:27
-#: build/index.js:13913
+#: build/index.js:1
 msgid "Yes, I am"
 msgstr ""
 
-#: build/index.js:16704
-#: src/pages/login/login.js:30
-#: build/index.js:13916
+#: build/index.js:1
 msgid "No, I forgot password"
 msgstr ""
 
-#: build/index.js:16711
-#: src/pages/login/login.js:38
-#: build/index.js:13924
+#: build/index.js:1
 msgid "Have you signed up for WDesignKit Account?"
 msgstr ""
 
-#: build/index.js:16715
-#: src/pages/login/login.js:41
-#: build/index.js:13927
+#: build/index.js:1
 msgid "You need to signup for "
 msgstr ""
 
-#: build/index.js:16718
-#: src/pages/login/login.js:42
-#: build/index.js:13928
+#: build/index.js:1
 msgid "WDesignKit account separately "
 msgstr ""
 
-#: build/index.js:16721
-#: src/pages/login/login.js:43
-#: build/index.js:13929
+#: build/index.js:1
 msgid "as it's different from our POSIMYTH Store login. Make sure you signup first and then try to login in WDesignKit."
 msgstr ""
 
-#: build/index.js:16723
-#: src/pages/login/login.js:45
-#: build/index.js:13931
+#: build/index.js:1
 msgid "I got it, WDesignKit & POSIMYTH Store account is Different."
 msgstr ""
 
-#: build/index.js:16725
-#: src/pages/login/login.js:47
-#: build/index.js:13933
+#: build/index.js:1
 msgid "Signup for WDesignKit"
 msgstr ""
 
-#: build/index.js:16727
-#: src/pages/login/login.js:49
-#: build/index.js:13935
+#: build/index.js:1
 msgid "Forgot Password"
 msgstr ""
 
-#: build/index.js:16729
-#: src/pages/login/login.js:51
-#: build/index.js:13937
+#: build/index.js:1
 msgid "Want to know more?"
 msgstr ""
 
-#: build/index.js:16762
-#: build/index.js:16769
-#: build/index.js:26999
-#: build/index.js:27006
-#: src/pages/login/login.js:94
-#: src/pages/login/login.js:104
-#: src/pages/theplus_popup/theplus_popup.js:283
-#: src/pages/theplus_popup/theplus_popup.js:293
-#: build/index.js:13980
-#: build/index.js:13990
-#: build/index.js:21366
-#: build/index.js:21376
-msgid "Please fill all fields"
-msgstr ""
-
-#: build/index.js:16762
-#: build/index.js:16769
-#: build/index.js:26999
-#: build/index.js:27006
-#: src/pages/login/login.js:94
-#: src/pages/login/login.js:104
-#: src/pages/theplus_popup/theplus_popup.js:283
-#: src/pages/theplus_popup/theplus_popup.js:293
-#: build/index.js:13980
-#: build/index.js:13990
-#: build/index.js:21366
-#: build/index.js:21376
-msgid "Missing information! Complete all fields."
-msgstr ""
-
-#: build/index.js:16765
-#: build/index.js:16865
-#: build/index.js:16923
-#: build/index.js:26926
-#: build/index.js:26984
-#: build/index.js:27002
-#: src/pages/login/login.js:98
-#: src/pages/login/login.js:212
-#: src/pages/login/login.js:280
-#: src/pages/theplus_popup/theplus_popup.js:197
-#: src/pages/theplus_popup/theplus_popup.js:265
-#: src/pages/theplus_popup/theplus_popup.js:287
-#: build/index.js:13984
-#: build/index.js:14098
-#: build/index.js:14166
-#: build/index.js:21280
-#: build/index.js:21348
-#: build/index.js:21370
-msgid "Invalid Login Details"
-msgstr ""
-
-#: build/index.js:16765
-#: build/index.js:16865
-#: build/index.js:16923
-#: build/index.js:26926
-#: build/index.js:26984
-#: build/index.js:27002
-#: src/pages/login/login.js:98
-#: src/pages/login/login.js:212
-#: src/pages/login/login.js:280
-#: src/pages/theplus_popup/theplus_popup.js:197
-#: src/pages/theplus_popup/theplus_popup.js:265
-#: src/pages/theplus_popup/theplus_popup.js:287
-#: build/index.js:13984
-#: build/index.js:14098
-#: build/index.js:14166
-#: build/index.js:21280
-#: build/index.js:21348
-#: build/index.js:21370
-msgid "Login Error: Check your details and try again."
-msgstr ""
-
-#: build/index.js:16950
-#: src/pages/login/login.js:308
-#: build/index.js:14194
+#: build/index.js:1
 msgid "Continue with"
 msgstr ""
 
-#: build/index.js:16961
-#: src/pages/login/login.js:316
-#: build/index.js:14202
+#: build/index.js:1
 msgid "Extend Your Design Capacity with"
 msgstr ""
 
-#: build/index.js:16974
-#: src/pages/login/login.js:321
-#: build/index.js:14207
+#: build/index.js:1
 msgid "No time to design? Get Wdesignkit today and jump-start your WordPress websites with Elementor, Gutenberg and Bricks."
 msgstr ""
 
-#: build/index.js:16987
-#: src/pages/login/login.js:327
-#: build/index.js:14213
+#: build/index.js:1
 msgid "Login to WDesignKit"
 msgstr ""
 
-#: build/index.js:16990
-#: src/pages/login/login.js:328
-#: build/index.js:14214
+#: build/index.js:1
 msgid "Explore, Download, or Manage Your Designs and Widgets."
 msgstr ""
 
-#: build/index.js:17023
-#: src/pages/login/login.js:344
-#: build/index.js:14230
-msgid "Connect via Login Key"
+#: build/index.js:1
+msgid "Invalid Login Details"
 msgstr ""
 
-#: build/index.js:17035
-#: src/pages/login/login.js:351
-#: build/index.js:14237
-msgid "Or Sign Up with Email"
+#: build/index.js:1
+msgid "Login Error: Check your details and try again."
 msgstr ""
 
-#: build/index.js:17048
-#: build/index.js:27127
-#: src/pages/login/login.js:357
-#: src/pages/theplus_popup/theplus_popup.js:385
-#: build/index.js:14243
-#: build/index.js:21468
-msgid "Email"
+#: build/index.js:1
+msgid "Google"
 msgstr ""
 
-#: build/index.js:17062
-#: build/index.js:27145
-#: build/index.js:27152
-#: src/pages/login/login.js:361
-#: src/pages/theplus_popup/theplus_popup.js:389
-#: src/pages/theplus_popup/theplus_popup.js:391
-#: build/index.js:14247
-#: build/index.js:21472
-#: build/index.js:21474
-msgid "Password"
-msgstr ""
-
-#: build/index.js:17137
-#: build/index.js:27223
-#: src/pages/login/login.js:382
-#: src/pages/theplus_popup/theplus_popup.js:410
-#: build/index.js:14268
-#: build/index.js:21493
-msgid "Remember Me"
-msgstr ""
-
-#: build/index.js:17144
-#: build/index.js:27230
-#: src/pages/login/login.js:384
-#: src/pages/theplus_popup/theplus_popup.js:412
-#: build/index.js:14270
-#: build/index.js:21495
-msgid "Forgot Password?"
-msgstr ""
-
-#: build/index.js:17162
-#: src/pages/login/login.js:396
-#: build/index.js:14282
-msgid "Logged in"
-msgstr ""
-
-#: build/index.js:17162
-#: build/index.js:27248
-#: src/pages/login/login.js:396
-#: src/pages/theplus_popup/theplus_popup.js:423
-#: build/index.js:14282
-#: build/index.js:21506
-msgid "Log in"
-msgstr ""
-
-#: build/index.js:17165
-#: build/index.js:27251
-#: src/pages/login/login.js:398
-#: src/pages/theplus_popup/theplus_popup.js:426
-#: build/index.js:14284
-#: build/index.js:21509
-msgid "Don't have an account?"
-msgstr ""
-
-#: build/index.js:17172
-#: src/pages/login/login.js:400
-#: build/index.js:14286
-msgid "Sign Up"
-msgstr ""
-
-#: build/index.js:17328
-#: src/pages/manage_workspace/manage_workspace.js:117
-#: build/index.js:14418
-msgid "New Workspace ?"
-msgstr ""
-
-#: build/index.js:17328
-#: src/pages/manage_workspace/manage_workspace.js:117
-#: build/index.js:14418
-msgid "You have Used Free Credit"
-msgstr ""
-
-#: build/index.js:17331
-#: src/pages/manage_workspace/manage_workspace.js:118
-#: build/index.js:14419
-msgid "Manage and collaborate with ease."
-msgstr ""
-
-#: build/index.js:17331
-#: src/pages/manage_workspace/manage_workspace.js:118
-#: build/index.js:14419
-msgid "You need to purchase now to add more workspace"
-msgstr ""
-
-#: build/index.js:17336
-#: src/pages/manage_workspace/manage_workspace.js:121
-#: build/index.js:14422
-msgid "Create Workspace"
-msgstr ""
-
-#: build/index.js:17343
-#: src/pages/manage_workspace/manage_workspace.js:123
-#: build/index.js:14424
-msgid "Buy Now"
-msgstr ""
-
-#: build/index.js:17367
-#: src/pages/manage_workspace/manage_workspace.js:145
-#: build/index.js:14446
-msgid "by"
-msgstr ""
-
-#: build/index.js:17494
-#: src/pages/manage_workspace/manage_workspace.js:207
-#: build/index.js:14508
-msgid "Users"
-msgstr ""
-
-#: build/index.js:17768
-#: src/pages/manage_workspace/single_workspace.js:81
-#: build/index.js:14706
-msgid "Workspace Deactivated"
-msgstr ""
-
-#: build/index.js:17768
-#: src/pages/manage_workspace/single_workspace.js:81
-#: build/index.js:14706
-msgid "This Workspace is Deactivated"
-msgstr ""
-
-#: build/index.js:18607
-#: src/pages/manage_workspace/single_workspace.js:735
-#: build/index.js:15360
-msgid "Move from Workspace"
-msgstr ""
-
-#: build/index.js:18788
-#: build/index.js:18869
-#: src/pages/manage_workspace/single_workspace.js:851
-#: src/pages/manage_workspace/single_workspace.js:899
-#: build/index.js:15476
-#: build/index.js:15524
-msgid "All"
-msgstr ""
-
-#: build/index.js:18809
-#: build/index.js:18890
-#: build/index.js:20575
-#: build/index.js:20690
-#: src/pages/manage_workspace/single_workspace.js:860
-#: src/pages/manage_workspace/single_workspace.js:908
-#: src/pages/onboarding/onboarding.js:201
-#: src/pages/onboarding/onboarding.js:250
-#: build/index.js:15485
-#: build/index.js:15533
-#: build/index.js:16836
-#: build/index.js:16885
-msgid "Elementor"
-msgstr ""
-
-#: build/index.js:18830
-#: build/index.js:18911
-#: build/index.js:20607
-#: build/index.js:20724
-#: src/pages/manage_workspace/single_workspace.js:870
-#: src/pages/manage_workspace/single_workspace.js:918
-#: src/pages/onboarding/onboarding.js:214
-#: src/pages/onboarding/onboarding.js:263
-#: build/index.js:15495
-#: build/index.js:15543
-#: build/index.js:16849
-#: build/index.js:16898
-msgid "Gutenberg"
-msgstr ""
-
-#: build/index.js:18840
-#: build/index.js:20643
-#: build/index.js:20762
-#: src/pages/manage_workspace/single_workspace.js:878
-#: src/pages/onboarding/onboarding.js:227
-#: src/pages/onboarding/onboarding.js:276
-#: build/index.js:15503
-#: build/index.js:16862
-#: build/index.js:16911
-msgid "Bricks"
-msgstr ""
-
-#: build/index.js:19013
-#: build/index.js:23854
-#: src/pages/manage_workspace/single_workspace.js:974
-#: src/pages/save_template/main_save_template.js:552
-#: build/index.js:15599
-#: build/index.js:19267
-msgid "Limit Reached"
-msgstr ""
-
-#: build/index.js:19074
-#: build/index.js:30531
-#: build/index.js:58988
-#: src/pages/manage_workspace/single_workspace.js:1010
-#: src/widget-builder/Listing-panle/listing_popup.js:1223
-#: src/widget-builder/wb-setting-panel/setting_panel.js:532
-#: build/index.js:15635
-#: build/index.js:24186
-#: build/index.js:45429
-msgid "Update"
-msgstr ""
-
-#: build/index.js:19111
-#: src/pages/manage_workspace/single_workspace.js:1046
-#: build/index.js:15671
-msgid "Manage Members"
-msgstr ""
-
-#: build/index.js:19577
-#: src/pages/myuploaded/kit_page.js:198
-#: build/index.js:16042
-msgid "Select All"
-msgstr ""
-
-#: build/index.js:20052
-#: src/pages/myuploaded/myuploaded.js:264
-#: build/index.js:16436
-msgid "Pages"
-msgstr ""
-
-#: build/index.js:20146
-#: build/index.js:32085
-#: src/pages/myuploaded/myuploaded.js:299
-#: src/widget-builder/Listing-panle/main.js:474
-#: build/index.js:16471
-#: build/index.js:25267
-msgid "Favourites"
-msgstr ""
-
-#: build/index.js:20536
-#: src/pages/onboarding/onboarding.js:184
-#: build/index.js:16819
-msgid "Welcome to WDesignKit"
-msgstr ""
-
-#: build/index.js:20545
-#: src/pages/onboarding/onboarding.js:189
-#: build/index.js:16824
-msgid "Page Templates"
-msgstr ""
-
-#: build/index.js:20650
-#: build/index.js:24502
-#: src/pages/onboarding/onboarding.js:230
-#: src/pages/setting_panel/settings.js:103
-#: build/index.js:16865
-#: build/index.js:19703
-msgid "Coming Soon"
-msgstr ""
-
-#: build/index.js:20660
-#: build/index.js:21127
-#: build/index.js:24780
-#: src/pages/onboarding/onboarding.js:238
-#: src/pages/onboarding/onboarding.js:470
-#: src/pages/setting_panel/settings.js:226
-#: build/index.js:16873
-#: build/index.js:17105
-#: build/index.js:19826
-msgid "Widget Builder"
-msgstr ""
-
-#: build/index.js:20824
-#: src/pages/onboarding/onboarding.js:309
-#: build/index.js:16944
-msgid "Bricks Elements Builder"
-msgstr ""
-
-#: build/index.js:20839
-#: build/index.js:24944
-#: src/pages/onboarding/onboarding.js:317
-#: src/pages/setting_panel/settings.js:311
-#: build/index.js:16952
-#: build/index.js:19911
-msgid "Elementor Widget Builder"
-msgstr ""
-
-#: build/index.js:20856
-#: src/pages/onboarding/onboarding.js:325
-#: build/index.js:16960
-msgid "Gutenberg Blocks Builder"
-msgstr ""
-
-#: build/index.js:20865
-#: src/pages/onboarding/onboarding.js:332
-#: build/index.js:16967
-msgid "Basic Requirements"
-msgstr ""
-
-#: build/index.js:20936
-#: src/pages/onboarding/onboarding.js:378
-#: build/index.js:17013
-msgid "Activate Now"
-msgstr ""
-
-#: build/index.js:20936
-#: src/pages/onboarding/onboarding.js:378
-#: build/index.js:17013
-msgid "Install & Activate"
-msgstr ""
-
-#: build/index.js:20947
-#: src/pages/onboarding/onboarding.js:387
-#: build/index.js:17022
-msgid "How to Install ?"
-msgstr ""
-
-#: build/index.js:20973
-#: src/pages/onboarding/onboarding.js:413
-#: build/index.js:17048
-msgid "Packed with Everything You Need for Exceptional Websites"
-msgstr ""
-
-#: build/index.js:21000
-#: src/pages/onboarding/onboarding.js:423
-#: build/index.js:17058
-msgid "Browse Our Templates"
-msgstr ""
-
-#: build/index.js:21044
-#: src/pages/onboarding/onboarding.js:439
-#: build/index.js:17074
-msgid "Widget Library"
-msgstr ""
-
-#: build/index.js:21083
-#: src/pages/onboarding/onboarding.js:454
-#: build/index.js:17089
-msgid "Figma Design Templates"
-msgstr ""
-
-#: build/index.js:21169
-#: src/pages/onboarding/onboarding.js:486
-#: build/index.js:17121
-msgid "Cloud Workspace"
-msgstr ""
-
-#: build/index.js:21207
-#: src/pages/onboarding/onboarding.js:509
-#: build/index.js:17144
-msgid "WDesignKit is Ready to Power your WordPress Website"
-msgstr ""
-
-#: build/index.js:21212
-#: src/pages/onboarding/onboarding.js:512
-#: build/index.js:17147
-msgid "Still in Doubt?"
-msgstr ""
-
-#: build/index.js:21220
-#: src/pages/onboarding/onboarding.js:514
-#: build/index.js:17149
-msgid "Watch Video Tutorials"
-msgstr ""
-
-#: build/index.js:21228
-#: src/pages/onboarding/onboarding.js:516
-#: build/index.js:17151
-msgid "Read Documentation"
-msgstr ""
-
-#: build/index.js:21236
-#: src/pages/onboarding/onboarding.js:518
-#: build/index.js:17153
-msgid "Helpdesk"
-msgstr ""
-
-#: build/index.js:21242
-#: src/pages/onboarding/onboarding.js:522
-#: build/index.js:17157
-msgid "Check our other products"
-msgstr ""
-
-#: build/index.js:21305
-#: src/pages/onboarding/onboarding.js:549
-#: build/index.js:17184
-msgid "By accepting this you agree to our"
-msgstr ""
-
-#: build/index.js:21310
-#: src/pages/onboarding/onboarding.js:549
-#: build/index.js:17184
-msgid "Terms & Conditions"
-msgstr ""
-
-#: build/index.js:21412
-#: src/pages/onboarding/onboarding.js:643
-#: build/index.js:17278
-msgid "Back"
-msgstr ""
-
-#: build/index.js:21423
-#: src/pages/onboarding/onboarding.js:652
-#: build/index.js:17287
-msgid "Finish"
-msgstr ""
-
-#: build/index.js:21434
-#: src/pages/onboarding/onboarding.js:662
-#: build/index.js:17297
-msgid "Enable any one feature to continue!"
-msgstr ""
-
-#: build/index.js:22947
-#: src/pages/reuable/Page_not_found.js:52
-#: build/index.js:18489
-msgid "Page Disabled"
-msgstr ""
-
-#: build/index.js:22951
-#: src/pages/reuable/Page_not_found.js:53
-#: build/index.js:18490
-msgid "Go to Settings"
-msgstr ""
-
-#: build/index.js:22964
-#: src/pages/reuable/Page_not_found.js:62
-#: build/index.js:18499
-msgid "Page not Found"
-msgstr ""
-
-#: build/index.js:22968
-#: src/pages/reuable/Page_not_found.js:63
-#: build/index.js:18500
-msgid "Back to home"
-msgstr ""
-
-#: build/index.js:23371
-#: build/index.js:24051
-#: src/pages/save_template/main_save_template.js:163
-#: src/pages/save_template/main_save_template.js:682
-#: build/index.js:18878
-#: build/index.js:19397
-msgid "Enter Template Name"
-msgstr ""
-
-#: build/index.js:23371
-#: src/pages/save_template/main_save_template.js:163
-#: build/index.js:18878
-msgid "Title can not be empty!"
-msgstr ""
-
-#: build/index.js:23461
-#: src/pages/save_template/main_save_template.js:258
-#: build/index.js:18973
-msgid "Page Content is empty"
-msgstr ""
-
-#: build/index.js:23461
-#: src/pages/save_template/main_save_template.js:258
-#: build/index.js:18973
-msgid "Page should have some content"
-msgstr ""
-
-#: build/index.js:23558
-#: src/pages/save_template/main_save_template.js:352
-#: build/index.js:19067
-msgid "Upload Template"
-msgstr ""
-
-#: build/index.js:23586
-#: src/pages/save_template/main_save_template.js:356
-#: build/index.js:19071
-msgid "Successfully Uploaded"
-msgstr ""
-
-#: build/index.js:23589
-#: src/pages/save_template/main_save_template.js:357
-#: build/index.js:19072
-msgid "To Edit fully visit WdesignKit admin and make it live."
-msgstr ""
-
-#: build/index.js:23598
-#: src/pages/save_template/main_save_template.js:361
-#: build/index.js:19076
-msgid "Edit Fully"
-msgstr ""
-
-#: build/index.js:23612
-#: src/pages/save_template/main_save_template.js:375
-#: build/index.js:19090
-msgid "Plugins Used"
-msgstr ""
-
-#: build/index.js:23686
-#: src/pages/save_template/main_save_template.js:418
-#: build/index.js:19133
-msgid "No Plugin List"
-msgstr ""
-
-#: build/index.js:23745
-#: src/pages/save_template/main_save_template.js:473
-#: build/index.js:19188
-msgid "New Template"
-msgstr ""
-
-#: build/index.js:23760
-#: src/pages/save_template/main_save_template.js:478
-#: build/index.js:19193
-msgid "Existing Template"
-msgstr ""
-
-#: build/index.js:23773
-#: src/pages/save_template/main_save_template.js:493
-#: build/index.js:19208
-msgid "Template Not Found"
-msgstr ""
-
-#: build/index.js:23773
-#: src/pages/save_template/main_save_template.js:493
-#: build/index.js:19208
-msgid "selected Template is Not Found"
-msgstr ""
-
-#: build/index.js:23820
-#: src/pages/save_template/main_save_template.js:525
-#: build/index.js:19240
-msgid "Are you sure you want to replace this template ?"
-msgstr ""
-
-#: build/index.js:23866
-#: build/index.js:23871
-#: src/pages/save_template/main_save_template.js:563
-#: src/pages/save_template/main_save_template.js:565
-#: build/index.js:19278
-#: build/index.js:19280
-msgid "Search Template"
-msgstr ""
-
-#: build/index.js:23912
-#: src/pages/save_template/main_save_template.js:583
-#: build/index.js:19298
-msgid "Recently added"
-msgstr ""
-
-#: build/index.js:23966
-#: src/pages/save_template/main_save_template.js:620
-#: build/index.js:19335
-msgid "Search Template can not found"
-msgstr ""
-
-#: build/index.js:23979
-#: src/pages/save_template/main_save_template.js:635
-#: build/index.js:19350
-msgid "Do you want to replace this?"
-msgstr ""
-
-#: build/index.js:23987
-#: src/pages/save_template/main_save_template.js:639
-#: build/index.js:19354
-msgid "Note : "
-msgstr ""
-
-#: build/index.js:23988
-#: src/pages/save_template/main_save_template.js:639
-#: build/index.js:19354
-msgid "Replacing the template will erase the current design. This action cannot be undone, and the old design will be permanently lost."
-msgstr ""
-
-#: build/index.js:24015
-#: src/pages/save_template/main_save_template.js:655
-#: build/index.js:19370
-msgid "Replace"
-msgstr ""
-
-#: build/index.js:24048
-#: src/pages/save_template/main_save_template.js:681
-#: build/index.js:19396
-msgid "Template Name"
-msgstr ""
-
-#: build/index.js:24073
-#: src/pages/save_template/main_save_template.js:695
-#: build/index.js:19410
-msgid "My Upload"
-msgstr ""
-
-#: build/index.js:24075
-#: src/pages/save_template/main_save_template.js:696
-#: build/index.js:19411
-msgid "My Workspace"
-msgstr ""
-
-#: build/index.js:24101
-#: src/pages/save_template/main_save_template.js:712
-#: build/index.js:19427
-msgid "Template Type"
-msgstr ""
-
-#: build/index.js:24112
-#: src/pages/save_template/main_save_template.js:715
-#: build/index.js:19430
-msgid "Page Template"
-msgstr ""
-
-#: build/index.js:24132
-#: build/index.js:57834
-#: src/pages/save_template/main_save_template.js:724
-#: src/widget-builder/wb-setting-panel/popup.js:330
-#: build/index.js:19439
-#: build/index.js:44734
-msgid "Category"
-msgstr ""
-
-#: build/index.js:24141
-#: src/pages/save_template/main_save_template.js:727
-#: build/index.js:19442
-msgid "Select Category"
-msgstr ""
-
-#: build/index.js:24261
-#: src/pages/save_template/save_template_section.js:19
-#: build/index.js:19523
-msgid "Save in WDesignKit"
-msgstr ""
-
-#: build/index.js:24473
-#: src/pages/setting_panel/settings.js:84
-#: build/index.js:19684
-msgid "Error Handling"
-msgstr ""
-
-#: build/index.js:24476
-#: src/pages/setting_panel/settings.js:87
-#: build/index.js:19687
-msgid "Performance"
-msgstr ""
-
-#: build/index.js:24479
-#: src/pages/setting_panel/settings.js:90
-#: build/index.js:19690
-msgid "White Label"
-msgstr ""
-
-#: build/index.js:24482
-#: src/pages/setting_panel/settings.js:93
-#: build/index.js:19693
-msgid "Role Manager"
-msgstr ""
-
-#: build/index.js:24510
-#: src/pages/setting_panel/settings.js:107
-#: build/index.js:19707
-msgid "Enable"
-msgstr ""
-
-#: build/index.js:24522
-#: src/pages/setting_panel/settings.js:118
-#: build/index.js:19718
-msgid "Widget Builders"
-msgstr ""
-
-#: build/index.js:24544
-#: src/pages/setting_panel/settings.js:126
-#: build/index.js:19726
-msgid "Features Manager"
-msgstr ""
-
-#: build/index.js:24575
-#: src/pages/setting_panel/settings.js:133
-#: build/index.js:19733
-msgid "Design Templates"
-msgstr ""
-
-#: build/index.js:24590
-#: build/index.js:25161
-#: src/pages/setting_panel/settings.js:138
-#: src/pages/setting_panel/settings.js:451
-#: build/index.js:19738
-#: build/index.js:20051
-msgid "Roll Back"
-msgstr ""
-
-#: build/index.js:24606
-#: build/index.js:25224
-#: src/pages/setting_panel/settings.js:144
-#: src/pages/setting_panel/settings.js:493
-#: build/index.js:19744
-#: build/index.js:20093
-msgid "Remove Database"
-msgstr ""
-
-#: build/index.js:24666
-#: src/pages/setting_panel/settings.js:177
-#: build/index.js:19777
-msgid "Customize"
-msgstr ""
-
-#: build/index.js:24728
-#: src/pages/setting_panel/settings.js:210
-#: build/index.js:19810
-msgid "Design Template"
-msgstr ""
-
-#: build/index.js:24743
-#: src/pages/setting_panel/settings.js:212
-#: build/index.js:19812
-msgid "Enable/Disable Our Templates Feature, which includes, Templates Download, Templates Upload, Workspace and everything related to Templates features."
-msgstr ""
-
-#: build/index.js:24795
-#: src/pages/setting_panel/settings.js:229
-#: build/index.js:19829
-msgid "Enable/Disable Widget builder Feature, Which include your No Code Widgets builder, Download/Upload of Widgets for Elementor and Gutenberg."
-msgstr ""
-
-#: build/index.js:24842
-#: src/pages/setting_panel/settings.js:260
-#: build/index.js:19860
-msgid "Elementor Page Builder"
-msgstr ""
-
-#: build/index.js:24857
-#: src/pages/setting_panel/settings.js:265
-#: build/index.js:19865
-msgid "Enable/Disable Elementor Page builder and all Elementor widgets."
-msgstr ""
-
-#: build/index.js:24884
-#: src/pages/setting_panel/settings.js:278
-#: build/index.js:19878
-msgid "Gutenberg Page Builder"
-msgstr ""
-
-#: build/index.js:24899
-#: src/pages/setting_panel/settings.js:281
-#: build/index.js:19881
-msgid "Enable/Disable Gutenberg Page builder and all Gutenberg Widgets."
-msgstr ""
-
-#: build/index.js:24959
-#: src/pages/setting_panel/settings.js:316
-#: build/index.js:19916
-msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
-msgstr ""
-
-#: build/index.js:24986
-#: src/pages/setting_panel/settings.js:329
-#: build/index.js:19929
-msgid "Gutenberg Widget Builder"
-msgstr ""
-
-#: build/index.js:25001
-#: src/pages/setting_panel/settings.js:332
-#: build/index.js:19932
-msgid "Enable/Disable Gutenberg Widget builder and all Gutenberg Widgets."
-msgstr ""
-
-#: build/index.js:25031
-#: src/pages/setting_panel/settings.js:347
-#: build/index.js:19947
-msgid "Bricks Widget Builder"
-msgstr ""
-
-#: build/index.js:25046
-#: src/pages/setting_panel/settings.js:350
-#: build/index.js:19950
-msgid "Enable/Disable Bricks Widget builder and all Bricks Widgets."
-msgstr ""
-
-#: build/index.js:25078
-#: src/pages/setting_panel/settings.js:377
-#: build/index.js:19977
-msgid "Operation failed"
-msgstr ""
-
-#: build/index.js:25168
-#: src/pages/setting_panel/settings.js:462
-#: build/index.js:20062
-msgid "Delete all the WDesignKit promotion related data."
-msgstr ""
-
-#: build/index.js:25173
-#: src/pages/setting_panel/settings.js:468
-#: build/index.js:20068
-msgid "Delete all the Widget Builder widget data."
-msgstr ""
-
-#: build/index.js:25178
-#: src/pages/setting_panel/settings.js:474
-#: build/index.js:20074
-msgid "Delete all WDesignKit plugin data (templates/widgets)"
-msgstr ""
-
-#: build/index.js:25262
-#: src/pages/setting_panel/settings.js:514
-#: build/index.js:20114
-msgid "Note:"
-msgstr ""
-
-#: build/index.js:25265
-#: src/pages/setting_panel/settings.js:515
-#: build/index.js:20115
-msgid "Once the selected data is deleted, it cannot be restored."
-msgstr ""
-
-#: build/index.js:25322
-#: build/index.js:26153
-#: src/pages/setting_panel/settings.js:569
-#: src/pages/side_menu/main_side_menu.js:177
-#: build/index.js:20169
-#: build/index.js:20739
-msgid "General Settings"
-msgstr ""
-
-#: build/index.js:25663
-#: src/pages/share_with_me/main_share_with_me.js:235
-#: build/index.js:20430
-msgid "Shared With Me"
-msgstr ""
-
-#: build/index.js:26356
-#: src/pages/side_menu/main_side_menu.js:322
-#: build/index.js:20884
-msgid "Dashboard"
-msgstr ""
-
-#: build/index.js:26384
-#: src/pages/side_menu/main_side_menu.js:343
-#: build/index.js:20905
-msgid "Manage Profile"
-msgstr ""
-
-#: build/index.js:26436
-#: src/pages/side_menu/main_side_menu.js:368
-#: build/index.js:20930
-msgid "Get Started"
-msgstr ""
-
-#: build/index.js:26508
-#: src/pages/support/support.js:24
-#: build/index.js:20966
-msgid "Get Free Support"
-msgstr ""
-
-#: build/index.js:26511
-#: src/pages/support/support.js:28
-#: build/index.js:20970
-msgid "Whats New?"
-msgstr ""
-
-#: build/index.js:26514
-#: src/pages/support/support.js:32
-#: build/index.js:20974
-msgid "Join Facebook Community"
-msgstr ""
-
-#: build/index.js:26517
-#: src/pages/support/support.js:36
-#: build/index.js:20978
-msgid "Suggest New Features"
-msgstr ""
-
-#: build/index.js:26520
-#: src/pages/support/support.js:40
-#: build/index.js:20982
-msgid "Report Bug"
-msgstr ""
-
-#: build/index.js:26523
-#: src/pages/support/support.js:44
-#: build/index.js:20986
-msgid "AI Chat"
-msgstr ""
-
-#: build/index.js:26526
-#: src/pages/support/support.js:50
-#: build/index.js:20992
-msgid "YouTube"
-msgstr ""
-
-#: build/index.js:26542
-#: src/pages/support/support.js:55
-#: build/index.js:20997
-msgid "Twitter"
-msgstr ""
-
-#: build/index.js:26558
-#: src/pages/support/support.js:60
-#: build/index.js:21002
+#: build/index.js:1
 msgid "Facebook"
 msgstr ""
 
-#: build/index.js:26574
-#: src/pages/support/support.js:65
-#: build/index.js:21007
-msgid "Instagram"
+#: build/index.js:1
+msgid "Connect via Login Key"
 msgstr ""
 
-#: build/index.js:26593
-#: src/pages/support/support.js:70
-#: build/index.js:21012
-msgid "Affiliate-Program"
+#: build/index.js:1
+msgid "Or Sign Up with Email"
 msgstr ""
 
-#: build/index.js:26623
-#: src/pages/support/support.js:75
-#: build/index.js:21017
-msgid "Earn-Free-WDesignKit-Credits"
+#: build/index.js:1
+msgid "Please fill all fields"
 msgstr ""
 
-#: build/index.js:26674
-#: src/pages/support/support.js:98
-#: build/index.js:21040
-msgid "Powered by POSIMYTH Innovations"
+#: build/index.js:1
+msgid "Missing information! Complete all fields."
 msgstr ""
 
-#: build/index.js:26681
-#: src/pages/support/support.js:101
-#: build/index.js:21043
-msgid "Quick Support"
+#: build/index.js:1
+msgid "Email"
 msgstr ""
 
-#: build/index.js:26722
-#: src/pages/support/support.js:127
-#: build/index.js:21069
-msgid "WordPress Version: "
+#: build/index.js:1
+msgid "Password"
 msgstr ""
 
-#: build/index.js:26727
-#: src/pages/support/support.js:128
-#: build/index.js:21070
-msgid "Plugin Version: "
+#: build/index.js:1
+msgid "Remember Me"
 msgstr ""
 
-#: build/index.js:26836
-#: build/index.js:56838
-#: src/pages/theplus_popup/theplus_popup.js:87
-#: src/widget-builder/loader.js:114
-#: build/index.js:21170
-#: build/index.js:43995
-msgid "Widget Not Found"
+#: build/index.js:1
+msgid "Forgot Password?"
 msgstr ""
 
-#: build/index.js:26836
-#: src/pages/theplus_popup/theplus_popup.js:87
-#: build/index.js:21170
-msgid "Can Not Find Widget, Please Try Again Later!"
+#: build/index.js:1
+msgid "Logged in"
 msgstr ""
 
-#: build/index.js:27074
-#: src/pages/theplus_popup/theplus_popup.js:360
-#: build/index.js:21443
-msgid "Login with"
+#: build/index.js:1
+msgid "Log in"
 msgstr ""
 
-#: build/index.js:27082
-#: src/pages/theplus_popup/theplus_popup.js:366
-#: build/index.js:21449
-msgid "Login to use WDesignKit Widgets"
+#: build/index.js:1
+msgid "Don't have an account?"
 msgstr ""
 
-#: build/index.js:27113
-#: build/index.js:37224
-#: src/pages/theplus_popup/theplus_popup.js:380
-#: src/widget-builder/components-controller/block_edit.js:2166
-#: build/index.js:21463
-#: build/index.js:28366
-msgid "OR"
+#: build/index.js:1
+msgid "Sign Up"
 msgstr ""
 
-#: build/index.js:27132
-#: src/pages/theplus_popup/theplus_popup.js:386
-#: build/index.js:21469
-msgid "Enter your email"
+#: build/index.js:1
+msgid "Wrong or Expired Login Key"
 msgstr ""
 
-#: build/index.js:27255
-#: src/pages/theplus_popup/theplus_popup.js:427
-#: build/index.js:21510
-msgid "Create Account"
+#: build/index.js:1
+msgid "Your login API key seems to be wrong, Ask your webmaster with main WDesignKit Account access for another Login key."
 msgstr ""
 
-#: build/index.js:27269
-#: src/pages/theplus_popup/theplus_popup.js:442
-#: build/index.js:21525
-msgid "Upgrade to WDesignKit Pro for Premium Widgets Access"
+#: build/index.js:1
+msgid "I know Purchase key and Login Key is different."
 msgstr ""
 
-#: build/index.js:27285
-#: src/pages/theplus_popup/theplus_popup.js:453
-#: build/index.js:21536
-msgid "Live Demo"
+#: build/index.js:1
+msgid "This Login key is not your WDesignKit's Pro Licence's Purchase Key. Do you want to know, "
 msgstr ""
 
-#: build/index.js:27314
-#: src/pages/theplus_popup/theplus_popup.js:475
-#: build/index.js:21558
-msgid "Get WDesignKit Pro"
+#: build/index.js:1
+msgid "How to get Login Key?"
 msgstr ""
 
-#: build/index.js:27321
-#: src/pages/theplus_popup/theplus_popup.js:478
-#: build/index.js:21561
-msgid "Activate WDesignKit"
+#: build/index.js:1
+msgid "Let me Try again"
 msgstr ""
 
-#: build/index.js:27328
-#: src/pages/theplus_popup/theplus_popup.js:482
-#: build/index.js:21565
-msgid "Why Do I Need WDesignKit Pro if I Have The Plus Addons for Elementor Pro?"
+#: build/index.js:1
+msgid "I need to recheck Login Key"
 msgstr ""
 
-#: build/index.js:27371
-#: src/pages/theplus_popup/theplus_popup.js:497
-#: build/index.js:21580
-msgid "WDesignKit and The Plus Addons for Elementor are two distinct products. The Plus Addons is entirely focused on Elementor, offering essential and advanced widgets specifically designed for Elementor users."
+#: build/index.js:1
+msgid "Login With Key"
 msgstr ""
 
-#: build/index.js:27373
-#: src/pages/theplus_popup/theplus_popup.js:498
-#: build/index.js:21581
-msgid "WDesignKit, on the other hand, focuses on unique custom widgets created with its easy-to-use Drag and Drop Widget Builder, Cloud Workspace, and many other added benefits."
+#: build/index.js:1
+msgid "Enter your Login Key to get access"
 msgstr ""
 
-#: build/index.js:27379
-#: src/pages/theplus_popup/theplus_popup.js:501
-#: build/index.js:21584
-msgid "Explore the differences between The Plus Addons and WDesignKit to see what's included in each!"
+#: build/index.js:1
+msgid "Login Key"
 msgstr ""
 
-#: build/index.js:27424
-#: src/pages/theplus_popup/theplus_popup.js:550
-#: build/index.js:21633
-msgid "Activate Your Pro License to Access Pro Widgets"
+#: build/index.js:1
+msgid "Logged In"
 msgstr ""
 
-#: build/index.js:27427
-#: src/pages/theplus_popup/theplus_popup.js:553
-#: build/index.js:21636
-msgid "Please activate your WDesignKit Pro license to start using advanced Pro widgets."
+#: build/index.js:1
+msgid "Back to Login"
 msgstr ""
 
-#: build/index.js:27617
-#: src/pages/wdesignkit.js:90
-#: build/index.js:21782
-msgid "Unable to connect to the Internet !"
+#: build/index.js:1
+msgid "You need existing account to use this method. "
 msgstr ""
 
-#: build/index.js:27857
-#: build/index.js:28433
-#: build/index.js:32012
-#: src/pages/widget_brows/mobile-filter-widget.js:167
-#: src/pages/widget_brows/widget_brows.js:146
-#: src/widget-builder/Listing-panle/main.js:443
-#: build/index.js:22000
-#: build/index.js:22413
-#: build/index.js:25236
-msgid "Search Widgets"
+#: build/index.js:1
+msgid "Signup"
 msgstr ""
 
-#: build/index.js:27944
-#: src/pages/widget_brows/mobile-filter-widget.js:229
-#: build/index.js:22062
-msgid "Free/Pro :"
+#: build/index.js:1
+msgid "Filter by"
 msgstr ""
 
-#: build/index.js:27950
-#: src/pages/widget_brows/mobile-filter-widget.js:233
-#: build/index.js:22066
-msgid "Categories :"
+#: build/index.js:1
+msgid "Search :"
 msgstr ""
 
-#: build/index.js:28680
-#: src/pages/widget_brows/widget_brows.js:361
-#: build/index.js:22628
-msgid "Categories"
+#: build/index.js:1
+msgid "Search Templates"
 msgstr ""
 
-#: build/index.js:29240
-#: src/widget-builder/Listing-panle/listing_popup.js:30
-#: build/index.js:22993
+#: build/index.js:1
+msgid "Page Builder :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Free / Pro :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Free"
+msgstr ""
+
+#: build/index.js:1
+msgid "Type :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Full Pages"
+msgstr ""
+
+#: build/index.js:1
+msgid "Sections"
+msgstr ""
+
+#: build/index.js:1
+msgid "Our Pagekits can only be imported from the plugin dashboard,"
+msgstr ""
+
+#: build/index.js:1
+msgid "click here"
+msgstr ""
+
+#: build/index.js:1
+msgid "to open the dashboard."
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Kits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugins :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Tag :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Tags"
+msgstr ""
+
+#: build/index.js:1
+msgid "Visit Site"
+msgstr ""
+
+#: build/index.js:1
+msgid "Modern Hover Post"
+msgstr ""
+
+#: build/index.js:1
+msgid "1 Review"
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor"
+msgstr ""
+
+#: build/index.js:1
+msgid "Filters"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search"
+msgstr ""
+
+#: build/index.js:1
+msgid "Free / Pro"
+msgstr ""
+
+#: build/index.js:1
+msgid "Type"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugins"
+msgstr ""
+
+#: build/index.js:1
+msgid "Tags"
+msgstr ""
+
+#: build/index.js:1
+msgid "Applied Filter :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Clear All"
+msgstr ""
+
+#: build/index.js:1
+msgid "Pages"
+msgstr ""
+
+#: build/index.js:1
+msgid "Favourites"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select All"
+msgstr ""
+
+#: build/index.js:1
+msgid "Shared With Me"
+msgstr ""
+
+#: build/index.js:1
+msgid "Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "by"
+msgstr ""
+
+#: build/index.js:1
+msgid "Users"
+msgstr ""
+
+#: build/index.js:1
+msgid "New Workspace ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "You have Used Free Credit"
+msgstr ""
+
+#: build/index.js:1
+msgid "Manage and collaborate with ease."
+msgstr ""
+
+#: build/index.js:1
+msgid "You need to purchase now to add more workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Buy Now"
+msgstr ""
+
+#: build/index.js:1
+msgid "Workspace Deactivated"
+msgstr ""
+
+#: build/index.js:1
+msgid "This Workspace is Deactivated"
+msgstr ""
+
+#: build/index.js:1
+msgid "Limit Reached"
+msgstr ""
+
+#: build/index.js:1
+msgid "Update"
+msgstr ""
+
+#: build/index.js:1
+msgid "Manage Members"
+msgstr ""
+
+#: build/index.js:1
+msgid "Move from Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "General Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Dashboard"
+msgstr ""
+
+#: build/index.js:1
+msgid "Manage Profile"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get Started"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Template Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Title can not be empty!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Content is empty"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page should have some content"
+msgstr ""
+
+#: build/index.js:1
+msgid "New Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Existing Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Are you sure you want to replace this template ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Recently added"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Not Found"
+msgstr ""
+
+#: build/index.js:1
+msgid "selected Template is Not Found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Template can not found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Do you want to replace this?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note : "
+msgstr ""
+
+#: build/index.js:1
+msgid "Replacing the template will erase the current design. This action cannot be undone, and the old design will be permanently lost."
+msgstr ""
+
+#: build/index.js:1
+msgid "Replace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "My Upload"
+msgstr ""
+
+#: build/index.js:1
+msgid "My Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Type"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Category"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select Category"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugins Used"
+msgstr ""
+
+#: build/index.js:1
+msgid "No Plugin List"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Successfully Uploaded"
+msgstr ""
+
+#: build/index.js:1
+msgid "To Edit fully visit WdesignKit admin and make it live."
+msgstr ""
+
+#: build/index.js:1
+msgid "Edit Fully"
+msgstr ""
+
+#: build/index.js:1
 msgid "E-icons"
 msgstr ""
 
-#: build/index.js:29243
-#: build/index.js:29263
-#: src/widget-builder/Listing-panle/listing_popup.js:31
-#: src/widget-builder/Listing-panle/listing_popup.js:45
-#: build/index.js:22994
-#: build/index.js:23008
+#: build/index.js:1
 msgid "Font-Awesome 5"
 msgstr ""
 
-#: build/index.js:29250
-#: src/widget-builder/Listing-panle/listing_popup.js:37
-#: build/index.js:23000
+#: build/index.js:1
 msgid "Ionicons 4"
 msgstr ""
 
-#: build/index.js:29253
-#: src/widget-builder/Listing-panle/listing_popup.js:38
-#: build/index.js:23001
+#: build/index.js:1
 msgid "Font-Awesome 6"
 msgstr ""
 
-#: build/index.js:29256
-#: src/widget-builder/Listing-panle/listing_popup.js:39
-#: build/index.js:23002
+#: build/index.js:1
 msgid "Themify"
 msgstr ""
 
-#: build/index.js:29502
-#: build/index.js:29512
-#: build/index.js:29522
-#: src/widget-builder/Listing-panle/listing_popup.js:248
-#: src/widget-builder/Listing-panle/listing_popup.js:258
-#: src/widget-builder/Listing-panle/listing_popup.js:268
-#: build/index.js:23211
-#: build/index.js:23221
-#: build/index.js:23231
-msgid "Widget Added Successfully"
-msgstr ""
-
-#: build/index.js:29505
-#: build/index.js:29515
-#: build/index.js:29525
-#: src/widget-builder/Listing-panle/listing_popup.js:251
-#: src/widget-builder/Listing-panle/listing_popup.js:261
-#: src/widget-builder/Listing-panle/listing_popup.js:271
-#: build/index.js:23214
-#: build/index.js:23224
-#: build/index.js:23234
-msgid "Widget Creation Fail !"
-msgstr ""
-
-#: build/index.js:29505
-#: build/index.js:29515
-#: build/index.js:29525
-#: src/widget-builder/Listing-panle/listing_popup.js:251
-#: src/widget-builder/Listing-panle/listing_popup.js:261
-#: src/widget-builder/Listing-panle/listing_popup.js:271
-#: build/index.js:23214
-#: build/index.js:23224
-#: build/index.js:23234
-msgid "Widget is not created."
-msgstr ""
-
-#: build/index.js:29601
-#: src/widget-builder/Listing-panle/listing_popup.js:354
-#: build/index.js:23317
-msgid "Successfully Imported."
-msgstr ""
-
-#: build/index.js:29601
-#: src/widget-builder/Listing-panle/listing_popup.js:354
-#: build/index.js:23317
-msgid "Yay! Your Widget has been successfully imported."
-msgstr ""
-
-#: build/index.js:29610
-#: src/widget-builder/Listing-panle/listing_popup.js:364
-#: build/index.js:23327
-msgid "Widget import fail"
-msgstr ""
-
-#: build/index.js:29610
-#: src/widget-builder/Listing-panle/listing_popup.js:364
-#: build/index.js:23327
-msgid "Widget import fail! data not get "
-msgstr ""
-
-#: build/index.js:29630
-#: src/widget-builder/Listing-panle/listing_popup.js:388
-#: build/index.js:23351
-msgid "Widget imported Succesfully"
-msgstr ""
-
-#: build/index.js:29660
-#: build/index.js:29671
-#: build/index.js:57686
-#: build/index.js:57694
-#: src/widget-builder/Listing-panle/listing_popup.js:424
-#: src/widget-builder/Listing-panle/listing_popup.js:437
-#: src/widget-builder/wb-setting-panel/popup.js:204
-#: src/widget-builder/wb-setting-panel/popup.js:212
-#: build/index.js:23387
-#: build/index.js:23400
-#: build/index.js:44608
-#: build/index.js:44616
+#: build/index.js:1
 msgid "Insert valid Image"
 msgstr ""
 
-#: build/index.js:29660
-#: build/index.js:57686
-#: src/widget-builder/Listing-panle/listing_popup.js:424
-#: src/widget-builder/wb-setting-panel/popup.js:204
-#: build/index.js:23387
-#: build/index.js:44608
+#: build/index.js:1
 msgid "Image size must be less tahn 2 mb."
 msgstr ""
 
-#: build/index.js:29671
-#: build/index.js:57694
-#: src/widget-builder/Listing-panle/listing_popup.js:437
-#: src/widget-builder/wb-setting-panel/popup.js:212
-#: build/index.js:23400
-#: build/index.js:44616
+#: build/index.js:1
 msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
 msgstr ""
 
-#: build/index.js:29725
-#: build/index.js:58536
-#: src/widget-builder/Listing-panle/listing_popup.js:495
-#: src/widget-builder/wb-setting-panel/setting_panel.js:294
-#: build/index.js:23458
-#: build/index.js:45191
-msgid "Widget synced"
-msgstr ""
-
-#: build/index.js:29728
-#: build/index.js:58538
-#: src/widget-builder/Listing-panle/listing_popup.js:498
-#: src/widget-builder/wb-setting-panel/setting_panel.js:296
-#: build/index.js:23461
-#: build/index.js:45193
-msgid "Operation fail"
-msgstr ""
-
-#: build/index.js:29728
-#: build/index.js:58538
-#: src/widget-builder/Listing-panle/listing_popup.js:498
-#: src/widget-builder/wb-setting-panel/setting_panel.js:296
-#: build/index.js:23461
-#: build/index.js:45193
-msgid "Something went wrong"
-msgstr ""
-
-#: build/index.js:29835
-#: build/index.js:29845
-#: build/index.js:29855
-#: src/widget-builder/Listing-panle/listing_popup.js:627
-#: src/widget-builder/Listing-panle/listing_popup.js:637
-#: src/widget-builder/Listing-panle/listing_popup.js:647
-#: build/index.js:23590
-#: build/index.js:23600
-#: build/index.js:23610
-msgid "Widget Duplicated"
-msgstr ""
-
-#: build/index.js:29835
-#: build/index.js:29845
-#: build/index.js:29855
-#: src/widget-builder/Listing-panle/listing_popup.js:627
-#: src/widget-builder/Listing-panle/listing_popup.js:637
-#: src/widget-builder/Listing-panle/listing_popup.js:647
-#: build/index.js:23590
-#: build/index.js:23600
-#: build/index.js:23610
-msgid "Widget Duplicated successfully."
-msgstr ""
-
-#: build/index.js:30256
-#: src/widget-builder/Listing-panle/listing_popup.js:1059
-#: build/index.js:24022
-msgid "Widget Converted"
-msgstr ""
-
-#: build/index.js:30256
-#: src/widget-builder/Listing-panle/listing_popup.js:1059
-#: build/index.js:24022
-msgid "Widget Converted successfully."
-msgstr ""
-
-#: build/index.js:30260
-#: src/widget-builder/Listing-panle/listing_popup.js:1063
-#: build/index.js:24026
-msgid "Widget Conversion Fail!"
-msgstr ""
-
-#: build/index.js:30260
-#: src/widget-builder/Listing-panle/listing_popup.js:1063
-#: build/index.js:24026
-msgid "Widget not Converted successfully."
-msgstr ""
-
-#: build/index.js:30322
-#: src/widget-builder/Listing-panle/listing_popup.js:1118
-#: build/index.js:24081
+#: build/index.js:1
 msgid "Are you sure you want to delete?"
 msgstr ""
 
-#: build/index.js:30327
-#: src/widget-builder/Listing-panle/listing_popup.js:1120
-#: build/index.js:24083
+#: build/index.js:1
 msgid "Please select an option from below:"
 msgstr ""
 
-#: build/index.js:30341
-#: src/widget-builder/Listing-panle/listing_popup.js:1124
-#: build/index.js:24087
+#: build/index.js:1
 msgid "Permanently Delete"
 msgstr ""
 
-#: build/index.js:30344
-#: src/widget-builder/Listing-panle/listing_popup.js:1125
-#: build/index.js:24088
+#: build/index.js:1
 msgid "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it."
 msgstr ""
 
-#: build/index.js:30359
-#: src/widget-builder/Listing-panle/listing_popup.js:1131
-#: build/index.js:24094
+#: build/index.js:1
 msgid "Local Delete"
 msgstr ""
 
-#: build/index.js:30362
-#: src/widget-builder/Listing-panle/listing_popup.js:1132
-#: build/index.js:24095
+#: build/index.js:1
 msgid "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server."
 msgstr ""
 
-#: build/index.js:30380
-#: src/widget-builder/Listing-panle/listing_popup.js:1145
-#: build/index.js:24108
+#: build/index.js:1
 msgid "Yes, Delete it!"
 msgstr ""
 
-#: build/index.js:30412
-#: build/index.js:58857
-#: src/widget-builder/Listing-panle/listing_popup.js:1165
-#: src/widget-builder/wb-setting-panel/setting_panel.js:476
-#: build/index.js:24128
-#: build/index.js:45373
+#: build/index.js:1
 msgid "Add Sync Details"
 msgstr ""
 
-#: build/index.js:30422
-#: build/index.js:58883
-#: src/widget-builder/Listing-panle/listing_popup.js:1170
-#: src/widget-builder/wb-setting-panel/setting_panel.js:486
-#: build/index.js:24133
-#: build/index.js:45383
+#: build/index.js:1
 msgid "Current Version"
 msgstr ""
 
-#: build/index.js:30436
-#: build/index.js:58897
-#: src/widget-builder/Listing-panle/listing_popup.js:1178
-#: src/widget-builder/wb-setting-panel/setting_panel.js:490
-#: build/index.js:24141
-#: build/index.js:45387
+#: build/index.js:1
 msgid "Latest Version"
 msgstr ""
 
-#: build/index.js:30452
-#: build/index.js:58913
-#: src/widget-builder/Listing-panle/listing_popup.js:1187
-#: src/widget-builder/wb-setting-panel/setting_panel.js:498
-#: build/index.js:24150
-#: build/index.js:45395
+#: build/index.js:1
 msgid "Changelog"
 msgstr ""
 
-#: build/index.js:30461
-#: src/widget-builder/Listing-panle/listing_popup.js:1192
-#: build/index.js:24155
+#: build/index.js:1
 msgid "Please enter description"
 msgstr ""
 
-#: build/index.js:30501
-#: build/index.js:51830
-#: build/index.js:52031
-#: build/index.js:58960
-#: src/widget-builder/editor/wb-editor.js:1382
-#: src/widget-builder/editor/wb-editor.js:1484
-#: src/widget-builder/Listing-panle/listing_popup.js:1205
-#: src/widget-builder/wb-setting-panel/setting_panel.js:514
-#: build/index.js:24168
-#: build/index.js:38831
-#: build/index.js:38933
-#: build/index.js:45411
+#: build/index.js:1
 msgid "Add more"
 msgstr ""
 
-#: build/index.js:30511
-#: build/index.js:31447
-#: build/index.js:58165
-#: build/index.js:58971
-#: src/widget-builder/Listing-panle/listing_popup.js:1209
-#: src/widget-builder/Listing-panle/listing_popup.js:1738
-#: src/widget-builder/wb-setting-panel/popup.js:477
-#: src/widget-builder/wb-setting-panel/setting_panel.js:519
-#: build/index.js:24172
-#: build/index.js:24701
-#: build/index.js:44881
-#: build/index.js:45416
+#: build/index.js:1
 msgid "Cancel"
 msgstr ""
 
-#: build/index.js:30565
-#: src/widget-builder/Listing-panle/listing_popup.js:1245
-#: build/index.js:24208
+#: build/index.js:1
+msgid "Widget synced"
+msgstr ""
+
+#: build/index.js:1
+msgid "Operation fail"
+msgstr ""
+
+#: build/index.js:1
+msgid "Something went wrong"
+msgstr ""
+
+#: build/index.js:1
 msgid "Duplicate Widget"
 msgstr ""
 
-#: build/index.js:30578
-#: src/widget-builder/Listing-panle/listing_popup.js:1253
-#: build/index.js:24216
+#: build/index.js:1
 msgid "Enter New Widget Name"
 msgstr ""
 
-#: build/index.js:30590
-#: build/index.js:30945
-#: src/widget-builder/Listing-panle/listing_popup.js:1257
-#: src/widget-builder/Listing-panle/listing_popup.js:1456
-#: build/index.js:24220
-#: build/index.js:24419
+#: build/index.js:1
 msgid "Only numbers and alphabet are allowed for this field,Widget name must be smaller then 25 charaters and first letter can't be digit."
 msgstr ""
 
-#: build/index.js:30596
-#: src/widget-builder/Listing-panle/listing_popup.js:1262
-#: build/index.js:24225
+#: build/index.js:1
 msgid "Enter Widget Name"
 msgstr ""
 
-#: build/index.js:30622
-#: src/widget-builder/Listing-panle/listing_popup.js:1281
-#: build/index.js:24244
+#: build/index.js:1
 msgid "This new widget will have unique class, So It will work independently from previous widget."
 msgstr ""
 
-#: build/index.js:30632
-#: build/index.js:32513
-#: src/widget-builder/Listing-panle/listing_popup.js:1287
-#: src/widget-builder/Listing-panle/main.js:686
-#: build/index.js:24250
-#: build/index.js:25479
+#: build/index.js:1
+msgid "Widget Duplicated"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Duplicated successfully."
+msgstr ""
+
+#: build/index.js:1
 msgid "Duplicate"
 msgstr ""
 
-#: build/index.js:30689
-#: src/widget-builder/Listing-panle/listing_popup.js:1315
-#: build/index.js:24278
+#: build/index.js:1
 msgid "In Progress"
 msgstr ""
 
-#: build/index.js:30712
-#: src/widget-builder/Listing-panle/listing_popup.js:1324
-#: build/index.js:24287
+#: build/index.js:1
 msgid "Transferring all your HTML,CSS and JS to New one"
 msgstr ""
 
-#: build/index.js:30717
-#: src/widget-builder/Listing-panle/listing_popup.js:1329
-#: build/index.js:24292
+#: build/index.js:1
 msgid "Congratulations!"
 msgstr ""
 
-#: build/index.js:30754
-#: src/widget-builder/Listing-panle/listing_popup.js:1341
-#: build/index.js:24304
+#: build/index.js:1
 msgid "Congratulations! New Widget"
 msgstr ""
 
-#: build/index.js:30756
-#: src/widget-builder/Listing-panle/listing_popup.js:1341
-#: build/index.js:24304
+#: build/index.js:1
 msgid "created from Widget"
 msgstr ""
 
-#: build/index.js:30758
-#: src/widget-builder/Listing-panle/listing_popup.js:1341
-#: build/index.js:24304
+#: build/index.js:1
 msgid "Successfully!"
 msgstr ""
 
-#: build/index.js:30803
-#: src/widget-builder/Listing-panle/listing_popup.js:1371
-#: build/index.js:24334
+#: build/index.js:1
 msgid "Convert Widget"
 msgstr ""
 
-#: build/index.js:30819
-#: src/widget-builder/Listing-panle/listing_popup.js:1380
-#: build/index.js:24343
+#: build/index.js:1
 msgid "Current Widget"
 msgstr ""
 
-#: build/index.js:30848
-#: src/widget-builder/Listing-panle/listing_popup.js:1392
-#: build/index.js:24355
+#: build/index.js:1
 msgid "Convert to"
 msgstr ""
 
-#: build/index.js:30864
-#: src/widget-builder/Listing-panle/listing_popup.js:1400
-#: build/index.js:24363
+#: build/index.js:1
 msgid "Select Builder"
 msgstr ""
 
-#: build/index.js:30909
-#: build/index.js:31067
-#: src/widget-builder/Listing-panle/listing_popup.js:1433
-#: src/widget-builder/Listing-panle/listing_popup.js:1523
-#: build/index.js:24396
-#: build/index.js:24486
+#: build/index.js:1
 msgid "This new widget will have have unique class, So It will work independently from previous widget."
 msgstr ""
 
-#: build/index.js:30933
-#: build/index.js:31271
-#: src/widget-builder/Listing-panle/listing_popup.js:1452
-#: src/widget-builder/Listing-panle/listing_popup.js:1631
-#: build/index.js:24415
-#: build/index.js:24594
+#: build/index.js:1
 msgid "Widget Name"
 msgstr ""
 
-#: build/index.js:30968
-#: build/index.js:31312
-#: build/index.js:57972
-#: src/widget-builder/Listing-panle/listing_popup.js:1470
-#: src/widget-builder/Listing-panle/listing_popup.js:1653
-#: src/widget-builder/wb-setting-panel/popup.js:393
-#: build/index.js:24433
-#: build/index.js:24616
-#: build/index.js:44797
+#: build/index.js:1
 msgid "Featured Image"
 msgstr ""
 
-#: build/index.js:30998
-#: build/index.js:31363
-#: src/widget-builder/Listing-panle/listing_popup.js:1483
-#: src/widget-builder/Listing-panle/listing_popup.js:1678
-#: build/index.js:24446
-#: build/index.js:24641
+#: build/index.js:1
 msgid "Widget Icon"
 msgstr ""
 
-#: build/index.js:31017
-#: build/index.js:31384
-#: src/widget-builder/Listing-panle/listing_popup.js:1490
-#: src/widget-builder/Listing-panle/listing_popup.js:1687
-#: build/index.js:24453
-#: build/index.js:24650
+#: build/index.js:1
 msgid "Copy Icon Name From Below Libraries and Paste Above."
 msgstr ""
 
-#: build/index.js:31057
-#: src/widget-builder/Listing-panle/listing_popup.js:1515
-#: build/index.js:24478
+#: build/index.js:1
 msgid "Do you want to load jQuery ?"
 msgstr ""
 
-#: build/index.js:31137
-#: src/widget-builder/Listing-panle/listing_popup.js:1557
-#: build/index.js:24520
+#: build/index.js:1
+msgid "Widget Converted"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Converted successfully."
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Conversion Fail!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget not Converted successfully."
+msgstr ""
+
+#: build/index.js:1
 msgid "Converting"
 msgstr ""
 
-#: build/index.js:31185
-#: src/widget-builder/Listing-panle/listing_popup.js:1578
-#: build/index.js:24541
+#: build/index.js:1
 msgid "Converting your widget"
 msgstr ""
 
-#: build/index.js:31185
-#: src/widget-builder/Listing-panle/listing_popup.js:1578
-#: build/index.js:24541
+#: build/index.js:1
 msgid "to"
 msgstr ""
 
-#: build/index.js:31195
-#: src/widget-builder/Listing-panle/listing_popup.js:1589
-#: build/index.js:24552
+#: build/index.js:1
 msgid "Successfully  converted"
 msgstr ""
 
-#: build/index.js:31216
-#: src/widget-builder/Listing-panle/listing_popup.js:1594
-#: build/index.js:24557
+#: build/index.js:1
 msgid "Your"
 msgstr ""
 
-#: build/index.js:31216
-#: src/widget-builder/Listing-panle/listing_popup.js:1594
-#: build/index.js:24557
+#: build/index.js:1
 msgid "widget has been successfully converted to"
 msgstr ""
 
-#: build/index.js:31216
-#: src/widget-builder/Listing-panle/listing_popup.js:1594
-#: build/index.js:24557
+#: build/index.js:1
 msgid "Builder"
 msgstr ""
 
-#: build/index.js:31241
-#: build/index.js:31469
-#: build/index.js:31479
-#: build/index.js:32120
-#: src/widget-builder/Listing-panle/listing_popup.js:1619
-#: src/widget-builder/Listing-panle/listing_popup.js:1753
-#: src/widget-builder/Listing-panle/listing_popup.js:1760
-#: src/widget-builder/Listing-panle/main.js:495
-#: build/index.js:24582
-#: build/index.js:24716
-#: build/index.js:24723
-#: build/index.js:25288
+#: build/index.js:1
 msgid "Create Widget"
 msgstr ""
 
-#: build/index.js:31283
-#: src/widget-builder/Listing-panle/listing_popup.js:1635
-#: build/index.js:24598
+#: build/index.js:1
 msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller than 25 characters and first letter can't be digit."
 msgstr ""
 
-#: build/index.js:31337
-#: src/widget-builder/Listing-panle/listing_popup.js:1665
-#: build/index.js:24628
+#: build/index.js:1
 msgid "Drag & Drop or Upload Image File Here"
 msgstr ""
 
-#: build/index.js:31337
-#: src/widget-builder/Listing-panle/listing_popup.js:1665
-#: build/index.js:24628
+#: build/index.js:1
 msgid "(Only .JPG and .PNG Allowed)"
 msgstr ""
 
-#: build/index.js:31410
-#: src/widget-builder/Listing-panle/listing_popup.js:1712
-#: build/index.js:24675
+#: build/index.js:1
 msgid "Choose Page Builder"
 msgstr ""
 
-#: build/index.js:31491
-#: build/index.js:32107
-#: src/widget-builder/Listing-panle/listing_popup.js:1772
-#: src/widget-builder/Listing-panle/main.js:491
-#: build/index.js:24735
-#: build/index.js:25284
+#: build/index.js:1
+msgid "Widget Added Successfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Creation Fail !"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget is not created."
+msgstr ""
+
+#: build/index.js:1
 msgid "Import Widget"
 msgstr ""
 
-#: build/index.js:31517
-#: src/widget-builder/Listing-panle/listing_popup.js:1781
-#: build/index.js:24744
+#: build/index.js:1
 msgid "Select or Drop Your File Here (.ZIP Only)"
 msgstr ""
 
-#: build/index.js:31552
-#: src/widget-builder/Listing-panle/listing_popup.js:1792
-#: build/index.js:24755
+#: build/index.js:1
 msgid "Drag & Drop or Upload Widget ZIP File Here"
 msgstr ""
 
-#: build/index.js:31558
-#: src/widget-builder/Listing-panle/listing_popup.js:1797
-#: build/index.js:24760
+#: build/index.js:1
 msgid "Zip file invalid or Missing. Upload Again!"
 msgstr ""
 
-#: build/index.js:31568
-#: build/index.js:52045
-#: src/widget-builder/editor/wb-editor.js:1492
-#: src/widget-builder/Listing-panle/listing_popup.js:1801
-#: build/index.js:24764
-#: build/index.js:38941
+#: build/index.js:1
 msgid "Close"
 msgstr ""
 
-#: build/index.js:31874
-#: src/widget-builder/Listing-panle/main.js:299
-#: build/index.js:25092
-msgid "Widget Successfully Retrived"
+#: build/index.js:1
+msgid "Successfully Imported."
 msgstr ""
 
-#: build/index.js:31874
-#: src/widget-builder/Listing-panle/main.js:299
-#: build/index.js:25092
-msgid "Widget Successfully Retrived ."
+#: build/index.js:1
+msgid "Yay! Your Widget has been successfully imported."
 msgstr ""
 
-#: build/index.js:32058
-#: build/index.js:32100
-#: build/index.js:32113
-#: src/widget-builder/Listing-panle/main.js:467
-#: src/widget-builder/Listing-panle/main.js:490
-#: src/widget-builder/Listing-panle/main.js:494
-#: build/index.js:25260
-#: build/index.js:25283
-#: build/index.js:25287
+#: build/index.js:1
+msgid "Widget import fail"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget import fail! data not get "
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget imported Succesfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Widgets"
+msgstr ""
+
+#: build/index.js:1
 msgid "Login to use this option."
 msgstr ""
 
-#: build/index.js:32149
-#: src/widget-builder/Listing-panle/main.js:523
-#: build/index.js:25316
+#: build/index.js:1
 msgid "This Widget got disabled until you have more credits to make it active."
 msgstr ""
 
-#: build/index.js:32241
-#: src/widget-builder/Listing-panle/main.js:559
-#: build/index.js:25352
+#: build/index.js:1
+msgid "Widget Successfully Retrived"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Successfully Retrived ."
+msgstr ""
+
+#: build/index.js:1
 msgid "Local"
 msgstr ""
 
-#: build/index.js:32269
-#: src/widget-builder/Listing-panle/main.js:574
-#: build/index.js:25367
+#: build/index.js:1
 msgid "Remote"
 msgstr ""
 
-#: build/index.js:32322
-#: src/widget-builder/Listing-panle/main.js:594
-#: build/index.js:25387
+#: build/index.js:1
 msgid "Local + Remote"
 msgstr ""
 
-#: build/index.js:32459
-#: src/widget-builder/Listing-panle/main.js:665
-#: build/index.js:25458
+#: build/index.js:1
 msgid "Edit in New Tab"
 msgstr ""
 
-#: build/index.js:32537
-#: src/widget-builder/Listing-panle/main.js:697
-#: build/index.js:25490
+#: build/index.js:1
 msgid "Convert"
 msgstr ""
 
-#: build/index.js:32562
-#: src/widget-builder/Listing-panle/main.js:708
-#: build/index.js:25501
+#: build/index.js:1
 msgid "Download ZIP"
 msgstr ""
 
-#: build/index.js:32586
-#: src/widget-builder/Listing-panle/main.js:727
-#: build/index.js:25520
+#: build/index.js:1
 msgid "Push Widget"
 msgstr ""
 
-#: build/index.js:32834
-#: build/index.js:32840
-#: build/index.js:37436
-#: build/index.js:42624
-#: build/index.js:42659
-#: src/widget-builder/component-setting/wb-layout.js:78
-#: src/widget-builder/component-setting/wb-layout.js:86
-#: src/widget-builder/components-controller/block_element.js:70
-#: src/widget-builder/components-data/component_layout.js:146
-#: src/widget-builder/components-data/component_layout.js:180
-#: build/index.js:25724
-#: build/index.js:25732
-#: build/index.js:28497
-#: build/index.js:33487
-#: build/index.js:33521
-msgid "Not Valid"
-msgstr ""
-
-#: build/index.js:32834
-#: build/index.js:32840
-#: build/index.js:37436
-#: build/index.js:42624
-#: build/index.js:42659
-#: src/widget-builder/component-setting/wb-layout.js:78
-#: src/widget-builder/component-setting/wb-layout.js:86
-#: src/widget-builder/components-controller/block_element.js:70
-#: src/widget-builder/components-data/component_layout.js:146
-#: src/widget-builder/components-data/component_layout.js:180
-#: build/index.js:25724
-#: build/index.js:25732
-#: build/index.js:28497
-#: build/index.js:33487
-#: build/index.js:33521
-msgid "You Can Not put this controller here"
-msgstr ""
-
-#: build/index.js:33358
-#: build/index.js:57959
-#: src/widget-builder/component-setting/wb-layout.js:534
-#: src/widget-builder/wb-setting-panel/popup.js:385
-#: build/index.js:26180
-#: build/index.js:44789
-msgid "Add More"
-msgstr ""
-
-#: build/index.js:33390
-#: src/widget-builder/component-setting/wb-layout.js:546
-#: build/index.js:26192
-msgid "Add Section"
-msgstr ""
-
-#: build/index.js:34052
-#: build/index.js:34084
-#: build/index.js:36263
-#: src/widget-builder/components-controller/block_edit.js:605
-#: src/widget-builder/components-controller/block_edit.js:624
-#: src/widget-builder/components-controller/block_edit.js:1733
-#: build/index.js:26805
-#: build/index.js:26824
-#: build/index.js:27933
+#: build/index.js:1
 msgid "Label"
 msgstr ""
 
-#: build/index.js:34061
-#: build/index.js:34093
-#: src/widget-builder/components-controller/block_edit.js:608
-#: src/widget-builder/components-controller/block_edit.js:627
-#: build/index.js:26808
-#: build/index.js:26827
+#: build/index.js:1
 msgid "The label that appears above of the field."
 msgstr ""
 
-#: build/index.js:34116
-#: src/widget-builder/components-controller/block_edit.js:643
-#: build/index.js:26843
+#: build/index.js:1
 msgid "Input Type"
 msgstr ""
 
-#: build/index.js:34125
-#: src/widget-builder/components-controller/block_edit.js:646
-#: build/index.js:26846
+#: build/index.js:1
 msgid "The input field type. Available values are all HTML5 supported types."
 msgstr ""
 
-#: build/index.js:34147
-#: src/widget-builder/components-controller/block_edit.js:655
-#: build/index.js:26855
+#: build/index.js:1
 msgid "Text"
 msgstr ""
 
-#: build/index.js:34153
-#: src/widget-builder/components-controller/block_edit.js:656
-#: build/index.js:26856
+#: build/index.js:1
 msgid "Number"
 msgstr ""
 
-#: build/index.js:34159
-#: build/index.js:43999
-#: build/index.js:44111
-#: src/widget-builder/components-controller/block_edit.js:657
-#: src/widget-builder/components-data/component_layout.js:917
-#: src/widget-builder/components-data/component_layout.js:977
-#: build/index.js:26857
-#: build/index.js:34258
-#: build/index.js:34318
+#: build/index.js:1
 msgid "Color"
 msgstr ""
 
-#: build/index.js:34165
-#: src/widget-builder/components-controller/block_edit.js:658
-#: build/index.js:26858
+#: build/index.js:1
 msgid "Date"
 msgstr ""
 
-#: build/index.js:34171
-#: src/widget-builder/components-controller/block_edit.js:659
-#: build/index.js:26859
+#: build/index.js:1
 msgid "Datetime-Local"
 msgstr ""
 
-#: build/index.js:34177
-#: src/widget-builder/components-controller/block_edit.js:660
-#: build/index.js:26860
+#: build/index.js:1
 msgid "Month"
 msgstr ""
 
-#: build/index.js:34183
-#: src/widget-builder/components-controller/block_edit.js:661
-#: build/index.js:26861
+#: build/index.js:1
 msgid "Time"
 msgstr ""
 
-#: build/index.js:34189
-#: src/widget-builder/components-controller/block_edit.js:662
-#: build/index.js:26862
+#: build/index.js:1
 msgid "Week"
 msgstr ""
 
-#: build/index.js:34214
-#: build/index.js:34247
-#: src/widget-builder/components-controller/block_edit.js:678
-#: src/widget-builder/components-controller/block_edit.js:695
-#: build/index.js:26878
-#: build/index.js:26895
+#: build/index.js:1
+msgid "Name"
+msgstr ""
+
+#: build/index.js:1
 msgid "The name must be unique and should only contain letters, numbers and underscore (_)."
 msgstr ""
 
-#: build/index.js:34238
-#: src/widget-builder/components-controller/block_edit.js:692
-#: build/index.js:26892
+#: build/index.js:1
 msgid "Repeater type"
 msgstr ""
 
-#: build/index.js:34269
-#: src/widget-builder/components-controller/block_edit.js:704
-#: build/index.js:26904
+#: build/index.js:1
 msgid "Old"
 msgstr ""
 
-#: build/index.js:34275
-#: src/widget-builder/components-controller/block_edit.js:705
-#: build/index.js:26905
+#: build/index.js:1
 msgid "New"
 msgstr ""
 
-#: build/index.js:34291
-#: src/widget-builder/components-controller/block_edit.js:718
-#: build/index.js:26918
+#: build/index.js:1
 msgid "Description"
 msgstr ""
 
-#: build/index.js:34300
-#: src/widget-builder/components-controller/block_edit.js:721
-#: build/index.js:26921
+#: build/index.js:1
 msgid "The description that appears below the field."
 msgstr ""
 
-#: build/index.js:34323
-#: src/widget-builder/components-controller/block_edit.js:735
-#: build/index.js:26935
+#: build/index.js:1
 msgid "Title field"
 msgstr ""
 
-#: build/index.js:34332
-#: src/widget-builder/components-controller/block_edit.js:738
-#: build/index.js:26938
+#: build/index.js:1
 msgid "Field that will be used as the repeater title in the fields list when the item is minimized."
 msgstr ""
 
-#: build/index.js:34355
-#: src/widget-builder/components-controller/block_edit.js:752
-#: build/index.js:26952
+#: build/index.js:1
 msgid "Placeholder"
 msgstr ""
 
-#: build/index.js:34364
-#: src/widget-builder/components-controller/block_edit.js:755
-#: build/index.js:26955
+#: build/index.js:1
 msgid "The field placeholder that appears when the field has no values."
 msgstr ""
 
-#: build/index.js:34387
-#: build/index.js:34723
-#: build/index.js:34797
-#: build/index.js:34841
-#: build/index.js:34892
-#: build/index.js:34969
-#: build/index.js:35034
-#: build/index.js:35134
-#: src/widget-builder/components-controller/block_edit.js:770
-#: src/widget-builder/components-controller/block_edit.js:930
-#: src/widget-builder/components-controller/block_edit.js:975
-#: src/widget-builder/components-controller/block_edit.js:1000
-#: src/widget-builder/components-controller/block_edit.js:1033
-#: src/widget-builder/components-controller/block_edit.js:1063
-#: src/widget-builder/components-controller/block_edit.js:1105
-#: src/widget-builder/components-controller/block_edit.js:1159
-#: build/index.js:26970
-#: build/index.js:27130
-#: build/index.js:27175
-#: build/index.js:27200
-#: build/index.js:27233
-#: build/index.js:27263
-#: build/index.js:27305
-#: build/index.js:27359
+#: build/index.js:1
 msgid "Default Value"
 msgstr ""
 
-#: build/index.js:34396
-#: build/index.js:34732
-#: build/index.js:34806
-#: build/index.js:34850
-#: build/index.js:34901
-#: build/index.js:34978
-#: build/index.js:35043
-#: build/index.js:35143
-#: build/index.js:35202
-#: src/widget-builder/components-controller/block_edit.js:773
-#: src/widget-builder/components-controller/block_edit.js:933
-#: src/widget-builder/components-controller/block_edit.js:978
-#: src/widget-builder/components-controller/block_edit.js:1003
-#: src/widget-builder/components-controller/block_edit.js:1036
-#: src/widget-builder/components-controller/block_edit.js:1066
-#: src/widget-builder/components-controller/block_edit.js:1108
-#: src/widget-builder/components-controller/block_edit.js:1162
-#: src/widget-builder/components-controller/block_edit.js:1180
-#: build/index.js:26973
-#: build/index.js:27133
-#: build/index.js:27178
-#: build/index.js:27203
-#: build/index.js:27236
-#: build/index.js:27266
-#: build/index.js:27308
-#: build/index.js:27362
-#: build/index.js:27380
+#: build/index.js:1
 msgid "The field default value."
 msgstr ""
 
-#: build/index.js:34484
-#: src/widget-builder/components-controller/block_edit.js:807
-#: build/index.js:27007
+#: build/index.js:1
 msgid "Alert Type"
 msgstr ""
 
-#: build/index.js:34493
-#: src/widget-builder/components-controller/block_edit.js:810
-#: build/index.js:27010
+#: build/index.js:1
 msgid "Select the type of Alert message."
 msgstr ""
 
-#: build/index.js:34515
-#: build/index.js:34616
-#: src/widget-builder/components-controller/block_edit.js:819
-#: src/widget-builder/components-controller/block_edit.js:867
-#: build/index.js:27019
-#: build/index.js:27067
+#: build/index.js:1
 msgid "Warning"
 msgstr ""
 
-#: build/index.js:34521
-#: build/index.js:34622
-#: src/widget-builder/components-controller/block_edit.js:820
-#: src/widget-builder/components-controller/block_edit.js:868
-#: build/index.js:27020
-#: build/index.js:27068
+#: build/index.js:1
 msgid "info"
 msgstr ""
 
-#: build/index.js:34533
-#: build/index.js:34634
-#: src/widget-builder/components-controller/block_edit.js:822
-#: src/widget-builder/components-controller/block_edit.js:870
-#: build/index.js:27022
-#: build/index.js:27070
+#: build/index.js:1
 msgid "Danger"
 msgstr ""
 
-#: build/index.js:34549
-#: src/widget-builder/components-controller/block_edit.js:835
-#: build/index.js:27035
+#: build/index.js:1
 msgid "Parent Class"
 msgstr ""
 
-#: build/index.js:34558
-#: src/widget-builder/components-controller/block_edit.js:838
-#: build/index.js:27038
+#: build/index.js:1
 msgid "Whether to select the parent class."
 msgstr ""
 
-#: build/index.js:34585
-#: src/widget-builder/components-controller/block_edit.js:855
-#: build/index.js:27055
+#: build/index.js:1
 msgid "Notice Type"
 msgstr ""
 
-#: build/index.js:34594
-#: src/widget-builder/components-controller/block_edit.js:858
-#: build/index.js:27058
+#: build/index.js:1
 msgid "Select the type of Noitce message."
 msgstr ""
 
-#: build/index.js:34650
-#: src/widget-builder/components-controller/block_edit.js:883
-#: build/index.js:27083
+#: build/index.js:1
 msgid "Dismissible"
 msgstr ""
 
-#: build/index.js:34659
-#: src/widget-builder/components-controller/block_edit.js:886
-#: build/index.js:27086
+#: build/index.js:1
 msgid "Whether to prevent deleting the first notice."
 msgstr ""
 
-#: build/index.js:34923
-#: src/widget-builder/components-controller/block_edit.js:1045
-#: build/index.js:27245
+#: build/index.js:1
 msgid "H1"
 msgstr ""
 
-#: build/index.js:34929
-#: src/widget-builder/components-controller/block_edit.js:1046
-#: build/index.js:27246
+#: build/index.js:1
 msgid "H2"
 msgstr ""
 
-#: build/index.js:34935
-#: src/widget-builder/components-controller/block_edit.js:1047
-#: build/index.js:27247
+#: build/index.js:1
 msgid "H3"
 msgstr ""
 
-#: build/index.js:34941
-#: src/widget-builder/components-controller/block_edit.js:1048
-#: build/index.js:27248
+#: build/index.js:1
 msgid "H4"
 msgstr ""
 
-#: build/index.js:34947
-#: src/widget-builder/components-controller/block_edit.js:1049
-#: build/index.js:27249
+#: build/index.js:1
 msgid "H5"
 msgstr ""
 
-#: build/index.js:34953
-#: src/widget-builder/components-controller/block_edit.js:1050
-#: build/index.js:27250
+#: build/index.js:1
 msgid "H6"
 msgstr ""
 
-#: build/index.js:35193
-#: src/widget-builder/components-controller/block_edit.js:1178
-#: build/index.js:27378
+#: build/index.js:1
 msgid "Select Default Unit"
 msgstr ""
 
-#: build/index.js:35248
-#: src/widget-builder/components-controller/block_edit.js:1213
-#: build/index.js:27413
+#: build/index.js:1
 msgid "Rows"
 msgstr ""
 
-#: build/index.js:35257
-#: src/widget-builder/components-controller/block_edit.js:1216
-#: build/index.js:27416
+#: build/index.js:1
 msgid "Number of rows."
 msgstr ""
 
-#: build/index.js:35281
-#: src/widget-builder/components-controller/block_edit.js:1232
-#: build/index.js:27432
+#: build/index.js:1
 msgid "Default Count"
 msgstr ""
 
-#: build/index.js:35290
-#: src/widget-builder/components-controller/block_edit.js:1235
-#: build/index.js:27435
+#: build/index.js:1
 msgid "default Count of Repeater item."
 msgstr ""
 
-#: build/index.js:35314
-#: src/widget-builder/components-controller/block_edit.js:1251
-#: build/index.js:27451
+#: build/index.js:1
 msgid "Show Unit"
 msgstr ""
 
-#: build/index.js:35323
-#: build/index.js:35461
-#: src/widget-builder/components-controller/block_edit.js:1254
-#: src/widget-builder/components-controller/block_edit.js:1322
-#: build/index.js:27454
-#: build/index.js:27522
+#: build/index.js:1
 msgid "An array of available CSS units like px, em, rem, %, deg, vh or custom."
 msgstr ""
 
-#: build/index.js:35352
-#: src/widget-builder/components-controller/block_edit.js:1272
-#: build/index.js:27472
+#: build/index.js:1
 msgid "Size Unit & Range"
 msgstr ""
 
-#: build/index.js:35361
-#: src/widget-builder/components-controller/block_edit.js:1275
-#: build/index.js:27475
+#: build/index.js:1
 msgid "An array of ranges for each register size."
 msgstr ""
 
-#: build/index.js:35373
-#: build/index.js:36531
-#: src/widget-builder/components-controller/block_edit.js:1281
-#: src/widget-builder/components-controller/block_edit.js:1827
-#: build/index.js:27481
-#: build/index.js:28027
+#: build/index.js:1
 msgid "Min"
 msgstr ""
 
-#: build/index.js:35375
-#: build/index.js:36559
-#: src/widget-builder/components-controller/block_edit.js:1282
-#: src/widget-builder/components-controller/block_edit.js:1837
-#: build/index.js:27482
-#: build/index.js:28037
+#: build/index.js:1
 msgid "Max"
 msgstr ""
 
-#: build/index.js:35377
-#: build/index.js:36584
-#: src/widget-builder/components-controller/block_edit.js:1283
-#: src/widget-builder/components-controller/block_edit.js:1847
-#: build/index.js:27483
-#: build/index.js:28047
+#: build/index.js:1
 msgid "Step"
 msgstr ""
 
-#: build/index.js:35452
-#: src/widget-builder/components-controller/block_edit.js:1319
-#: build/index.js:27519
+#: build/index.js:1
 msgid "Size Unit"
 msgstr ""
 
-#: build/index.js:35549
-#: src/widget-builder/components-controller/block_edit.js:1359
-#: build/index.js:27559
+#: build/index.js:1
 msgid "Switcher Label"
 msgstr ""
 
-#: build/index.js:35558
-#: src/widget-builder/components-controller/block_edit.js:1362
-#: build/index.js:27562
+#: build/index.js:1
 msgid "The label for the “unchecked” state and “checked” state."
 msgstr ""
 
-#: build/index.js:35567
-#: src/widget-builder/components-controller/block_edit.js:1367
-#: build/index.js:27567
+#: build/index.js:1
 msgid "Switch is on"
 msgstr ""
 
-#: build/index.js:35581
-#: src/widget-builder/components-controller/block_edit.js:1373
-#: build/index.js:27573
+#: build/index.js:1
 msgid "Switch is off"
 msgstr ""
 
-#: build/index.js:35607
-#: build/index.js:36164
-#: build/index.js:36244
-#: src/widget-builder/components-controller/block_edit.js:1388
-#: src/widget-builder/components-controller/block_edit.js:1690
-#: src/widget-builder/components-controller/block_edit.js:1726
-#: build/index.js:27588
-#: build/index.js:27890
-#: build/index.js:27926
+#: build/index.js:1
 msgid "Options"
 msgstr ""
 
-#: build/index.js:35616
-#: src/widget-builder/components-controller/block_edit.js:1391
-#: build/index.js:27591
+#: build/index.js:1
 msgid "Turn on for url_options value."
 msgstr ""
 
-#: build/index.js:35652
-#: src/widget-builder/components-controller/block_edit.js:1411
-#: build/index.js:27611
+#: build/index.js:1
 msgid "Whether to open the url in the same tab or in a new one."
 msgstr ""
 
-#: build/index.js:35679
-#: src/widget-builder/components-controller/block_edit.js:1428
-#: build/index.js:27628
+#: build/index.js:1
 msgid "No Follow"
 msgstr ""
 
-#: build/index.js:35688
-#: src/widget-builder/components-controller/block_edit.js:1431
-#: build/index.js:27631
+#: build/index.js:1
 msgid "Whether to add nofollow attribute."
 msgstr ""
 
-#: build/index.js:35715
-#: src/widget-builder/components-controller/block_edit.js:1448
-#: build/index.js:27648
+#: build/index.js:1
 msgid "Attributes"
 msgstr ""
 
-#: build/index.js:35724
-#: src/widget-builder/components-controller/block_edit.js:1451
-#: build/index.js:27651
+#: build/index.js:1
 msgid "Custom attributes string that come as a string of comma-delimited key|value pairs."
 msgstr ""
 
-#: build/index.js:35747
-#: src/widget-builder/components-controller/block_edit.js:1467
-#: build/index.js:27667
+#: build/index.js:1
 msgid "Return Value"
 msgstr ""
 
-#: build/index.js:35756
-#: src/widget-builder/components-controller/block_edit.js:1470
-#: build/index.js:27670
+#: build/index.js:1
 msgid "The value returned when checked."
 msgstr ""
 
-#: build/index.js:35779
-#: src/widget-builder/components-controller/block_edit.js:1486
-#: build/index.js:27686
+#: build/index.js:1
 msgid "Show Label"
 msgstr ""
 
-#: build/index.js:35788
-#: build/index.js:36626
-#: src/widget-builder/components-controller/block_edit.js:1489
-#: src/widget-builder/components-controller/block_edit.js:1868
-#: build/index.js:27689
-#: build/index.js:28068
+#: build/index.js:1
 msgid "Whether to display the label."
 msgstr ""
 
-#: build/index.js:35815
-#: src/widget-builder/components-controller/block_edit.js:1506
-#: build/index.js:27706
+#: build/index.js:1
 msgid "Label Block"
 msgstr ""
 
-#: build/index.js:35824
-#: src/widget-builder/components-controller/block_edit.js:1509
-#: build/index.js:27709
+#: build/index.js:1
 msgid "Whether to display the label in a separate line."
 msgstr ""
 
-#: build/index.js:35849
-#: src/widget-builder/components-controller/block_edit.js:1525
-#: build/index.js:27725
+#: build/index.js:1
 msgid "Media Types"
 msgstr ""
 
-#: build/index.js:35858
-#: src/widget-builder/components-controller/block_edit.js:1528
-#: build/index.js:27728
+#: build/index.js:1
 msgid "Supported media types. Available values are image, video, and svg."
 msgstr ""
 
-#: build/index.js:35875
-#: src/widget-builder/components-controller/block_edit.js:1534
-#: build/index.js:27734
+#: build/index.js:1
 msgid "Image & Svg"
 msgstr ""
 
-#: build/index.js:35875
-#: src/widget-builder/components-controller/block_edit.js:1534
-#: build/index.js:27734
+#: build/index.js:1
 msgid "Image"
 msgstr ""
 
-#: build/index.js:35889
-#: src/widget-builder/components-controller/block_edit.js:1538
-#: build/index.js:27738
+#: build/index.js:1
 msgid "Video"
 msgstr ""
 
-#: build/index.js:35903
-#: build/index.js:36167
-#: build/index.js:36707
-#: src/widget-builder/components-controller/block_edit.js:1543
-#: src/widget-builder/components-controller/block_edit.js:1691
-#: src/widget-builder/components-controller/block_edit.js:1901
-#: build/index.js:27743
-#: build/index.js:27891
-#: build/index.js:28101
+#: build/index.js:1
 msgid "Svg"
 msgstr ""
 
-#: build/index.js:35918
-#: src/widget-builder/components-controller/block_edit.js:1557
-#: build/index.js:27757
+#: build/index.js:1
 msgid "Types"
 msgstr ""
 
-#: build/index.js:35927
-#: src/widget-builder/components-controller/block_edit.js:1560
-#: build/index.js:27760
+#: build/index.js:1
 msgid "Used to change the appearance of the control. There are two options: media or inline. The inline skin's design is based on the Choose Control."
 msgstr ""
 
-#: build/index.js:35949
-#: src/widget-builder/components-controller/block_edit.js:1569
-#: build/index.js:27769
+#: build/index.js:1
 msgid "Media"
 msgstr ""
 
-#: build/index.js:35955
-#: src/widget-builder/components-controller/block_edit.js:1570
-#: build/index.js:27770
+#: build/index.js:1
 msgid "Inline"
 msgstr ""
 
-#: build/index.js:35980
-#: src/widget-builder/components-controller/block_edit.js:1586
-#: build/index.js:27786
+#: build/index.js:1
 msgid "Whether to display the NHA type."
 msgstr ""
 
-#: build/index.js:36086
-#: src/widget-builder/components-controller/block_edit.js:1652
-#: build/index.js:27852
+#: build/index.js:1
 msgid "The specific background types to use. Available types are classic, gradient and video. Default is an empty array, including all the types."
 msgstr ""
 
-#: build/index.js:36103
-#: src/widget-builder/components-controller/block_edit.js:1659
-#: build/index.js:27859
+#: build/index.js:1
 msgid "Classic"
 msgstr ""
 
-#: build/index.js:36117
-#: src/widget-builder/components-controller/block_edit.js:1665
-#: build/index.js:27865
+#: build/index.js:1
 msgid "Color & Image"
 msgstr ""
 
-#: build/index.js:36131
-#: src/widget-builder/components-controller/block_edit.js:1670
-#: build/index.js:27870
+#: build/index.js:1
 msgid "Gradient"
 msgstr ""
 
-#: build/index.js:36145
-#: src/widget-builder/components-controller/block_edit.js:1682
-#: build/index.js:27882
+#: build/index.js:1
 msgid "Drop Down Value"
 msgstr ""
 
-#: build/index.js:36154
-#: build/index.js:36253
-#: src/widget-builder/components-controller/block_edit.js:1685
-#: src/widget-builder/components-controller/block_edit.js:1729
-#: build/index.js:27885
-#: build/index.js:27929
+#: build/index.js:1
 msgid "An array of key => value pairs: [ 'key' => 'value', ... ]"
 msgstr ""
 
-#: build/index.js:36161
-#: build/index.js:36269
-#: build/index.js:37246
-#: src/widget-builder/components-controller/block_edit.js:1689
-#: src/widget-builder/components-controller/block_edit.js:1734
-#: src/widget-builder/components-controller/block_edit.js:2176
-#: build/index.js:27889
-#: build/index.js:27934
-#: build/index.js:28376
+#: build/index.js:1
 msgid "Value"
 msgstr ""
 
-#: build/index.js:36231
-#: build/index.js:36446
-#: build/index.js:37340
-#: src/widget-builder/components-controller/block_edit.js:1715
-#: src/widget-builder/components-controller/block_edit.js:1784
-#: src/widget-builder/components-controller/block_edit.js:2213
-#: build/index.js:27915
-#: build/index.js:27984
-#: build/index.js:28413
+#: build/index.js:1
 msgid "Add"
 msgstr ""
 
-#: build/index.js:36275
-#: build/index.js:36703
-#: build/index.js:58039
-#: src/widget-builder/components-controller/block_edit.js:1735
-#: src/widget-builder/components-controller/block_edit.js:1900
-#: src/widget-builder/wb-setting-panel/popup.js:422
-#: build/index.js:27935
-#: build/index.js:28100
-#: build/index.js:44826
+#: build/index.js:1
 msgid "Icon"
 msgstr ""
 
-#: build/index.js:36352
-#: src/widget-builder/components-controller/block_edit.js:1757
-#: build/index.js:27957
+#: build/index.js:1
 msgid "Align-Left"
 msgstr ""
 
-#: build/index.js:36358
-#: src/widget-builder/components-controller/block_edit.js:1758
-#: build/index.js:27958
+#: build/index.js:1
 msgid "Align-Right"
 msgstr ""
 
-#: build/index.js:36364
-#: src/widget-builder/components-controller/block_edit.js:1759
-#: build/index.js:27959
+#: build/index.js:1
 msgid "Align-Center"
 msgstr ""
 
-#: build/index.js:36370
-#: src/widget-builder/components-controller/block_edit.js:1760
-#: build/index.js:27960
+#: build/index.js:1
 msgid "Align-Justify"
 msgstr ""
 
-#: build/index.js:36376
-#: src/widget-builder/components-controller/block_edit.js:1761
-#: build/index.js:27961
+#: build/index.js:1
 msgid "Up-Arrow"
 msgstr ""
 
-#: build/index.js:36382
-#: src/widget-builder/components-controller/block_edit.js:1762
-#: build/index.js:27962
+#: build/index.js:1
 msgid "Down-Arrow"
 msgstr ""
 
-#: build/index.js:36388
-#: src/widget-builder/components-controller/block_edit.js:1763
-#: build/index.js:27963
+#: build/index.js:1
 msgid "Right-Arrow"
 msgstr ""
 
-#: build/index.js:36394
-#: src/widget-builder/components-controller/block_edit.js:1764
-#: build/index.js:27964
+#: build/index.js:1
 msgid "Left-Arrow"
 msgstr ""
 
-#: build/index.js:36400
-#: src/widget-builder/components-controller/block_edit.js:1765
-#: build/index.js:27965
+#: build/index.js:1
 msgid "Custom Icon"
 msgstr ""
 
-#: build/index.js:36407
-#: src/widget-builder/components-controller/block_edit.js:1768
-#: build/index.js:27968
+#: build/index.js:1
 msgid "Custom Title"
 msgstr ""
 
-#: build/index.js:36413
-#: src/widget-builder/components-controller/block_edit.js:1769
-#: build/index.js:27969
+#: build/index.js:1
 msgid "Custom Svg"
 msgstr ""
 
-#: build/index.js:36461
-#: src/widget-builder/components-controller/block_edit.js:1796
-#: build/index.js:27996
+#: build/index.js:1
 msgid "Align Type"
 msgstr ""
 
-#: build/index.js:36470
-#: src/widget-builder/components-controller/block_edit.js:1799
-#: build/index.js:27999
+#: build/index.js:1
 msgid "Select the Align CSS property you want to use."
 msgstr ""
 
-#: build/index.js:36492
-#: src/widget-builder/components-controller/block_edit.js:1808
-#: build/index.js:28008
+#: build/index.js:1
 msgid "text-align"
 msgstr ""
 
-#: build/index.js:36498
-#: src/widget-builder/components-controller/block_edit.js:1809
-#: build/index.js:28009
+#: build/index.js:1
 msgid "justify-content"
 msgstr ""
 
-#: build/index.js:36504
-#: src/widget-builder/components-controller/block_edit.js:1810
-#: build/index.js:28010
+#: build/index.js:1
 msgid "align-items"
 msgstr ""
 
-#: build/index.js:36510
-#: src/widget-builder/components-controller/block_edit.js:1811
-#: build/index.js:28011
+#: build/index.js:1
 msgid "flex-direction"
 msgstr ""
 
-#: build/index.js:36540
-#: src/widget-builder/components-controller/block_edit.js:1830
-#: build/index.js:28030
+#: build/index.js:1
 msgid "The minimum number ( only affects the spinners, the user can still type a lower value )."
 msgstr ""
 
-#: build/index.js:36568
-#: src/widget-builder/components-controller/block_edit.js:1840
-#: build/index.js:28040
+#: build/index.js:1
 msgid "The minimum and maximum number (only affects the spinners, the user can still type a lower value)."
 msgstr ""
 
-#: build/index.js:36593
-#: src/widget-builder/components-controller/block_edit.js:1850
-#: build/index.js:28050
+#: build/index.js:1
 msgid "The intervals value that will be incremented or decremented when using the controls' spinners. Default is empty, the value will be incremented by 1."
 msgstr ""
 
-#: build/index.js:36617
-#: src/widget-builder/components-controller/block_edit.js:1865
-#: build/index.js:28065
+#: build/index.js:1
 msgid "Code"
 msgstr ""
 
-#: build/index.js:36652
-#: build/index.js:51356
-#: src/widget-builder/components-controller/block_edit.js:1878
-#: src/widget-builder/editor/wb-editor.js:1163
-#: build/index.js:28078
-#: build/index.js:38612
+#: build/index.js:1
 msgid "HTML"
 msgstr ""
 
-#: build/index.js:36658
-#: build/index.js:51370
-#: build/index.js:51624
-#: src/widget-builder/components-controller/block_edit.js:1879
-#: src/widget-builder/editor/wb-editor.js:1167
-#: src/widget-builder/editor/wb-editor.js:1283
-#: build/index.js:28079
-#: build/index.js:38616
-#: build/index.js:38732
+#: build/index.js:1
 msgid "CSS"
 msgstr ""
 
-#: build/index.js:36664
-#: build/index.js:51404
-#: src/widget-builder/components-controller/block_edit.js:1880
-#: src/widget-builder/editor/wb-editor.js:1183
-#: build/index.js:28080
-#: build/index.js:38632
+#: build/index.js:1
 msgid "JAVASCRIPT"
 msgstr ""
 
-#: build/index.js:36679
-#: src/widget-builder/components-controller/block_edit.js:1892
-#: build/index.js:28092
+#: build/index.js:1
 msgid "Exclude Inline Options"
 msgstr ""
 
-#: build/index.js:36688
-#: src/widget-builder/components-controller/block_edit.js:1895
-#: build/index.js:28095
+#: build/index.js:1
 msgid "Used with the inline skin only, to hide an option (Icon Library/SVG) from the inline icon control's buttons."
 msgstr ""
 
-#: build/index.js:36699
-#: src/widget-builder/components-controller/block_edit.js:1899
-#: build/index.js:28099
+#: build/index.js:1
 msgid "None"
 msgstr ""
 
-#: build/index.js:36722
-#: src/widget-builder/components-controller/block_edit.js:1913
-#: build/index.js:28113
+#: build/index.js:1
 msgid "Separator"
 msgstr ""
 
-#: build/index.js:36731
-#: src/widget-builder/components-controller/block_edit.js:1916
-#: build/index.js:28116
+#: build/index.js:1
 msgid "Set the position of the control separator. Available values are default, before and after. default will position the separator depending on the control type. before / after will position the separator before/after the control."
 msgstr ""
 
-#: build/index.js:36753
-#: src/widget-builder/components-controller/block_edit.js:1925
-#: build/index.js:28125
+#: build/index.js:1
 msgid "Default"
 msgstr ""
 
-#: build/index.js:36759
-#: src/widget-builder/components-controller/block_edit.js:1926
-#: build/index.js:28126
+#: build/index.js:1
 msgid "Before"
 msgstr ""
 
-#: build/index.js:36765
-#: src/widget-builder/components-controller/block_edit.js:1927
-#: build/index.js:28127
+#: build/index.js:1
 msgid "After"
 msgstr ""
 
-#: build/index.js:36781
-#: src/widget-builder/components-controller/block_edit.js:1940
-#: build/index.js:28140
+#: build/index.js:1
 msgid "Classes"
 msgstr ""
 
-#: build/index.js:36790
-#: src/widget-builder/components-controller/block_edit.js:1943
-#: build/index.js:28143
+#: build/index.js:1
 msgid "Add custom classes to control wrapper in the panel."
 msgstr ""
 
-#: build/index.js:36815
-#: src/widget-builder/components-controller/block_edit.js:1958
-#: build/index.js:28158
+#: build/index.js:1
 msgid "Selectors Value"
 msgstr ""
 
-#: build/index.js:36824
-#: src/widget-builder/components-controller/block_edit.js:1961
-#: build/index.js:28161
+#: build/index.js:1
 msgid "Enter CSS properties (e.g., color, font-size, background-color) to apply to the selected class or ID."
 msgstr ""
 
-#: build/index.js:36848
-#: build/index.js:36883
-#: build/index.js:36916
-#: src/widget-builder/components-controller/block_edit.js:1973
-#: src/widget-builder/components-controller/block_edit.js:1991
-#: src/widget-builder/components-controller/block_edit.js:2008
-#: build/index.js:28173
-#: build/index.js:28191
-#: build/index.js:28208
+#: build/index.js:1
 msgid "Selectors"
 msgstr ""
 
-#: build/index.js:36857
-#: build/index.js:36892
-#: build/index.js:36925
-#: src/widget-builder/components-controller/block_edit.js:1975
-#: src/widget-builder/components-controller/block_edit.js:1993
-#: src/widget-builder/components-controller/block_edit.js:2011
-#: build/index.js:28175
-#: build/index.js:28193
-#: build/index.js:28211
+#: build/index.js:1
 msgid "Add a CSS class (e.g., .my-class) or ID (e.g., #my-id) to target and style elements."
 msgstr ""
 
-#: build/index.js:36948
-#: src/widget-builder/components-controller/block_edit.js:2025
-#: build/index.js:28225
+#: build/index.js:1
 msgid "Multiple"
 msgstr ""
 
-#: build/index.js:36957
-#: src/widget-builder/components-controller/block_edit.js:2028
-#: build/index.js:28228
+#: build/index.js:1
 msgid "Whether to allow multiple value selection."
 msgstr ""
 
-#: build/index.js:36984
-#: src/widget-builder/components-controller/block_edit.js:2045
-#: build/index.js:28245
+#: build/index.js:1
 msgid "Alpha"
 msgstr ""
 
-#: build/index.js:36993
-#: src/widget-builder/components-controller/block_edit.js:2048
-#: build/index.js:28248
+#: build/index.js:1
 msgid "Whether to allow alpha channel."
 msgstr ""
 
-#: build/index.js:37020
-#: src/widget-builder/components-controller/block_edit.js:2065
-#: build/index.js:28265
+#: build/index.js:1
 msgid "Global Color"
 msgstr ""
 
-#: build/index.js:37029
-#: src/widget-builder/components-controller/block_edit.js:2068
-#: build/index.js:28268
+#: build/index.js:1
 msgid "Default color in RGB, RGBA, or HEX format."
 msgstr ""
 
-#: build/index.js:37056
-#: src/widget-builder/components-controller/block_edit.js:2085
-#: build/index.js:28285
+#: build/index.js:1
 msgid "Prevent Empty"
 msgstr ""
 
-#: build/index.js:37065
-#: src/widget-builder/components-controller/block_edit.js:2088
-#: build/index.js:28288
+#: build/index.js:1
 msgid "Whether to prevent deleting the first repeater field. To keep at least one repeater field."
 msgstr ""
 
-#: build/index.js:37092
-#: src/widget-builder/components-controller/block_edit.js:2105
-#: build/index.js:28305
+#: build/index.js:1
 msgid "Responsive"
 msgstr ""
 
-#: build/index.js:37101
-#: src/widget-builder/components-controller/block_edit.js:2108
-#: build/index.js:28308
+#: build/index.js:1
 msgid "Switch to Mobile, Laptop, Tablet mode"
 msgstr ""
 
-#: build/index.js:37132
-#: src/widget-builder/components-controller/block_edit.js:2125
-#: build/index.js:28325
+#: build/index.js:1
 msgid "Dynamic"
 msgstr ""
 
-#: build/index.js:37141
-#: src/widget-builder/components-controller/block_edit.js:2127
-#: build/index.js:28327
+#: build/index.js:1
 msgid "Turn on for dynamic value"
 msgstr ""
 
-#: build/index.js:37171
-#: src/widget-builder/components-controller/block_edit.js:2144
-#: build/index.js:28344
+#: build/index.js:1
 msgid "Conditions"
 msgstr ""
 
-#: build/index.js:37180
-#: src/widget-builder/components-controller/block_edit.js:2146
-#: build/index.js:28346
+#: build/index.js:1
 msgid "Whether to apply the conditions."
 msgstr ""
 
-#: build/index.js:37201
-#: src/widget-builder/components-controller/block_edit.js:2159
-#: build/index.js:28359
+#: build/index.js:1
 msgid "Relation of Condition"
 msgstr ""
 
-#: build/index.js:37230
-#: src/widget-builder/components-controller/block_edit.js:2167
-#: build/index.js:28367
+#: build/index.js:1
+msgid "OR"
+msgstr ""
+
+#: build/index.js:1
 msgid "AND"
 msgstr ""
 
-#: build/index.js:37243
-#: src/widget-builder/components-controller/block_edit.js:2175
-#: build/index.js:28375
+#: build/index.js:1
 msgid "Operator"
 msgstr ""
 
-#: build/index.js:43581
-#: src/widget-builder/components-data/component_layout.js:715
-#: build/index.js:34056
-msgid "font-1"
+#: build/index.js:1
+msgid "Not Valid"
 msgstr ""
 
-#: build/index.js:43583
-#: src/widget-builder/components-data/component_layout.js:716
-#: build/index.js:34057
-msgid "font-2"
+#: build/index.js:1
+msgid "You Can Not put this controller here"
 msgstr ""
 
-#: build/index.js:43585
-#: src/widget-builder/components-data/component_layout.js:717
-#: build/index.js:34058
-msgid "font-3"
-msgstr ""
-
-#: build/index.js:43755
-#: src/widget-builder/components-data/component_layout.js:796
-#: build/index.js:34137
-msgid "No Images Selected"
-msgstr ""
-
-#: build/index.js:44008
-#: build/index.js:44120
-#: src/widget-builder/components-data/component_layout.js:921
-#: src/widget-builder/components-data/component_layout.js:981
-#: build/index.js:34262
-#: build/index.js:34322
-msgid "X"
-msgstr ""
-
-#: build/index.js:44017
-#: build/index.js:44129
-#: src/widget-builder/components-data/component_layout.js:925
-#: src/widget-builder/components-data/component_layout.js:985
-#: build/index.js:34266
-#: build/index.js:34326
-msgid "Y"
-msgstr ""
-
-#: build/index.js:44026
-#: build/index.js:44138
-#: src/widget-builder/components-data/component_layout.js:929
-#: src/widget-builder/components-data/component_layout.js:989
-#: build/index.js:34270
-#: build/index.js:34330
-msgid "Blur"
-msgstr ""
-
-#: build/index.js:44035
-#: build/index.js:44147
-#: src/widget-builder/components-data/component_layout.js:933
-#: src/widget-builder/components-data/component_layout.js:993
-#: build/index.js:34274
-#: build/index.js:34334
-msgid "Spread"
-msgstr ""
-
-#: build/index.js:44387
-#: src/widget-builder/components-data/component_layout.js:1115
-#: build/index.js:34456
-msgid "TOP"
-msgstr ""
-
-#: build/index.js:44400
-#: src/widget-builder/components-data/component_layout.js:1119
-#: build/index.js:34460
-msgid "RIGHT"
-msgstr ""
-
-#: build/index.js:44413
-#: src/widget-builder/components-data/component_layout.js:1123
-#: build/index.js:34464
-msgid "BOTTOM"
-msgstr ""
-
-#: build/index.js:44426
-#: src/widget-builder/components-data/component_layout.js:1127
-#: build/index.js:34468
-msgid "LEFT"
-msgstr ""
-
-#: build/index.js:44574
-#: src/widget-builder/components-data/component_layout.js:1205
-#: build/index.js:34546
-msgid "Linear"
-msgstr ""
-
-#: build/index.js:44576
-#: src/widget-builder/components-data/component_layout.js:1206
-#: build/index.js:34547
-msgid "radial"
-msgstr ""
-
-#: build/index.js:44578
-#: src/widget-builder/components-data/component_layout.js:1207
-#: build/index.js:34548
-msgid "conic"
-msgstr ""
-
-#: build/index.js:44835
-#: build/index.js:45032
-#: build/index.js:45251
-#: src/widget-builder/components-data/component_layout.js:1351
-#: src/widget-builder/components-data/component_layout.js:1464
-#: src/widget-builder/components-data/component_layout.js:1599
-#: build/index.js:34692
-#: build/index.js:34805
-#: build/index.js:34940
-msgid "Add Controller"
-msgstr ""
-
-#: build/index.js:45980
-#: src/widget-builder/components-data/component_layout.js:1993
-#: build/index.js:35334
-msgid "Write Your Note here...."
-msgstr ""
-
-#: build/index.js:46066
-#: src/widget-builder/components-data/component_layout.js:2037
-#: build/index.js:35378
-msgid "Normal"
-msgstr ""
-
-#: build/index.js:46072
-#: src/widget-builder/components-data/component_layout.js:2038
-#: build/index.js:35379
-msgid "grediant"
-msgstr ""
-
-#: build/index.js:46446
-#: src/widget-builder/components-data/component_layout.js:2223
-#: build/index.js:35564
-msgid "Left"
-msgstr ""
-
-#: build/index.js:46457
-#: build/index.js:46503
-#: build/index.js:46571
-#: src/widget-builder/components-data/component_layout.js:2229
-#: src/widget-builder/components-data/component_layout.js:2257
-#: src/widget-builder/components-data/component_layout.js:2297
-#: build/index.js:35570
-#: build/index.js:35598
-#: build/index.js:35638
-msgid "Center"
-msgstr ""
-
-#: build/index.js:46468
-#: src/widget-builder/components-data/component_layout.js:2235
-#: build/index.js:35576
-msgid "Right"
-msgstr ""
-
-#: build/index.js:46479
-#: src/widget-builder/components-data/component_layout.js:2241
-#: build/index.js:35582
-msgid "Justify"
-msgstr ""
-
-#: build/index.js:46492
-#: build/index.js:46560
-#: src/widget-builder/components-data/component_layout.js:2251
-#: src/widget-builder/components-data/component_layout.js:2291
-#: build/index.js:35592
-#: build/index.js:35632
-msgid "Start"
-msgstr ""
-
-#: build/index.js:46514
-#: build/index.js:46582
-#: src/widget-builder/components-data/component_layout.js:2263
-#: src/widget-builder/components-data/component_layout.js:2303
-#: build/index.js:35604
-#: build/index.js:35644
-msgid "End"
-msgstr ""
-
-#: build/index.js:46525
-#: src/widget-builder/components-data/component_layout.js:2269
-#: build/index.js:35610
-msgid "Space Between"
-msgstr ""
-
-#: build/index.js:46536
-#: src/widget-builder/components-data/component_layout.js:2275
-#: build/index.js:35616
-msgid "Space Around"
-msgstr ""
-
-#: build/index.js:46547
-#: src/widget-builder/components-data/component_layout.js:2281
-#: build/index.js:35622
-msgid "Space Evenly"
-msgstr ""
-
-#: build/index.js:46593
-#: src/widget-builder/components-data/component_layout.js:2309
-#: build/index.js:35650
-msgid "Stretch"
-msgstr ""
-
-#: build/index.js:46606
-#: src/widget-builder/components-data/component_layout.js:2319
-#: build/index.js:35660
-msgid "Vertical"
-msgstr ""
-
-#: build/index.js:46617
-#: src/widget-builder/components-data/component_layout.js:2325
-#: build/index.js:35666
-msgid "Horizontal"
-msgstr ""
-
-#: build/index.js:46628
-#: src/widget-builder/components-data/component_layout.js:2331
-#: build/index.js:35672
-msgid "Row"
-msgstr ""
-
-#: build/index.js:47133
-#: src/widget-builder/components-data/component_layout.js:2579
-#: build/index.js:35920
-msgid "Open in new window"
-msgstr ""
-
-#: build/index.js:47144
-#: src/widget-builder/components-data/component_layout.js:2583
-#: build/index.js:35924
-msgid "Add Nofollow"
-msgstr ""
-
-#: build/index.js:51322
-#: src/widget-builder/editor/wb-editor.js:1144
-#: build/index.js:38593
-msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
-msgstr ""
-
-#: build/index.js:51570
-#: src/widget-builder/editor/wb-editor.js:1251
-#: build/index.js:38700
+#: build/index.js:1
 msgid "Perform activity inside the loop"
 msgstr ""
 
-#: build/index.js:51574
-#: src/widget-builder/editor/wb-editor.js:1253
-#: build/index.js:38702
+#: build/index.js:1
 msgid "You need to write or perform any of your activity inside the loop"
 msgstr ""
 
-#: build/index.js:51594
-#: src/widget-builder/editor/wb-editor.js:1267
-#: build/index.js:38716
+#: build/index.js:1
+msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
+msgstr ""
+
+#: build/index.js:1
 msgid "Characters"
 msgstr ""
 
-#: build/index.js:51597
-#: src/widget-builder/editor/wb-editor.js:1268
-#: build/index.js:38717
+#: build/index.js:1
 msgid "Line"
 msgstr ""
 
-#: build/index.js:51630
-#: src/widget-builder/editor/wb-editor.js:1287
-#: build/index.js:38736
+#: build/index.js:1
 msgid "JS"
 msgstr ""
 
-#: build/index.js:51636
-#: src/widget-builder/editor/wb-editor.js:1292
-#: build/index.js:38741
+#: build/index.js:1
 msgid "Insert CSS Library"
 msgstr ""
 
-#: build/index.js:51639
-#: src/widget-builder/editor/wb-editor.js:1293
-#: build/index.js:38742
+#: build/index.js:1
 msgid "Enter the URL of Your External CSS Library, Which You Want to Load in this Widget."
 msgstr ""
 
-#: build/index.js:51693
-#: build/index.js:51895
-#: src/widget-builder/editor/wb-editor.js:1323
-#: src/widget-builder/editor/wb-editor.js:1422
-#: build/index.js:38772
-#: build/index.js:38871
+#: build/index.js:1
 msgid "Not Result Found"
 msgstr ""
 
-#: build/index.js:51696
-#: build/index.js:51898
-#: src/widget-builder/editor/wb-editor.js:1324
-#: src/widget-builder/editor/wb-editor.js:1423
-#: build/index.js:38773
-#: build/index.js:38872
+#: build/index.js:1
 msgid "Sorry, the cdn you are looking for doesn't exist."
 msgstr ""
 
-#: build/index.js:51838
-#: src/widget-builder/editor/wb-editor.js:1391
-#: build/index.js:38840
+#: build/index.js:1
 msgid "Insert JS Library"
 msgstr ""
 
-#: build/index.js:51841
-#: src/widget-builder/editor/wb-editor.js:1392
-#: build/index.js:38841
+#: build/index.js:1
 msgid "Enter the URL of Your External JS Library, Which You Want to Load in this Widget."
 msgstr ""
 
-#: build/index.js:56834
-#: src/widget-builder/loader.js:110
-#: build/index.js:43991
-msgid "Widget Deactivated"
-msgstr ""
-
-#: build/index.js:56834
-#: src/widget-builder/loader.js:110
-#: build/index.js:43991
-msgid "This Widget is Deactivated "
-msgstr ""
-
-#: build/index.js:56838
-#: src/widget-builder/loader.js:114
-#: build/index.js:43995
-msgid "Widget not found try again later"
-msgstr ""
-
-#: build/index.js:57774
-#: src/widget-builder/wb-setting-panel/popup.js:300
-#: build/index.js:44704
+#: build/index.js:1
 msgid "Edit Widget Information"
 msgstr ""
 
-#: build/index.js:57815
-#: src/widget-builder/wb-setting-panel/popup.js:316
-#: build/index.js:44720
+#: build/index.js:1
 msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller then 25 charaters and first letter can't be digit."
 msgstr ""
 
-#: build/index.js:57823
-#: src/widget-builder/wb-setting-panel/popup.js:324
-#: build/index.js:44728
+#: build/index.js:1
 msgid "Enter your Widget Name"
 msgstr ""
 
-#: build/index.js:57882
-#: src/widget-builder/wb-setting-panel/popup.js:351
-#: build/index.js:44755
+#: build/index.js:1
 msgid "Create New Category"
 msgstr ""
 
-#: build/index.js:57900
-#: src/widget-builder/wb-setting-panel/popup.js:356
-#: build/index.js:44760
+#: build/index.js:1
 msgid "Add more categories of Elementor Editor area."
 msgstr ""
 
-#: build/index.js:57981
-#: src/widget-builder/wb-setting-panel/popup.js:396
-#: build/index.js:44800
+#: build/index.js:1
+msgid "Add More"
+msgstr ""
+
+#: build/index.js:1
 msgid "Only .jpg and .png are allowed"
 msgstr ""
 
-#: build/index.js:58004
-#: src/widget-builder/wb-setting-panel/popup.js:408
-#: build/index.js:44812
+#: build/index.js:1
 msgid "Upload Widget's featured image to show in widget listing. Only .jpg and .png images allowed."
 msgstr ""
 
-#: build/index.js:58048
-#: src/widget-builder/wb-setting-panel/popup.js:425
-#: build/index.js:44829
+#: build/index.js:1
 msgid "Choose and paste your icon code here to show that with widget."
 msgstr ""
 
-#: build/index.js:58069
-#: src/widget-builder/wb-setting-panel/popup.js:434
-#: build/index.js:44838
+#: build/index.js:1
 msgid "Copy and Paste Icons from below libraries"
 msgstr ""
 
-#: build/index.js:58098
-#: src/widget-builder/wb-setting-panel/popup.js:456
-#: build/index.js:44860
+#: build/index.js:1
 msgid "Keywords"
 msgstr ""
 
-#: build/index.js:58107
-#: src/widget-builder/wb-setting-panel/popup.js:459
-#: build/index.js:44863
+#: build/index.js:1
 msgid "Enter keywords to allow searching in elementor editor."
 msgstr ""
 
-#: build/index.js:58111
-#: build/index.js:58143
-#: src/widget-builder/wb-setting-panel/popup.js:459
-#: src/widget-builder/wb-setting-panel/popup.js:469
-#: build/index.js:44863
-#: build/index.js:44873
+#: build/index.js:1
 msgid "Read More"
 msgstr ""
 
-#: build/index.js:58130
-#: src/widget-builder/wb-setting-panel/popup.js:466
-#: build/index.js:44870
+#: build/index.js:1
 msgid "Help Link"
 msgstr ""
 
-#: build/index.js:58139
-#: src/widget-builder/wb-setting-panel/popup.js:469
-#: build/index.js:44873
+#: build/index.js:1
 msgid "Enter URL for users to get more information about this widget."
 msgstr ""
 
-#: build/index.js:58177
-#: src/widget-builder/wb-setting-panel/popup.js:482
-#: build/index.js:44886
+#: build/index.js:1
 msgid "SAVE"
 msgstr ""
 
-#: build/index.js:58298
-#: build/index.js:58302
-#: build/index.js:58306
-#: src/widget-builder/wb-setting-panel/setting_panel.js:92
-#: src/widget-builder/wb-setting-panel/setting_panel.js:97
-#: src/widget-builder/wb-setting-panel/setting_panel.js:101
-#: build/index.js:44989
-#: build/index.js:44994
-#: build/index.js:44998
-msgid "Save"
-msgstr ""
-
-#: build/index.js:58336
-#: src/widget-builder/wb-setting-panel/setting_panel.js:105
-#: build/index.js:45002
-msgid "Saved"
-msgstr ""
-
-#: build/index.js:58356
-#: src/widget-builder/wb-setting-panel/setting_panel.js:123
-#: build/index.js:45020
-msgid "Fail to Save"
-msgstr ""
-
-#: build/index.js:58356
-#: src/widget-builder/wb-setting-panel/setting_panel.js:123
-#: build/index.js:45020
-msgid "Fail! Can not Saved"
-msgstr ""
-
-#: build/index.js:58777
-#: src/widget-builder/wb-setting-panel/setting_panel.js:441
-#: build/index.js:45338
+#: build/index.js:1
 msgid "Publish"
 msgstr ""
 
-#: build/index.js:58810
-#: src/widget-builder/wb-setting-panel/setting_panel.js:452
-#: build/index.js:45349
+#: build/index.js:1
 msgid "Push widget on Cloud and Sync it"
 msgstr ""
 
-#: build/index.js:58825
-#: src/widget-builder/wb-setting-panel/setting_panel.js:458
-#: build/index.js:45355
+#: build/index.js:1
 msgid "Push"
 msgstr ""
 
-#: build/index.js:59115
-#: src/widget-builder/widget-downloader/widget_download.js:112
-#: build/index.js:45553
-msgid "Widget Downloading"
+#: build/index.js:1
+msgid "Save"
 msgstr ""
 
-#: build/index.js:59143
-#: src/widget-builder/widget-downloader/widget_download.js:126
-#: build/index.js:45567
-msgid "Your widget Downloaded Successfully"
+#: build/index.js:1
+msgid "Saved"
 msgstr ""
 
-#: build/index.js:59280
-#: src/widget-builder/widget_builder.js:89
-#: build/index.js:45672
+#: build/index.js:1
+msgid "Fail to Save"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail! Can not Saved"
+msgstr ""
+
+#: build/index.js:1
+msgid "font-1"
+msgstr ""
+
+#: build/index.js:1
+msgid "font-2"
+msgstr ""
+
+#: build/index.js:1
+msgid "font-3"
+msgstr ""
+
+#: build/index.js:1
+msgid "No Images Selected"
+msgstr ""
+
+#: build/index.js:1
+msgid "X"
+msgstr ""
+
+#: build/index.js:1
+msgid "Y"
+msgstr ""
+
+#: build/index.js:1
+msgid "Blur"
+msgstr ""
+
+#: build/index.js:1
+msgid "Spread"
+msgstr ""
+
+#: build/index.js:1
+msgid "TOP"
+msgstr ""
+
+#: build/index.js:1
+msgid "RIGHT"
+msgstr ""
+
+#: build/index.js:1
+msgid "BOTTOM"
+msgstr ""
+
+#: build/index.js:1
+msgid "LEFT"
+msgstr ""
+
+#: build/index.js:1
+msgid "Linear"
+msgstr ""
+
+#: build/index.js:1
+msgid "radial"
+msgstr ""
+
+#: build/index.js:1
+msgid "conic"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Controller"
+msgstr ""
+
+#: build/index.js:1
+msgid "Write Your Note here...."
+msgstr ""
+
+#: build/index.js:1
+msgid "Normal"
+msgstr ""
+
+#: build/index.js:1
+msgid "grediant"
+msgstr ""
+
+#: build/index.js:1
+msgid "Left"
+msgstr ""
+
+#: build/index.js:1
+msgid "Center"
+msgstr ""
+
+#: build/index.js:1
+msgid "Right"
+msgstr ""
+
+#: build/index.js:1
+msgid "Justify"
+msgstr ""
+
+#: build/index.js:1
+msgid "Start"
+msgstr ""
+
+#: build/index.js:1
+msgid "End"
+msgstr ""
+
+#: build/index.js:1
+msgid "Space Between"
+msgstr ""
+
+#: build/index.js:1
+msgid "Space Around"
+msgstr ""
+
+#: build/index.js:1
+msgid "Space Evenly"
+msgstr ""
+
+#: build/index.js:1
+msgid "Stretch"
+msgstr ""
+
+#: build/index.js:1
+msgid "Vertical"
+msgstr ""
+
+#: build/index.js:1
+msgid "Horizontal"
+msgstr ""
+
+#: build/index.js:1
+msgid "Row"
+msgstr ""
+
+#: build/index.js:1
+msgid "Open in new window"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Nofollow"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Section"
+msgstr ""
+
+#: build/index.js:1
 msgid "Layout"
 msgstr ""
 
-#: build/index.js:59299
-#: src/widget-builder/widget_builder.js:96
-#: build/index.js:45679
+#: build/index.js:1
 msgid "Style"
 msgstr ""
 
-#: build/index.js:59327
-#: src/widget-builder/widget_builder.js:112
-#: build/index.js:45695
+#: build/index.js:1
 msgid "Controls"
 msgstr ""
 
-#: src/pages/reuable/post_notFound.js:12
-msgid "It seems to be empty!"
+#: build/index.js:1
+msgid "Widget Deactivated"
+msgstr ""
+
+#: build/index.js:1
+msgid "This Widget is Deactivated "
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Not Found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget not found try again later"
+msgstr ""
+
+#: build/index.js:1
+msgid "Free/Pro :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Categories :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Categories"
+msgstr ""
+
+#: build/index.js:1
+msgid "Error Handling"
+msgstr ""
+
+#: build/index.js:1
+msgid "Performance"
+msgstr ""
+
+#: build/index.js:1
+msgid "Role Manager"
+msgstr ""
+
+#: build/index.js:1
+msgid "White Label"
+msgstr ""
+
+#: build/index.js:1
+msgid "Coming Soon"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Builders"
+msgstr ""
+
+#: build/index.js:1
+msgid "Features Manager"
+msgstr ""
+
+#: build/index.js:1
+msgid "Design Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Roll Back"
+msgstr ""
+
+#: build/index.js:1
+msgid "Remove Database"
+msgstr ""
+
+#: build/index.js:1
+msgid "Customize"
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor Widget Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg Widget Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Gutenberg Widget builder and all Gutenberg Widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Bricks Widget Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Bricks Widget builder and all Bricks Widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Design Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Our Templates Feature, which includes, Templates Download, Templates Upload, Workspace and everything related to Templates features."
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Widget builder Feature, Which include your No Code Widgets builder, Download/Upload of Widgets for Elementor and Gutenberg."
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor Page Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Elementor Page builder and all Elementor widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg Page Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Gutenberg Page builder and all Gutenberg Widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Operation failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Delete all the WDesignKit promotion related data."
+msgstr ""
+
+#: build/index.js:1
+msgid "Delete all the Widget Builder widget data."
+msgstr ""
+
+#: build/index.js:1
+msgid "Delete all WDesignKit plugin data (templates/widgets)"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note:"
+msgstr ""
+
+#: build/index.js:1
+msgid "Once the selected data is deleted, it cannot be restored."
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide all Help Links?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide all Plugin Updates related News?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide Licence Key Tab?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide Plugin RollBack Tab?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Plugin Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Name cannot be empty"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Plugin Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Developer/Agency"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Developer Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Website URL"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Web URL"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plus Icon/Logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select or Upload Media"
+msgstr ""
+
+#: build/index.js:1
+msgid "Use this media"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload your Icon File Only .png, .jpg, .svg supported"
+msgstr ""
+
+#: build/index.js:1
+msgid "Reset"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Disabled"
+msgstr ""
+
+#: build/index.js:1
+msgid "Go to Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page not Found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Back to home"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save in WDesignKit"
+msgstr ""
+
+#: build/index.js:1
+msgid "Welcome to WDesignKit"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg"
+msgstr ""
+
+#: build/index.js:1
+msgid "Bricks"
+msgstr ""
+
+#: build/index.js:1
+msgid "Bricks Elements Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg Blocks Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Basic Requirements"
+msgstr ""
+
+#: build/index.js:1
+msgid "Activate Now"
+msgstr ""
+
+#: build/index.js:1
+msgid "Install & Activate"
+msgstr ""
+
+#: build/index.js:1
+msgid "How to Install ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Back"
+msgstr ""
+
+#: build/index.js:1
+msgid "Finish"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable any one feature to continue!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get Free Support"
+msgstr ""
+
+#: build/index.js:1
+msgid "Whats New?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Join Facebook Community"
+msgstr ""
+
+#: build/index.js:1
+msgid "Suggest New Features"
+msgstr ""
+
+#: build/index.js:1
+msgid "Report Bug"
+msgstr ""
+
+#: build/index.js:1
+msgid "AI Chat"
+msgstr ""
+
+#: build/index.js:1
+msgid "YouTube"
+msgstr ""
+
+#: build/index.js:1
+msgid "Twitter"
+msgstr ""
+
+#: build/index.js:1
+msgid "Instagram"
+msgstr ""
+
+#: build/index.js:1
+msgid "Affiliate-Program"
+msgstr ""
+
+#: build/index.js:1
+msgid "Earn-Free-WDesignKit-Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Powered by POSIMYTH Innovations"
+msgstr ""
+
+#: build/index.js:1
+msgid "Quick Support"
+msgstr ""
+
+#: build/index.js:1
+msgid "WordPress Version: "
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Version: "
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Downloading"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your widget Downloaded Successfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid key entered"
+msgstr ""
+
+#: build/index.js:1
+msgid "Key error, check and fix"
+msgstr ""
+
+#: build/index.js:1
+msgid "Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Go Pro"
+msgstr ""
+
+#: build/index.js:1
+msgid "Buy Extra Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Licence Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Key:"
+msgstr ""
+
+#: build/index.js:1
+msgid "Email:"
+msgstr ""
+
+#: build/index.js:1
+msgid "Apply Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Licence Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Activate"
+msgstr ""
+
+#: build/index.js:1
+msgid "How to get key?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Existing Licence Keys"
+msgstr ""
+
+#: build/index.js:1
+msgid "To utilize the credits associated with this license key, it must be in an 'Active' status. If it has expired, access will be restricted, and you won't be able to use it."
+msgstr ""
+
+#: build/index.js:1
+msgid "Licence Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Status"
+msgstr ""
+
+#: build/index.js:1
+msgid "No licence keys found. Add your WDesignKit, Nexter Blocks, The Plus Addons, UiChemy or other keys to activate and get benefits of pro version."
+msgstr ""
+
+#: build/index.js:1
+msgid "How to get a key?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Are you sure you want to deactivate the"
+msgstr ""
+
+#: build/index.js:1
+msgid "Pro License Key ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Can Not Find Widget, Please Try Again Later!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login with"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login to use WDesignKit Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter your email"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create Account"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upgrade to WDesignKit Pro for Premium Widgets Access"
+msgstr ""
+
+#: build/index.js:1
+msgid "Live Demo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get WDesignKit Pro"
+msgstr ""
+
+#: build/index.js:1
+msgid "Activate WDesignKit"
+msgstr ""
+
+#: build/index.js:1
+msgid "Why Do I Need WDesignKit Pro if I Have The Plus Addons for Elementor Pro?"
+msgstr ""
+
+#: build/index.js:1
+msgid "WDesignKit and The Plus Addons for Elementor are two distinct products. The Plus Addons is entirely focused on Elementor, offering essential and advanced widgets specifically designed for Elementor users."
+msgstr ""
+
+#: build/index.js:1
+msgid "WDesignKit, on the other hand, focuses on unique custom widgets created with its easy-to-use Drag and Drop Widget Builder, Cloud Workspace, and many other added benefits."
+msgstr ""
+
+#: build/index.js:1
+msgid "Explore the differences between The Plus Addons and WDesignKit to see what's included in each!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Activate Your Pro License to Access Pro Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please activate your WDesignKit Pro license to start using advanced Pro widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Unable to connect to the Internet !"
 msgstr ""
