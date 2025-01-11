@@ -17,11 +17,6 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Get the plugin setting and remove entries before unistall plugin.
 $get_setting = get_option( 'wkit_settings_panel', false );
 
-$get_white_label = get_option( 'wkit_white_label' );
-if ( ! empty( $get_white_label ) ) {
-	delete_option( 'wkit_white_label' );
-}
-
 if ( ! empty( $get_setting['remove_db']['remove_entries'] ) && $get_setting['remove_db']['remove_entries'] == 'on' ) {
 
 	if ( ! empty( $get_setting['remove_db']['promotion_data'] ) && $get_setting['remove_db']['promotion_data'] == true ) {

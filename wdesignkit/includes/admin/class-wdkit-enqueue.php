@@ -178,6 +178,8 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			wp_set_script_translations( 'wdkit-editor-js', 'wdesignkit' );
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );
+			$white_label   = get_option( 'wkit_white_label', false );
+
 
 			wp_localize_script(
 				'wdkit-editor-js',
@@ -197,6 +199,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'use_editor'          => $this->wdkit_use_editor(),
 					'post_type_list'      => $this->wdkit_get_post_type_list(),
 					'WDKIT_onbording_end' => $onbording_end,
+					'wdkit_white_label'   => $white_label,
 
 					/** Widget Builder Path */
 					'WDKIT_SITE_URL'      => WDKIT_GET_SITE_URL,

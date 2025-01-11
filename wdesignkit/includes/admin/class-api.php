@@ -200,6 +200,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'import_kit_template':
 					$data = $this->wdkit_import_kit_template();
 					break;
+				case 'scan_tpae_widgets':
+					if (has_filter('tpae_widget_scan')) {
+						$type = array('get_wdkit_unused_widgets');
+						$data = apply_filters( 'tpae_widget_scan', $type );
+
+						$res = array(
+							'massage' => 'Disabled Successfully',
+							'description' => 'Unused widgets have been Disabled successfully',
+							'success' => true,
+						); 
+						wp_send_json();
+						wp_die();
+					}
+
+					$data = '';
+					break;
 				case 'shared_with_me':
 					$data = $this->wdkit_shared_with_me();
 					break;
@@ -1047,6 +1063,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args     = $this->wdkit_parse_args( $_POST );
 			$api_type = isset( $_POST['api_type'] ) ? sanitize_text_field( wp_unslash( $_POST['api_type'] ) ) : 'import_template';
 
+			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
+                $widgets = ['widgets', 'extensions'];
+                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
+            }
+
 			$response = '';
 			if ( empty( $args['template_id'] ) ) {
 				$result = array(
@@ -1345,6 +1366,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				return false;
 			}
 
+			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+
+			if( !empty($builder) && $builder == 'elementor' ){
+                $widgets = ['widgets', 'extensions'];
+                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
+            }
+
 			$page_section = ! empty( $_POST['page_section'] ) ? sanitize_text_field( wp_unslash( $_POST['page_section'] ) ) : '';
 
 			if ( isset( $page_section ) ) {
@@ -1412,6 +1440,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return false;
 			}
+
+			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
+                $widgets = ['widgets', 'extensions'];
+                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
+            }
 
 			if ( empty( $_POST['template_ids'] ) ) {
 				$output = array(
@@ -1645,6 +1678,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								}
 							}
 
+							if (has_filter('tpae_widget_scan')) {
+								$type = array('get_wdkit_unused_widgets');
+								$data = apply_filters( 'tpae_widget_scan', $type );
+							}
+
 							return array(
 								'title'     => get_the_title( $inserted_id ),
 								'edit_link' => get_edit_post_link( $inserted_id, 'internal' ),
@@ -1652,6 +1690,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							);
 						}
 					} else {
+						if (has_filter('tpae_widget_scan')) {
+							$type = array('get_wdkit_unused_widgets');
+							$data = apply_filters( 'tpae_widget_scan', $type );
+						}
+
 						wp_send_json(
 							array(
 								'template_id' => $template_id,
@@ -2220,7 +2263,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$get_setting = get_option( 'wkit_settings_panel', false );
-			$white_label = get_option( 'wkit_white_label', [] );
 
 			$setting_data = array(
 				'builder'            => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
@@ -2230,8 +2272,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'bricks_builder'     => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
 				'gutenberg_template' => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
 				'elementor_template' => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
-				'plugin_version'     => $version_check,
-				'white_label'     	 => !empty($white_label) ? $white_label : false,
+				'plugin_version'     => $version_check
 			);
 
 			if(isset( $get_setting['remove_db'] )){
@@ -2294,19 +2335,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			wp_send_json( $response );
 		}
 
+		/**
+		 * Reset White Label Data.
+		 *
+		 * @since 1.1.8
+		 */
 		public function wkit_reset_wl() {
 			$wl_data = get_option('wkit_white_label');
-			if (!empty($wl_data)) {
+
+			if ( !empty( $wl_data ) ) {
 				delete_option('wkit_white_label');
+
 				$result = array(
 					'success'     => true,
 					'message'     => esc_html__('Reset White Label Successfully', 'wdesignkit'),
 				);
+
 				wp_send_json( $result );
-				wp_die();	
+				wp_die();
 			}
 		}
-
 
 		/**
 		 *

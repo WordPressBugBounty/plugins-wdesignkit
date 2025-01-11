@@ -94,7 +94,20 @@
 		var eleTempContent = $("#tmpl-elementor-add-section");
 		if (eleTempContent.length > 0) {
 			var actionHtml = eleTempContent.html();
-			actionHtml = actionHtml.replace('<div class="elementor-add-section-drag-title', '<div data-mode="dark" class="elementor-add-section-area-button elementor-action-wdkit-button" title="' + __("WDesignKit","wdesignkit") + '"><a href="#" class="wkit-main-logo-div"></a></div><div class="elementor-add-section-drag-title'), eleTempContent.html(actionHtml), elementor.on("preview:loaded", (function () {
+			let pluginDetail = {
+				pluginName: wdkitData?.wdkit_white_label?.plugin_name || 'WDesignKit',
+				pluginLogo: wdkitData?.wdkit_white_label?.plugin_logo || wdkitData.WDKIT_URL + 'assets/images/jpg/Wdesignkit-logo.png'
+			}
+
+			actionHtml = actionHtml.replace(
+				'<div class="elementor-add-section-drag-title',
+				`<div data-mode="dark" class="elementor-add-section-area-button elementor-action-wdkit-button" title="${pluginDetail.pluginName}">
+					<a href="#" class="wkit-main-logo-div">
+						<img src="${pluginDetail.pluginLogo}" />
+					</a>
+				</div><div class="elementor-add-section-drag-title`
+			);
+			eleTempContent.html(actionHtml), elementor.on("preview:loaded", (function () {
 				$(elementor.$previewContents[0].body).on("click", ".elementor-action-wdkit-button", (function (e) {
 					wkit_load_save_tempalte({
 						route: "/dashboard"

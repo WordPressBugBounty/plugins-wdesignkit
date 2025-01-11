@@ -122,6 +122,11 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 		 * @return void
 		 */
 		public static function wdkit_deactivation() {
+			$get_white_label = get_option( 'wkit_white_label' );
+
+			if ( ! empty( $get_white_label ) ) {
+				delete_option( 'wkit_white_label' );
+			}
 		}
 
 		/**

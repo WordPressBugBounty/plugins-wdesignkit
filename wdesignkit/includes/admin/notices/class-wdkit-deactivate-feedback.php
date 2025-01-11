@@ -96,23 +96,27 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 		 */
 		public function wdkit_deact_popup_html() {
 
+			$white_label = get_option( 'wkit_white_label', false);
+
 			$site_url = home_url();
 			$security = wp_create_nonce( 'wdkit-deactivate-feedback' );
-
+			$plugin_logo = !empty($white_label['plugin_logo']) ? $white_label['plugin_logo'] : WDKIT_URL . 'assets/images/jpg/Wdesignkit-logo.png';
+			$plugin_name = !empty($white_label['plugin_name']) ? $white_label['plugin_name'] : esc_html__( 'WDesignKit', 'wdesignkit' );
+		
 			?>
 			<div class="wdkit-modal" id="wdkit-deactive-modal">
 				<div class="wdkit-modal-wrap">
 				
 					<div class="wdkit-modal-header">
-						<img class="wdkit-deactive-logo" style="height: 16px;" src="<?php echo esc_url( WDKIT_URL . 'assets/images/jpg/Wdesignkit-logo.png' ); ?>" />
-						<span class="wdkit-feed-head-title">
+					<img class="wdkit-deactive-logo" style="height: 16px;" src="<?php echo esc_url( $plugin_logo ); ?>" />
+					<span class="wdkit-feed-head-title">
 							<?php echo esc_html__( 'Quick Feedback', 'wdesignkit' ); ?>
 						</span>
 					</div>
 
 					<div class="wdkit-modal-body">
 						<h3 class="wdkit-feed-caption">
-							<?php echo esc_html__( "If you have a moment, please let us know why you're deactivating Wdesignkit :", 'wdesignkit' ); ?>
+							<?php echo esc_html__( "If you have a moment, please let us know why you're deactivating $plugin_name :", 'wdesignkit' ); ?>
 						</h3>
 
 						<form class="wdkit-feedback-dialog-form" method="post">
@@ -172,23 +176,27 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 							<?php echo esc_html__( 'Skip & Deactivate', 'wdesignkit' ); ?>
 						</a>
 					</div>
-						
+
 					<div class="wdkit-help-link">
-						<span>
-							<?php echo esc_html__( 'If you require any help , ', 'wdesignkit' ); ?>
+						<?php if ( empty($white_label['help_link']) ) { ?>
+							<span>
+								<?php echo esc_html__( 'If you require any help , ', 'wdesignkit' ); ?>
 
-							<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer"> 
-								<?php echo esc_html__( 'please add a ticket ', 'wdesignkit' ); ?> </a> . 
-								<?php echo esc_html__( 'We reply within 24 working hours.', 'wdesignkit' ); ?></span>
+								<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer"> 
+									<?php echo esc_html__( 'please add a ticket ', 'wdesignkit' ); ?> 
+								</a>. 
+								<?php echo esc_html__( 'We reply within 24 working hours.', 'wdesignkit' ); ?>
+							</span>
 
-								<span> <?php echo esc_html__( 'Read', 'wdesignkit' ); ?> 
+							<span> 
+								<?php echo esc_html__( 'Read', 'wdesignkit' ); ?> 
 
 								<a href="<?php echo esc_url( 'https://theplusblocks.com/docs/?utm_source=wpbackend&utm_medium=admin&utm_campaign=links' ); ?>" target="_blank" rel="noopener noreferrer">
-
-								<?php echo esc_html__( 'Documentation.', 'wdesignkit' ); ?>   
-							</a> 
-						</span> 
-					</div>
+									<?php echo esc_html__( 'Documentation.', 'wdesignkit' ); ?>   
+								</a> 
+							</span> 
+						<?php } ?>
+						</div>
 				</div>
 			</div>
 			<?php
