@@ -154,6 +154,8 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				return;
 			}
 
+			wp_enqueue_media(); 
+
 			$this->wdkit_enqueue_scripts( $hook );
 			$this->wdkit_enqueue_styles();
 		}

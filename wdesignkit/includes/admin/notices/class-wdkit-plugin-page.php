@@ -70,15 +70,13 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		public function __construct() {
 			$this->white_label = get_option( 'wkit_white_label' );
 
-			if ( is_admin() && current_user_can( 'manage_options' ) ) {
-				// Add a filter to include a settings link for the plugin in the WordPress plugins page.
-				add_filter( 'plugin_action_links_' . WDKIT_PBNAME, array( $this, 'wdkit_settings_pro_link' ) );
+			// Add a filter to include a settings link for the plugin in the WordPress plugins page.
+			add_filter( 'plugin_action_links_' . WDKIT_PBNAME, array( $this, 'wdkit_settings_pro_link' ) );
 
-				// Add a filter to include additional links/meta for the plugin on the WordPress plugins page.
-				add_filter( 'plugin_row_meta', array( $this, 'wdkit_extra_links_plugin_row_meta' ), 10, 2 );
+			// Add a filter to include additional links/meta for the plugin on the WordPress plugins page.
+			add_filter( 'plugin_row_meta', array( $this, 'wdkit_extra_links_plugin_row_meta' ), 10, 2 );
 
-				add_filter( 'all_plugins', array( $this, 'wdkit_plugin_row_meta' ), 10, 2 );
-			}
+			add_filter( 'all_plugins', array( $this, 'wdkit_plugin_row_meta' ), 10, 2 );
 		}
 
 		/**

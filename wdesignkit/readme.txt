@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.9
+Stable tag: 1.1.10
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -94,7 +94,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.1.9 – 11 January 2024
+1.1.10 – 16 January 2024
+Add: YouTube video Tutorial Section to the Widget Builder.
+Fix: Error from White Label Icon Selection Feature.
+Fix: Raw HTML controller in the Elementor Widget Builder.
+Fix: Minor bugs and improvements.
+
+1.1.9 – 10 January 2024
 New: White Label Feature.
 Fix: Import Template Error in Elementor Page Builder.
 Fix: Minor Bugs and Improvements.

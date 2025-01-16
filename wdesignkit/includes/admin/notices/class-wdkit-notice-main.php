@@ -65,10 +65,12 @@ if ( ! class_exists( 'Wdkit_Notice_Main' ) ) {
 			if ( is_admin() && current_user_can( 'manage_options' ) ) {
 				/**Remove Key In Databash*/
 				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-notices-remove.php';
+				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
 			}
 
-			require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
-			require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
+			if ( is_admin() ) {
+				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
+			}
 
 			/**Add Banner For Reating after 3 day*/
 			// require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-rating.php';

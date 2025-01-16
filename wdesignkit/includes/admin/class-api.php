@@ -1067,6 +1067,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
             }
+			//  else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
+			// }
 
 			$response = '';
 			if ( empty( $args['template_id'] ) ) {
@@ -1371,7 +1374,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if( !empty($builder) && $builder == 'elementor' ){
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            }
+            } 
+			// else if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
+			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
+			// }
 
 			$page_section = ! empty( $_POST['page_section'] ) ? sanitize_text_field( wp_unslash( $_POST['page_section'] ) ) : '';
 
@@ -1444,7 +1450,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            }
+            } 
+			// else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
+			// }
 
 			if ( empty( $_POST['template_ids'] ) ) {
 				$output = array(
