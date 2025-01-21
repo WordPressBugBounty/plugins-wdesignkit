@@ -790,6 +790,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_put_save_template() {
 			$email    = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
+			$post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
+			
 			$response = '';
 
 			if ( empty( $email ) ) {
@@ -811,10 +813,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			global $post;
 
-			$post_id       = get_the_ID();
 			$custom_fields = array();
 			if ( ! empty( $post_id ) ) {
-				$meta_fields = get_post_custom( get_the_ID() );
+				$meta_fields = get_post_custom( $post_id );
 
 				foreach ( $meta_fields as $key => $value ) {
 					if ( str_contains( $key, 'nxt-' ) ) {
@@ -865,11 +866,31 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_update_template() {
 			$array_data = array(
-				'data'  => isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '',
-				'token' => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
-				'type'  => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
-				'id'    => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
+				'data'    => isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '',
+				'post_id' => isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '',
+				'token'   => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
+				'type'    => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
+				'id'      => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
 			);
+
+			if ( ! empty( $array_data['post_id'] ) ) {
+				$custom_fields = array();
+				$post_id = $array_data['post_id'];
+
+				$meta_fields = get_post_custom( $post_id );
+
+				foreach ( $meta_fields as $key => $value ) {
+					if ( str_contains( $key, 'nxt-' ) ) {
+						$custom_fields[ $key ] = $value;
+					}
+				}
+
+				if ( ! empty( $custom_fields ) ) {
+					$data                = json_decode( $array_data['data'], true );
+					$data['custom_meta'] = $custom_fields;
+					$array_data['data']  = wp_json_encode( $data );
+				}
+			}
 
 			$response = $this->wkit_api_call( $array_data, 'existing_template' );
 
