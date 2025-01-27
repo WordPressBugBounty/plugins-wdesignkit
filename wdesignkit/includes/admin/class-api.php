@@ -216,6 +216,21 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 					$data = '';
 					break;
+				case 'scan_nexter_widgets':
+					if (has_filter('tpgb_disable_unsed_block_filter')) {
+						$data = apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
+
+						$res = array(
+							'massage' => 'Disabled Successfully',
+							'description' => 'Unused widgets have been Disabled successfully',
+							'success' => true,
+						); 
+						wp_send_json();
+						wp_die();
+					}
+
+					$data = '';
+					break;
 				case 'shared_with_me':
 					$data = $this->wdkit_shared_with_me();
 					break;
@@ -1087,10 +1102,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            }
-			//  else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
-			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
-			// }
+            } else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
+			}
 
 			$response = '';
 			if ( empty( $args['template_id'] ) ) {
@@ -1395,10 +1409,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if( !empty($builder) && $builder == 'elementor' ){
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } 
-			// else if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
-			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
-			// }
+            } else if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
+				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
+			}
 
 			$page_section = ! empty( $_POST['page_section'] ) ? sanitize_text_field( wp_unslash( $_POST['page_section'] ) ) : '';
 
@@ -1471,10 +1484,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
                 $widgets = ['widgets', 'extensions'];
                 $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } 
-			// else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
-			// 	apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
-			// }
+            } else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
+			}
 
 			if ( empty( $_POST['template_ids'] ) ) {
 				$output = array(
@@ -1632,6 +1644,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									}
 								}
 							}
+						}
+						
+						if (has_filter('tpgb_disable_unsed_block_filter')) {
+							apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
 						}
 
 						return array(
