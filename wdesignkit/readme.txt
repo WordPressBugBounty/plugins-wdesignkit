@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.12
+Stable tag: 1.1.13
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -93,6 +93,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+1.1.13 – 30 January 2024
+Fix : Gallery Controller Error in Gutenebrg Widget Builder.
+Fix : Border Controller Error in Gutenebrg Widget Builder.
+Fix: Minor bugs and improvements.
 
 1.1.12 – 27 January 2024
 Improve : Gutenberg Template Import Feature.
