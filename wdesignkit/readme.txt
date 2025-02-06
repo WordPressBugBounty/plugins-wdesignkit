@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.13
+Stable tag: 1.1.14
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -94,37 +94,43 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.1.13 – 30 January 2024
-Fix : Gallery Controller Error in Gutenebrg Widget Builder.
-Fix : Border Controller Error in Gutenebrg Widget Builder.
+1.1.14 – 6 February 2025
+Fix : Post-Type Selection in Import Section Feature. 
+Fix : Get Widget JSON file in Edit Widget Page.
+Improve : Import Template Design.
+Fix: Minor bugs and Improvements.
+
+1.1.13 – 30 January 2025
+Fix : Gallery Controller Error in Gutenberg Widget Builder.
+Fix : Border Controller Error in Gutenberg Widget Builder.
 Fix: Minor bugs and improvements.
 
-1.1.12 – 27 January 2024
+1.1.12 – 27 January 2025
 Improve : Gutenberg Template Import Feature.
 Fix: Minor bugs and improvements.
 
-1.1.11 – 21 January 2024
+1.1.11 – 21 January 2025
 New: Preview Controller in Elementor Widget Builder.
 New: AI Support Switcher in Some Controller.
 Fix: Export Template / Section Error.
 Fix: Remove Support Icon from Widget Builder Page.
 Fix: Minor bugs and improvements.
 
-1.1.10 – 16 January 2024
+1.1.10 – 16 January 2025
 Add: YouTube video Tutorial Section to the Widget Builder.
 Fix: Error from White Label Icon Selection Feature.
 Fix: Raw HTML controller in the Elementor Widget Builder.
 Fix: Minor bugs and improvements.
 
-1.1.9 – 10 January 2024
+1.1.9 – 10 January 2025
 New: White Label Feature.
 Fix: Import Template Error in Elementor Page Builder.
 Fix: Minor Bugs and Improvements.
 
-1.1.8 – 08 January 2024
+1.1.8 – 08 January 2025
 Fix: Minor Bugs and Improvements.
 
-1.1.7 – 06 January 2024
+1.1.7 – 06 January 2025
 New : Remove Image Feature in Create and Edit Widget Popup.
 Fix : Solve Language Translation Error in Toast message.
 Fix: Minor Bugs and Improvements.

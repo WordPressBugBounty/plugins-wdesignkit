@@ -58,6 +58,7 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			register_deactivation_hook( WDKIT_FILE, array( __CLASS__, 'wdkit_deactivation' ) );
 
 			add_action( 'plugins_loaded', array( $this, 'wdkit_plugin_loaded' ) );
+			add_action( 'init', array( $this, 'wdkit_string_taxdomian' ) );
 		}
 
 		/**
@@ -173,6 +174,17 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';
 		}
+
+		/**
+		 * Check Setting Panal switch On off
+		 *
+		 * @since 1.1.14
+		 *
+		 */
+		public function wdkit_string_taxdomian() {
+			require_once WDKIT_INCLUDES . 'admin/notices/wdkit-string.php';
+		}
+
 	}
 
 	Wdkit_Wdesignkit::get_instance();

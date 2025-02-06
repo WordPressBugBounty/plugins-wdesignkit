@@ -206,11 +206,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						$data = apply_filters( 'tpae_widget_scan', $type );
 
 						$res = array(
-							'massage' => 'Disabled Successfully',
-							'description' => 'Unused widgets have been Disabled successfully',
+							'massage' => __('Disabled Successfully', 'wdesignkit'),
+							'description' => __('Unused widgets have been Disabled successfully', 'wdesignkit'),
 							'success' => true,
 						); 
-						wp_send_json();
+						wp_send_json($res);
 						wp_die();
 					}
 
@@ -221,11 +221,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						$data = apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
 
 						$res = array(
-							'massage' => 'Disabled Successfully',
-							'description' => 'Unused widgets have been Disabled successfully',
+							'massage' => __('Disabled Successfully', 'wdesignkit'),
+							'description' => __('Unused widgets have been Disabled successfully', 'wdesignkit'),
 							'success' => true,
 						); 
-						wp_send_json();
+						wp_send_json($res);
 						wp_die();
 					}
 
@@ -1361,7 +1361,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 										foreach ( $val as $sub_key => $sub_val ) {
 											if ( isset( $sub_val['url'] ) && ( isset( $sub_val['Id'] ) || isset( $sub_val['id'] ) ) && ! empty( $sub_val['url'] ) ) {
 												$new_media                                     = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
-												$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
+
+                                                if ( is_array($sub_val) && is_array($new_media) ){
+                                                    $blocks_attr[ $block_key ][ $key ][ $sub_key ] = array_merge( $sub_val , $new_media );
+                                                } else {
+                                                    $blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
+                                                }
+											
 											} elseif ( isset( $sub_val['url'] ) && ! empty( $sub_val['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val['url'] ) ) {
 												$new_media                                     = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
 												$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
@@ -1369,7 +1375,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 												foreach ( $sub_val as $sub_key1 => $sub_val1 ) {
 													if ( isset( $sub_val1['url'] ) && ( isset( $sub_val1['Id'] ) || isset( $sub_val1['id'] ) ) && ! empty( $sub_val1['url'] ) ) {
 														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
-														$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
+
+                                                        if ( is_array($sub_val1) && is_array($new_media) ){
+														    $blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = array_merge( $sub_val1 , $new_media );
+                                                        } else {
+                                                            $blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] =  $new_media ;
+                                                        }
+
 													} elseif ( isset( $sub_val1['url'] ) && ! empty( $sub_val1['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val1['url'] ) ) {
 														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
 														$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
@@ -2005,9 +2017,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wkit_widget_json() {
-			$json_path = isset( $_POST['json_path'] ) ? ( wp_unslash( $_POST['json_path'] ) ) : '';
+			$widget_type = !empty( $_POST['widget_type'] ) ? wp_unslash( $_POST['widget_type'] ) : '';
+			$folder_name = !empty( $_POST['folder_name'] ) ? wp_unslash( $_POST['folder_name'] ) : '';
+			$file_name = !empty( $_POST['file_name'] ) ? ( wp_unslash( $_POST['file_name'] ) ) : '';
 			
-			if ( empty( $json_path ) ) {
+			if ( empty( $widget_type ) || empty( $folder_name ) || empty( $file_name ) ) {
 				return array(
 					'success'     => false,
 					'message'     => esc_html__( 'Widget JSON not found', 'wdesignkit' ),
@@ -2015,11 +2029,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			$json_data = wp_remote_get( $json_path );
-			if ( ! empty( $json_data['body'] ) ) {
+			$json_path     = WDKIT_BUILDER_PATH . "/{$widget_type}/{$downlod_path}/{$folder_name}/{$file_name}";
+
+			$json_data = wp_json_file_decode( "$json_path.json" );
+			if ( ! empty( $json_data ) ) {
 				$result = (object) array(
 					'success'     => true,
-					'data'        => $json_data['body'],
+					'data'        => $json_data,
 					'message'     => esc_html__( 'Widget get Successfully', 'wdesignkit' ),
 					'description' => esc_html__( 'Widget JSON get Successfully', 'wdesignkit' ),
 				);
