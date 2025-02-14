@@ -173,6 +173,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'save_template':
 					$data = $this->wdkit_put_save_template();
 					break;
+				case 'get_global_val':
+					$data = $this->wdkit_get_global_val();
+					break;
 				case 'find_template':
 					$data = $this->wdkit_find_existing_template();
 					break;
@@ -853,6 +856,58 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 		/**
 		 *
+		 * Get Elementor Global color and Typography.
+		 *
+		 * @since 1.1.16
+		 */
+		protected function wdkit_get_global_val() {
+		
+			// Get colors from Elementor Site Kit
+			$kit_id = get_option('elementor_active_kit');
+			if (!$kit_id) {
+					$response = array(
+					'message'     => __('Elementor kit not found', 'wdesignkit'),
+					'description' => __('No active Elementor kit found', 'wdesignkit'),
+					'success'     => false,
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+		
+			$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
+				if ( empty($kit_meta) ) {
+					$response = array(
+					'message'     => __('Data Not Found', 'wdesignkit'),
+					'description' => __('No meta data found in kit', 'wdesignkit'),
+					'success'     => false,
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$color_array = array_merge($kit_meta['system_colors'], $kit_meta['custom_colors']);
+			$typo_array = array_merge($kit_meta['system_typography'], $kit_meta['custom_typography']);
+			
+			$global_data = array(
+				'color' => $color_array,
+				'typography' => $typo_array
+			);
+
+			$response = array(
+				'message'     => __('Global data Found', 'wdesignkit'),
+				'description' => __('Global Color and Typography found', 'wdesignkit'),
+				'data'        => $global_data,
+				'success'     => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
 		 * It is For Find User Existing template List.
 		 *
 		 * @since 1.0.6
@@ -886,6 +941,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'token'   => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
 				'type'    => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
 				'id'      => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
+				'global_font_family' => isset( $_POST['global_font_family'] ) ? wp_unslash( $_POST['global_font_family'] ) : array(),
+				'global_color' => isset( $_POST['global_color'] ) ? wp_unslash( $_POST['global_color'] ) : array(),
 			);
 
 			if ( ! empty( $array_data['post_id'] ) ) {
@@ -1013,7 +1070,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			$this->wdkit_success_msg( array( 'plugins' => $update_plugin ) );
+			$response = array( 
+				'plugins' => $update_plugin,
+				'ele_container' => get_option( 'elementor_experiment-container', false )
+			);
+
+			$this->wdkit_success_msg( $response );
 		}
 
 		/**
@@ -2733,6 +2795,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( isset( $data['plugin'] ) ) {
 				$args['plugin'] = isset( $data['plugin'] ) ? wp_unslash( $data['plugin'] ) : array();
+			}
+
+			if ( isset( $data['global_color'] ) ) {
+				$args['global_color'] = isset( $data['global_color'] ) ? wp_unslash( $data['global_color'] ) : array();
+			}
+
+			if ( isset( $data['global_font_family'] ) ) {
+				$args['global_font_family'] = isset( $data['global_font_family'] ) ? wp_unslash( $data['global_font_family'] ) : array();
 			}
 
 			if ( isset( $data['tag'] ) ) {
