@@ -194,6 +194,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'update_latest_plugin':
 					$data = $this->wdkit_update_latest_plugin();
 					break;
+				case 'activate_container':
+					$data = $this->wdkit_activate_container();
+					break;
 				case 'import_template':
 					$data = $this->wdkit_import_template();
 					break;
@@ -941,8 +944,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'token'   => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
 				'type'    => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
 				'id'      => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
-				'global_font_family' => isset( $_POST['global_font_family'] ) ? wp_unslash( $_POST['global_font_family'] ) : array(),
-				'global_color' => isset( $_POST['global_color'] ) ? wp_unslash( $_POST['global_color'] ) : array(),
+				'global_data' => isset( $_POST['global_data'] ) ? wp_unslash( $_POST['global_data'] ) : array(),
+				// 'global_font_family' => isset( $_POST['global_font_family'] ) ? wp_unslash( $_POST['global_font_family'] ) : array(),
+				// 'global_color' => isset( $_POST['global_color'] ) ? wp_unslash( $_POST['global_color'] ) : array(),
 			);
 
 			if ( ! empty( $array_data['post_id'] ) ) {
@@ -1150,6 +1154,31 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			return get_plugins();
+		}
+
+		/**
+		 * Get Download Template Content
+		 *
+		 * @since 1.0.0
+		 */
+		protected function wdkit_activate_container() {
+
+			$option_value = get_option( 'elementor_experiment-container', false );
+
+			if ( $option_value === false ) {
+				add_option( 'elementor_experiment-container', 'active' );
+			} else {
+				update_option( 'elementor_experiment-container', 'active' );
+			}
+
+			$result = array(
+				'message'     => esc_html__( 'Container Activated Successfully', 'wdesignkit' ),
+				'description' => esc_html__( 'Elementor Container Activated Successfully.', 'wdesignkit' ),
+				'success'     => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
 		}
 
 		/**
@@ -2797,12 +2826,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$args['plugin'] = isset( $data['plugin'] ) ? wp_unslash( $data['plugin'] ) : array();
 			}
 
-			if ( isset( $data['global_color'] ) ) {
-				$args['global_color'] = isset( $data['global_color'] ) ? wp_unslash( $data['global_color'] ) : array();
+			if ( isset( $data['plugin_exclude'] ) ) {
+				$args['plugin_exclude'] = isset( $data['plugin_exclude'] ) ? wp_unslash( $data['plugin_exclude'] ) : array();
 			}
 
-			if ( isset( $data['global_font_family'] ) ) {
-				$args['global_font_family'] = isset( $data['global_font_family'] ) ? wp_unslash( $data['global_font_family'] ) : array();
+			// if ( isset( $data['global_color'] ) ) {
+			// 	$args['global_color'] = isset( $data['global_color'] ) ? wp_unslash( $data['global_color'] ) : array();
+			// }
+
+			// if ( isset( $data['global_font_family'] ) ) {
+			// 	$args['global_font_family'] = isset( $data['global_font_family'] ) ? wp_unslash( $data['global_font_family'] ) : array();
+			// }
+
+			if ( isset( $data['global_data'] ) ) {
+				$args['global_data'] = isset( $data['global_data'] ) ? wp_unslash( $data['global_data'] ) : array();
 			}
 
 			if ( isset( $data['tag'] ) ) {
