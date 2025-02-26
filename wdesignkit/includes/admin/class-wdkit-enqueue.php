@@ -219,6 +219,8 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				wp_enqueue_script( 'widgetBuilder-script-editor-js', WDKIT_URL . 'assets/js/extra/ace.min.js', array( 'wp-element' ), WDKIT_VERSION, true );
 				wp_enqueue_script( 'widgetBuilder-script-editor-cobalt', WDKIT_URL . 'assets/js/extra/theme-cobalt.js', array( 'wp-element' ), WDKIT_VERSION, true );
 				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra//mode-html.js', array( 'wp-element' ), WDKIT_VERSION, true );
+				wp_enqueue_style( 'wdkit-theme-css', WDKIT_GET_SITE_URL .'/wp-content/themes/bricks/assets/css/libs/themify-icons.min.css', array(), WDKIT_VERSION );
+				wp_enqueue_style( 'wdkit-eicons-css', WDKIT_GET_SITE_URL .'/wp-content/plugins/elementor/assets/lib/eicons/css/elementor-icons', array(), WDKIT_VERSION );
 			}
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {
