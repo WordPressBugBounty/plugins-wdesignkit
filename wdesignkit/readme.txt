@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.18
+Stable tag: 1.1.19
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -93,6 +93,12 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+1.1.19 – 08 February 2025
+New: Live preview for Elementor and Gutenberg widgets.
+Improve: YouTube video playlist popup in the Widget Builder for user assistance.
+Fix: Design-related bugs when changing the language.
+Fix: Minor bugs and improvements.
 
 1.1.18 – 26 February 2025
 New: Widget Scan before Conversion.

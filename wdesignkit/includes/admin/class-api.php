@@ -258,6 +258,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wkit_delete_widget':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_delete_widget' );
 					break;
+				case 'wkit_widget_preview':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_widget_preview' );
+					break;
 				case 'wkit_manage_widget_workspace':
 					$data = $this->wdkit_manage_widget_workspace();
 					break;
@@ -2120,7 +2123,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			$json_path     = WDKIT_BUILDER_PATH . "/{$widget_type}/{$downlod_path}/{$folder_name}/{$file_name}";
+			$json_path     = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}/{$file_name}";
 
 			$json_data = wp_json_file_decode( "$json_path.json" );
 			if ( ! empty( $json_data ) ) {

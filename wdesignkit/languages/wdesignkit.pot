@@ -2,40 +2,40 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.1.7\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.1.18\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-08T11:49:20+00:00\n"
+"POT-Creation-Date: 2025-02-26T12:52:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: wdesignkit\n"
 
 #. Plugin Name of the plugin
-#: wdesignkit.php
+#: C:\Users\posim\Local Sites\release\app\public\wp-content\plugins\wdesignkit\wdesignkit.php
 msgid "WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: wdesignkit.php
+#: C:\Users\posim\Local Sites\release\app\public\wp-content\plugins\wdesignkit\wdesignkit.php
 msgid "https://wdesignkit.com/"
 msgstr ""
 
 #. Description of the plugin
-#: wdesignkit.php
+#: C:\Users\posim\Local Sites\release\app\public\wp-content\plugins\wdesignkit\wdesignkit.php
 msgid "Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 50+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more."
 msgstr ""
 
 #. Author of the plugin
-#: wdesignkit.php
+#: C:\Users\posim\Local Sites\release\app\public\wp-content\plugins\wdesignkit\wdesignkit.php
 msgid "POSIMYTH"
 msgstr ""
 
 #. Author URI of the plugin
-#: wdesignkit.php
+#: C:\Users\posim\Local Sites\release\app\public\wp-content\plugins\wdesignkit\wdesignkit.php
 msgid "https://posimyth.com/"
 msgstr ""
 
@@ -51,7 +51,17 @@ msgstr ""
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/class-api.php:298
+#: includes/admin/class-api.php:215
+#: includes/admin/class-api.php:230
+msgid "Disabled Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:216
+#: includes/admin/class-api.php:231
+msgid "Unused widgets have been Disabled successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:335
 #: includes/admin/hooks/class-wdkit-login-ajax.php:270
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:272
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:722
@@ -59,14 +69,14 @@ msgid "API Not Found"
 msgstr ""
 
 #. Translators: %s is a placeholder for the error message
-#: includes/admin/class-api.php:314
+#: includes/admin/class-api.php:351
 #: includes/admin/hooks/class-wdkit-login-ajax.php:286
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:288
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:738
 msgid "API request error: %s"
 msgstr ""
 
-#: includes/admin/class-api.php:327
+#: includes/admin/class-api.php:364
 #: includes/admin/hooks/class-wdkit-login-ajax.php:299
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:301
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:751
@@ -74,104 +84,24 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: includes/admin/class-api.php:489
+#: includes/admin/class-api.php:526
 msgid "Server Error"
 msgstr ""
 
-#: includes/admin/class-api.php:490
+#: includes/admin/class-api.php:527
 msgid "Server Error, Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:989
-msgid "Theme activated successfully"
+#: includes/admin/class-api.php:872
+msgid "Elementor kit not found"
 msgstr ""
 
-#: includes/admin/class-api.php:990
-msgid "Theme successfully activated"
+#: includes/admin/class-api.php:873
+msgid "No active Elementor kit found"
 msgstr ""
 
-#: includes/admin/class-api.php:997
-msgid "Theme Not Activated !"
-msgstr ""
-
-#: includes/admin/class-api.php:1005
-msgid "Theme Name not Found"
-msgstr ""
-
-#: includes/admin/class-api.php:1006
-msgid "Can Not Found Theme Name you Enterd."
-msgstr ""
-
-#: includes/admin/class-api.php:1054
-#: includes/admin/class-api.php:1362
-#: includes/admin/class-api.php:1419
-msgid "Invalid import"
-msgstr ""
-
-#: includes/admin/class-api.php:1055
-#: includes/admin/class-api.php:1363
-#: includes/admin/class-api.php:1420
-msgid "Invalid import: Check your details and try again."
-msgstr ""
-
-#: includes/admin/class-api.php:1658
-msgid "Relevant Page Builder not installed or activated"
-msgstr ""
-
-#: includes/admin/class-api.php:1924
-msgid "Widget JSON not found"
-msgstr ""
-
-#: includes/admin/class-api.php:1925
-msgid "widget JSON file not found."
-msgstr ""
-
-#: includes/admin/class-api.php:1934
-msgid "Widget get Successfully"
-msgstr ""
-
-#: includes/admin/class-api.php:1935
-msgid "Widget JSON get Successfully"
-msgstr ""
-
-#: includes/admin/class-api.php:1940
-msgid "Widget not get"
-msgstr ""
-
-#: includes/admin/class-api.php:1941
-msgid "Widget JSON not get"
-msgstr ""
-
-#: includes/admin/class-api.php:1969
-#: includes/admin/class-api.php:2097
-#: includes/admin/class-api.php:2153
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:168
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:670
-msgid "server error"
-msgstr ""
-
-#: includes/admin/class-api.php:1973
-msgid " Widget not Downloaded"
-msgstr ""
-
-#: includes/admin/class-api.php:2007
-msgid "No Response Found"
-msgstr ""
-
-#: includes/admin/class-api.php:2008
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:173
-msgid "Widget not Downloaded"
-msgstr ""
-
-#: includes/admin/class-api.php:2049
-msgid "no message"
-msgstr ""
-
-#: includes/admin/class-api.php:2102
-msgid "Widget Not Added"
-msgstr ""
-
-#: includes/admin/class-api.php:2263
+#: includes/admin/class-api.php:884
+#: includes/admin/class-api.php:2457
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:111
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:144
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:205
@@ -181,23 +111,132 @@ msgstr ""
 msgid "Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:2280
+#: includes/admin/class-api.php:885
+msgid "No meta data found in kit"
+msgstr ""
+
+#: includes/admin/class-api.php:902
+msgid "Global data Found"
+msgstr ""
+
+#: includes/admin/class-api.php:903
+msgid "Global Color and Typography found"
+msgstr ""
+
+#: includes/admin/class-api.php:1107
+msgid "Theme activated successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:1108
+msgid "Theme successfully activated"
+msgstr ""
+
+#: includes/admin/class-api.php:1115
+msgid "Theme Not Activated !"
+msgstr ""
+
+#: includes/admin/class-api.php:1123
+msgid "Theme Name not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:1124
+msgid "Can Not Found Theme Name you Enterd."
+msgstr ""
+
+#: includes/admin/class-api.php:1175
+msgid "Container Activated Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:1176
+msgid "Elementor Container Activated Successfully."
+msgstr ""
+
+#: includes/admin/class-api.php:1204
+#: includes/admin/class-api.php:1533
+#: includes/admin/class-api.php:1597
+msgid "Invalid import"
+msgstr ""
+
+#: includes/admin/class-api.php:1205
+#: includes/admin/class-api.php:1534
+#: includes/admin/class-api.php:1598
+msgid "Invalid import: Check your details and try again."
+msgstr ""
+
+#: includes/admin/class-api.php:1850
+msgid "Relevant Page Builder not installed or activated"
+msgstr ""
+
+#: includes/admin/class-api.php:2118
+msgid "Widget JSON not found"
+msgstr ""
+
+#: includes/admin/class-api.php:2119
+msgid "widget JSON file not found."
+msgstr ""
+
+#: includes/admin/class-api.php:2130
+msgid "Widget get Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2131
+msgid "Widget JSON get Successfully"
+msgstr ""
+
+#: includes/admin/class-api.php:2136
+msgid "Widget not get"
+msgstr ""
+
+#: includes/admin/class-api.php:2137
+msgid "Widget JSON not get"
+msgstr ""
+
+#: includes/admin/class-api.php:2165
+#: includes/admin/class-api.php:2293
+#: includes/admin/class-api.php:2349
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:168
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:670
+msgid "server error"
+msgstr ""
+
+#: includes/admin/class-api.php:2169
+msgid " Widget not Downloaded"
+msgstr ""
+
+#: includes/admin/class-api.php:2203
+msgid "No Response Found"
+msgstr ""
+
+#: includes/admin/class-api.php:2204
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:173
+msgid "Widget not Downloaded"
+msgstr ""
+
+#: includes/admin/class-api.php:2245
+msgid "no message"
+msgstr ""
+
+#: includes/admin/class-api.php:2298
+msgid "Widget Not Added"
+msgstr ""
+
+#: includes/admin/class-api.php:2474
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:2303
+#: includes/admin/class-api.php:2504
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2433
+#: includes/admin/class-api.php:2634
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2469
+#: includes/admin/class-api.php:2670
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:2478
+#: includes/admin/class-api.php:2679
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
@@ -236,8 +275,9 @@ msgstr ""
 msgid "Failed to activate WDesignKit"
 msgstr ""
 
-#: includes/admin/class-wdkit-enqueue.php:233
-#: assets/js/main/elementor/elementor-editor.js:97
+#: includes/admin/class-wdkit-enqueue.php:240
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:104
+#: build/index.js:1
 msgid "WDesignKit"
 msgstr ""
 
@@ -349,75 +389,71 @@ msgstr ""
 msgid "Widget deleted successfully"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:109
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:113
 msgid "Quick Feedback"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:115
-msgid "If you have a moment, please let us know why you're deactivating Wdesignkit :"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:127
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:131
 msgid "This is a temporary deactivation."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:130
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:134
 msgid "Facing technical issues/bugs with the plugin."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:133
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:137
 msgid "Performance Issues."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:136
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:140
 msgid "Found an alternative plugin."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:139
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:143
 msgid "No more planning to use."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:142
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:146
 msgid "Dont want to use any wordpress plugin."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:145
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:149
 msgid "Its missing the feature i require."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:148
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:152
 msgid "Other"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:163
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:167
 msgid "Please share the reason"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:169
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:173
 msgid "Submit & Deactivate"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:172
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:176
 msgid "Skip & Deactivate"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:178
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:183
 msgid "If you require any help , "
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:181
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:186
 msgid "please add a ticket "
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:182
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
 msgid "We reply within 24 working hours."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:184
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:192
 msgid "Read"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:195
 msgid "Documentation."
 msgstr ""
 
@@ -435,31 +471,31 @@ msgstr ""
 msgid "Need Help?"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:129
+#: includes/admin/notices/class-wdkit-plugin-page.php:151
 msgid "Official Website"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:130
+#: includes/admin/notices/class-wdkit-plugin-page.php:152
 msgid "docs"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:131
+#: includes/admin/notices/class-wdkit-plugin-page.php:153
 msgid "Video Tutorials"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:132
+#: includes/admin/notices/class-wdkit-plugin-page.php:154
 msgid "Join Community"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:133
+#: includes/admin/notices/class-wdkit-plugin-page.php:155
 msgid "What`s New?"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:134
+#: includes/admin/notices/class-wdkit-plugin-page.php:156
 msgid "Request Feature"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-plugin-page.php:135
+#: includes/admin/notices/class-wdkit-plugin-page.php:157
 msgid "Rate 5 Stars"
 msgstr ""
 
@@ -485,6 +521,97 @@ msgstr ""
 
 #: includes/admin/notices/class-wdkit-rating.php:345
 msgid "Success Fully Close Rating Notice"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:4
+#: build/index.js:1
+msgid "Templates"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:5
+#: build/index.js:1
+msgid "Search"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:6
+#: build/index.js:1
+msgid "Filters"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:7
+#: build/index.js:1
+msgid "Free / Pro"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:8
+#: build/index.js:1
+msgid "Type"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:9
+#: build/index.js:1
+msgid "Free"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:10
+#: build/index.js:1
+msgid "Full Pages"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:11
+#: build/index.js:1
+msgid "Sections"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:12
+#: includes/admin/notices/wdkit-string.php:20
+#: build/index.js:1
+msgid "Page Kits"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:13
+#: build/index.js:1
+msgid "Clear All"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:14
+#: build/index.js:1
+msgid "Widgets"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:15
+#: build/index.js:1
+msgid "Workspace"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:16
+#: build/index.js:1
+msgid "Manage Workspace"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:17
+#: build/index.js:1
+msgid "Dashboard"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:18
+#: build/index.js:1
+msgid "Manage Profile"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:19
+#: build/index.js:1
+msgid "Plugins"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:21
+#: build/index.js:1
+msgid "Tags"
+msgstr ""
+
+#: includes/admin/notices/wdkit-string.php:22
+#: build/index.js:1
+msgid "Categories"
 msgstr ""
 
 #: includes/widget-load/elementor/wb-controller.php:88
@@ -681,10 +808,6 @@ msgid "Shared with Me"
 msgstr ""
 
 #: build/index.js:1
-msgid "Manage Workspace"
-msgstr ""
-
-#: build/index.js:1
 msgid "Manage Licence"
 msgstr ""
 
@@ -710,14 +833,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Copy"
-msgstr ""
-
-#: build/index.js:1
-msgid "Review"
-msgstr ""
-
-#: build/index.js:1
-msgid "Reviews"
 msgstr ""
 
 #: build/index.js:1
@@ -765,7 +880,19 @@ msgid "Learn How?"
 msgstr ""
 
 #: build/index.js:1
+msgid "Do you want to continue without Activating the Elementor Container ?"
+msgstr ""
+
+#: build/index.js:1
 msgid "To download this template, you will need to install below listed plugins"
+msgstr ""
+
+#: build/index.js:1
+msgid "The plus addons for elementor"
+msgstr ""
+
+#: build/index.js:1
+msgid "Install All"
 msgstr ""
 
 #: build/index.js:1
@@ -774,6 +901,18 @@ msgstr ""
 
 #: build/index.js:1
 msgid "You have selected design which doesn't need any plugin to install. Press Next."
+msgstr ""
+
+#: build/index.js:1
+msgid "System Container Activated Successfully. Please Refresh to Apply the changes on the site"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your system's container is not currently acitve. To use this design , you need to enable it."
+msgstr ""
+
+#: build/index.js:1
+msgid "Container"
 msgstr ""
 
 #: build/index.js:1
@@ -786,10 +925,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Installing"
-msgstr ""
-
-#: build/index.js:1
-msgid "Install All"
 msgstr ""
 
 #: build/index.js:1
@@ -877,10 +1012,6 @@ msgid "Incorrect Login Details"
 msgstr ""
 
 #: build/index.js:1
-msgid "Are you first time trying to login at WDesignKit?"
-msgstr ""
-
-#: build/index.js:1
 msgid "Yes, I am"
 msgstr ""
 
@@ -889,27 +1020,7 @@ msgid "No, I forgot password"
 msgstr ""
 
 #: build/index.js:1
-msgid "Have you signed up for WDesignKit Account?"
-msgstr ""
-
-#: build/index.js:1
 msgid "You need to signup for "
-msgstr ""
-
-#: build/index.js:1
-msgid "WDesignKit account separately "
-msgstr ""
-
-#: build/index.js:1
-msgid "as it's different from our POSIMYTH Store login. Make sure you signup first and then try to login in WDesignKit."
-msgstr ""
-
-#: build/index.js:1
-msgid "I got it, WDesignKit & POSIMYTH Store account is Different."
-msgstr ""
-
-#: build/index.js:1
-msgid "Signup for WDesignKit"
 msgstr ""
 
 #: build/index.js:1
@@ -925,15 +1036,11 @@ msgid "Continue with"
 msgstr ""
 
 #: build/index.js:1
-msgid "Extend Your Design Capacity with"
+msgid "Extend Your Design Capacity with "
 msgstr ""
 
 #: build/index.js:1
-msgid "No time to design? Get Wdesignkit today and jump-start your WordPress websites with Elementor, Gutenberg and Bricks."
-msgstr ""
-
-#: build/index.js:1
-msgid "Login to WDesignKit"
+msgid "Login to "
 msgstr ""
 
 #: build/index.js:1
@@ -973,6 +1080,10 @@ msgid "Missing information! Complete all fields."
 msgstr ""
 
 #: build/index.js:1
+msgid "The login Details you entered is not correct. Please verify and try again"
+msgstr ""
+
+#: build/index.js:1
 msgid "Email"
 msgstr ""
 
@@ -997,7 +1108,7 @@ msgid "Log in"
 msgstr ""
 
 #: build/index.js:1
-msgid "Don't have an account?"
+msgid "Don't have an account? "
 msgstr ""
 
 #: build/index.js:1
@@ -1009,15 +1120,7 @@ msgid "Wrong or Expired Login Key"
 msgstr ""
 
 #: build/index.js:1
-msgid "Your login API key seems to be wrong, Ask your webmaster with main WDesignKit Account access for another Login key."
-msgstr ""
-
-#: build/index.js:1
 msgid "I know Purchase key and Login Key is different."
-msgstr ""
-
-#: build/index.js:1
-msgid "This Login key is not your WDesignKit's Pro Licence's Purchase Key. Do you want to know, "
 msgstr ""
 
 #: build/index.js:1
@@ -1042,6 +1145,22 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "The login key you entered is not valid. Please verify and try again"
+msgstr ""
+
+#: build/index.js:1
+msgid "API Key Required"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please provide an API key to activate Plugin."
 msgstr ""
 
 #: build/index.js:1
@@ -1081,19 +1200,7 @@ msgid "Free / Pro :"
 msgstr ""
 
 #: build/index.js:1
-msgid "Free"
-msgstr ""
-
-#: build/index.js:1
 msgid "Type :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Full Pages"
-msgstr ""
-
-#: build/index.js:1
-msgid "Sections"
 msgstr ""
 
 #: build/index.js:1
@@ -1106,10 +1213,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "to open the dashboard."
-msgstr ""
-
-#: build/index.js:1
-msgid "Page Kits"
 msgstr ""
 
 #: build/index.js:1
@@ -1141,35 +1244,7 @@ msgid "Elementor"
 msgstr ""
 
 #: build/index.js:1
-msgid "Filters"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search"
-msgstr ""
-
-#: build/index.js:1
-msgid "Free / Pro"
-msgstr ""
-
-#: build/index.js:1
-msgid "Type"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plugins"
-msgstr ""
-
-#: build/index.js:1
-msgid "Tags"
-msgstr ""
-
-#: build/index.js:1
 msgid "Applied Filter :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Clear All"
 msgstr ""
 
 #: build/index.js:1
@@ -1186,14 +1261,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Shared With Me"
-msgstr ""
-
-#: build/index.js:1
-msgid "Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Widgets"
 msgstr ""
 
 #: build/index.js:1
@@ -1253,19 +1320,7 @@ msgid "Move from Workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Workspace"
-msgstr ""
-
-#: build/index.js:1
 msgid "General Settings"
-msgstr ""
-
-#: build/index.js:1
-msgid "Dashboard"
-msgstr ""
-
-#: build/index.js:1
-msgid "Manage Profile"
 msgstr ""
 
 #: build/index.js:1
@@ -1393,15 +1448,7 @@ msgid "E-icons"
 msgstr ""
 
 #: build/index.js:1
-msgid "Font-Awesome 5"
-msgstr ""
-
-#: build/index.js:1
-msgid "Ionicons 4"
-msgstr ""
-
-#: build/index.js:1
-msgid "Font-Awesome 6"
+msgid "Font-Awesome"
 msgstr ""
 
 #: build/index.js:1
@@ -1418,6 +1465,42 @@ msgstr ""
 
 #: build/index.js:1
 msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Icon"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search for icons"
+msgstr ""
+
+#: build/index.js:1
+msgid "Selected"
+msgstr ""
+
+#: build/index.js:1
+msgid "No Search Found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Relevant Plugin/Theme is not Activated."
+msgstr ""
+
+#: build/index.js:1
+msgid "How to Install ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installation Failed!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin is not installed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Install Now"
 msgstr ""
 
 #: build/index.js:1
@@ -1573,15 +1656,11 @@ msgid "Featured Image"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Icon"
-msgstr ""
-
-#: build/index.js:1
-msgid "Copy Icon Name From Below Libraries and Paste Above."
-msgstr ""
-
-#: build/index.js:1
 msgid "Do you want to load jQuery ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget controllers remain unchanged after scanning"
 msgstr ""
 
 #: build/index.js:1
@@ -1598,6 +1677,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Widget not Converted successfully."
+msgstr ""
+
+#: build/index.js:1
+msgid "Convert"
 msgstr ""
 
 #: build/index.js:1
@@ -1734,10 +1817,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Edit in New Tab"
-msgstr ""
-
-#: build/index.js:1
-msgid "Convert"
 msgstr ""
 
 #: build/index.js:1
@@ -1990,6 +2069,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Turn on for url_options value."
+msgstr ""
+
+#: build/index.js:1
+msgid "Is External"
 msgstr ""
 
 #: build/index.js:1
@@ -2249,7 +2332,11 @@ msgid "Classes"
 msgstr ""
 
 #: build/index.js:1
-msgid "Add custom classes to control wrapper in the panel."
+msgid "Add custom classes to control wrapper in the panel. "
+msgstr ""
+
+#: build/index.js:1
+msgid "Read More"
 msgstr ""
 
 #: build/index.js:1
@@ -2306,6 +2393,14 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Switch to Mobile, Laptop, Tablet mode"
+msgstr ""
+
+#: build/index.js:1
+msgid "AI Support"
+msgstr ""
+
+#: build/index.js:1
+msgid "Want AI Support or not."
 msgstr ""
 
 #: build/index.js:1
@@ -2429,11 +2524,7 @@ msgid "Upload Widget's featured image to show in widget listing. Only .jpg and .
 msgstr ""
 
 #: build/index.js:1
-msgid "Choose and paste your icon code here to show that with widget."
-msgstr ""
-
-#: build/index.js:1
-msgid "Copy and Paste Icons from below libraries"
+msgid "Relevant Plugin/Theme is not Activated"
 msgstr ""
 
 #: build/index.js:1
@@ -2442,10 +2533,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Enter keywords to allow searching in elementor editor."
-msgstr ""
-
-#: build/index.js:1
-msgid "Read More"
 msgstr ""
 
 #: build/index.js:1
@@ -2458,6 +2545,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "SAVE"
+msgstr ""
+
+#: build/index.js:1
+msgid "Draft"
 msgstr ""
 
 #: build/index.js:1
@@ -2486,6 +2577,14 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Fail! Can not Saved"
+msgstr ""
+
+#: build/index.js:1
+msgid "Update changes to page"
+msgstr ""
+
+#: build/index.js:1
+msgid "Apply"
 msgstr ""
 
 #: build/index.js:1
@@ -2629,6 +2728,18 @@ msgid "Add Section"
 msgstr ""
 
 #: build/index.js:1
+msgid "Oops! Elementor Page Builder is not activated. Please install it now to unlock full functionality."
+msgstr ""
+
+#: build/index.js:1
+msgid "Oops! Nexter blocks is not activated. Please install it now to unlock full functionality."
+msgstr ""
+
+#: build/index.js:1
+msgid "Oops! Bricks Theme is not activated. Please install it now to unlock full functionality."
+msgstr ""
+
+#: build/index.js:1
 msgid "Layout"
 msgstr ""
 
@@ -2662,10 +2773,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Categories :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Categories"
 msgstr ""
 
 #: build/index.js:1
@@ -2713,7 +2820,95 @@ msgid "Remove Database"
 msgstr ""
 
 #: build/index.js:1
+msgid "Read Document"
+msgstr ""
+
+#: build/index.js:1
+msgid "Only lifetime & studio users can access this feature."
+msgstr ""
+
+#: build/index.js:1
+msgid " Read Document"
+msgstr ""
+
+#: build/index.js:1
 msgid "Customize"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide all Help Links?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide all Plugin Updates related News?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide Licence Key Tab?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Hide Plugin RollBack Tab?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Plugin Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Name cannot be empty"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Plugin Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Developer/Agency"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Developer Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Website URL"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Web URL"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plus Icon/Logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select or Upload Media"
+msgstr ""
+
+#: build/index.js:1
+msgid "Use this media"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload your Icon File Only .png, .jpg, .svg supported"
+msgstr ""
+
+#: build/index.js:1
+msgid "Reset"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Settings"
 msgstr ""
 
 #: build/index.js:1
@@ -2797,82 +2992,6 @@ msgid "Once the selected data is deleted, it cannot be restored."
 msgstr ""
 
 #: build/index.js:1
-msgid "Hide all Help Links?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Hide all Plugin Updates related News?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Hide Licence Key Tab?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Hide Plugin RollBack Tab?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plugin Name"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter Plugin Name"
-msgstr ""
-
-#: build/index.js:1
-msgid "Name cannot be empty"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plugin Description"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter Plugin Description"
-msgstr ""
-
-#: build/index.js:1
-msgid "Developer/Agency"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter Developer Name"
-msgstr ""
-
-#: build/index.js:1
-msgid "Website URL"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter Web URL"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plus Icon/Logo"
-msgstr ""
-
-#: build/index.js:1
-msgid "Select or Upload Media"
-msgstr ""
-
-#: build/index.js:1
-msgid "Use this media"
-msgstr ""
-
-#: build/index.js:1
-msgid "Upload your Icon File Only .png, .jpg, .svg supported"
-msgstr ""
-
-#: build/index.js:1
-msgid "Reset"
-msgstr ""
-
-#: build/index.js:1
-msgid "Save Settings"
-msgstr ""
-
-#: build/index.js:1
 msgid "Page Disabled"
 msgstr ""
 
@@ -2926,10 +3045,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Install & Activate"
-msgstr ""
-
-#: build/index.js:1
-msgid "How to Install ?"
 msgstr ""
 
 #: build/index.js:1
@@ -3106,6 +3221,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Enter your email"
+msgstr ""
+
+#: build/index.js:1
+msgid "Don't have an account?"
 msgstr ""
 
 #: build/index.js:1

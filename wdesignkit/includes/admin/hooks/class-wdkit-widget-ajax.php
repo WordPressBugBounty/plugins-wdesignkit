@@ -98,6 +98,9 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				case 'wkit_delete_widget':
 					$response = $this->wkit_delete_widget();
 					break;
+				case 'wkit_widget_preview':
+					$response = $this->wkit_widget_preview();
+					break;
 			}
 
 			wp_send_json( $response );
@@ -703,6 +706,208 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			}
 		}
 
+		/**
+		 *
+		 * It is Use for Check Widegt live preview
+		 *
+		 * @since 1.1.19
+		 */
+		public function wkit_widget_preview() {
+
+			$widget_data = !empty( $_POST['widget_data'] ) ? json_decode(stripslashes($_POST['widget_data']), true) : '';
+
+			if ( empty( $widget_data ) ) {
+				$response = array(
+					'success'     => true,
+					'message'     => esc_html__( 'Invalid widget data', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget data', 'wdesignkit' ),
+				);
+
+				wp_send_json($response);
+				wp_die();
+			}
+
+			$widget_name = !empty( $widget_data['widget_name'] ) ? sanitize_text_field( $widget_data['widget_name'] ) : ''; 
+			$widget_id   = !empty( $widget_data['widget_id'] ) ? sanitize_title($widget_data['widget_id']) : '';
+			$widget_type = !empty( $widget_data['widget_type'] ) ? sanitize_key($widget_data['widget_type']) : '';
+			$page_data =  !empty( $widget_data['page_data'] ) ? sanitize_key($widget_data['page_data']) : '';
+		
+			if ( 'elementor' === $widget_type ) {
+				$existing_page = get_posts([
+					'post_type'      => 'page',
+					'meta_key'       => '_is_preview_page',
+					'meta_value'     => true,
+					'posts_per_page' => 1,
+				]);
+
+				if ( !empty( $existing_page ) ) {
+					$page_id = $existing_page[0]->ID;
+				} else {
+					$page_id = wp_insert_post([
+						'post_title'   => $widget_name . '-Preview',
+						'post_status'  => 'publish',
+						'post_type'    => 'page',
+						'post_name'    => $widget_id,
+						'post_content' => '',
+						'meta_input'   => [
+							'_is_preview_page'     => true,
+							'_elementor_edit_mode' => 'builder',
+							'_wp_page_template'    => 'elementor_canvas',
+						],
+					]);
+				}
+		
+				$this->wdkit_update_elementor_data($page_id, $page_data, $widget_id, $widget_name);
+		
+				if (class_exists('\Elementor\Plugin')) {
+					\Elementor\Plugin::$instance->files_manager->clear_cache($page_id);
+					\Elementor\Plugin::$instance->files_manager->generate_css($page_id);
+				}
+		
+				$preview_url = admin_url('post.php?post=' . $page_id . '&action=elementor');
+			} else if ( "gutenberg" === $widget_type ) {
+				$existing_page = get_posts([
+					'post_type'      => 'page',
+					'meta_key'       => 'gutenberg_preview',
+					'meta_value'     => true,
+					'posts_per_page' => 1,
+				]);
+			
+				if ( !empty( $existing_page ) ) {
+					$page_id = $existing_page[0]->ID;
+				} else {
+					$post_name = wp_unique_post_slug($widget_id, 0, 'publish', 'page', 0);
+
+					$page_id = wp_insert_post([
+						'post_title'   => $widget_name . ' - Preview',
+						'post_status'  => 'publish',
+						'post_type'    => 'page',
+						'post_name'    => sanitize_title($post_name),
+						'post_content' => '',
+						'meta_input'   => [
+							'gutenberg_preview'  => true,
+							'_wp_page_template'  => 'default',
+						],
+					]);
+			
+					if ( is_wp_error($page_id) || !$page_id ) {						
+						$response = array(
+							'success'     => true,
+							'message'     => esc_html__( 'Page Not Found!', 'wdesignkit' ),
+							'description' => esc_html__( 'Page Not Found!', 'wdesignkit' ),
+						);
+
+						wp_send_json($response);
+						wp_die();
+					}
+			
+					update_post_meta($page_id, '_edit_lock', time() . ':1');
+					update_post_meta($page_id, '_edit_last', get_current_user_id());
+				}
+			
+				if (!function_exists('serialize_blocks')) {
+					$response = array(
+						'success'     => true,
+						'message'     => esc_html__( 'Invalid serialize_blocks', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid serialize_blocks', 'wdesignkit' ),
+					);
+	
+					wp_send_json($response);
+					wp_die();
+				}
+			
+				$blocks = [
+					[
+						'blockName'    => 'wdkit/' . $page_data,
+						'attrs'        => [],
+						'innerHTML'    => '',
+						'innerContent' => [],
+					]
+				];
+			
+				$updated_content = serialize_blocks($blocks);
+			
+				wp_update_post([
+					'ID'           => $page_id,
+					'post_content' => $updated_content,
+				]);
+			
+				$preview_url = admin_url('post.php?post=' . $page_id . '&action=edit');
+			} else {
+				$result = (object) array(
+					'success'     => true,
+					'message'     => esc_html__( 'widget Type Not Found', 'wdesignkit' ),
+					'description' => esc_html__( 'widget Type Not Found', 'wdesignkit' ),
+				);
+
+				wp_send_json($response);
+				wp_die();
+			}
+				
+			$response = array(
+				'success' => true,
+				'preview_url' => $preview_url
+			);
+
+			wp_send_json($response);
+			wp_die();
+		}
+			
+		public function wdkit_update_elementor_data($page_id, $page_data, $widget_id, $widget_name) {
+			$experiments_manager = Elementor\Plugin::$instance->experiments;
+
+        	if( $experiments_manager->is_feature_active( 'container' ) ) {
+				$elementor_data = [
+					[
+						'id'        => 'container_' . wp_generate_uuid4(),
+						'elType'    => 'container',
+						'settings'  => [],
+						'elements'  => [
+							[
+								'id'         => 'widget_' . wp_generate_uuid4(),
+								'elType'     => 'widget',
+								'widgetType' => $page_data,
+								'settings'   => [
+									'title'     => $widget_name,
+									'widget_id' => $widget_id,
+								],
+							],
+						],
+					],
+				];
+			} else {
+				$elementor_data = [
+					[
+						'id'        => 'section_' . wp_generate_uuid4(),
+						'elType'    => 'section',
+						'settings'  => [],
+						'elements'  => [
+							[
+								'id'       => 'column_' . wp_generate_uuid4(),
+								'elType'   => 'column',
+								'settings' => [],
+								'elements' => [
+									[
+										'id'         => 'widget_' . wp_generate_uuid4(),
+										'elType'     => 'widget',
+										'widgetType' => $page_data,
+										'settings'   => [
+											'title'     => $widget_name,
+											'widget_id' => $widget_id,
+										],
+									],
+								],
+							],
+						],
+					],
+				];
+			}
+			
+			update_post_meta($page_id, '_elementor_data', wp_slash(json_encode($elementor_data)));
+			update_post_meta($page_id, '_elementor_edit_mode', 'builder');
+			update_post_meta($page_id, '_wp_page_template', 'elementor_canvas');
+			
+		}
 		/* All below functions are helper functions for this file */
 
 		/**
