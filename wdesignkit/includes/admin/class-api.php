@@ -176,6 +176,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'get_global_val':
 					$data = $this->wdkit_get_global_val();
 					break;
+				case 'update_global_val':
+					$data = $this->wdkit_update_global_val();
+					break;
 				case 'find_template':
 					$data = $this->wdkit_find_existing_template();
 					break;
@@ -202,6 +205,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'import_multi_template':
 					$data = $this->wdkit_import_multi_template();
+					break;
+				case 'import_page_section':
+					$data = $this->import_page_section_content();
 					break;
 				case 'import_kit_template':
 					$data = $this->wdkit_import_kit_template();
@@ -867,7 +873,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.16
 		 */
 		protected function wdkit_get_global_val() {
-		
 			// Get colors from Elementor Site Kit
 			$kit_id = get_option('elementor_active_kit');
 			if (!$kit_id) {
@@ -882,15 +887,33 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 		
 			$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-				if ( empty($kit_meta) ) {
-					$response = array(
-					'message'     => __('Data Not Found', 'wdesignkit'),
-					'description' => __('No meta data found in kit', 'wdesignkit'),
-					'success'     => false,
-				);
-
-				wp_send_json( $response );
-				wp_die();
+			if ( empty($kit_meta) ) {
+				$static_meta = array (
+					// 'colors_enable_styleguide_preview' => 'yes',
+					'system_colors' => array (
+						0 => array ( '_id' => 'primary', 'title' => 'Primary', 'color' => '#6EC1E4' ),
+						1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'color' => '#54595F' ),
+						2 => array ( '_id' => 'text', 'title' => 'Text', 'color' => '#7A7A7A' ),
+						3 => array ( '_id' => 'accent', 'title' => 'Accent', 'color' => '#61CE70' ),
+					),
+					'custom_colors' => array (),
+					'system_typography' => array (
+						0 => array ( '_id' => 'primary', 'title' => 'Primary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '600' ),
+						1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto Slab', 'typography_font_weight' => '400' ),
+						2 => array ( '_id' => 'text', 'title' => 'Text', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '400' ),
+						3 => array ( '_id' => 'accent', 'title' => 'Accent', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '500' ),
+					),
+					'custom_typography' => array (),
+					'default_generic_fonts' => 'Sans-serif',
+					'site_name' => !empty(get_bloginfo('name')) ? get_bloginfo('name') : '',
+					'page_title_selector' => 'h1.entry-title',
+					'activeItemIndex' => 1,
+					'viewport_md' => 768,
+					'viewport_lg' => 1025,
+				  );
+				
+				$kit_meta = $static_meta;
+				update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
 			}
 
 			$color_array = array_merge($kit_meta['system_colors'], $kit_meta['custom_colors']);
@@ -905,6 +928,57 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'message'     => __('Global data Found', 'wdesignkit'),
 				'description' => __('Global Color and Typography found', 'wdesignkit'),
 				'data'        => $global_data,
+				'success'     => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
+		 * Update Elementor Global color and Typography.
+		 *
+		 * @since 1.1.20
+		 */
+		protected function wdkit_update_global_val() {
+			
+			$g_color = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
+			$g_typo = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+
+			// Get colors from Elementor Site Kit
+			$kit_id = get_option('elementor_active_kit');
+			if (!$kit_id) {
+				$response = array(
+					'message'     => __('Elementor kit not found', 'wdesignkit'),
+					'description' => __('No active Elementor kit found', 'wdesignkit'),
+					'success'     => false,
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+		
+			$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
+			if ( empty($kit_meta) ) {
+				$response = array(
+					'message'     => __('Data Not Found', 'wdesignkit'),
+					'description' => __('No meta data found in kit', 'wdesignkit'),
+					'success'     => false,
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$kit_meta['custom_colors'] = array_merge($g_color, $kit_meta['custom_colors']);
+			$kit_meta['custom_typography'] = array_merge($g_typo, $kit_meta['custom_typography']);
+
+			update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
+
+			$response = array(
+				'message'     => __('Global data Updated', 'wdesignkit'),
+				'description' => __('Global Color and Typography Updated', 'wdesignkit'),
 				'success'     => true,
 			);
 
@@ -1566,9 +1640,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				wp_send_json( $response );
 				wp_die();
 			} else {
-				$output[ $template_ids['id'] ] = $this->import_page_section_content( $args, $template_ids['id'], $response, $template_ids );
+
+				$result = array(
+					'response' => $response,
+					'args' => $args,
+					'id' => $template_ids['id'],
+					'temp_data' => $template_ids,
+				);
+
 				$output['message']             = $response['message'];
 				$output['description']         = $response['description'];
+				$output['data']                = $result;
 				$output['success']             = $response['success'];
 			}
 
@@ -1636,12 +1718,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							if ( 'error' === $response['content'] ) {
 								wp_send_json( $response );
 								wp_die();
-							} else {
-								$output[ $value['id'] ] = $this->import_page_section_content( $args, $value['id'], $response, $value );
-								$output['message']      = $response['message'];
-								$output['description']  = $response['description'];
-								$output['success']      = $response['success'];
 							}
+							
+							$result = array(
+								'response' => $response,
+								'args' => $args,
+								'id' => $args['template_ids'],
+								'value' => $value,
+							);
+		
+							$output['message']      = $response['message'];
+							$output['description']  = $response['description'];
+							$output['data']         = $result;
+							$output['success']      = true;
+
 						}
 					}
 				} else {
@@ -1657,15 +1747,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					if ( 'error' === $response['content'] ) {
 						wp_send_json( $response );
 						wp_die();
-					} else {
-						$output[ $args['template_ids'] ] = $this->import_page_section_content( $args, $args['template_ids'], $response );
-						$output['message']               = $response['message'];
-						$output['description']           = $response['description'];
-						$output['success']               = $response['success'];
 					}
+
+					$result = array(
+						'response' => $response,
+						'args' => $args,
+						'id' => $args['template_ids'],
+					);
+
+					$output['message']      = $response['message'];
+					$output['description']  = $response['description'];
+					$output['data']         = $result;
+					$output['success']      = true;
 				}
 
-				$output['success'] = true;
 
 				wp_send_json( $output );
 				wp_die();
@@ -1680,7 +1775,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param array $data store data.
 		 * @param array $temp_data store data.
 		 * */
-		private function import_page_section_content( $args, $template_id, $data, $temp_data = array() ) {
+		protected function import_page_section_content() {
+
+			if ( isset( $_POST['args'] ) ) {
+				$args = ! empty( $_POST['args'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['args'] ) ), true ) : array();
+			}
+
+			if ( isset( $_POST['temp_data'] ) ) {
+				$temp_data = ! empty( $_POST['temp_data'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['temp_data'] ) ), true ) : array();
+			}
+
+			if ( isset( $_POST['template_id'] ) ) {
+				$template_id = ! empty( $_POST['template_id'] ) ? json_decode(sanitize_text_field( wp_unslash( $_POST['template_id'] ), true)) : '';
+			}
+
+			if ( isset( $_POST['data'] ) ) {
+				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] )) : '';
+			}
+
 			$enqueue_instance = new Wdkit_Enqueue();
 			$get_post_type    = $enqueue_instance->wdkit_get_post_type_list();
 
@@ -1696,8 +1808,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$post_type = 'page';
 			}
 
-			if ( ! empty( $data ) && ! empty( $data['content'] ) && ! empty( $template_id ) && ! empty( $post_type ) && current_user_can( 'manage_options' ) ) {
-				$post_content = json_decode( $data['content'] );
+			if ( ! empty( $data ) && ! empty( $template_id ) && ! empty( $post_type ) && current_user_can( 'manage_options' ) ) {
+				$post_content = $data;
 				$post_title   = isset( $post_content->title ) ? sanitize_text_field( $post_content->title ) : '';
 				$file_type    = isset( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
 				$content      = isset( $post_content->content ) ? wp_slash( $post_content->content ) : '';
@@ -1711,7 +1823,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							)
 						);
 						wp_die();
-					} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
+					} else if ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
 						$parse_blocks = parse_blocks( stripslashes( $content ) );
 
 						$editor  = ( 'wdkit' === $args['editor'] ) ? 'gutenberg' : $args['editor'];
@@ -1756,10 +1868,27 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
 						}
 
-						return array(
+						$temp_detail =  array(
 							'title'     => get_the_title( $inserted_post ),
 							'edit_link' => get_edit_post_link( $inserted_post, 'internal' ),
 							'view'      => get_permalink( $inserted_post ),
+						);
+
+						if ( !empty( $template_id[0]->id ) ){
+							$temp_id = $template_id[0]->id;
+						} else if ( !empty($template_id) ) {
+							$temp_id = $template_id;
+						} else { 
+							$temp_id = '';
+						}
+
+						wp_send_json(
+							array(
+								$temp_id      => $temp_detail,
+								'description' => "Yay! Your Section has been successfully imported. ",
+								'message'     =>  "Successfully Imported.",
+								'success'     => true
+							)
 						);
 					}
 				} elseif ( 'elementor' === $args['editor'] || ( 'wdkit' === $args['editor'] && ! empty( $file_type ) && 'elementor' === $file_type ) ) {
@@ -1772,7 +1901,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								)
 							);
 							wp_die();
-						} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'elementor' === $file_type ) {
+						} else if ( ! empty( $content ) && ! empty( $file_type ) && 'elementor' === $file_type ) {
+							
 							$post_attributes = array(
 								'post_title'  => $post_title,
 								'post_type'   => $post_type,
@@ -1835,10 +1965,29 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								$data = apply_filters( 'tpae_widget_scan', $type );
 							}
 
-							return array(
-								'title'     => get_the_title( $inserted_id ),
-								'edit_link' => get_edit_post_link( $inserted_id, 'internal' ),
-								'view'      => get_permalink( $inserted_id ),
+							$temp_detail =  array(
+								'title'       => get_the_title( $inserted_id ),
+								'edit_link'   => get_edit_post_link( $inserted_id, 'internal' ),
+								'view'        => get_permalink( $inserted_id ),
+							);
+
+							if ( !empty( $template_id[0]->id ) ){
+								$temp_id = $template_id[0]->id;
+							} else if ( !empty($template_id) ) {
+								$temp_id = $template_id;
+							} else { 
+								$temp_id = '';
+							}
+
+							\Elementor\Plugin::$instance->files_manager->clear_cache();
+
+							wp_send_json(
+								array(
+									$temp_id      => $temp_detail,
+									'description' => "Yay! Your Section has been successfully imported. ",
+									'message'     =>  "Successfully Imported.",
+									'success'     => true
+								)
 							);
 						}
 					} else {

@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.1.19
+Stable tag: 1.2.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -94,10 +94,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.1.19 – 08 February 2025
-New: Live preview for Elementor and Gutenberg widgets.
-Improve: YouTube video playlist popup in the Widget Builder for user assistance.
-Fix: Design-related bugs when changing the language.
+1.2.0 – 13 March 2025
+New: Global Colors and Typography in Import Template process for Elementor.
+Improve: Import Template feature in Elementor Editor.
+Update: Name change from Gutenberg Widget Builder to Nexter Widget Builder.
+Fix: Minor bugs and improvements.
+
+1.1.19 – 07 March 2025
 Fix: Minor bugs and improvements.
 
 1.1.18 – 26 February 2025

@@ -162,9 +162,19 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 		 * @since 1.1.7
 		 */
 		public function wdkit_preset_dwnld_template() {
+
+			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+			
+			if( 'elementor' === $builder ){
+                $widgets = ['widgets', 'extensions'];
+                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
+            } else if( 'gutenberg' === $builder ){ 
+				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
+			}
+
 			$array_data = array(
 				'id'           => isset( $_POST['id'] ) ? (int) $_POST['id'] : '',
-				'builder'      => isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '',
+				'builder'      => $builder,
 				'free_pro'     => isset( $_POST['free_pro'] ) ? sanitize_text_field( wp_unslash( $_POST['free_pro'] ) ) : '',
 				'product_name' => isset( $_POST['product_name'] ) ? sanitize_text_field( wp_unslash( $_POST['product_name'] ) ) : '',
 			);
