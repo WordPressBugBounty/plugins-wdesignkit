@@ -1885,7 +1885,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						wp_send_json(
 							array(
 								$temp_id      => $temp_detail,
-								'description' => "Yay! Your Section has been successfully imported. ",
+								'description' => "Yay! Your Section has been Successfully Imported.",
 								'message'     =>  "Successfully Imported.",
 								'success'     => true
 							)
@@ -1984,7 +1984,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							wp_send_json(
 								array(
 									$temp_id      => $temp_detail,
-									'description' => "Yay! Your Section has been successfully imported. ",
+									'description' => "Yay! Your Section has been Successfully Imported.",
 									'message'     =>  "Successfully Imported.",
 									'success'     => true
 								)
@@ -2163,8 +2163,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 					if ( ! empty( $elementor_list ) ) {
 						foreach ( $elementor_list as $key => $value ) {
-							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) ]['data']    = $value;
-							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) ]['builder'] = $name;
+							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key]['data']    = $value;
+							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key]['builder'] = $name;
 						}
 					}
 				}
