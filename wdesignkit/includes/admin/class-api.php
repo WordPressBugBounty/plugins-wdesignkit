@@ -179,6 +179,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'update_global_val':
 					$data = $this->wdkit_update_global_val();
 					break;
+				case 'update_preset_setting':
+					$data = $this->wdkit_update_preset();
+					break;
 				case 'find_template':
 					$data = $this->wdkit_find_existing_template();
 					break;
@@ -873,63 +876,629 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.16
 		 */
 		protected function wdkit_get_global_val() {
-			// Get colors from Elementor Site Kit
-			$kit_id = get_option('elementor_active_kit');
-			if (!$kit_id) {
-					$response = array(
-					'message'     => __('Elementor kit not found', 'wdesignkit'),
-					'description' => __('No active Elementor kit found', 'wdesignkit'),
-					'success'     => false,
+
+			$builder = isset( $_POST['builder'] ) ? strtolower( sanitize_text_field( $_POST['builder'] ) ) : '';
+
+			if( 'elementor' === $builder ){
+				$kit_id = get_option('elementor_active_kit');
+				if (!$kit_id) {
+						$response = array(
+						'message'     => __('Elementor kit not found', 'wdesignkit'),
+						'description' => __('No active Elementor kit found', 'wdesignkit'),
+						'success'     => false,
+					);
+
+					wp_send_json( $response );
+					wp_die();
+				}
+
+				$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
+				if ( empty($kit_meta) ) {
+					$static_meta = array (
+						'system_colors' => array (
+							0 => array ( '_id' => 'primary', 'title' => 'Primary', 'color' => '#6EC1E4' ),
+							1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'color' => '#54595F' ),
+							2 => array ( '_id' => 'text', 'title' => 'Text', 'color' => '#7A7A7A' ),
+							3 => array ( '_id' => 'accent', 'title' => 'Accent', 'color' => '#61CE70' ),
+						),
+						'custom_colors' => array (),
+						'system_typography' => array (
+							0 => array ( '_id' => 'primary', 'title' => 'Primary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '600' ),
+							1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto Slab', 'typography_font_weight' => '400' ),
+							2 => array ( '_id' => 'text', 'title' => 'Text', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '400' ),
+							3 => array ( '_id' => 'accent', 'title' => 'Accent', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '500' ),
+						),
+						'custom_typography' => array (),
+						'default_generic_fonts' => 'Sans-serif',
+						'site_name' => !empty(get_bloginfo('name')) ? get_bloginfo('name') : '',
+						'page_title_selector' => 'h1.entry-title',
+						'activeItemIndex' => 1,
+						'viewport_md' => 768,
+						'viewport_lg' => 1025,
+					);
+					
+					$kit_meta = $static_meta;
+					update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
+				}
+
+				$color_array = array_merge($kit_meta['system_colors'], $kit_meta['custom_colors']);
+				$typo_array = array_merge($kit_meta['system_typography'], $kit_meta['custom_typography']);
+
+				$global_data = array(
+					'color' => $color_array,
+					'typography' => $typo_array
 				);
 
-				wp_send_json( $response );
-				wp_die();
-			}
-		
-			$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-			if ( empty($kit_meta) ) {
-				$static_meta = array (
-					// 'colors_enable_styleguide_preview' => 'yes',
-					'system_colors' => array (
-						0 => array ( '_id' => 'primary', 'title' => 'Primary', 'color' => '#6EC1E4' ),
-						1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'color' => '#54595F' ),
-						2 => array ( '_id' => 'text', 'title' => 'Text', 'color' => '#7A7A7A' ),
-						3 => array ( '_id' => 'accent', 'title' => 'Accent', 'color' => '#61CE70' ),
-					),
-					'custom_colors' => array (),
-					'system_typography' => array (
-						0 => array ( '_id' => 'primary', 'title' => 'Primary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '600' ),
-						1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto Slab', 'typography_font_weight' => '400' ),
-						2 => array ( '_id' => 'text', 'title' => 'Text', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '400' ),
-						3 => array ( '_id' => 'accent', 'title' => 'Accent', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '500' ),
-					),
-					'custom_typography' => array (),
-					'default_generic_fonts' => 'Sans-serif',
-					'site_name' => !empty(get_bloginfo('name')) ? get_bloginfo('name') : '',
-					'page_title_selector' => 'h1.entry-title',
-					'activeItemIndex' => 1,
-					'viewport_md' => 768,
-					'viewport_lg' => 1025,
-				  );
+				$response = array(
+					'message'     => __('Global data Found', 'wdesignkit'),
+					'description' => __('Global Color and Typography found', 'wdesignkit'),
+					'data'        => $global_data,
+					'success'     => true,
+				);
+
+			} else if ( 'gutenberg' === $builder ){
 				
-				$kit_meta = $static_meta;
-				update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
-			}
+				$plus_settings = get_option('tpgb_global_options', false);
+				$plus_settings = !empty($plus_settings) ? json_decode($plus_settings, true) : json_decode('[]');
+				
+				if( empty($plus_settings) ){
 
-			$color_array = array_merge($kit_meta['system_colors'], $kit_meta['custom_colors']);
-			$typo_array = array_merge($kit_meta['system_typography'], $kit_meta['custom_typography']);
+					$static_meta = array(
+						'active' => 'preset1',
+						'darkMode' => 'none',
+						'presets' => array(
+							'preset1' => array(
+								'name' => 'Preset 1',
+								'key' => 'preset1',
+								'colors' => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+									),
+								'gradient' => array(
+										array(
+											'label' => 'Primary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
 			
-			$global_data = array(
-				'color' => $color_array,
-				'typography' => $typo_array
-			);
+										array(
+											'label' => 'Secondary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Tertiary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Accent',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Background',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+									),
+								'spacing' => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+												'md' => 70,
+												'unit' => 'px',
+											)
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+												'md' => 40,
+												'unit' => 'px',
+											)
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+												'md' => 20,
+												'unit' => 'px',
+											)
+	
+									)
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 65,
+												'unit' => 'px'
+											),
+											'height' => array(
+													'md' => 75,
+													'unit' => 'px',
+											),
+											'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 700,
+											),
+											'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+												'openTypography' => 1,
+												'size' => array(
+													'md' => 45,
+													'unit' => 'px',
+												),					
+												'height' => array(
+													'md' => 60,
+													'unit' => 'px',
+												),
+												'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 700,
+												),
+												'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+												),
+											)
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+												'openTypography' => 1,
+												'size' => array(
+													'md' => 38,
+													'unit' => 'px',
+												),
+												'height' => array(
+													'md' => 45,
+													'unit' => 'px',
+												),
+												'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 500,
+												),					
+												'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+												),
+											)
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 30,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 25,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 17,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 13,
+												'unit' => 'px',
+											),					
+											'height' => array(
+												'md' => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),					
+										)
+									)
+								),
+								'boxshadow' => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+												'openShadow' => 1,
+												'inset' => 0,
+												'horizontal' => 2,
+												'vertical' => 6,
+												'blur' => 10,
+												'spread' => 0,
+												'color' => 'rgba(0,0,0,0.15)',
+											)
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+												'openShadow' => 1,
+												'inset' => 0,
+												'horizontal' => 2,
+												'vertical' => 5,
+												'blur' => 14,
+												'spread' => 3,
+												'color' => 'rgba(0,0,0,0.2)',
+											)
+									),
+								)
+							),
+							'preset2' => array(
+								'name' => 'Preset 2',
+								'key' => 'preset2',
+								'colors' => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+									),
+								'gradient' => array(
+										array(
+											'label' => 'Primary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Secondary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Tertiary',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Accent',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+			
+										array(
+											'label' => 'Background',
+											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+										),
+									),
+								'spacing' => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+												'md' => 70,
+												'unit' => 'px',
+											)
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+												'md' => 40,
+												'unit' => 'px',
+											)
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+												'md' => 20,
+												'unit' => 'px',
+											)
+	
+									)
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 65,
+												'unit' => 'px'
+											),
+											'height' => array(
+													'md' => 75,
+													'unit' => 'px',
+											),
+											'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 700,
+											),
+											'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+												'openTypography' => 1,
+												'size' => array(
+													'md' => 45,
+													'unit' => 'px',
+												),					
+												'height' => array(
+													'md' => 60,
+													'unit' => 'px',
+												),
+												'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 700,
+												),
+												'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+												),
+											)
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+												'openTypography' => 1,
+												'size' => array(
+													'md' => 38,
+													'unit' => 'px',
+												),
+												'height' => array(
+													'md' => 45,
+													'unit' => 'px',
+												),
+												'fontFamily' => array(
+													'family' => 'Roboto',
+													'type' => 'sans-serif',
+													'fontWeight' => 500,
+												),					
+												'spacing' => array(
+													'md' => 0,
+													'unit' => 'px',
+												),
+											)
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 30,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 25,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 17,
+												'unit' => 'px',
+											),
+											'height' => array(
+												'md' => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),
+										)
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size' => array(
+												'md' => 13,
+												'unit' => 'px',
+											),					
+											'height' => array(
+												'md' => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type' => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing' => array(
+												'md' => 0,
+												'unit' => 'px',
+											),					
+										)
+									)
+								),
+								'boxshadow' => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+												'openShadow' => 1,
+												'inset' => 0,
+												'horizontal' => 2,
+												'vertical' => 6,
+												'blur' => 10,
+												'spread' => 0,
+												'color' => 'rgba(0,0,0,0.15)',
+											)
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+												'openShadow' => 1,
+												'inset' => 0,
+												'horizontal' => 2,
+												'vertical' => 5,
+												'blur' => 14,
+												'spread' => 3,
+												'color' => 'rgba(0,0,0,0.2)',
+											)
+									),
+								)
+							),
+						),
+						'globalContainer' => array(
+							'md' => '', 
+							'unit' => 'px',
+						)
+					);				
 
-			$response = array(
-				'message'     => __('Global data Found', 'wdesignkit'),
-				'description' => __('Global Color and Typography found', 'wdesignkit'),
-				'data'        => $global_data,
-				'success'     => true,
-			);
+					update_option('tpgb_global_options', json_encode($static_meta));
+					$plus_settings = $static_meta;
+				} 
+
+				$active_id = !empty( $plus_settings['active'] ) ? $plus_settings['active'] : '';
+				$preset_array = !empty( $plus_settings['presets'] ) ? $plus_settings['presets'] : array();
+				$act_preset = !empty( $plus_settings['presets'][$active_id] ) ? $plus_settings['presets'][$active_id] : array();
+				
+				$response = array(
+					'message'     => __('Global data Found', 'wdesignkit'),
+					'description' => __('Global Color and Typography found', 'wdesignkit'),
+					'data'        => $act_preset,
+					'success'     => true,
+				);
+			}
 
 			wp_send_json( $response );
 			wp_die();
@@ -943,47 +1512,145 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_update_global_val() {
 			
-			$g_color = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
-			$g_typo = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+			$builder = ! empty( $_POST['builder'] ) ?  sanitize_text_field( $_POST['builder'] ) : '';
 
-			// Get colors from Elementor Site Kit
-			$kit_id = get_option('elementor_active_kit');
-			if (!$kit_id) {
+			if( 'elementor' == $builder ){
+
+				$g_color = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
+				$g_typo = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+	
+				// Get colors from Elementor Site Kit
+				$kit_id = get_option('elementor_active_kit');
+				if (!$kit_id) {
+					$response = array(
+						'message'     => __('Elementor kit not found', 'wdesignkit'),
+						'description' => __('No active Elementor kit found', 'wdesignkit'),
+						'success'     => false,
+					);
+	
+					wp_send_json( $response );
+					wp_die();
+				}
+			
+				$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
+				if ( empty($kit_meta) ) {
+					$response = array(
+						'message'     => __('Data Not Found', 'wdesignkit'),
+						'description' => __('No meta data found in kit', 'wdesignkit'),
+						'success'     => false,
+					);
+	
+					wp_send_json( $response );
+					wp_die();
+				}
+	
+				$kit_meta['custom_colors'] = array_merge($g_color, $kit_meta['custom_colors']);
+				$kit_meta['custom_typography'] = array_merge($g_typo, $kit_meta['custom_typography']);
+	
+				update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
+
 				$response = array(
-					'message'     => __('Elementor kit not found', 'wdesignkit'),
-					'description' => __('No active Elementor kit found', 'wdesignkit'),
-					'success'     => false,
+					'message'     => __('Global data Updated', 'wdesignkit'),
+					'description' => __('Global Color and Typography Updated', 'wdesignkit'),
+					'success'     => true,
 				);
 
-				wp_send_json( $response );
-				wp_die();
-			}
-		
-			$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-			if ( empty($kit_meta) ) {
+			} else if( 'gutenberg' == $builder ){
+				$new_preset = ! empty( $_POST['new_preset'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['new_preset'] ) ), true ) : array();
+				$new_preset_id = ! empty( $new_preset['key'] ) ? $new_preset['key'] : '';
+				$plus_settings = get_option('tpgb_global_options');
+				$site_preset = json_decode($plus_settings, true);
+
+				$site_preset['presets'][$new_preset_id] = $new_preset;
+				$site_preset['active'] = $new_preset_id;
+
+				update_option( 'tpgb_global_options', json_encode($site_preset) );
+
 				$response = array(
-					'message'     => __('Data Not Found', 'wdesignkit'),
-					'description' => __('No meta data found in kit', 'wdesignkit'),
-					'success'     => false,
+					'message'     => __('Global data Updated', 'wdesignkit'),
+					'description' => __('Global Color and Typography Updated', 'wdesignkit'),
+					'success'     => true,
 				);
 
-				wp_send_json( $response );
-				wp_die();
+			} else {
+				$response = array(
+					'message'     => __('Builder Not Found !', 'wdesignkit'),
+					'description' => __('Template Builder not Found', 'wdesignkit'),
+					'success'     => true,
+				);
 			}
-
-			$kit_meta['custom_colors'] = array_merge($g_color, $kit_meta['custom_colors']);
-			$kit_meta['custom_typography'] = array_merge($g_typo, $kit_meta['custom_typography']);
-
-			update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
-
-			$response = array(
-				'message'     => __('Global data Updated', 'wdesignkit'),
-				'description' => __('Global Color and Typography Updated', 'wdesignkit'),
-				'success'     => true,
-			);
 
 			wp_send_json( $response );
 			wp_die();
+		}
+
+		/**
+		 *
+		 * Create Gutenberg page and save for re-generate css file.
+		 *
+		 * @since 1.2.3
+		 */
+		protected function wdkit_update_preset() {
+
+			$act_type = ! empty( $_POST['act_type'] ) ?  sanitize_text_field( $_POST['act_type'] ) : '';
+			$post_id = ! empty( $_POST['post_id'] ) ?  sanitize_text_field( $_POST['post_id'] ) : '';
+
+			if( 'create' == $act_type ){
+
+				$page_id = wp_insert_post([
+					'post_title'   => 'WDesignKit Gutenberg',
+					'post_status'  => 'publish',
+					'post_type'    => 'post',
+					'post_name'    => sanitize_title('wdesignkit'),
+					'post_content' => '<!-- wp:heading --><h2 class="wp-block-heading">Add Your Heading Text Here<h2><!-- /wp:heading -->',
+					'meta_input'   => [
+						'gutenberg_preview'  => true,
+						'_wp_page_template'  => 'default',
+					],
+				]);
+		
+				if ( is_wp_error($page_id) || !$page_id ) {						
+					$response = array(
+						'success'     => true,
+						'message'     => esc_html__( 'Page Not Found!', 'wdesignkit' ),
+						'description' => esc_html__( 'Page Not Found!', 'wdesignkit' ),
+					);
+	
+					wp_send_json($response);
+					wp_die();
+				}
+		
+				update_post_meta($page_id, '_edit_lock', time() . ':1');
+				update_post_meta($page_id, '_edit_last', get_current_user_id());
+	
+				$preview_url = admin_url('post.php?post=' . $page_id . '&action=edit');
+	
+				$response = array(
+					'success'      => true,
+					'post_id'      => $page_id,
+					'preview_url'  => $preview_url,
+					'message'      => esc_html__( 'Page Created', 'wdesignkit' ),
+					'description'  => esc_html__( 'Page Created', 'wdesignkit' ),
+				);
+	
+				wp_send_json($response);
+				wp_die();
+
+			}
+			
+			if ( !empty($post_id) && ( $act_type == 'remove' ) ){
+
+				wp_delete_post($post_id, true);
+
+				$response = array(
+					'success'      => true,
+					'message'      => esc_html__( 'post deleted', 'wdesignkit' ),
+					'description'  => esc_html__( 'post deleted', 'wdesignkit' ),
+				);
+	
+				wp_send_json($response);
+				wp_die();
+			}
 		}
 
 		/**
