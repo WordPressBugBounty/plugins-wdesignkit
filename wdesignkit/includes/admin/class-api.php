@@ -215,21 +215,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'import_kit_template':
 					$data = $this->wdkit_import_kit_template();
 					break;
-				case 'scan_tpae_widgets':
-					if (has_filter('tpae_widget_scan')) {
-						$type = array('get_wdkit_unused_widgets');
-						$data = apply_filters( 'tpae_widget_scan', $type );
-
-						$res = array(
-							'massage' => __('Disabled Successfully', 'wdesignkit'),
-							'description' => __('Unused widgets have been Disabled successfully', 'wdesignkit'),
-							'success' => true,
-						); 
-						wp_send_json($res);
-						wp_die();
-					}
-
-					$data = '';
+				case 'enable_template_widgets':
+					$data = $this->wdkit_enable_template_widgets();
 					break;
 				case 'scan_nexter_widgets':
 					if (has_filter('tpgb_disable_unsed_block_filter')) {
@@ -881,7 +868,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if( 'elementor' === $builder ){
 				$kit_id = get_option('elementor_active_kit');
-				if (!$kit_id) {
+				if ( empty($kit_id) ) {
 						$response = array(
 						'message'     => __('Elementor kit not found', 'wdesignkit'),
 						'description' => __('No active Elementor kit found', 'wdesignkit'),
@@ -893,7 +880,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 
 				$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-				if ( empty($kit_meta) ) {
+				if ( empty($kit_meta['system_colors']) ) {
 					$static_meta = array (
 						'system_colors' => array (
 							0 => array ( '_id' => 'primary', 'title' => 'Primary', 'color' => '#6EC1E4' ),
@@ -921,8 +908,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
 				}
 
-				$color_array = array_merge($kit_meta['system_colors'], $kit_meta['custom_colors']);
-				$typo_array = array_merge($kit_meta['system_typography'], $kit_meta['custom_typography']);
+				$system_colors = !empty($kit_meta['system_colors']) ? $kit_meta['system_colors'] : [];
+				$custom_colors = !empty($kit_meta['custom_colors']) ? $kit_meta['custom_colors'] : [];
+				$system_typography = !empty($kit_meta['system_typography']) ? $kit_meta['system_typography'] : [];
+				$custom_typography = !empty($kit_meta['custom_typography']) ? $kit_meta['custom_typography'] : [];
+
+				$color_array = array_merge($system_colors, $custom_colors);
+				$typo_array = array_merge($system_typography, $custom_typography);
 
 				$global_data = array(
 					'color' => $color_array,
@@ -1934,10 +1926,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args     = $this->wdkit_parse_args( $_POST );
 			$api_type = isset( $_POST['api_type'] ) ? sanitize_text_field( wp_unslash( $_POST['api_type'] ) ) : 'import_template';
 
-			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
-                $widgets = ['widgets', 'extensions'];
-                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+			if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
 				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
 			}
 
@@ -2253,10 +2242,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
 
-			if( !empty($builder) && $builder == 'elementor' ){
-                $widgets = ['widgets', 'extensions'];
-                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } else if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
+			if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
 				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
 			}
 
@@ -2325,6 +2311,53 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			wp_die();
 		}
 
+		protected function wdkit_enable_template_widgets() {
+			$widget_list = ! empty( $_POST['widget_list'] ) ? json_decode( wp_unslash( $_POST['widget_list'] ), true ) : [];
+
+			if ( empty( $widget_list ) ){
+				$res = array(
+					'massage' => __('Widget array not found', 'wdesignkit'),
+					'description' => __('Widget array not found', 'wdesignkit'),
+					'success' => false,
+				); 
+				wp_send_json($res);
+				wp_die();
+			}
+
+			if ( ! has_filter('tpae_enable_selected_widgets') ){
+				$res = array(
+					'massage' => __('Relevant Plugin not Activated', 'wdesignkit'),
+					'description' => __('Relevant Plugin not Installed / Activated', 'wdesignkit'),
+					'success' => false,
+				); 
+				wp_send_json($res);
+				wp_die();
+			}
+
+			$w_list = array(
+				'widgets' => $widget_list
+			);
+			
+			$result = apply_filters( 'tpae_enable_selected_widgets', $w_list );
+
+			if( !empty( $result['success'] ) ){
+				$res = array(
+					'massage' => __('Enabled widgets successfully', 'wdesignkit'),
+					'description' => __('Used widgets have been enabled successfully', 'wdesignkit'),
+					'success' => true,
+				);
+			} else {
+				$res = array(
+					'massage' => __( $result['message'], 'wdesignkit'),
+					'description' => __( $result['description'], 'wdesignkit'),
+					'success' => true,
+				);
+			}
+
+			wp_send_json($res);
+			wp_die();
+		}
+
 		/**
 		 * Import single template and section from plugin only
 		 * */
@@ -2336,10 +2369,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				return false;
 			}
 
-			if( ! empty( $args['builder'] ) && 'elementor' === $args['builder'] ){
-                $widgets = ['widgets', 'extensions'];
-                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } else if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
+			if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
 				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
 			}
 
@@ -2627,11 +2657,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								}
 							}
 
-							if (has_filter('tpae_widget_scan')) {
-								$type = array('get_wdkit_unused_widgets');
-								$data = apply_filters( 'tpae_widget_scan', $type );
-							}
-
 							$temp_detail =  array(
 								'title'       => get_the_title( $inserted_id ),
 								'edit_link'   => get_edit_post_link( $inserted_id, 'internal' ),
@@ -2658,11 +2683,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							);
 						}
 					} else {
-						if (has_filter('tpae_widget_scan')) {
-							$type = array('get_wdkit_unused_widgets');
-							$data = apply_filters( 'tpae_widget_scan', $type );
-						}
-
 						wp_send_json(
 							array(
 								'template_id' => $template_id,

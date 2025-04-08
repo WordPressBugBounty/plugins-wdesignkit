@@ -101,6 +101,8 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 				'page'        => isset( $_POST['page'] ) ? (int) $_POST['page'] : 1,
 				'free_pro'    => isset( $_POST['free_pro'] ) ? sanitize_text_field( wp_unslash( $_POST['free_pro'] ) ) : '',
 				'search'      => isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '',
+				'plugin'      => isset( $_POST['plugin'] ) ? wp_unslash($_POST['plugin']) : json_encode(array(1014)),
+				'key_words'   => isset( $_POST['key_words'] ) ? wp_unslash($_POST['key_words']) : [],
 			);
 
 			$temp_id = isset( $_POST['template_id'] ) ? $_POST['template_id'] : '';
@@ -165,10 +167,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
 			
-			if( 'elementor' === $builder ){
-                $widgets = ['widgets', 'extensions'];
-                $widgets = apply_filters( 'tpae_enable_widgets', $widgets );
-            } else if( 'gutenberg' === $builder ){ 
+			if( 'gutenberg' === $builder ){ 
 				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
 			}
 

@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -94,7 +94,14 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.2.3 – 3 April 2025
+1.2.4 – 8 April 2025
+New: Widget Builder : Section edit Option.
+Fix: Widget Builder : Security Patch ( Medium security ).
+Fix: Widget Builder : Slider Controller Error.
+Improve: Elementor Template Import Process.
+Fix: Minor bugs and improvements.
+
+1.2.3 – 2 April 2025
 New: Global Colors and Typography in Import Template process for Gutenberg.
 Fix: Minor bugs and improvements.
 
