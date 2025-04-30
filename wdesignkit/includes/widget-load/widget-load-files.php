@@ -76,7 +76,7 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 		}
 
 		/**
-		 * This function is called to load Elementor files, categories, and everything needed for WDesignKit to build with Gutenberg.
+		 * This function is called to load Gutenberg files, categories, and everything needed for WDesignKit to build with Gutenberg.
 		 *
 		 * @since 1.0.0
 		 */

@@ -106,6 +106,10 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
 					continue;
 				}
 
+				if (! is_dir( trailingslashit( $dir ) . $value ) ){
+					return false;
+				}
+
 				if ( ! strpos( $value, '.' ) ) {
 					$sub_dir = scandir( trailingslashit( $dir ) . '/' . $value );
 
