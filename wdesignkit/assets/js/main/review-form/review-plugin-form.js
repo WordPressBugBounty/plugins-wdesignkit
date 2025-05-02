@@ -1,6 +1,6 @@
-const { __ } = wp.i18n;
-
 document.addEventListener("DOMContentLoaded", function () {
+    const { __ } = wp.i18n;
+
     const params = new URLSearchParams(window.location.search),
         checkparams = params.get('wkit_user_review'),
         Email = __("Email", "wdesignkit"),

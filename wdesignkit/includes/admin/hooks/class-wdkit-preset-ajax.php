@@ -123,20 +123,10 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 			$manage_licence       = array();
 			$theplus_active_check = is_plugin_active( 'the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php' );
 			$nexter_active_check  = is_plugin_active( 'the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php' );
-
-			$theplus_licence = get_option( 'tpaep_licence_data', array() );
-
-			if ( ! empty( $theplus_active_check ) && ! empty( $theplus_licence ) ) {
-				$manage_licence['tpae'] = $theplus_licence;
-			}
-
-			$nexter_licence = get_option( 'tpgb_activate', array() );
-
-			if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && ! empty( $nexter_licence['tpgb_activate_key'] ) ) {
-				$tpgb_license_status                = get_option( 'tpgbp_license_status', array() );
-				$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
-				$manage_licence['tpag']             = $tpgb_license_status;
-			}
+			$manage_licence['theplus_elementor_addon'] = !empty ( defined( 'THEPLUS_VERSION' ) ) ? true : false;
+			$manage_licence['the-plus-addons-for-elementor-page-builder'] = !empty ( $theplus_active_check ) ? true : false;
+			$manage_licence['tpag'] = !empty ( defined( 'TPGBP_VERSION' ) ) ? true : false;
+			$manage_licence['elementor-pro'] = !empty ( defined( 'ELEMENTOR_PRO_VERSION' ) ) ? true : false;
 
 			$success = ! empty( $response['success'] ) ? $response['success'] : false;
 
@@ -166,6 +156,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 		public function wdkit_preset_dwnld_template() {
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+			$sheCheck = isset( $_POST['sheCheck'] ) ? sanitize_text_field( wp_unslash( $_POST['sheCheck'] ) ) : false;
 			
 			if( 'gutenberg' === $builder ){ 
 				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
@@ -180,8 +171,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 
 			if ( $array_data['free_pro'] == 'pro' ) {
 				if ( $array_data['builder'] === 'elementor' ) {
-					$theplus_licence = get_option( 'tpaep_licence_data', array() );
-					if ( empty( $theplus_licence ) || empty( $theplus_licence['license_key'] ) ) {
+					if ( empty ( defined( 'THEPLUS_VERSION' )) && empty( $sheCheck )) {
 						$response = $this->tpae_set_response( false, 'Invalid Permission.', 'Something went wrong.' );
 
 						wp_send_json( $response );
@@ -192,9 +182,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 					$array_data['license_key']    = $theplus_licence['license_key'];
 
 				} else if ( $array_data['builder'] === 'gutenberg' ) {
-					$nexter_licence = get_option( 'tpgb_activate', array() );
-
-					if ( empty( $nexter_licence ) || empty( $nexter_licence['tpgb_activate_key'] ) ) {
+					if ( empty ( defined( 'TPGBP_VERSION' ) ) ) {
 						$response = $this->tpae_set_response( false, 'Invalid Permission.', 'Something went wrong.' );
 
 						wp_send_json( $response );
