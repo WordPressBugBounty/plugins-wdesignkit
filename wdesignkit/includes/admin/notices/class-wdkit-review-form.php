@@ -76,7 +76,6 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		}
 
 		public function wdkit_review_form_scripts() {
-			$active_plugins = get_plugins();
 
             wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
             wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
@@ -86,18 +85,26 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 				array(
 					'ajax_url'       => admin_url( 'admin-ajax.php' ),
 					'nonce'         => wp_create_nonce( 'wdkit_review_nonce' ),
-					'active_plugins' => $active_plugins,
 				)
 			);
 		}
 
 		public function wdkit_handle_review_submission() {
 			check_ajax_referer( 'wdkit_review_nonce', 'nonce' );
+			$active_plugins = get_plugins();
+			$active_plugins_list = [];
+
+			foreach ($active_plugins as $plugin) {
+				if (!in_array($plugin['Title'], $active_plugins_list)) {
+					$active_plugins_list[] = $plugin['Title'];
+				}
+			}
+
 			global $wpdb;
 			$rating     		= !empty( $_POST['rating'] ) ? sanitize_text_field( $_POST['rating'] ) : '0';
-			$email      		= !empty( $_POST['email'] ) ? sanitize_text_field( $_POST['email'] ) : '';
+			$email      		= !empty( wp_get_current_user()->user_email ) ? wp_get_current_user()->user_email : '';
 			$description    	= !empty( $_POST['description'] ) ? sanitize_textarea_field( $_POST['description'] ) : '';
-			$plugins    		= !empty( $_POST['plugins'] ) ? sanitize_text_field( $_POST['plugins'] ) : '';
+			$plugins    		= !empty( $active_plugins_list ) ? implode(', ', $active_plugins_list) : '';
 			$page_url 			= !empty( $_POST['page_url'] ) ? sanitize_text_field( $_POST['page_url'] ) : '';
 			$screen_resolution  = !empty( $_POST['screen_resolution'] ) ? sanitize_text_field( $_POST['screen_resolution'] ) : '';
 			$active_theme   	= get_option( 'current_theme' );
@@ -107,7 +114,7 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 			$max_execution_time = ini_get( 'max_execution_time' );
 			$memory_limit 		= ini_get( 'memory_limit' );
 			$language 			= get_bloginfo( 'language' );
-			$server 			= ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';;
+			$server 			= ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 
 			$response = wp_remote_post('https://wdesignkit.com/api/wp/userreview', [
 				'method'  => 'POST',
@@ -136,9 +143,9 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		
 			if (is_wp_error($response)) {
 				wp_send_json([
-					'message' => __( 'API Request Failed', 'wdesignkit' ),
-					'error'   => $response->get_error_message(),
-					'success'   => false,
+					'message' 	 => __( 'API Request Failed', 'wdesignkit' ),
+					'error'  	 => $response->get_error_message(),
+					'success'    => false,
 				]);
 			}
 		
@@ -148,15 +155,15 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		
 			if ($response_code >= 200 && $response_code < 300) {
 				wp_send_json([
-					'message' => __( 'API responded successfully.', 'wdesignkit' ),
-					'data'    => $response_json,
+					'message' 	=> __( 'API responded successfully.', 'wdesignkit' ),
+					'data'    	=> $response_json,
 					'success'   => true,
 				]);
 			} else {
 				wp_send_json([
-					'message' => __( 'API returned error', 'wdesignkit' ),
-					'code'    => $response_code,
-					'data'    => $response_json,
+					'message' 	=> __( 'API returned error', 'wdesignkit' ),
+					'code'    	=> $response_code,
+					'data'    	=> $response_json,
 					'success'   => false,
 				]);
 			}

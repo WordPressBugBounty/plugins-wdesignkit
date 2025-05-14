@@ -68,8 +68,7 @@
     cursor: pointer;
 }
 
-.wkit-plugin-review-popup-container .wkit-plugin-review-btn:hover,
-.wkit-plugin-review-popup-container .wkit-selected-rating {
+.wkit-plugin-review-popup-container .wkit-plugin-review-btn:hover {
     background-color: #F5F5FA;
 }
 
@@ -88,13 +87,11 @@
     transition: 0.3s linear;
 }
 
-.wkit-plugin-review-popup-container .wkit-emoji-container:hover,
-.wkit-plugin-review-popup-container .wkit-emoji-container.wkit-selected-rating {
+.wkit-plugin-review-popup-container .wkit-emoji-container:hover {
     border: 1px solid #C22076;
 }
 
-.wkit-plugin-review-popup-container .wkit-emoji-container:hover svg path,
-.wkit-plugin-review-popup-container .wkit-emoji-container.wkit-selected-rating svg path {
+.wkit-plugin-review-popup-container .wkit-emoji-container:hover svg path {
     fill: #C22076;
 }
 

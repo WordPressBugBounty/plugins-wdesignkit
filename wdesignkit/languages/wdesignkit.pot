@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.5\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-29T17:14:30+00:00\n"
+"POT-Creation-Date: 2025-05-14T11:12:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: wdesignkit\n"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: includes/admin/class-api.php:334
 #: includes/admin/hooks/class-wdkit-login-ajax.php:270
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:281
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:269
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:927
 msgid "API Not Found"
 msgstr ""
@@ -69,14 +69,14 @@ msgstr ""
 #. Translators: %s is a placeholder for the error message
 #: includes/admin/class-api.php:350
 #: includes/admin/hooks/class-wdkit-login-ajax.php:286
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:297
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:285
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:943
 msgid "API request error: %s"
 msgstr ""
 
 #: includes/admin/class-api.php:363
 #: includes/admin/hooks/class-wdkit-login-ajax.php:299
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:310
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:298
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:956
 #: build/index.js:1
 msgid "Success"
@@ -113,9 +113,9 @@ msgstr ""
 #: includes/admin/class-api.php:1530
 #: includes/admin/class-api.php:3296
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:113
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:146
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:214
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:228
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:136
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:202
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:216
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:132
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:254
 msgid "Data Not Found"
@@ -351,15 +351,15 @@ msgstr ""
 msgid "Preset ID Not Found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:147
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:137
 msgid "Preset List Not Found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:215
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:203
 msgid "Sorry , Invalid ID"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:229
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:217
 msgid "Sorry , Cannot Download"
 msgstr ""
 
@@ -596,15 +596,15 @@ msgstr ""
 msgid "Success Fully Close Rating Notice"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:139
+#: includes/admin/notices/class-wdkit-review-form.php:146
 msgid "API Request Failed"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:151
+#: includes/admin/notices/class-wdkit-review-form.php:158
 msgid "API responded successfully."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:157
+#: includes/admin/notices/class-wdkit-review-form.php:164
 msgid "API returned error"
 msgstr ""
 
@@ -713,39 +713,26 @@ msgid "Save Page in WDesignKit"
 msgstr ""
 
 #: assets/js/main/review-form/review-plugin-form.js:6
-#: build/index.js:1
-msgid "Email"
-msgstr ""
-
-#: assets/js/main/review-form/review-plugin-form.js:7
-msgid "Email is required"
-msgstr ""
-
-#: assets/js/main/review-form/review-plugin-form.js:8
-msgid "Your email address"
-msgstr ""
-
-#: assets/js/main/review-form/review-plugin-form.js:9
 msgid "Your Feedback"
 msgstr ""
 
-#: assets/js/main/review-form/review-plugin-form.js:10
+#: assets/js/main/review-form/review-plugin-form.js:7
 msgid "Please Enter feedback"
 msgstr ""
 
-#: assets/js/main/review-form/review-plugin-form.js:11
+#: assets/js/main/review-form/review-plugin-form.js:8
 msgid "Add comment"
 msgstr ""
 
-#: assets/js/main/review-form/review-plugin-form.js:12
+#: assets/js/main/review-form/review-plugin-form.js:9
 msgid "Rate Your Import Experience"
 msgstr ""
 
-#: assets/js/main/review-form/review-plugin-form.js:13
+#: assets/js/main/review-form/review-plugin-form.js:10
 msgid "How Was Your Experience with WDesignKit?"
 msgstr ""
 
-#: assets/js/main/review-form/review-plugin-form.js:14
+#: assets/js/main/review-form/review-plugin-form.js:11
 msgid "Submit"
 msgstr ""
 
@@ -1251,6 +1238,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "The login Details you entered is not correct. Please verify and try again"
+msgstr ""
+
+#: build/index.js:1
+msgid "Email"
 msgstr ""
 
 #: build/index.js:1
@@ -3526,6 +3517,14 @@ msgid "The Elementor Free version does not come with a free Navigation Menu widg
 msgstr ""
 
 #: build/index.js:1
+msgid "Why do I need Elementor Pro for this Template?"
+msgstr ""
+
+#: build/index.js:1
+msgid "This sticky header template is built using Elementor Pro's Navigation Menu widget, which is only available with the Pro version. To use this template and unlock its full potential, you'll need to have Elementor Pro installed and activated."
+msgstr ""
+
+#: build/index.js:1
 msgid "Click to know more"
 msgstr ""
 
@@ -3667,6 +3666,22 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Enable Free Navigation Menu"
+msgstr ""
+
+#: build/index.js:1
+msgid "Unlock This Sticky Header Template with Elementor Pro!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Access advanced design options like Sticky Headers, available only in Elementor Pro. Take your website's user experience to the next level!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upgrade Elementor Pro Now"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note :- If you're looking for a Free option, simply select the Filter Free option in Template. You can still import templates made using the Free Navigation Menu Widget from The Plus Addons for Elementor."
 msgstr ""
 
 #: build/index.js:1

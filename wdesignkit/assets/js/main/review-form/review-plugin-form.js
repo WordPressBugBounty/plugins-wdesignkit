@@ -3,9 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const params = new URLSearchParams(window.location.search),
         checkparams = params.get('wkit_user_review'),
-        Email = __("Email", "wdesignkit"),
-        Email_error = __("Email is required", "wdesignkit"),
-        p_address = __("Your email address", "wdesignkit"),
         Feedback = __("Your Feedback", "wdesignkit"),
         Feedback_error = __("Please Enter feedback", "wdesignkit"),
         p_comment = __("Add comment", "wdesignkit"),
@@ -17,7 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var reviewContentDiv = document.querySelector('.wkit-plugin-review-popup-container'),
             ratings = '',
-            active_plugins = [];
+            screenWidth = window.innerWidth,
+            screenHeight = window.innerHeight,
+            resolutions = (screenWidth + ' x ' + screenHeight);
 
         document.addEventListener('click', (e) => {
             if (e.target.closest('.wkit-plus-review')) {
@@ -31,12 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.open('https://wordpress.org/support/plugin/wdesignkit/reviews/#new-post', '_blank');
             } else if (e.target.closest('.wkit-minus-review')) {
 
-                let clickedElement = e.target.closest('.wkit-minus-review');
-                if (reviewContentDiv.querySelector('.wkit-selected-rating')) {
-                    reviewContentDiv.querySelector('.wkit-selected-rating').classList.remove('wkit-selected-rating');
-                }
-                clickedElement.classList.add('wkit-selected-rating');
-
                 if (e.target.closest('.wkit-rating-one')) {
                     ratings = 1;
                 } else if (e.target.closest('.wkit-rating-two')) {
@@ -45,52 +38,50 @@ document.addEventListener("DOMContentLoaded", function () {
                     ratings = 3;
                 }
 
-                let feedbackElement = reviewContentDiv.querySelector('.wkit-get-feedback');
+                let feedbackElement = reviewContentDiv.querySelector('.wkit-get-feedback'),
+                    selectedReview = reviewContentDiv.querySelector('.wkit-get-plugin-review'),
+                    reviewText = reviewContentDiv.querySelector('.wkit-plugin-review-text');
+
+                if (selectedReview && reviewText) {
+                    selectedReview.remove();
+                    reviewText.remove();
+                }
+
                 if (!feedbackElement) {
                     reviewContentDiv.classList.add('wkit-negative-review');
                     getReviewData()
                 }
             } else if (e.target.closest('.wkit-plugin-review-close')) {
-                removeReviewPopup();
-            } else if (e.target.closest('.wkit-submit-review')) {
-                var email_val = document.querySelector('#wkit-pr-email'),
-                    feedback_msg = document.querySelector('#wkit-pr-feedback');
 
-                if (email_val?.value.trim() == '' && feedback_msg?.value.trim() == '') {
-                    email_val.classList.add('wkit-pr-error');
-                    feedback_msg.classList.add('wkit-pr-error');
-                    email_val.placeholder = Email_error;
-                    feedback_msg.placeholder = Feedback_error;
-                    return;
-                } else if (email_val?.value.trim() == '') {
-                    email_val.classList.add('wkit-pr-error');
-                    email_val.placeholder = Email_error;
-                    return;
-                } else if (feedback_msg?.value.trim() == '') {
+                const formData = new FormData();
+                formData.append('action', 'wdkit_submit_review');
+                formData.append('nonce', wdkitPluginReview.nonce);
+                formData.append('rating', 0);
+                formData.append('description', 'Popup Closed by User');
+                formData.append('page_url', window.location.href);
+                formData.append('screen_resolution', resolutions);
+
+                removeReviewPopup();
+                fetch(wdkitPluginReview.ajax_url, {
+                    method: 'POST',
+                    body: formData,
+                }).then(res => res.json())
+
+            } else if (e.target.closest('.wkit-submit-review')) {
+                var feedback_msg = document.querySelector('#wkit-pr-feedback');
+
+                if (feedback_msg?.value.trim() == '') {
                     feedback_msg.classList.add('wkit-pr-error');
                     feedback_msg.placeholder = Feedback_error;
                     return
                 }
 
-                if (wdkitPluginReview?.active_plugins) {
-                    Object.values(wdkitPluginReview?.active_plugins).map((plugin) => {
-                        if (!(active_plugins.includes(plugin.Title))) {
-                            active_plugins.push(plugin.Title)
-                        }
-                    })
-                }
-
-                var screenWidth = window.innerWidth,
-                    screenHeight = window.innerHeight,
-                    resolutions = (screenWidth + ' x ' + screenHeight);
                 const formData = new FormData();
                 formData.append('action', 'wdkit_submit_review');
                 formData.append('nonce', wdkitPluginReview.nonce);
                 formData.append('rating', ratings);
-                formData.append('email', email_val?.value);
                 formData.append('description', feedback_msg?.value);
                 formData.append('page_url', window.location.href);
-                formData.append('plugins', active_plugins);
                 formData.append('screen_resolution', resolutions);
 
                 removeReviewPopup();
@@ -102,12 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         document.addEventListener('input', (e) => {
-            var email_val = e.target.closest('#wkit-pr-email'),
-                feedback_msg = e.target.closest('#wkit-pr-feedback');
-            if (email_val && email_val.value.trim() != '' && email_val.classList.contains('wkit-pr-error')) {
-                email_val.classList.remove('wkit-pr-error');
-                email_val.placeholder = p_address;
-            }
+            var feedback_msg = e.target.closest('#wkit-pr-feedback');
 
             if (feedback_msg && feedback_msg.value.trim() != '' && feedback_msg.classList.contains('wkit-pr-error')) {
                 feedback_msg.placeholder = p_comment;
@@ -117,8 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const getReviewData = () => {
             let review_form = `<div class='wkit-get-feedback'>
-                <label for='wkit-pr-email' class='wkit-plugin-review-lable'>${Email}</label>
-                <input type='text' class='wkit-plugin-review-input' id='wkit-pr-email' placeholder='${p_address}' />
                 <label for='wkit-pr-feedback' class='wkit-plugin-review-lable'>${Feedback}</label>
                 <textarea class='wkit-plugin-review-input' rows='3' id='wkit-pr-feedback' placeholder='${p_comment}'></textarea>
                 <span class='wkit-submit-review'>${submit_btn}</span>
