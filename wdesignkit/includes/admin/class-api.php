@@ -309,7 +309,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					$this->wkit_white_label();
 					break;
 				case 'wkit_reset_wl':
-					$response = $this->wkit_reset_wl();
+					$data = $this->wkit_reset_wl();
 					break;
 			}
 

@@ -157,6 +157,15 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
 			$sheCheck = isset( $_POST['sheCheck'] ) ? sanitize_text_field( wp_unslash( $_POST['sheCheck'] ) ) : false;
+			$ele_mega_menu = get_option('elementor_experiment-mega-menu', false);
+			
+			if ( ('elementor' == $builder) && $sheCheck ){
+				if ( isset( $ele_mega_menu ) ){
+					update_option('elementor_experiment-mega-menu', 'active');
+				} else {
+					add_option('elementor_experiment-mega-menu', 'active');
+				}
+			}
 			
 			if( 'gutenberg' === $builder ){ 
 				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
