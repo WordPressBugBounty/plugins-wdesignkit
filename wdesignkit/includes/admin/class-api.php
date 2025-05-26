@@ -392,6 +392,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$elementor_plugin = isset( $_POST['elementor_plugin'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['elementor_plugin'] ) ) : 0;
 			$tpag_plugin      = isset( $_POST['tpag_plugin'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['tpag_plugin'] ) ) : 0;
 			$bricks_theme     = isset( $_POST['bricks_theme'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['bricks_theme'] ) ) : 0;
+			$site_info        = isset( $_POST['info'] ) ? sanitize_text_field( wp_unslash( $_POST['info'] ) ) : false;
 
 			$server_software = ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 
@@ -432,21 +433,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'bricks_install'    => $bricks_theme,
 			);
 
-			$final = array(
-				'web_server'         => $web_server,
-				'memory_limit'       => $memory_limit,
-				'max_execution_time' => $max_execution_time,
-				'php_version'        => $php_version,
-				'wp_version'         => $wp_version,
-				'email'              => $email,
-				'site_url'           => $siteurl,
-				'site_language'      => $language,
-				'theme'              => $theme,
-				'plugins'            => $act_plugin,
-				'basic_requirements' => $basic_requirements,
-				'page_template'      => $page_template,
-				'page_builder'       => $page_builder,
-			);
+			
+			if ( !empty( $site_info ) ) {
+				$final = array(
+					'web_server'         => $web_server,
+					'memory_limit'       => $memory_limit,
+					'max_execution_time' => $max_execution_time,
+					'php_version'        => $php_version,
+					'wp_version'         => $wp_version,
+					'email'              => $email,
+					'site_url'           => $siteurl,
+					'site_language'      => $language,
+					'theme'              => $theme,
+					'plugins'            => $act_plugin,
+					'basic_requirements' => $basic_requirements,
+					'page_template'      => $page_template,
+					'page_builder'       => $page_builder,
+				);
+			} else {
+				$final = array();
+			}
 
 			$response = wp_remote_post(
 				$this->wdkit_onbording_api,

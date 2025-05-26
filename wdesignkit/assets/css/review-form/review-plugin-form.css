@@ -135,6 +135,22 @@
     font-size: 14px !important;
 }
 
+.wkit-plugin-review-popup-container .wkit-preview-popup-email {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.wkit-plugin-review-popup-container .wkit-preview-popup-email .wkit-plugin-review-email-inp {
+    margin: 0;
+    padding: 0;
+}
+
+.wkit-plugin-review-popup-container .wkit-preview-popup-email label {
+    cursor: pointer;
+}
+
 .wkit-plugin-review-popup-container input[type='text'].wkit-plugin-review-input {
     line-height: 2px !important;
 }

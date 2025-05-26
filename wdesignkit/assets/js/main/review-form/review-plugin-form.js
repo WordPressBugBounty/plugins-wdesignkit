@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         p_comment = __("Add comment", "wdesignkit"),
         emoji_number_text = __("Rate Your Import Experience", "wdesignkit"),
         thumb_text = __("How Was Your Experience with WDesignKit?", "wdesignkit"),
+        allow_email = __("Include your email with your review", "wdesignkit"),
         submit_btn = __("Submit", "wdesignkit");
 
     if (checkparams) {
@@ -53,22 +54,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } else if (e.target.closest('.wkit-plugin-review-close')) {
 
-                const formData = new FormData();
-                formData.append('action', 'wdkit_submit_review');
-                formData.append('nonce', wdkitPluginReview.nonce);
-                formData.append('rating', 0);
-                formData.append('description', 'Popup Closed by User');
-                formData.append('page_url', window.location.href);
-                formData.append('screen_resolution', resolutions);
+                // const formData = new FormData();
+                // formData.append('action', 'wdkit_submit_review');
+                // formData.append('nonce', wdkitPluginReview.nonce);
+                // formData.append('rating', 0);
+                // formData.append('description', 'Popup Closed by User');
+                // formData.append('page_url', window.location.href);
+                // formData.append('screen_resolution', resolutions);
 
-                removeReviewPopup();
-                fetch(wdkitPluginReview.ajax_url, {
-                    method: 'POST',
-                    body: formData,
-                }).then(res => res.json())
+                // removeReviewPopup();
+                // fetch(wdkitPluginReview.ajax_url, {
+                //     method: 'POST',
+                //     body: formData,
+                // }).then(res => res.json())
 
             } else if (e.target.closest('.wkit-submit-review')) {
                 var feedback_msg = document.querySelector('#wkit-pr-feedback');
+                var email_val = document.querySelector('.wkit-plugin-review-email-inp') ? document.querySelector('.wkit-plugin-review-email-inp') : '';
 
                 if (feedback_msg?.value.trim() == '') {
                     feedback_msg.classList.add('wkit-pr-error');
@@ -83,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 formData.append('description', feedback_msg?.value);
                 formData.append('page_url', window.location.href);
                 formData.append('screen_resolution', resolutions);
+                formData.append('allow_email', email_val?.checked);
 
                 removeReviewPopup();
                 fetch(wdkitPluginReview.ajax_url, {
@@ -105,6 +108,10 @@ document.addEventListener("DOMContentLoaded", function () {
             let review_form = `<div class='wkit-get-feedback'>
                 <label for='wkit-pr-feedback' class='wkit-plugin-review-lable'>${Feedback}</label>
                 <textarea class='wkit-plugin-review-input' rows='3' id='wkit-pr-feedback' placeholder='${p_comment}'></textarea>
+                <div class="wkit-preview-popup-email">
+                    <input id="wkit-emial-permission" type="checkbox" class="wkit-plugin-review-email-inp" />
+                    <label for="wkit-emial-permission">${allow_email}</label>
+                </div>
                 <span class='wkit-submit-review'>${submit_btn}</span>
             </div>`;
 

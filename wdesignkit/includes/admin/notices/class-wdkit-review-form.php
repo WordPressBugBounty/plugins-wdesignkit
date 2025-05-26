@@ -101,6 +101,7 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 			}
 
 			global $wpdb;
+			$allow_email     	= !empty( $_POST['allow_email'] ) ? sanitize_text_field( $_POST['allow_email'] ) : false;
 			$rating     		= !empty( $_POST['rating'] ) ? sanitize_text_field( $_POST['rating'] ) : '0';
 			$email      		= !empty( wp_get_current_user()->user_email ) ? wp_get_current_user()->user_email : '';
 			$description    	= !empty( $_POST['description'] ) ? sanitize_textarea_field( $_POST['description'] ) : '';
@@ -116,29 +117,34 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 			$language 			= get_bloginfo( 'language' );
 			$server 			= ! empty( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 
+			$detail = [
+				'rating'      		 => $rating,
+				'description' 		 => $description,
+				// 'plugins'     		 => $plugins,
+				// 'themes'      		 => $active_theme,
+				// 'wp_version'  		 => $wp_version,
+				// 'page_url'  		 => $page_url,
+				// 'wdkit_version' 	 => WDKIT_VERSION,
+				// 'db_version' 		 => $db_version,
+				// 'php_version' 		 => $php_version,
+				// 'server' 			 => $server,
+				// 'memory_limit' 		 => $memory_limit,
+				// 'language' 			 => $language,
+				'screen_resolution'  => 1,
+				// 'max_execution_time' => $max_execution_time,
+			];
+
+			if( !empty($allow_email) && $allow_email === 'true' ){
+				$detail['email'] = $email;
+			}
+
 			$response = wp_remote_post('https://wdesignkit.com/api/wp/userreview', [
 				'method'  => 'POST',
 				'timeout' => 30,
 				'headers' => [
 					'Content-Type' => 'application/json',
 				],
-				'body'    => json_encode([
-					'rating'      		 => $rating,
-					'email'       	 	 => $email,
-					'description' 		 => $description,
-					'plugins'     		 => $plugins,
-					'themes'      		 => $active_theme,
-					'wp_version'  		 => $wp_version,
-					'page_url'  		 => $page_url,
-					'wdkit_version' 	 => WDKIT_VERSION,
-					'db_version' 		 => $db_version,
-					'php_version' 		 => $php_version,
-					'server' 			 => $server,
-					'memory_limit' 		 => $memory_limit,
-					'language' 			 => $language,
-					'screen_resolution'  => $screen_resolution,
-					'max_execution_time' => $max_execution_time,
-				]),
+				'body'    => json_encode($detail),
 			]);
 		
 			if (is_wp_error($response)) {

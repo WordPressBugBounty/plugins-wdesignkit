@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 1.2.9
+Stable tag: 1.2.10
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -94,7 +94,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-1.2.9 – 19 May 2025
+1.2.10 – 27 May 2025
+Fix: Widget Builder : Convert widget error Bricks Builder.
+Fix: Conflict : Solve Design conflict.
+Fix: Import Template error in Gutenberg.
+Fix: Minor bugs and improvements.
+
+1.2.9 – 16 May 2025
 Fix: Widget Builder : Sanitizer error.
 Fix: Minor bugs and improvements.
 
