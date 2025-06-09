@@ -53,21 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     getReviewData()
                 }
             } else if (e.target.closest('.wkit-plugin-review-close')) {
-
-                // const formData = new FormData();
-                // formData.append('action', 'wdkit_submit_review');
-                // formData.append('nonce', wdkitPluginReview.nonce);
-                // formData.append('rating', 0);
-                // formData.append('description', 'Popup Closed by User');
-                // formData.append('page_url', window.location.href);
-                // formData.append('screen_resolution', resolutions);
-
-                // removeReviewPopup();
-                // fetch(wdkitPluginReview.ajax_url, {
-                //     method: 'POST',
-                //     body: formData,
-                // }).then(res => res.json())
-
+                removeReviewPopup();
             } else if (e.target.closest('.wkit-submit-review')) {
                 var feedback_msg = document.querySelector('#wkit-pr-feedback');
                 var email_val = document.querySelector('.wkit-plugin-review-email-inp') ? document.querySelector('.wkit-plugin-review-email-inp') : '';
