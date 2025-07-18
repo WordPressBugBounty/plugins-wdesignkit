@@ -219,18 +219,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					$data = $this->wdkit_enable_template_widgets();
 					break;
 				case 'scan_nexter_widgets':
-					if (has_filter('tpgb_disable_unsed_block_filter')) {
-						$data = apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
-
-						$res = array(
-							'massage' => __('Disabled Successfully', 'wdesignkit'),
-							'description' => __('Unused widgets have been Disabled successfully', 'wdesignkit'),
-							'success' => true,
-						); 
-						wp_send_json($res);
+					if ( ! empty( $_POST['blockNames'] ) && has_filter( 'nexter_block_list_merge' ) ) {
+						$blockList = array_map( 'sanitize_text_field', (array) $_POST['blockNames'] );
+						$result = apply_filters( 'nexter_block_list_merge', $blockList );
+				
+						wp_send_json( $result );
 						wp_die();
 					}
-
+				
+					wp_send_json( array(
+						'success' => false,
+						'message' => 'No block names received or filter not found.',
+						'description' => 'Ensure blockNames are posted and the filter is attached.',
+					) );
+					wp_die();
 					$data = '';
 					break;
 				case 'shared_with_me':
@@ -1932,10 +1934,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args     = $this->wdkit_parse_args( $_POST );
 			$api_type = isset( $_POST['api_type'] ) ? sanitize_text_field( wp_unslash( $_POST['api_type'] ) ) : 'import_template';
 
-			if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
-				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
-			}
-
 			$response = '';
 			if ( empty( $args['template_id'] ) ) {
 				$result = array(
@@ -2247,11 +2245,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
-
-			if( ! empty( $builder ) && 'gutenberg' === $builder ){ 
-				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
-			}
-
 			$page_section = ! empty( $_POST['page_section'] ) ? sanitize_text_field( wp_unslash( $_POST['page_section'] ) ) : '';
 
 			if ( isset( $page_section ) ) {
@@ -2373,10 +2366,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return false;
-			}
-
-			if( ! empty( $args['builder'] ) && 'gutenberg' === $args['builder'] ){ 
-				apply_filters( 'widget_load_nxt', 'tpgb_blocks_enable_all_filter' );
 			}
 
 			if ( empty( $_POST['template_ids'] ) ) {
@@ -2567,10 +2556,6 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							}
 						}
 						
-						if (has_filter('tpgb_disable_unsed_block_filter')) {
-							apply_filters( 'tpgb_disable_unsed_block_filter', array('tpgb_disable_unsed_block_filter_fun') );
-						}
-
 						$temp_detail =  array(
 							'title'     => get_the_title( $inserted_post ),
 							'edit_link' => get_edit_post_link( $inserted_post, 'internal' ),

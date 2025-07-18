@@ -3,7 +3,7 @@
  * Plugin Name: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder
  * Plugin URI: https://wdesignkit.com/
  * Description: Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 50+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more.
- * Version: 1.2.11
+ * Version: 1.2.12
  * Author: POSIMYTH
  * Author URI: https://posimyth.com/
  * Text Domain: wdesignkit
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WDKIT_VERSION', '1.2.11' );
+define( 'WDKIT_VERSION', '1.2.12' );
 define( 'WDKIT_FILE', __FILE__ );
 define( 'WDKIT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WDKIT_PBNAME', plugin_basename( __FILE__ ) );
@@ -30,7 +30,7 @@ define( 'WDKIT_INCLUDES', WDKIT_PATH . '/includes/' );
 define( 'WDKIT_ASSETS', WDKIT_URL . 'assets/' );
 define( 'WDKIT_TEXT_DOMAIN', 'wdesignkit' );
 define( 'WDKIT_SERVER_SITE_URL', 'https://wdesignkit.com/' );
-define( 'WDKIT_DOCUMENT', 'https://learn.wdesignkit.com/' );
+define( 'WDKIT_DOCUMENT', 'https://learn.wdesignkit.com/docs/' );
 
 /** Widget Builder path*/
 define( 'WDKIT_SERVER_PATH', wp_upload_dir()['baseurl'] . '/wdesignkit' );

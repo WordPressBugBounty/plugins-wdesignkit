@@ -166,10 +166,6 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 					add_option('elementor_experiment-mega-menu', 'active');
 				}
 			}
-			
-			if( 'gutenberg' === $builder ){ 
-				apply_filters( 'tpgb_blocks_enable_all', 'tpgb_blocks_enable_all_filter' );
-			}
 
 			$array_data = array(
 				'id'           => isset( $_POST['id'] ) ? (int) $_POST['id'] : '',
