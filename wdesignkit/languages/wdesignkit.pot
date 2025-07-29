@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.12\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.13\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-18T06:25:56+00:00\n"
+"POT-Creation-Date: 2025-07-28T06:25:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -3634,7 +3634,19 @@ msgid "Header Effects"
 msgstr ""
 
 #: build/index.js:1
+msgid "Elementor Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg Blocks"
+msgstr ""
+
+#: build/index.js:1
 msgid "Widget Presets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Presets"
 msgstr ""
 
 #: build/index.js:1

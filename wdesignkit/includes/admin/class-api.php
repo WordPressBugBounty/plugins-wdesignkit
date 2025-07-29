@@ -757,6 +757,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = WDesignKit_Data_Query::get_data( 'browse_page', $args );
 
+			$manage_licence       = array();
+			$manage_licence['theplus_elementor_addon'] = !empty ( defined( 'THEPLUS_VERSION' ) ) ? true : false;
+			$manage_licence['tpag'] = !empty ( defined( 'TPGBP_VERSION' ) ) ? true : false;
+			$manage_licence['elementor-pro'] = !empty ( defined( 'ELEMENTOR_PRO_VERSION' ) ) ? true : false;
+			$response['manage_licence'] = $manage_licence;
+
 			wp_send_json( $response );
 			wp_die();
 		}
