@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.14\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.15\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-30T07:03:52+00:00\n"
+"POT-Creation-Date: 2025-08-18T10:54:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -589,15 +589,15 @@ msgstr ""
 msgid "Success Fully Close Rating Notice"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:152
+#: includes/admin/notices/class-wdkit-review-form.php:154
 msgid "API Request Failed"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:164
+#: includes/admin/notices/class-wdkit-review-form.php:166
 msgid "API responded successfully."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-review-form.php:170
+#: includes/admin/notices/class-wdkit-review-form.php:172
 msgid "API returned error"
 msgstr ""
 
@@ -3562,7 +3562,7 @@ msgid "Click to know more"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Preset Imported Successfully!"
+msgid "Preset Imported Successfully!"
 msgstr ""
 
 #: build/index.js:1

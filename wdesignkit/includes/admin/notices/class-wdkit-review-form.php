@@ -76,9 +76,11 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		}
 
 		public function wdkit_review_form_scripts() {
-
-            wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
-            wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
+			if ( is_user_logged_in() ) {
+				wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
+				wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
+			}
+			
 			wp_localize_script(
 				'wdkit-review-form-plugin',
 				'wdkitPluginReview',

@@ -191,7 +191,7 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 							<span> 
 								<?php echo esc_html__( 'Read', 'wdesignkit' ); ?> 
 
-								<a href="<?php echo esc_url( 'https://theplusblocks.com/docs/?utm_source=wpbackend&utm_medium=admin&utm_campaign=links' ); ?>" target="_blank" rel="noopener noreferrer">
+								<a href="<?php echo esc_url( 'https://learn.wdesignkit.com/' ); ?>" target="_blank" rel="noopener noreferrer">
 									<?php echo esc_html__( 'Documentation.', 'wdesignkit' ); ?>   
 								</a> 
 							</span> 
