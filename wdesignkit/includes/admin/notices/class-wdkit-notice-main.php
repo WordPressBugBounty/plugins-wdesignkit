@@ -64,17 +64,22 @@ if ( ! class_exists( 'Wdkit_Notice_Main' ) ) {
 
 			if ( is_admin() && current_user_can( 'manage_options' ) ) {
 				/**Remove Key In Databash*/
-				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-notices-remove.php';
-				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
+				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-notices-remove.php';
+				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
 			}
 
 			if ( is_admin() ) {
-				require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
+				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
+			}
+
+			if ( current_user_can( 'manage_options' ) ) {
+				if ( is_user_logged_in() ) {
+					include WDKIT_PATH . 'includes/admin/notices/class-wdkit-review-form.php';
+				}
 			}
 			
-			require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-review-form.php';
 			/**Add Banner For Reating after 3 day*/
-			// require_once WDKIT_PATH . 'includes/admin/notices/class-wdkit-rating.php';
+			// include WDKIT_PATH . 'includes/admin/notices/class-wdkit-rating.php';
 		}
 	}
 

@@ -75,12 +75,16 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
             <?php
 		}
 
+		/**
+		 * Load review form scripts
+		 *
+		 * @since 1.2.5
+		 */
 		public function wdkit_review_form_scripts() {
-			if ( is_user_logged_in() ) {
-				wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
-				wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
-			}
-			
+
+			wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
+			wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
+
 			wp_localize_script(
 				'wdkit-review-form-plugin',
 				'wdkitPluginReview',
@@ -91,8 +95,33 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 			);
 		}
 
+		/**
+		 * Handle review submission
+		 *
+		 * @since 1.2.5
+		 */
 		public function wdkit_handle_review_submission() {
+
 			check_ajax_referer( 'wdkit_review_nonce', 'nonce' );
+
+			// Check if user is logged in
+			if ( ! is_user_logged_in() ) {
+				wp_send_json([
+					'message' 	 => __( 'You must be logged in to submit a review.', 'wdesignkit' ),
+					'error'  	 => 'You must be logged in to submit a review.',
+					'success'    => false,
+				]);
+			}
+
+			// Check if the user is logged in and has manage_options capability	
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json([
+					'message' 	 => __( 'Unauthorized', 'wdesignkit' ),
+					'error'  	 => 'Unauthorized',
+					'success'    => false,
+				]);
+			}			
+
 			$active_plugins = get_plugins();
 			$active_plugins_list = [];
 
