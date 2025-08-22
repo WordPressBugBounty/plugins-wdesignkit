@@ -244,7 +244,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			}
 
 			$data   = ! empty( $_POST['value'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'value', 'cr_widget' ) : '';
-			$data   = ! empty( $data ) ? stripslashes( $data ) : '';
 			$return = ! empty( $data ) ? json_decode( $data ) : '';
 
 			$all_val = ! empty( $return ) ? $return : '';
@@ -1008,7 +1007,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			if ( 'none' === $condition ) {
 				return $data[ $type ];
 			} elseif ( 'cr_widget' === $condition ) {
-				return $data[ $type ];
+				return base64_decode($data[ $type ]);
 			}
 		}
 

@@ -1927,7 +1927,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'success'     => true,
 			);
 
-			wp_send_json( $response );
+			wp_send_json( $result );
 			wp_die();
 		}
 

@@ -94,6 +94,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
+1.2.17 - 22- Aug 2025
+Fix: Widget Builder : Security Patch (Low Security)
+Fix: Minor bugs and improvements.
+
 1.2.16 - 20- Aug 2025
 Fix: Security Patch (Low Security)
 Fix: Minor bugs and improvements.

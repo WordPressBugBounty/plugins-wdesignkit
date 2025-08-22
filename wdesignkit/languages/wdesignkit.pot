@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.16\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.17\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-20T05:58:01+00:00\n"
+"POT-Creation-Date: 2025-08-22T07:40:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -54,7 +54,7 @@ msgstr ""
 #: includes/admin/class-api.php:336
 #: includes/admin/hooks/class-wdkit-login-ajax.php:270
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:274
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:927
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:926
 msgid "API Not Found"
 msgstr ""
 
@@ -62,7 +62,7 @@ msgstr ""
 #: includes/admin/class-api.php:352
 #: includes/admin/hooks/class-wdkit-login-ajax.php:286
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:290
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:943
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:942
 #, php-format
 msgid "API request error: %s"
 msgstr ""
@@ -70,7 +70,7 @@ msgstr ""
 #: includes/admin/class-api.php:365
 #: includes/admin/hooks/class-wdkit-login-ajax.php:299
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:303
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:956
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:955
 #: build/index.js:1
 msgid "Success"
 msgstr ""
@@ -110,7 +110,7 @@ msgstr ""
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:207
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:221
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:132
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:254
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:253
 msgid "Data Not Found"
 msgstr ""
 
@@ -138,8 +138,8 @@ msgstr ""
 
 #: includes/admin/class-api.php:1621
 #: includes/admin/class-api.php:1622
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:795
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:796
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:797
 msgid "Page Not Found!"
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 #: includes/admin/class-api.php:3129
 #: includes/admin/class-api.php:3185
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:171
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:673
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:672
 msgid "server error"
 msgstr ""
 
@@ -360,98 +360,98 @@ msgstr ""
 msgid "Widget List Not Found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:255
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:293
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:642
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:254
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:292
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:641
 msgid "something went wrong! please try again later."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:292
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:291
 msgid "Builder Type not found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:455
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:454
 #: build/index.js:1
 msgid "Update Saved Successfully"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:456
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:455
 #: build/index.js:1
 msgid "Success! Update Saved"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:521
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:520
 msgid "Widget Already Exist!"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:522
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:521
 msgid "Widget Already Exist in plugin"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:532
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:571
+msgid "Operation Fial!"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:533
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:572
-msgid "Operation Fial!"
-msgstr ""
-
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:534
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:573
 msgid "Widget can not imported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:562
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:561
 #: build/index.js:1
 msgid "Widget imported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:563
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:562
 msgid "Widget imported successfully"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:602
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:601
 msgid "Widget Type Fail"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:603
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:602
 msgid "Widget Type Not Exists"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:631
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:630
 msgid "Widget Exported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:632
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:631
 msgid "Widget Exported successfully"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:641
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:640
 msgid "Widget Exported Fail"
 msgstr ""
 
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:676
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:677
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:678
 msgid "Widget Not Deleted"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:701
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:700
 msgid "widget deleted"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:702
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:701
 msgid "Widget deleted successfully"
 msgstr ""
 
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:721
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:722
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:723
 msgid "Invalid widget data"
 msgstr ""
 
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:810
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:811
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:812
 msgid "Invalid serialize_blocks"
 msgstr ""
 
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:838
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:839
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:840
 msgid "widget Type Not Found"
 msgstr ""
 
