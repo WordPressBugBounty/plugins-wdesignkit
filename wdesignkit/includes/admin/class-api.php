@@ -37,9 +37,25 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		/**
 		 * Member Variable
 		 *
+		 * @var staring widgets_with_post_category
+		 */
+		public $widgets_with_post_category = array(
+			'post_category',
+		);
+
+		/**
+		 * Member Variable
+		 *
 		 * @var staring $wdkit_api
 		 */
-		public $wdkit_api = WDKIT_SERVER_SITE_URL . 'api/wp/';
+		public $wdkit_api    = WDKIT_SERVER_API_URL . 'api/wp/';
+
+		/**
+		 * Member Variable
+		 *
+		 * @var staring $wdkit_api_v2
+		 */
+		public $wdkit_api_v2 = WDKIT_SERVER_API_URL . 'api/v2/wp/';
 
 		/**
 		 * Member Variable
@@ -99,7 +115,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @param array  $data give array.
 		 * @param string $status api code number.
-		 * 
+		 *
 		 * @since 1.0.0
 		 * */
 		public function wdkit_error_msg( $data = null, $status = null ) {
@@ -112,7 +128,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @param array  $data give array.
 		 * @param string $status api code number.
-		 * 
+		 *
 		 * @since 1.0.0
 		 * */
 		public function wdkit_success_msg( $data = null, $status = null ) {
@@ -149,6 +165,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'social_login':
 					$data = apply_filters( 'wp_wdkit_login_ajax', 'social_login' );
 					break;
+				case 'forgot_password':
+					$data = apply_filters( 'wp_wdkit_login_ajax', 'forgot_password' );
+					break;
+				case 'wdkit_user_signup':
+					$data = apply_filters( 'wp_wdkit_login_ajax', 'wdkit_user_signup' );
+					break;
 				case 'wkit_meta_data':
 					$data = $this->wdkit_meta_data();
 					break;
@@ -164,7 +186,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wkit_preset_template':
 					$data = apply_filters( 'wp_wdkit_preset_ajax', 'wdkit_preset_template' );
 					break;
-				case 'wdkit_preset_dwnld_template':	
+				case 'wdkit_preset_dwnld_template':
 					$data = apply_filters( 'wp_wdkit_preset_ajax', 'wdkit_preset_dwnld_template' );
 					break;
 				case 'template_remove':
@@ -173,11 +195,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'save_template':
 					$data = $this->wdkit_put_save_template();
 					break;
+				case 'update_save_temp_image':
+					$data = $this->wdkit_update_save_temp_image();
+					break;
 				case 'get_global_val':
 					$data = $this->wdkit_get_global_val();
 					break;
 				case 'update_global_val':
 					$data = $this->wdkit_update_global_val();
+					break;
+				case 'wdkit_get_site_setting':
+					$data = $this->wdkit_get_site_setting();
+					break;
+				case 'wdkit_update_site_setting':
+					$data = $this->wdkit_update_site_setting();
 					break;
 				case 'update_preset_setting':
 					$data = $this->wdkit_update_preset();
@@ -197,11 +228,47 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'install_plugins_depends':
 					$data = $this->wdkit_install_plugins_depends();
 					break;
+				case 'generate_site_logo':
+					$data = $this->wkit_generate_site_logo();
+					break;
+				case 'generate_ai_content':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'generate_ai_content' );
+					break;
+				case 'reset_site':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'reset_site' );
+					break;
+				case 'wdkit_nxt_thembuilder_reset':
+					$data = $this->wdkit_nxt_thembuilder_reset();
+					break;
+				case 'wdkit_check_user_credit':
+					$data = $this->wdkit_check_user_credit();
+					break;
+				case 'wdkit_remove_header_footer':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wdkit_remove_header_footer' );
+					break;
+				case 'check_post_count':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'check_post_count' );
+					break;
+				case 'select_team_img':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'select_team_img' );
+					break;
+				case 'wkit_ai_desc_keyword':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_ai_desc_keyword' );
+					break;
+				case 'wkit_ai_credit_update':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_ai_credit_update' );
+					break;
+				case 'wkit_generate_post_data':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_generate_post_data' );
+					break;
 				case 'update_latest_plugin':
 					$data = $this->wdkit_update_latest_plugin();
 					break;
 				case 'activate_container':
 					$data = $this->wdkit_activate_container();
+					break;
+				case 'import_taxonomy':
+					$data = $this->wdkit_import_taxonomy();
 					break;
 				case 'import_template':
 					$data = $this->wdkit_import_template();
@@ -212,6 +279,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'import_page_section':
 					$data = $this->import_page_section_content();
 					break;
+				case 'update_plugin_setting':
+					$data = $this->update_plugin_setting();
+					break;
+				case 'update_theme_setting':
+					$data = $this->update_theme_setting();
+					break;
+				case 'update_site_setting':
+					$data = $this->update_site_setting();
+					break;
 				case 'import_kit_template':
 					$data = $this->wdkit_import_kit_template();
 					break;
@@ -220,18 +296,27 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'scan_nexter_widgets':
 					if ( ! empty( $_POST['blockNames'] ) && has_filter( 'nexter_block_list_merge' ) ) {
-						$blockList = array_map( 'sanitize_text_field', (array) $_POST['blockNames'] );
-						$result = apply_filters( 'nexter_block_list_merge', $blockList );
-				
-						wp_send_json( $result );
-						wp_die();
+
+						$posted_blocks = json_decode( stripslashes( $_POST['blockNames'] ), true );
+
+						if ( is_array( $posted_blocks ) ) {
+							$blockList = array_map( 'sanitize_text_field', $posted_blocks );
+
+							// अब filter call करो
+							$result = apply_filters( 'nexter_block_list_merge', $blockList );
+
+							wp_send_json( $result );
+							wp_die();
+						}
 					}
-				
-					wp_send_json( array(
-						'success' => false,
-						'message' => 'No block names received or filter not found.',
-						'description' => 'Ensure blockNames are posted and the filter is attached.',
-					) );
+
+					wp_send_json(
+						array(
+							'success'     => false,
+							'message'     => 'No block names received or filter not found.',
+							'description' => 'Ensure blockNames are posted and the filter is attached.',
+						)
+					);
 					wp_die();
 					$data = '';
 					break;
@@ -258,6 +343,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_widget_preview':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_widget_preview' );
+					break;
+				case 'wkit_check_widget_versions':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_check_widget_versions' );
 					break;
 				case 'wkit_manage_widget_workspace':
 					$data = $this->wdkit_manage_widget_workspace();
@@ -312,6 +400,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_reset_wl':
 					$data = $this->wkit_reset_wl();
+					break;
+				case 'wdkit_dark_mode':
+					$data = $this->wdkit_dark_mode();
+					break;
+				case 'wdkit_get_workspace_data':
+					$data = $this->wdkit_get_workspace_data();
 					break;
 			}
 
@@ -435,8 +529,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'bricks_install'    => $bricks_theme,
 			);
 
-			
-			if ( !empty( $site_info ) ) {
+			if ( ! empty( $site_info ) ) {
 				$final = array(
 					'web_server'         => $web_server,
 					'memory_limit'       => $memory_limit,
@@ -511,7 +604,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * It is Use for get meta data for non login user
 		 *
-		 * @since 1.0.0\
+		 * @since 1.0.0
 		 */
 		protected function wdkit_meta_data() {
 			$type = isset( $_POST['meta_type'] ) ? sanitize_text_field( wp_unslash( $_POST['meta_type'] ) ) : '';
@@ -562,24 +655,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.6
 		 */
 		protected function wkit_manage_license_data() {
-			$manage_licence = array();
-			$theplus_active_check = is_plugin_active('the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php');
-			$nexter_active_check = is_plugin_active('the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php');
+			$manage_licence       = array();
+			$theplus_active_check = is_plugin_active( 'the-plus-addons-for-elementor-page-builder/theplus_elementor_addon.php' );
+			$nexter_active_check  = is_plugin_active( 'the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php' );
 
-			$theplus_licence = get_option('tpaep_licence_data', []);
-			
-			if ( ! empty( $theplus_active_check ) &&! empty( $theplus_licence ) ) {
+			$theplus_licence = get_option( 'tpaep_licence_data', array() );
+
+			if ( ! empty( $theplus_active_check ) && ! empty( $theplus_licence ) ) {
 				$manage_licence['tpae'] = $theplus_licence;
 			}
 
-			$nexter_licence = get_option('tpgb_activate', []);
+			$nexter_licence = get_option( 'tpgb_activate', array() );
 
-			if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && !empty( $nexter_licence['tpgb_activate_key'] ) ) {
-				$tpgb_license_status = get_option('tpgbp_license_status', []);
+			if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && ! empty( $nexter_licence['tpgb_activate_key'] ) ) {
+				$tpgb_license_status                = get_option( 'tpgbp_license_status', array() );
 				$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
-				$manage_licence['tpag'] = $tpgb_license_status;
+				$manage_licence['tpag']             = $tpgb_license_status;
 			}
-			
+
 			return $manage_licence;
 		}
 
@@ -590,6 +683,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wdkit_get_user_info() {
+			$token   = isset( $_POST['token'] ) ? wp_unslash( $_POST['token'] ) : false;
 			$email   = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
 			$builder = isset( $_POST['builder'] ) ? strtolower( sanitize_text_field( wp_unslash( $_POST['builder'] ) ) ) : '';
 
@@ -597,7 +691,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = array();
 
-			if ( empty( $email ) ) {
+			if ( empty( $token ) ) {
 				$response = array(
 					'success'     => false,
 					'message'     => $this->e_msg_login,
@@ -608,8 +702,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				wp_die();
 			}
 
-			$token = $this->wdkit_login_user_token( $email );
-			$args  = array(
+			// $token = $this->wdkit_login_user_token( $email );
+			$args = array(
 				'token'    => $token,
 				'builder'  => $builder,
 				'site_url' => $site_url,
@@ -622,10 +716,28 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			/**Condtion user for user logout & expire token*/
 			if ( 'Token is Expired' === $status || 'Authorization Token not found' === $status ) {
 				delete_transient( 'wdkit_auth_' . $email );
+				// Clear stored license data when token expires so banner shows again
+				delete_option( 'wdkit_licence_data' );
 			}
 
-            $response['Setting']     = $this->wkit_get_settings_panel();
-            $response['widget_list'] = $this->wkit_manage_widget_sequence( $response );
+			if ( empty( $response ) ) {
+				$response['login_reset'] = 'yes';
+			}
+
+			// Store WDesignKit license data locally if present in response
+			if ( ! empty( $response['credits']['wdkit_licence'] ) && is_array( $response['credits']['wdkit_licence'] ) ) {
+				$wdkit_licence = $response['credits']['wdkit_licence'];
+				// Handle serialized data
+				if ( is_string( $wdkit_licence ) && is_serialized( $wdkit_licence ) ) {
+					$wdkit_licence = unserialize( $wdkit_licence );
+				}
+				if ( ! empty( $wdkit_licence ) && is_array( $wdkit_licence ) ) {
+					update_option( 'wdkit_licence_data', $wdkit_licence );
+				}
+			}
+
+			$response['Setting']        = $this->wkit_get_settings_panel();
+			$response['widget_list']    = $this->wkit_manage_widget_sequence( $response );
 			$response['manage_licence'] = $this->wkit_manage_license_data();
 
 			$response = array(
@@ -662,7 +774,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$w_id         = ! empty( $value['w_id'] ) ? $value['w_id'] : '';
 
 				if ( ! empty( $builder_name ) ) {
-					$idx_builder[ $w_id ] = strtolower( $builder_name );
+					$idx_builder[ $w_id ] = strtolower( str_replace( ' ', '_', trim( $builder_name ) ) );
 				}
 			}
 
@@ -757,11 +869,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = WDesignKit_Data_Query::get_data( 'browse_page', $args );
 
-			$manage_licence       = array();
-			$manage_licence['theplus_elementor_addon'] = !empty ( defined( 'THEPLUS_VERSION' ) ) ? true : false;
-			$manage_licence['tpag'] = !empty ( defined( 'TPGBP_VERSION' ) ) ? true : false;
-			$manage_licence['elementor-pro'] = !empty ( defined( 'ELEMENTOR_PRO_VERSION' ) ) ? true : false;
-			$response['manage_licence'] = $manage_licence;
+			$manage_licence                            = array();
+			$manage_licence['theplus_elementor_addon'] = ! empty( defined( 'THEPLUS_VERSION' ) ) ? true : false;
+			$manage_licence['tpag']                    = ! empty( defined( 'TPGBP_VERSION' ) ) ? true : false;
+			$manage_licence['elementor-pro']           = ! empty( defined( 'ELEMENTOR_PRO_VERSION' ) ) ? true : false;
+			$response['manage_licence']                = $manage_licence;
 
 			wp_send_json( $response );
 			wp_die();
@@ -823,9 +935,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wdkit_put_save_template() {
-			$email    = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
+			$email   = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
 			$post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '';
-			
+			$builder    = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+
 			$response = '';
 
 			if ( empty( $email ) ) {
@@ -844,6 +957,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args          = $this->wdkit_parse_args( $_POST );
 			$args['token'] = $this->wdkit_login_user_token( $email );
 			unset( $args['email'] );
+
+			if( 'elementor' === $builder ){
+				$args['data'] = base64_decode( $args['data'] );
+			} else if ( 'gutenberg' === $builder ) {
+				$args['data'] = base64_decode( $args['data'] );
+			}
 
 			global $post;
 
@@ -872,6 +991,60 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 		/**
 		 *
+		 * It is Use for update save template image.
+		 *
+		 * @since 2.0.6
+		 */
+		protected function wdkit_update_save_temp_image() {
+			$temp_content = isset( $_POST['temp_content'] ) ? esc_url_raw( $_POST['temp_content'] ) : '';
+			$content_name = isset( $_POST['content_name'] ) ? sanitize_text_field( $_POST['content_name'] ) : '';
+			$token        = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
+			$user_type    = isset( $_POST['user_type'] ) ? sanitize_text_field( $_POST['user_type'] ) : '';
+			$type         = isset( $_POST['content_type'] ) ? sanitize_text_field( $_POST['content_type'] ) : '';
+			$id           = isset( $_POST['id'] ) ? sanitize_text_field( $_POST['id'] ) : '';
+			if ( empty( $temp_content ) || empty( $user_type ) || empty( $id ) || empty( $token ) ) {
+				$response = array(
+					'message'     => __( 'Data not found', 'wdesignkit' ),
+					'description' => __( 'Data not found', 'wdesignkit' ),
+					'success'     => false,
+				);
+			} else {
+				$temp_content = str_replace( '\\', '', $temp_content );
+				$temp_content = wp_remote_get( $temp_content )['body'];
+				$temp_content = base64_encode( $temp_content );
+
+				$args = array(
+					'token'       => $token,
+					'template_id' => $id,
+					'name'        => $content_name,
+					'content'     => $temp_content,
+					'type'        => $type,
+				);
+
+				$response = $this->wkit_api_call( $args, 'save_images' );
+				$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+				if ( $success ) {
+					$response = array(
+						'data'    => $response['data'],
+						'success' => true,
+					);
+				} else {
+					$response = array(
+						'message'     => __( 'API Error', 'wdesignkit' ),
+						'description' => __( 'API Error', 'wdesignkit' ),
+						'data'        => $response['data'],
+						'success'     => false,
+					);
+				}
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
 		 * Get Elementor Global color and Typography.
 		 *
 		 * @since 1.1.16
@@ -880,12 +1053,749 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$builder = isset( $_POST['builder'] ) ? strtolower( sanitize_text_field( $_POST['builder'] ) ) : '';
 
-			if( 'elementor' === $builder ){
-				$kit_id = get_option('elementor_active_kit');
-				if ( empty($kit_id) ) {
+			if ( 'elementor' === $builder ) {
+				$kit_id = get_option( 'elementor_active_kit' );
+				if ( empty( $kit_id ) ) {
 						$response = array(
-						'message'     => __('Elementor kit not found', 'wdesignkit'),
-						'description' => __('No active Elementor kit found', 'wdesignkit'),
+							'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
+							'description' => __( 'No active Elementor kit found', 'wdesignkit' ),
+							'success'     => false,
+						);
+
+						wp_send_json( $response );
+						wp_die();
+				}
+
+				$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
+				if ( empty( $kit_meta['system_colors'] ) ) {
+					$static_meta = array(
+						'system_colors'         => array(
+							0 => array(
+								'_id'   => 'primary',
+								'title' => 'Primary',
+								'color' => '#6EC1E4',
+							),
+							1 => array(
+								'_id'   => 'secondary',
+								'title' => 'Secondary',
+								'color' => '#54595F',
+							),
+							2 => array(
+								'_id'   => 'text',
+								'title' => 'Text',
+								'color' => '#7A7A7A',
+							),
+							3 => array(
+								'_id'   => 'accent',
+								'title' => 'Accent',
+								'color' => '#61CE70',
+							),
+						),
+						'custom_colors'         => array(),
+						'system_typography'     => array(
+							0 => array(
+								'_id'                    => 'primary',
+								'title'                  => 'Primary',
+								'typography_typography'  => 'custom',
+								'typography_font_family' => 'Roboto',
+								'typography_font_weight' => '600',
+							),
+							1 => array(
+								'_id'                    => 'secondary',
+								'title'                  => 'Secondary',
+								'typography_typography'  => 'custom',
+								'typography_font_family' => 'Roboto Slab',
+								'typography_font_weight' => '400',
+							),
+							2 => array(
+								'_id'                    => 'text',
+								'title'                  => 'Text',
+								'typography_typography'  => 'custom',
+								'typography_font_family' => 'Roboto',
+								'typography_font_weight' => '400',
+							),
+							3 => array(
+								'_id'                    => 'accent',
+								'title'                  => 'Accent',
+								'typography_typography'  => 'custom',
+								'typography_font_family' => 'Roboto',
+								'typography_font_weight' => '500',
+							),
+						),
+						'custom_typography'     => array(),
+						'default_generic_fonts' => 'Sans-serif',
+						'site_name'             => ! empty( get_bloginfo( 'name' ) ) ? get_bloginfo( 'name' ) : '',
+						'page_title_selector'   => 'h1.entry-title',
+						'activeItemIndex'       => 1,
+						'viewport_md'           => 768,
+						'viewport_lg'           => 1025,
+					);
+
+					$kit_meta = $static_meta;
+					update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+				}
+
+				$system_colors     = ! empty( $kit_meta['system_colors'] ) ? $kit_meta['system_colors'] : array();
+				$custom_colors     = ! empty( $kit_meta['custom_colors'] ) ? $kit_meta['custom_colors'] : array();
+				$system_typography = ! empty( $kit_meta['system_typography'] ) ? $kit_meta['system_typography'] : array();
+				$custom_typography = ! empty( $kit_meta['custom_typography'] ) ? $kit_meta['custom_typography'] : array();
+
+				$color_array = array_merge( $system_colors, $custom_colors );
+				$typo_array  = array_merge( $system_typography, $custom_typography );
+
+				$global_data = array(
+					'color'      => $color_array,
+					'typography' => $typo_array,
+				);
+
+				$response = array(
+					'message'     => __( 'Global data Found', 'wdesignkit' ),
+					'description' => __( 'Global Color and Typography found', 'wdesignkit' ),
+					'data'        => $global_data,
+					'success'     => true,
+				);
+
+			} elseif ( 'gutenberg' === $builder ) {
+
+				$plus_settings = get_option( 'tpgb_global_options', false );
+				$plus_settings = ! empty( $plus_settings ) ? json_decode( $plus_settings, true ) : json_decode( '[]' );
+
+				if ( empty( $plus_settings ) ) {
+
+					$static_meta = array(
+						'active'          => 'preset1',
+						'darkMode'        => 'none',
+						'presets'         => array(
+							'preset1' => array(
+								'name'       => 'Preset 1',
+								'key'        => 'preset1',
+								'colors'     => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+								),
+								'gradient'   => array(
+									array(
+										'label' => 'Primary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Secondary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Tertiary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Accent',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Background',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+								),
+								'spacing'    => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+											'md'   => 70,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+											'md'   => 40,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+											'md'   => 20,
+											'unit' => 'px',
+										),
+
+									),
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 65,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 75,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 60,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 38,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 25,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 17,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 13,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+								),
+								'boxshadow'  => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 6,
+											'blur'       => 10,
+											'spread'     => 0,
+											'color'      => 'rgba(0,0,0,0.15)',
+										),
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 5,
+											'blur'       => 14,
+											'spread'     => 3,
+											'color'      => 'rgba(0,0,0,0.2)',
+										),
+									),
+								),
+							),
+							'preset2' => array(
+								'name'       => 'Preset 2',
+								'key'        => 'preset2',
+								'colors'     => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+								),
+								'gradient'   => array(
+									array(
+										'label' => 'Primary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Secondary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Tertiary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Accent',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Background',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+								),
+								'spacing'    => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+											'md'   => 70,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+											'md'   => 40,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+											'md'   => 20,
+											'unit' => 'px',
+										),
+
+									),
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 65,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 75,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 60,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 38,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 25,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 17,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 13,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+								),
+								'boxshadow'  => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 6,
+											'blur'       => 10,
+											'spread'     => 0,
+											'color'      => 'rgba(0,0,0,0.15)',
+										),
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 5,
+											'blur'       => 14,
+											'spread'     => 3,
+											'color'      => 'rgba(0,0,0,0.2)',
+										),
+									),
+								),
+							),
+						),
+						'globalContainer' => array(
+							'md'   => '',
+							'unit' => 'px',
+						),
+					);
+
+					update_option( 'tpgb_global_options', json_encode( $static_meta ) );
+					$plus_settings = $static_meta;
+				}
+
+				$active_id    = ! empty( $plus_settings['active'] ) ? $plus_settings['active'] : '';
+				$preset_array = ! empty( $plus_settings['presets'] ) ? $plus_settings['presets'] : array();
+				$act_preset   = ! empty( $plus_settings['presets'][ $active_id ] ) ? $plus_settings['presets'][ $active_id ] : array();
+
+				foreach ( $act_preset['colors'] as $index => &$item ) {
+					$item['id'] = $index + 1;
+				}
+				unset( $item );
+
+				foreach ( $act_preset['typography'] as $index => &$item ) {
+					$item['id'] = $index + 1;
+				}
+				unset( $item );
+
+				$act_preset['color'] = $act_preset['colors'];
+				unset( $act_preset['colors'] );
+
+				$response = array(
+					'message'     => __( 'Global data Found', 'wdesignkit' ),
+					'description' => __( 'Global Color and Typography found', 'wdesignkit' ),
+					'data'        => $act_preset,
+					'success'     => true,
+				);
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
+		 * Get site settings.
+		 *
+		 * @since 2.1.3
+		 */
+		protected function wdkit_get_site_setting() {
+
+			$kit_id = get_option( 'elementor_active_kit' );
+			if ( empty( $kit_id ) ) {
+					$response = array(
+						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
+						'description' => __( 'No active Elementor kit found', 'wdesignkit' ),
+						'success'     => false,
+					);
+
+					wp_send_json( $response );
+					wp_die();
+			}
+
+			$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
+
+			$container_width       = ! empty( $kit_meta['container_width'] ) ? $kit_meta['container_width'] : array();
+			$globals               = ! empty( $kit_meta['__globals__'] ) ? $kit_meta['__globals__'] : array();
+			$body_background_color = ! empty( $kit_meta['body_background_color'] ) ? $kit_meta['body_background_color'] : array();
+
+			$site_globals = array(
+				'body_background_color' => $body_background_color,
+				'container_width'       => $container_width,
+				'globals'               => $globals,
+			);
+
+			$response = array(
+				'message'     => __( 'Global data Found', 'wdesignkit' ),
+				'description' => __( 'Global Color and Typography found', 'wdesignkit' ),
+				'data'        => $site_globals,
+				'success'     => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
+		 * update site settings.
+		 *
+		 * @since 2.1.3
+		 */
+		protected function wdkit_update_site_setting() {
+
+			$builder   = ! empty( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
+			$site_data = ! empty( $_POST['site_data'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['site_data'] ) ), true ) : array();
+
+			if ( 'elementor' == $builder ) {
+				$kit_id = get_option( 'elementor_active_kit' );
+				if ( ! $kit_id ) {
+					$response = array(
+						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
+						'description' => __( 'No active Elementor kit found', 'wdesignkit' ),
 						'success'     => false,
 					);
 
@@ -893,615 +1803,48 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					wp_die();
 				}
 
-				$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-				if ( empty($kit_meta['system_colors']) ) {
-					$static_meta = array (
-						'system_colors' => array (
-							0 => array ( '_id' => 'primary', 'title' => 'Primary', 'color' => '#6EC1E4' ),
-							1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'color' => '#54595F' ),
-							2 => array ( '_id' => 'text', 'title' => 'Text', 'color' => '#7A7A7A' ),
-							3 => array ( '_id' => 'accent', 'title' => 'Accent', 'color' => '#61CE70' ),
-						),
-						'custom_colors' => array (),
-						'system_typography' => array (
-							0 => array ( '_id' => 'primary', 'title' => 'Primary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '600' ),
-							1 => array ( '_id' => 'secondary', 'title' => 'Secondary', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto Slab', 'typography_font_weight' => '400' ),
-							2 => array ( '_id' => 'text', 'title' => 'Text', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '400' ),
-							3 => array ( '_id' => 'accent', 'title' => 'Accent', 'typography_typography' => 'custom', 'typography_font_family' => 'Roboto', 'typography_font_weight' => '500' ),
-						),
-						'custom_typography' => array (),
-						'default_generic_fonts' => 'Sans-serif',
-						'site_name' => !empty(get_bloginfo('name')) ? get_bloginfo('name') : '',
-						'page_title_selector' => 'h1.entry-title',
-						'activeItemIndex' => 1,
-						'viewport_md' => 768,
-						'viewport_lg' => 1025,
+				$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
+				if ( empty( $kit_meta ) ) {
+					$response = array(
+						'message'     => __( 'Data Not Found', 'wdesignkit' ),
+						'description' => __( 'No site data found in kit', 'wdesignkit' ),
+						'success'     => false,
 					);
-					
-					$kit_meta = $static_meta;
-					update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
+
+					wp_send_json( $response );
+					wp_die();
 				}
 
-				$system_colors = !empty($kit_meta['system_colors']) ? $kit_meta['system_colors'] : [];
-				$custom_colors = !empty($kit_meta['custom_colors']) ? $kit_meta['custom_colors'] : [];
-				$system_typography = !empty($kit_meta['system_typography']) ? $kit_meta['system_typography'] : [];
-				$custom_typography = !empty($kit_meta['custom_typography']) ? $kit_meta['custom_typography'] : [];
+				$kit_meta['container_width']       = ! empty( $site_data['container_width'] ) ? $site_data['container_width'] : array();
+				$kit_meta['__globals__']           = ! empty( $site_data['globals'] ) ? $site_data['globals'] : array();
+				$kit_meta['body_background_color'] = ! empty( $site_data['body_background_color'] ) ? $site_data['body_background_color'] : array();
 
-				$color_array = array_merge($system_colors, $custom_colors);
-				$typo_array = array_merge($system_typography, $custom_typography);
-
-				$global_data = array(
-					'color' => $color_array,
-					'typography' => $typo_array
-				);
+				update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
 
 				$response = array(
-					'message'     => __('Global data Found', 'wdesignkit'),
-					'description' => __('Global Color and Typography found', 'wdesignkit'),
-					'data'        => $global_data,
+					'message'     => __( 'Site data Updated', 'wdesignkit' ),
+					'description' => __( 'Site Globals Updated', 'wdesignkit' ),
 					'success'     => true,
 				);
 
-			} else if ( 'gutenberg' === $builder ){
-				
-				$plus_settings = get_option('tpgb_global_options', false);
-				$plus_settings = !empty($plus_settings) ? json_decode($plus_settings, true) : json_decode('[]');
-				
-				if( empty($plus_settings) ){
+			} elseif ( 'gutenberg' == $builder ) {
+				$plus_settings = get_option( 'tpgb_global_options' );
 
-					$static_meta = array(
-						'active' => 'preset1',
-						'darkMode' => 'none',
-						'presets' => array(
-							'preset1' => array(
-								'name' => 'Preset 1',
-								'key' => 'preset1',
-								'colors' => array(
-									array(
-										'label' => 'Primary',
-										'value' => '#8072FC',
-									),
-									array(
-										'label' => 'Secondary',
-										'value' => '#6FC784',
-									),
-									array(
-										'label' => 'Tertiary',
-										'value' => '#FF5A6E',
-									),
-									array(
-										'label' => 'Accent',
-										'value' => '#F3F3F3',
-									),
-									array(
-										'label' => 'Background',
-										'value' => '#888888',
-									),
-									),
-								'gradient' => array(
-										array(
-											'label' => 'Primary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Secondary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Tertiary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Accent',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Background',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-									),
-								'spacing' => array(
-									array(
-										'label' => 'Large',
-										'value' => array(
-												'md' => 70,
-												'unit' => 'px',
-											)
-									),
-									array(
-										'label' => 'Medium',
-										'value' => array(
-												'md' => 40,
-												'unit' => 'px',
-											)
-									),
-									array(
-										'label' => 'Small',
-										'value' => array(
-												'md' => 20,
-												'unit' => 'px',
-											)
-	
-									)
-								),
-								'typography' => array(
-									array(
-										'label' => 'Display Text',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 65,
-												'unit' => 'px'
-											),
-											'height' => array(
-													'md' => 75,
-													'unit' => 'px',
-											),
-											'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 700,
-											),
-											'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Headline',
-										'value' => array(
-												'openTypography' => 1,
-												'size' => array(
-													'md' => 45,
-													'unit' => 'px',
-												),					
-												'height' => array(
-													'md' => 60,
-													'unit' => 'px',
-												),
-												'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 700,
-												),
-												'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-												),
-											)
-									),
-									array(
-										'label' => 'Sub Headline',
-										'value' => array(
-												'openTypography' => 1,
-												'size' => array(
-													'md' => 38,
-													'unit' => 'px',
-												),
-												'height' => array(
-													'md' => 45,
-													'unit' => 'px',
-												),
-												'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 500,
-												),					
-												'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-												),
-											)
-									),
-									array(
-										'label' => 'Title 1',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 30,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 40,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Title 2',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 25,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 30,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Body',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 17,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 22,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Captions',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 13,
-												'unit' => 'px',
-											),					
-											'height' => array(
-												'md' => 16,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),					
-										)
-									)
-								),
-								'boxshadow' => array(
-									array(
-										'label' => 'Normal Shadow',
-										'value' => array(
-												'openShadow' => 1,
-												'inset' => 0,
-												'horizontal' => 2,
-												'vertical' => 6,
-												'blur' => 10,
-												'spread' => 0,
-												'color' => 'rgba(0,0,0,0.15)',
-											)
-									),
-									array(
-										'label' => 'Hover Shadow',
-										'value' => array(
-												'openShadow' => 1,
-												'inset' => 0,
-												'horizontal' => 2,
-												'vertical' => 5,
-												'blur' => 14,
-												'spread' => 3,
-												'color' => 'rgba(0,0,0,0.2)',
-											)
-									),
-								)
-							),
-							'preset2' => array(
-								'name' => 'Preset 2',
-								'key' => 'preset2',
-								'colors' => array(
-									array(
-										'label' => 'Primary',
-										'value' => '#8072FC',
-									),
-									array(
-										'label' => 'Secondary',
-										'value' => '#6FC784',
-									),
-									array(
-										'label' => 'Tertiary',
-										'value' => '#FF5A6E',
-									),
-									array(
-										'label' => 'Accent',
-										'value' => '#F3F3F3',
-									),
-									array(
-										'label' => 'Background',
-										'value' => '#888888',
-									),
-									),
-								'gradient' => array(
-										array(
-											'label' => 'Primary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Secondary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Tertiary',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Accent',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-			
-										array(
-											'label' => 'Background',
-											'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-										),
-									),
-								'spacing' => array(
-									array(
-										'label' => 'Large',
-										'value' => array(
-												'md' => 70,
-												'unit' => 'px',
-											)
-									),
-									array(
-										'label' => 'Medium',
-										'value' => array(
-												'md' => 40,
-												'unit' => 'px',
-											)
-									),
-									array(
-										'label' => 'Small',
-										'value' => array(
-												'md' => 20,
-												'unit' => 'px',
-											)
-	
-									)
-								),
-								'typography' => array(
-									array(
-										'label' => 'Display Text',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 65,
-												'unit' => 'px'
-											),
-											'height' => array(
-													'md' => 75,
-													'unit' => 'px',
-											),
-											'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 700,
-											),
-											'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Headline',
-										'value' => array(
-												'openTypography' => 1,
-												'size' => array(
-													'md' => 45,
-													'unit' => 'px',
-												),					
-												'height' => array(
-													'md' => 60,
-													'unit' => 'px',
-												),
-												'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 700,
-												),
-												'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-												),
-											)
-									),
-									array(
-										'label' => 'Sub Headline',
-										'value' => array(
-												'openTypography' => 1,
-												'size' => array(
-													'md' => 38,
-													'unit' => 'px',
-												),
-												'height' => array(
-													'md' => 45,
-													'unit' => 'px',
-												),
-												'fontFamily' => array(
-													'family' => 'Roboto',
-													'type' => 'sans-serif',
-													'fontWeight' => 500,
-												),					
-												'spacing' => array(
-													'md' => 0,
-													'unit' => 'px',
-												),
-											)
-									),
-									array(
-										'label' => 'Title 1',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 30,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 40,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Title 2',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 25,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 30,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Body',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 17,
-												'unit' => 'px',
-											),
-											'height' => array(
-												'md' => 22,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),
-										)
-									),
-									array(
-										'label' => 'Captions',
-										'value' => array(
-											'openTypography' => 1,
-											'size' => array(
-												'md' => 13,
-												'unit' => 'px',
-											),					
-											'height' => array(
-												'md' => 16,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type' => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing' => array(
-												'md' => 0,
-												'unit' => 'px',
-											),					
-										)
-									)
-								),
-								'boxshadow' => array(
-									array(
-										'label' => 'Normal Shadow',
-										'value' => array(
-												'openShadow' => 1,
-												'inset' => 0,
-												'horizontal' => 2,
-												'vertical' => 6,
-												'blur' => 10,
-												'spread' => 0,
-												'color' => 'rgba(0,0,0,0.15)',
-											)
-									),
-									array(
-										'label' => 'Hover Shadow',
-										'value' => array(
-												'openShadow' => 1,
-												'inset' => 0,
-												'horizontal' => 2,
-												'vertical' => 5,
-												'blur' => 14,
-												'spread' => 3,
-												'color' => 'rgba(0,0,0,0.2)',
-											)
-									),
-								)
-							),
-						),
-						'globalContainer' => array(
-							'md' => '', 
-							'unit' => 'px',
-						)
-					);				
+				$site_preset                    = json_decode( $plus_settings, true );
+				$site_preset['globalContainer'] = $site_data;
 
-					update_option('tpgb_global_options', json_encode($static_meta));
-					$plus_settings = $static_meta;
-				} 
+				update_option( 'tpgb_global_options', json_encode( $site_preset ) );
 
-				$active_id = !empty( $plus_settings['active'] ) ? $plus_settings['active'] : '';
-				$preset_array = !empty( $plus_settings['presets'] ) ? $plus_settings['presets'] : array();
-				$act_preset = !empty( $plus_settings['presets'][$active_id] ) ? $plus_settings['presets'][$active_id] : array();
-				
 				$response = array(
-					'message'     => __('Global data Found', 'wdesignkit'),
-					'description' => __('Global Color and Typography found', 'wdesignkit'),
-					'data'        => $act_preset,
+					'message'     => __( 'Site data Updated', 'wdesignkit' ),
+					'description' => __( 'Site Globals Updated', 'wdesignkit' ),
+					'success'     => true,
+				);
+
+			} else {
+				$response = array(
+					'message'     => __( 'Builder Not Found !', 'wdesignkit' ),
+					'description' => __( 'Template Builder not Found', 'wdesignkit' ),
 					'success'     => true,
 				);
 			}
@@ -1517,71 +1860,71 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.20
 		 */
 		protected function wdkit_update_global_val() {
-			
-			$builder = ! empty( $_POST['builder'] ) ?  sanitize_text_field( $_POST['builder'] ) : '';
 
-			if( 'elementor' == $builder ){
+			$builder = ! empty( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
+
+			if ( 'elementor' == $builder ) {
 
 				$g_color = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
-				$g_typo = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
-	
+				$g_typo  = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+
 				// Get colors from Elementor Site Kit
-				$kit_id = get_option('elementor_active_kit');
-				if (!$kit_id) {
+				$kit_id = get_option( 'elementor_active_kit' );
+				if ( ! $kit_id ) {
 					$response = array(
-						'message'     => __('Elementor kit not found', 'wdesignkit'),
-						'description' => __('No active Elementor kit found', 'wdesignkit'),
+						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
+						'description' => __( 'No active Elementor kit found', 'wdesignkit' ),
 						'success'     => false,
 					);
-	
+
 					wp_send_json( $response );
 					wp_die();
 				}
-			
-				$kit_meta = get_post_meta($kit_id, '_elementor_page_settings', true);
-				if ( empty($kit_meta) ) {
+
+				$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
+				if ( empty( $kit_meta ) ) {
 					$response = array(
-						'message'     => __('Data Not Found', 'wdesignkit'),
-						'description' => __('No meta data found in kit', 'wdesignkit'),
+						'message'     => __( 'Data Not Found', 'wdesignkit' ),
+						'description' => __( 'No meta data found in kit', 'wdesignkit' ),
 						'success'     => false,
 					);
-	
+
 					wp_send_json( $response );
 					wp_die();
 				}
-	
-				$kit_meta['custom_colors'] = array_merge($g_color, $kit_meta['custom_colors']);
-				$kit_meta['custom_typography'] = array_merge($g_typo, $kit_meta['custom_typography']);
-	
-				update_post_meta($kit_id, '_elementor_page_settings', $kit_meta);
+
+				$kit_meta['custom_colors']     = array_merge( $g_color, $kit_meta['custom_colors'] );
+				$kit_meta['custom_typography'] = array_merge( $g_typo, $kit_meta['custom_typography'] );
+
+				update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
 
 				$response = array(
-					'message'     => __('Global data Updated', 'wdesignkit'),
-					'description' => __('Global Color and Typography Updated', 'wdesignkit'),
+					'message'     => __( 'Global data Updated', 'wdesignkit' ),
+					'description' => __( 'Global Color and Typography Updated', 'wdesignkit' ),
 					'success'     => true,
 				);
 
-			} else if( 'gutenberg' == $builder ){
-				$new_preset = ! empty( $_POST['new_preset'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['new_preset'] ) ), true ) : array();
+			} elseif ( 'gutenberg' == $builder ) {
+				$new_preset    = ! empty( $_POST['new_preset'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['new_preset'] ) ), true ) : array();
 				$new_preset_id = ! empty( $new_preset['key'] ) ? $new_preset['key'] : '';
-				$plus_settings = get_option('tpgb_global_options');
-				$site_preset = json_decode($plus_settings, true);
+				$plus_settings = get_option( 'tpgb_global_options' );
+				$site_preset   = json_decode( $plus_settings, true );
 
-				$site_preset['presets'][$new_preset_id] = $new_preset;
-				$site_preset['active'] = $new_preset_id;
+				$site_preset['presets'][ $new_preset_id ] = $new_preset;
+				$site_preset['active']                    = $new_preset_id;
 
-				update_option( 'tpgb_global_options', json_encode($site_preset) );
+				update_option( 'tpgb_global_options', json_encode( $site_preset ) );
 
 				$response = array(
-					'message'     => __('Global data Updated', 'wdesignkit'),
-					'description' => __('Global Color and Typography Updated', 'wdesignkit'),
+					'message'     => __( 'Global data Updated', 'wdesignkit' ),
+					'description' => __( 'Global Color and Typography Updated', 'wdesignkit' ),
 					'success'     => true,
 				);
 
 			} else {
 				$response = array(
-					'message'     => __('Builder Not Found !', 'wdesignkit'),
-					'description' => __('Template Builder not Found', 'wdesignkit'),
+					'message'     => __( 'Builder Not Found !', 'wdesignkit' ),
+					'description' => __( 'Template Builder not Found', 'wdesignkit' ),
 					'success'     => true,
 				);
 			}
@@ -1598,63 +1941,65 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_update_preset() {
 
-			$act_type = ! empty( $_POST['act_type'] ) ?  sanitize_text_field( $_POST['act_type'] ) : '';
-			$post_id = ! empty( $_POST['post_id'] ) ?  sanitize_text_field( $_POST['post_id'] ) : '';
+			$act_type = ! empty( $_POST['act_type'] ) ? sanitize_text_field( $_POST['act_type'] ) : '';
+			$post_id  = ! empty( $_POST['post_id'] ) ? sanitize_text_field( $_POST['post_id'] ) : '';
 
-			if( 'create' == $act_type ){
+			if ( 'create' == $act_type ) {
 
-				$page_id = wp_insert_post([
-					'post_title'   => 'WDesignKit Gutenberg',
-					'post_status'  => 'publish',
-					'post_type'    => 'post',
-					'post_name'    => sanitize_title('wdesignkit'),
-					'post_content' => '<!-- wp:heading --><h2 class="wp-block-heading">Add Your Heading Text Here<h2><!-- /wp:heading -->',
-					'meta_input'   => [
-						'gutenberg_preview'  => true,
-						'_wp_page_template'  => 'default',
-					],
-				]);
-		
-				if ( is_wp_error($page_id) || !$page_id ) {						
+				$page_id = wp_insert_post(
+					array(
+						'post_title'   => 'WDesignKit Gutenberg',
+						'post_status'  => 'publish',
+						'post_type'    => 'post',
+						'post_name'    => sanitize_title( 'wdesignkit' ),
+						'post_content' => '<!-- wp:heading --><h2 class="wp-block-heading">Add Your Heading Text Here<h2><!-- /wp:heading -->',
+						'meta_input'   => array(
+							'gutenberg_preview' => true,
+							'_wp_page_template' => 'default',
+						),
+					)
+				);
+
+				if ( is_wp_error( $page_id ) || ! $page_id ) {
 					$response = array(
 						'success'     => true,
 						'message'     => esc_html__( 'Page Not Found!', 'wdesignkit' ),
 						'description' => esc_html__( 'Page Not Found!', 'wdesignkit' ),
 					);
-	
-					wp_send_json($response);
+
+					wp_send_json( $response );
 					wp_die();
 				}
-		
-				update_post_meta($page_id, '_edit_lock', time() . ':1');
-				update_post_meta($page_id, '_edit_last', get_current_user_id());
-	
-				$preview_url = admin_url('post.php?post=' . $page_id . '&action=edit');
-	
+
+				update_post_meta( $page_id, '_edit_lock', time() . ':1' );
+				update_post_meta( $page_id, '_edit_last', get_current_user_id() );
+
+				$preview_url = admin_url( 'post.php?post=' . $page_id . '&action=edit' );
+
 				$response = array(
-					'success'      => true,
-					'post_id'      => $page_id,
-					'preview_url'  => $preview_url,
-					'message'      => esc_html__( 'Page Created', 'wdesignkit' ),
-					'description'  => esc_html__( 'Page Created', 'wdesignkit' ),
+					'success'     => true,
+					'post_id'     => $page_id,
+					'preview_url' => $preview_url,
+					'message'     => esc_html__( 'Page Created', 'wdesignkit' ),
+					'description' => esc_html__( 'Page Created', 'wdesignkit' ),
 				);
-	
-				wp_send_json($response);
+
+				wp_send_json( $response );
 				wp_die();
 
 			}
-			
-			if ( !empty($post_id) && ( $act_type == 'remove' ) ){
 
-				wp_delete_post($post_id, true);
+			if ( ! empty( $post_id ) && ( $act_type == 'remove' ) ) {
+
+				wp_delete_post( $post_id, true );
 
 				$response = array(
-					'success'      => true,
-					'message'      => esc_html__( 'post deleted', 'wdesignkit' ),
-					'description'  => esc_html__( 'post deleted', 'wdesignkit' ),
+					'success'     => true,
+					'message'     => esc_html__( 'post deleted', 'wdesignkit' ),
+					'description' => esc_html__( 'post deleted', 'wdesignkit' ),
 				);
-	
-				wp_send_json($response);
+
+				wp_send_json( $response );
 				wp_die();
 			}
 		}
@@ -1689,11 +2034,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_update_template() {
 			$array_data = array(
-				'data'    => isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '',
-				'post_id' => isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '',
-				'token'   => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
-				'type'    => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
-				'id'      => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
+				'data'        => isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '',
+				'post_id'     => isset( $_POST['post_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) : '',
+				'token'       => isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '',
+				'type'        => isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '',
+				'id'          => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
 				'global_data' => isset( $_POST['global_data'] ) ? wp_unslash( $_POST['global_data'] ) : array(),
 				// 'global_font_family' => isset( $_POST['global_font_family'] ) ? wp_unslash( $_POST['global_font_family'] ) : array(),
 				// 'global_color' => isset( $_POST['global_color'] ) ? wp_unslash( $_POST['global_color'] ) : array(),
@@ -1701,7 +2046,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! empty( $array_data['post_id'] ) ) {
 				$custom_fields = array();
-				$post_id = $array_data['post_id'];
+				$post_id       = $array_data['post_id'];
 
 				$meta_fields = get_post_custom( $post_id );
 
@@ -1718,8 +2063,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			$response = $this->wkit_api_call( $array_data, 'existing_template' );
-
+			$array_data['remove'] = 'yes';
+			$response             = $this->wkit_api_call( $array_data, 'existing_template' );
 			wp_send_json( $response );
 			wp_die();
 		}
@@ -1765,6 +2110,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		protected function wdkit_check_plugins_depends() {
 			$plugins       = isset( $_POST['plugins'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['plugins'] ) ) ) : array();
 			$update_plugin = array();
+			$update_theme  = array();
 
 			if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 				$this->wdkit_error_msg( array( 'plugins' => 'No Plugins' ) );
@@ -1779,6 +2125,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				if ( is_null( $pluginslug ) ) {
 					$plugin->status  = 'warning';
 					$update_plugin[] = $plugin;
+					$update_theme[]  = $plugin;
 
 					continue;
 				}
@@ -1801,14 +2148,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						$update_plugin[] = $plugin;
 					}
 				} elseif ( 'theme' === $type ) {
-					$theme_array = array_keys( wp_get_themes() );
-					$theme_slug  = get_stylesheet();
+					$theme_array       = array_keys( wp_get_themes() );
+					$theme_slug        = get_stylesheet();
+					$parent_theme_slug = get_template();
 
-					if ( $theme_slug === $plugin->name ) {
+					if ( $theme_slug === $plugin->original_slug || $parent_theme_slug === $plugin->original_slug ) {
 
 						$plugin->status = 'active';
 					} else {
-						$theme_name = $plugin->name;
+						$theme_name = $plugin->original_slug;
 						if ( ! in_array( $theme_name, $theme_array ) ) {
 							if ( isset( $free_pro ) && '1' === $free_pro ) {
 								$plugin->status = 'manually';
@@ -1820,13 +2168,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						}
 					}
 
-					$update_plugin[] = $plugin;
+					$update_theme[] = $plugin;
 				}
 			}
 
-			$response = array( 
-				'plugins' => $update_plugin,
-				'ele_container' => get_option( 'elementor_experiment-container', false )
+			$response = array(
+				'plugins'       => $update_plugin,
+				'theme'         => $update_theme,
+				'ele_container' => get_option( 'elementor_experiment-container', false ),
 			);
 
 			$this->wdkit_success_msg( $response );
@@ -1842,6 +2191,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		protected function wdkit_install_plugins_depends() {
 			$plugins = isset( $_POST['plugins'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['plugins'] ) ), true ) : array();
 			$type    = ! empty( $plugins['type'] ) ? $plugins['type'] : 'plugin';
+			$p_id    = ! empty( $plugins['p_id'] ) ? $plugins['p_id'] : 'plugin';
 
 			$responce = '';
 			if ( 'plugin' === $type ) {
@@ -1850,22 +2200,44 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$theme_name = ! empty( $plugins['original_slug'] ) ? $plugins['original_slug'] : '';
 				if ( ! empty( $theme_name ) ) {
 
-					$activate_result = switch_theme( $theme_name );
+					$theme_array = array_keys( wp_get_themes() );
+					$theme_slug  = get_stylesheet();
 
-					if ( ! is_wp_error( $activate_result ) ) {
-						$responce = array(
-							'message'     => esc_html__( 'Theme activated successfully', 'wdesignkit' ),
-							'description' => esc_html__( 'Theme successfully activated', 'wdesignkit' ),
-							'slug'        => 'the-plus-addons-for-block-editor',
-							'status'      => 'active',
-							'success'     => true,
-						);
+					if ( in_array( $theme_name, $theme_array ) ) {
+						$activate_result = switch_theme( $theme_name );
+
+						if ( ! is_wp_error( $activate_result ) ) {
+							$responce = array(
+								'message'     => esc_html__( 'Theme activated successfully', 'wdesignkit' ),
+								'description' => esc_html__( 'Theme successfully activated', 'wdesignkit' ),
+								'slug'        => 'nexter',
+								'p_id'        => $p_id,
+								'status'      => 'active',
+								'success'     => true,
+							);
+						} else {
+							$responce = array(
+								'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
+								'description' => $activate_result->get_error_message(),
+								'status'      => 'inactive',
+								'p_id'        => $p_id,
+								'success'     => false,
+							);
+						}
 					} else {
+						$result = $this->wdkit_install_theme_depends( $theme_name );
+
+						$message     = ! empty( $result['message'] ) ? $result['message'] : esc_html__( 'Somthing Wrong', 'wdesignkit' );
+						$description = ! empty( $result['description'] ) ? $result['description'] : esc_html__( 'Error Somthing Wrong', 'wdesignkit' );
+						$status      = ! empty( $result['status'] ) ? $result['status'] : esc_html__( 'inactive', 'wdesignkit' );
+						$success     = ! empty( $result['success'] ) ? $result['success'] : false;
+
 						$responce = array(
-							'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
-							'description' => $activate_result->get_error_message(),
-							'status'      => 'inactive',
-							'success'     => false,
+							'message'     => $message,
+							'description' => $description,
+							'p_id'        => $p_id,
+							'status'      => $status,
+							'success'     => $success,
 						);
 					}
 				} else {
@@ -1879,6 +2251,101 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			wp_send_json( $responce );
 			wp_die();
+		}
+
+		protected function wdkit_install_theme_depends( $name = 'nexter' ) {
+
+			if ( ! current_user_can( 'install_themes' ) ) {
+				$response = $this->tpae_set_response( false, 'Invalid nonce.', 'The security check failed. Please refresh the page and try again.' );
+				return $response;
+			}
+
+			$theme_slug    = $name;
+			$theme_api_url = 'https://api.wordpress.org/themes/info/1.0/';
+
+			// Parameters for the request
+			$args = array(
+				'body' => array(
+					'action'  => 'theme_information',
+					'request' => serialize(
+						(object) array(
+							'slug'   => $name,
+							'fields' => array(
+								'description'     => false,
+								'sections'        => false,
+								'rating'          => true,
+								'ratings'         => false,
+								'downloaded'      => true,
+								'download_link'   => true,
+								'last_updated'    => true,
+								'homepage'        => true,
+								'tags'            => true,
+								'template'        => true,
+								'active_installs' => false,
+								'parent'          => false,
+								'versions'        => false,
+								'screenshot_url'  => true,
+								'active_installs' => false,
+							),
+						)
+					),
+				),
+			);
+
+			// Make the request
+			$response = wp_remote_post( $theme_api_url, $args );
+			// Check for errors
+			if ( is_wp_error( $response ) ) {
+				$error_message = $response->get_error_message();
+
+				$result = $this->tpae_set_response( false, 'oops', 'oops', '' );
+			} else {
+				$theme_info    = unserialize( $response['body'] );
+				$theme_name    = $theme_info->name;
+				$theme_zip_url = $theme_info->download_link;
+
+				global $wp_filesystem;
+				// Install the theme
+				$theme = wp_remote_get( $theme_zip_url, array( 'timeout' => 30 ) );
+
+				if ( ! function_exists( 'WP_Filesystem' ) ) {
+					require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/file.php' );
+				}
+
+				WP_Filesystem();
+
+				$active_theme = wp_get_theme();
+				$theme_name   = $active_theme->get( 'Name' );
+
+				$wp_filesystem->put_contents( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip', $theme['body'] );
+				$zip = new ZipArchive();
+				if ( $zip->open( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip' ) === true ) {
+					$zip->extractTo( WP_CONTENT_DIR . '/themes/' );
+					$zip->close();
+				}
+
+				$wp_filesystem->delete( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip' );
+
+				$activate_result = switch_theme( $name );
+
+				if ( ! is_wp_error( $activate_result ) ) {
+					$response = array(
+						'message'     => esc_html__( 'Theme activated successfully', 'wdesignkit' ),
+						'description' => esc_html__( 'Theme successfully activated', 'wdesignkit' ),
+						'status'      => 'active',
+						'success'     => true,
+					);
+				} else {
+					$response = array(
+						'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
+						'description' => $activate_result->get_error_message(),
+						'status'      => 'inactive',
+						'success'     => false,
+					);
+				}
+			}
+
+			return $response;
 		}
 
 		/**
@@ -1927,7 +2394,86 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'success'     => true,
 			);
 
-			wp_send_json( $result );
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * import category and tags for post
+		 *
+		 * @since 2.0.0
+		 */
+		protected function wdkit_import_taxonomy() {
+			$category = isset( $_POST['category'] ) ? json_decode( wp_unslash( $_POST['category'] ) ) : array();
+			$tags     = isset( $_POST['tags'] ) ? json_decode( wp_unslash( $_POST['tags'] ) ) : array();
+
+			$response = array(
+				'success'    => false,
+				'categories' => array(),
+				'tags'       => array(),
+			);
+
+			if ( ! empty( $category ) && count( $category ) > 0 ) {
+				foreach ( $category as $category_name ) {
+					$category_name = sanitize_text_field( $category_name );
+
+					$term_exists = term_exists( $category_name, 'category' );
+					if ( ! $term_exists ) {
+						$result = wp_insert_term( $category_name, 'category' );
+						if ( ! is_wp_error( $result ) ) {
+							$response['categories'][] = array(
+								'name'    => $category_name,
+								'term_id' => $result['term_id'],
+							);
+						} else {
+							$response['categories'][] = array(
+								'name'  => $category_name,
+								'error' => $result->get_error_message(),
+							);
+						}
+					} else {
+						$term_id                  = is_array( $term_exists ) ? $term_exists['term_id'] : $term_exists;
+						$response['categories'][] = array(
+							'name'    => $category_name,
+							'term_id' => $term_id,
+						);
+					}
+				}
+
+				$response['success'] = true;
+			}
+
+			if ( ! empty( $tags ) && count( $tags ) > 0 ) {
+				foreach ( $tags as $tags_name ) {
+					$tags_name = sanitize_text_field( $tags_name );
+
+					$term_exists = term_exists( $tags_name, 'post_tag' );
+					if ( ! $term_exists ) {
+						$result = wp_insert_term( $tags_name, 'post_tag' );
+						if ( ! is_wp_error( $result ) ) {
+							$response['tags'][] = array(
+								'name'    => $tags_name,
+								'term_id' => $result['term_id'],
+							);
+						} else {
+							$response['tags'][] = array(
+								'name'  => $tags_name,
+								'error' => $result->get_error_message(),
+							);
+						}
+					} else {
+						$term_id            = is_array( $term_exists ) ? $term_exists['term_id'] : $term_exists;
+						$response['tags'][] = array(
+							'name'    => $tags_name,
+							'term_id' => $term_id,
+						);
+					}
+				}
+
+				$response['success'] = true;
+			}
+
+			wp_send_json( $response );
 			wp_die();
 		}
 
@@ -1956,6 +2502,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args['token'] = $this->wdkit_login_user_token( $args['email'] );
 
 			unset( $args['email'] );
+			$args['unique_id'] = get_option( 'wdkit_unique_id' ) ?? '';
 			$response    = WDesignKit_Data_Query::get_data( $api_type, $args );
 			$custom_meta = isset( $_POST['custom_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_meta'] ) ) : false;
 
@@ -2194,14 +2741,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									} else {
 										foreach ( $val as $sub_key => $sub_val ) {
 											if ( isset( $sub_val['url'] ) && ( isset( $sub_val['Id'] ) || isset( $sub_val['id'] ) ) && ! empty( $sub_val['url'] ) ) {
-												$new_media                                     = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
+												$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
 
-                                                if ( is_array($sub_val) && is_array($new_media) ){
-                                                    $blocks_attr[ $block_key ][ $key ][ $sub_key ] = array_merge( $sub_val , $new_media );
-                                                } else {
-                                                    $blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
-                                                }
-											
+												if ( is_array( $sub_val ) && is_array( $new_media ) ) {
+													$blocks_attr[ $block_key ][ $key ][ $sub_key ] = array_merge( $sub_val, $new_media );
+												} else {
+													$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
+												}
 											} elseif ( isset( $sub_val['url'] ) && ! empty( $sub_val['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val['url'] ) ) {
 												$new_media                                     = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
 												$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
@@ -2210,12 +2756,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 													if ( isset( $sub_val1['url'] ) && ( isset( $sub_val1['Id'] ) || isset( $sub_val1['id'] ) ) && ! empty( $sub_val1['url'] ) ) {
 														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
 
-                                                        if ( is_array($sub_val1) && is_array($new_media) ){
-														    $blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = array_merge( $sub_val1 , $new_media );
-                                                        } else {
-                                                            $blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] =  $new_media ;
-                                                        }
-
+														if ( is_array( $sub_val1 ) && is_array( $new_media ) ) {
+															$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = array_merge( $sub_val1, $new_media );
+														} else {
+															$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
+														}
 													} elseif ( isset( $sub_val1['url'] ) && ! empty( $sub_val1['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val1['url'] ) ) {
 														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
 														$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
@@ -2251,17 +2796,19 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+
 			$page_section = ! empty( $_POST['page_section'] ) ? sanitize_text_field( wp_unslash( $_POST['page_section'] ) ) : '';
 
 			if ( isset( $page_section ) ) {
 				$args['page_section'] = ! empty( $page_section ) ? sanitize_text_field( wp_unslash( $page_section ) ) : '';
 			}
 
-			$template_ids = ! empty( $_POST['template_ids'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_ids'] ) ), true ) : array();
-			$email        = ! empty( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : '';
-			$editor       = isset( $_POST['editor'] ) ? sanitize_text_field( wp_unslash( $_POST['editor'] ) ) : '';
-			$website_kit  = isset( $_POST['website_kit'] ) ? sanitize_text_field( wp_unslash( $_POST['website_kit'] ) ) : '';
-			$api_type     = isset( $_POST['api_type'] ) ? sanitize_text_field( wp_unslash( $_POST['api_type'] ) ) : 'import_template';
+			$template_ids  = ! empty( $_POST['template_ids'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_ids'] ) ), true ) : array();
+			$email         = ! empty( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : '';
+			$editor        = isset( $_POST['editor'] ) ? sanitize_text_field( wp_unslash( $_POST['editor'] ) ) : '';
+			$website_kit   = isset( $_POST['website_kit'] ) ? sanitize_text_field( wp_unslash( $_POST['website_kit'] ) ) : '';
+			$api_type      = isset( $_POST['api_type'] ) ? sanitize_text_field( wp_unslash( $_POST['api_type'] ) ) : 'import_template';
+			$ai_compitible = isset( $_POST['ai_compitible'] ) ? sanitize_text_field( wp_unslash( $_POST['ai_compitible'] ) ) : false;
 
 			if ( empty( $template_ids ) ) {
 				$output = array(
@@ -2289,77 +2836,89 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'template_id' => $template_ids['id'],
 				'editor'      => $editor,
 				'website_kit' => $website_kit,
+				'unique_id'   => get_option( 'wdkit_unique_id' ) ?? '',
 			);
 
 			$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
 			$output   = array();
 
-			if ( 'error' === $response['content'] ) {
+			if ( is_wp_error( $response ) ) {
+
 				wp_send_json( $response );
 				wp_die();
-			} else {
-
-				$result = array(
-					'response' => $response,
-					'args' => $args,
-					'id' => $template_ids['id'],
-					'temp_data' => $template_ids,
-				);
-
-				$output['message']             = $response['message'];
-				$output['description']         = $response['description'];
-				$output['data']                = $result;
-				$output['success']             = $response['success'];
 			}
+
+			if ( isset( $response['content'] ) && 'error' === $response['content'] ) {
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$result = array(
+				'response'  => $response,
+				'args'      => $args,
+				'id'        => $template_ids['id'],
+				'temp_data' => $template_ids,
+			);
+
+			$output['message']     = $response['message'];
+			$output['description'] = $response['description'];
+			$output['data']        = $result;
+			$output['success']     = $response['success'];
 
 			wp_send_json( $output );
 			wp_die();
 		}
 
-		protected function wdkit_enable_template_widgets() {
-			$widget_list = ! empty( $_POST['widget_list'] ) ? json_decode( wp_unslash( $_POST['widget_list'] ), true ) : [];
+		public function wdkit_enable_template_widgets() {
+			$widget_list     = ! empty( $_POST['widget_list'] ) ? json_decode( wp_unslash( $_POST['widget_list'] ), true ) : array();
+			$extensions_list = ! empty( $_POST['extensions_list'] ) ? json_decode( wp_unslash( $_POST['extensions_list'] ), true ) : array();
 
-			if ( empty( $widget_list ) ){
+			if ( empty( $widget_list ) && empty( $extensions_list ) ) {
 				$res = array(
-					'massage' => __('Widget array not found', 'wdesignkit'),
-					'description' => __('Widget array not found', 'wdesignkit'),
-					'success' => false,
-				); 
-				wp_send_json($res);
+					'massage'     => __( 'Widget array not found', 'wdesignkit' ),
+					'description' => __( 'Widget array not found', 'wdesignkit' ),
+					'success'     => false,
+				);
+				wp_send_json( $res );
 				wp_die();
 			}
 
-			if ( ! has_filter('tpae_enable_selected_widgets') ){
+			if ( ! has_filter( 'tpae_enable_selected_widgets' ) ) {
 				$res = array(
-					'massage' => __('Relevant Plugin not Activated', 'wdesignkit'),
-					'description' => __('Relevant Plugin not Installed / Activated', 'wdesignkit'),
-					'success' => false,
-				); 
-				wp_send_json($res);
+					'massage'     => __( 'Relevant Plugin not Activated', 'wdesignkit' ),
+					'description' => __( 'Relevant Plugin not Installed / Activated', 'wdesignkit' ),
+					'success'     => false,
+				);
+				wp_send_json( $res );
 				wp_die();
 			}
 
 			$w_list = array(
-				'widgets' => $widget_list
+				'widgets'    => $widget_list,
+				'extensions' => $extensions_list,
 			);
-			
+
 			$result = apply_filters( 'tpae_enable_selected_widgets', $w_list );
 
-			if( !empty( $result['success'] ) ){
+			if ( ! empty( $result['success'] ) ) {
 				$res = array(
-					'massage' => __('Enabled widgets successfully', 'wdesignkit'),
-					'description' => __('Used widgets have been enabled successfully', 'wdesignkit'),
-					'success' => true,
+					'massage'     => __( 'Enabled widgets successfully', 'wdesignkit' ),
+					'description' => __( 'Used widgets have been enabled successfully', 'wdesignkit' ),
+					'success'     => true,
 				);
 			} else {
+
+				$message     = isset( $result['message'] ) ? $result['message'] : __( 'Failed to enable widgets', 'wdesignkit' );
+				$description = isset( $result['description'] ) ? $result['description'] : __( 'Failed to enable widgets', 'wdesignkit' );
+
 				$res = array(
-					'massage' => __( $result['message'], 'wdesignkit'),
-					'description' => __( $result['description'], 'wdesignkit'),
-					'success' => true,
+					'massage'     => $message,
+					'description' => $description,
+					'success'     => false,
 				);
 			}
 
-			wp_send_json($res);
+			wp_send_json( $res );
 			wp_die();
 		}
 
@@ -2399,45 +2958,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$args['custom_meta'] = isset( $_POST['custom_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_meta'] ) ) : false;
+
 			if ( ! empty( $args['template_ids'] ) && ! empty( $args['page_section'] ) ) {
 				$output = array();
-				if ( is_array( $args['template_ids'] ) ) {
-					foreach ( $args['template_ids'] as $key => $value ) {
-						if ( ! empty( $value['id'] ) ) {
-							$token     = $this->wdkit_login_user_token( $args['email'] );
-							$temp_args = array(
-								'token'       => $token,
-								'template_id' => $value['id'],
-								'editor'      => $args['editor'],
-							);
-
-							$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
-
-							if ( 'error' === $response['content'] ) {
-								wp_send_json( $response );
-								wp_die();
-							}
-							
-							$result = array(
-								'response' => $response,
-								'args' => $args,
-								'id' => $args['template_ids'],
-								'value' => $value,
-							);
-		
-							$output['message']      = $response['message'];
-							$output['description']  = $response['description'];
-							$output['data']         = $result;
-							$output['success']      = true;
-
-						}
-					}
-				} else {
+				if ( ! empty( $args['template_ids']['id'] ) ) {
 					$token     = $this->wdkit_login_user_token( $args['email'] );
+
 					$temp_args = array(
 						'token'       => $token,
-						'template_id' => $args['template_ids'],
+						'template_id' => $args['template_ids']['id'],
 						'editor'      => $args['editor'],
+						'unique_id'   => get_option( 'wdkit_unique_id' ) ?? '',
 					);
 
 					$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
@@ -2449,21 +2980,53 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 					$result = array(
 						'response' => $response,
-						'args' => $args,
-						'id' => $args['template_ids'],
+						'args'     => $args,
+						'id'       => $args['template_ids'],
+						'value'    => $args['template_ids'],
 					);
 
-					$output['message']      = $response['message'];
-					$output['description']  = $response['description'];
-					$output['data']         = $result;
-					$output['success']      = true;
-				}
+					$output['message']     = $response['message'];
+					$output['description'] = $response['description'];
+					$output['data']        = $result;
+					$output['success']     = true;
 
+				}
 
 				wp_send_json( $output );
 				wp_die();
 			}
 		}
+
+		/**
+		 * It is Use for remove selected category from content.
+		 *
+		 * @since 2.0.5
+		 */
+		public function wdkit_content_remover( &$data ) {
+
+			if ( is_array( $data ) ) {
+
+				foreach ( $data as $key => &$value ) {
+					if ( $key === 'post_category' ) {
+						$data[ $key ] = array();
+					} else {
+						$this->wdkit_content_remover( $value );
+					}
+				}
+			} elseif ( is_object( $data ) ) {
+
+				foreach ( $data as $key => &$value ) {
+					if ( $key === 'post_category' ) {
+						$data->$key = array();
+					} else {
+						$this->wdkit_content_remover( $value );
+					}
+				}
+			}
+
+			return $data;
+		}
+
 
 		/**
 		 * Import single template and section from plugin only
@@ -2483,12 +3046,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$temp_data = ! empty( $_POST['temp_data'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['temp_data'] ) ), true ) : array();
 			}
 
+			if ( isset( $_POST['category_list'] ) ) {
+				$category_list = ! empty( $_POST['category_list'] ) ? json_decode( wp_unslash( $_POST['category_list'] ), true ) : '';
+			}
+
+			if ( isset( $_POST['tag_list'] ) ) {
+				$tag_list = ! empty( $_POST['tag_list'] ) ? json_decode( wp_unslash( $_POST['tag_list'] ), true ) : '';
+			}
+
+			if ( isset( $_POST['thumb_image'] ) ) {
+				$thumb_image = ! empty( $_POST['thumb_image'] ) ? esc_url_raw( $_POST['thumb_image'] ) : '';
+			}
+
 			if ( isset( $_POST['template_id'] ) ) {
-				$template_id = ! empty( $_POST['template_id'] ) ? json_decode(sanitize_text_field( wp_unslash( $_POST['template_id'] ), true)) : '';
+				$template_id = ! empty( $_POST['template_id'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_id'] ), true ) ) : '';
 			}
 
 			if ( isset( $_POST['data'] ) ) {
-				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] )) : '';
+				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ) ) : '';
 			}
 
 			$enqueue_instance = new Wdkit_Enqueue();
@@ -2509,6 +3084,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if ( ! empty( $data ) && ! empty( $template_id ) && ! empty( $post_type ) && current_user_can( 'manage_options' ) ) {
 				$post_content = $data;
 				$post_title   = isset( $post_content->title ) ? sanitize_text_field( $post_content->title ) : '';
+				$post_slug    = isset( $post_content->slug ) ? sanitize_text_field( $post_content->slug ) : '';
 				$file_type    = isset( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
 				$content      = isset( $post_content->content ) ? wp_slash( $post_content->content ) : '';
 
@@ -2521,12 +3097,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							)
 						);
 						wp_die();
-					} else if ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
+					} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
 						$parse_blocks = parse_blocks( stripslashes( $content ) );
 
 						$editor  = ( 'wdkit' === $args['editor'] ) ? 'gutenberg' : $args['editor'];
 						$content = $this->wdkit_media_import( $parse_blocks, $editor );
 						$content = addslashes( serialize_blocks( $content ) );
+
+						if ( ! empty( $category_list ) && is_array( $category_list ) ) {
+							$category_ids = array_map( 'intval', $category_list );
+							wp_set_post_terms( $inserted_id, $category_ids, 'category' );
+						}
+
+						if ( ! empty( $tag_list ) && is_array( $tag_list ) ) {
+							$tag_ids = array_map( 'intval', $tag_list );
+							wp_set_post_terms( $inserted_id, $tag_ids, 'post_tag' );
+						}
 
 						$inserted_post = wp_insert_post(
 							array(
@@ -2534,6 +3120,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								'post_type'    => $post_type,
 								'post_title'   => $post_title,
 								'post_content' => $content,
+								'post_name'    => $post_slug,
 							)
 						);
 
@@ -2545,6 +3132,39 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									)
 								);
 								wp_die();
+						}
+
+						if ( ! empty( $thumb_image ) ) {
+							// $featured_image_url = esc_url_raw( $thumb_image );
+							$tmp = download_url( $thumb_image );
+							if ( is_wp_error( $tmp ) ) {
+								error_log( 'Image download failed: ' . esc_html( $tmp->get_error_message() ) );
+							} else {
+								$file_array = array(
+									'name'     => wp_basename( $thumb_image ),
+									'tmp_name' => $tmp,
+								);
+
+								$image_id = media_handle_sideload( $file_array, $inserted_post );
+
+								if ( is_wp_error( $image_id ) ) {
+									error_log( 'Image sideload failed: ' . esc_html( $image_id->get_error_message() ) );
+								} else {
+									set_post_thumbnail( $inserted_post, $image_id );
+								}
+
+								@unlink( $tmp );
+							}
+						}
+
+						if ( ! empty( $category_list ) && is_array( $category_list ) ) {
+							$category_ids = array_map( 'intval', $category_list );
+							wp_set_post_terms( $inserted_post, $category_ids, 'category' );
+						}
+
+						if ( ! empty( $tag_list ) && is_array( $tag_list ) ) {
+							$tag_ids = array_map( 'intval', $tag_list );
+							wp_set_post_terms( $inserted_post, $tag_ids, 'post_tag' );
 						}
 
 						if ( ! empty( $args['custom_meta'] ) && 'true' == $args['custom_meta'] ) {
@@ -2561,29 +3181,32 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								}
 							}
 						}
-						
-						$temp_detail =  array(
+
+						$temp_detail = array(
 							'title'     => get_the_title( $inserted_post ),
 							'edit_link' => get_edit_post_link( $inserted_post, 'internal' ),
 							'view'      => get_permalink( $inserted_post ),
+							'id'        => $inserted_post,
 						);
 
-						if ( !empty( $template_id[0]->id ) ){
-							$temp_id = $template_id[0]->id;
-						} else if ( !empty($template_id) ) {
+						if ( ! empty( $template_id->id ) ) {
+							$temp_id = $template_id->id;
+						} elseif ( ! empty( $template_id ) ) {
 							$temp_id = $template_id;
-						} else { 
+						} else {
 							$temp_id = '';
 						}
 
 						wp_send_json(
 							array(
 								$temp_id      => $temp_detail,
-								'description' => "Yay! Your Section has been Successfully Imported.",
-								'message'     =>  "Successfully Imported.",
-								'success'     => true
+								'description' => 'Yay! Your Section has been Successfully Imported.',
+								'message'     => 'Successfully Imported.',
+								'inserted_id' => $inserted_post,
+								'success'     => true,
 							)
 						);
+						wp_die();
 					}
 				} elseif ( 'elementor' === $args['editor'] || ( 'wdkit' === $args['editor'] && ! empty( $file_type ) && 'elementor' === $file_type ) ) {
 					if ( did_action( 'elementor/loaded' ) ) {
@@ -2595,12 +3218,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								)
 							);
 							wp_die();
-						} else if ( ! empty( $content ) && ! empty( $file_type ) && 'elementor' === $file_type ) {
-							
+						} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'elementor' === $file_type ) {
+
+							$content = $this->wdkit_content_remover( $content );
+
 							$post_attributes = array(
 								'post_title'  => $post_title,
 								'post_type'   => $post_type,
 								'post_status' => 'publish',
+								'post_name'   => $post_slug,
 							);
 
 							if ( 'elementor_library' === $post_type ) {
@@ -2624,6 +3250,41 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									)
 								);
 								wp_die();
+							}
+
+							$inserted_id = $new_document->get_main_id();
+
+							if ( ! empty( $thumb_image ) ) {
+								// $featured_image_url = esc_url_raw( $thumb_image );
+								$tmp = download_url( $thumb_image );
+								if ( is_wp_error( $tmp ) ) {
+									error_log( 'Image download failed: ' . esc_html( $tmp->get_error_message() ) );
+								} else {
+									$file_array = array(
+										'name'     => wp_basename( $thumb_image ),
+										'tmp_name' => $tmp,
+									);
+
+									$image_id = media_handle_sideload( $file_array, $inserted_id );
+
+									if ( is_wp_error( $image_id ) ) {
+										error_log( 'Image sideload failed: ' . esc_html( $image_id->get_error_message() ) );
+									} else {
+										set_post_thumbnail( $inserted_id, $image_id );
+									}
+
+									@unlink( $tmp );
+								}
+							}
+
+							if ( ! empty( $category_list ) && is_array( $category_list ) ) {
+								$category_ids = array_map( 'intval', $category_list );
+								wp_set_post_terms( $inserted_id, $category_ids, 'category' );
+							}
+
+							if ( ! empty( $tag_list ) && is_array( $tag_list ) ) {
+								$tag_ids = array_map( 'intval', $tag_list );
+								wp_set_post_terms( $inserted_id, $tag_ids, 'post_tag' );
 							}
 
 							$settings = ( isset( $post_content->settings ) && ! empty( $post_content->settings ) ) ? json_decode( wp_json_encode( $post_content->settings ), true ) : array();
@@ -2654,17 +3315,18 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								}
 							}
 
-							$temp_detail =  array(
-								'title'       => get_the_title( $inserted_id ),
-								'edit_link'   => get_edit_post_link( $inserted_id, 'internal' ),
-								'view'        => get_permalink( $inserted_id ),
+							$temp_detail = array(
+								'title'     => get_the_title( $inserted_id ),
+								'edit_link' => get_edit_post_link( $inserted_id, 'internal' ),
+								'view'      => get_permalink( $inserted_id ),
+								'id'        => $inserted_id,
 							);
 
-							if ( !empty( $template_id[0]->id ) ){
-								$temp_id = $template_id[0]->id;
-							} else if ( !empty($template_id) ) {
+							if ( ! empty( $template_id->id ) ) {
+								$temp_id = $template_id->id;
+							} elseif ( ! empty( $template_id ) ) {
 								$temp_id = $template_id;
-							} else { 
+							} else {
 								$temp_id = '';
 							}
 
@@ -2673,11 +3335,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							wp_send_json(
 								array(
 									$temp_id      => $temp_detail,
-									'description' => "Yay! Your Section has been Successfully Imported.",
-									'message'     =>  "Successfully Imported.",
-									'success'     => true
+									'description' => 'Yay! Your Section has been Successfully Imported.',
+									'message'     => 'Successfully Imported.',
+									'inserted_id' => $inserted_id,
+									'success'     => true,
 								)
 							);
+							wp_die();
 						}
 					} else {
 						wp_send_json(
@@ -2690,7 +3354,491 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					}
 				}
 			}
+
+			wp_send_json(
+				array(
+					'success' => false,
+					'message' => esc_html__( 'Something went wrong', 'wdesignkit' ),
+				)
+			);
+			wp_die();
 		}
+
+		/**
+		 * change plugins setting for import kit
+		 *
+		 * @since 2.0.0
+		 */
+		protected function update_plugin_setting() {
+			$temp_id = isset( $_POST['plugin_type'] ) ? sanitize_text_field( $_POST['plugin_type'] ) : '';
+
+			if ( $temp_id == 'elementor' ) {
+				$unfiltered_files  = get_option( 'elementor_unfiltered_files_upload', false );
+				$load_fa4          = get_option( 'elementor_load_fa4_shim', false );
+				$Inline_font_icons = get_option( 'elementor_experiment-e_font_icon_svg', false );
+				$container         = get_option( 'elementor_experiment-container', false );
+
+				if ( isset( $unfiltered_files ) ) {
+					update_option( 'elementor_unfiltered_files_upload', 1 );
+				} else {
+					add_option( 'elementor_unfiltered_files_upload', 1 );
+				}
+
+				if ( isset( $load_fa4 ) ) {
+					update_option( 'elementor_load_fa4_shim', 'yes' );
+				} else {
+					add_option( 'elementor_load_fa4_shim', 'yes' );
+				}
+
+				if ( isset( $container ) ) {
+					update_option( 'elementor_experiment-container', 'active' );
+				} else {
+					add_option( 'elementor_experiment-container', 'active' );
+				}
+
+				if ( isset( $Inline_font_icons ) ) {
+					update_option( 'elementor_experiment-e_font_icon_svg', 'inactive' );
+				} else {
+					add_option( 'elementor_experiment-e_font_icon_svg', 'inactive' );
+				}
+
+				$response = array(
+					'message'     => esc_html__( 'Plugin Setting updated', 'wdesignkit' ),
+					'description' => esc_html__( 'Plugin Setting updated', 'wdesignkit' ),
+					'success'     => true,
+				);
+			} else {
+				$response = array(
+					'message'     => esc_html__( 'Plugin not found', 'wdesignkit' ),
+					'description' => esc_html__( 'Plugin not found', 'wdesignkit' ),
+					'success'     => false,
+				);
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * generate different color logo
+		 *
+		 * @since 2.0.0
+		 */
+		protected function wkit_generate_site_logo() {
+
+			if ( empty( $_POST['image_url'] ) ) {
+				wp_send_json_error( 'Image URL not provided.' );
+			}
+
+			if ( isset( $_POST['colors'] ) ) {
+				$img_colors = ! empty( $_POST['colors'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['colors'] ) ), true ) : array();
+			}
+
+			if ( empty( $img_colors ) ) {
+				wp_send_json_error( 'Image color not provided.' );
+			}
+
+			$image_url = esc_url_raw( $_POST['image_url'] );
+
+			$tmp_file = download_url( $image_url );
+			if ( is_wp_error( $tmp_file ) ) {
+				wp_send_json_error( 'Image could not be downloaded.' );
+			}
+
+			if ( mime_content_type( $tmp_file ) !== 'image/png' ) {
+				unlink( $tmp_file );
+				wp_send_json_error( 'Not a PNG file.' );
+			}
+
+			$src = imagecreatefrompng( $tmp_file );
+			imagesavealpha( $src, true );
+
+			$width  = imagesx( $src );
+			$height = imagesy( $src );
+
+			$hasTransparency = false;
+			for ( $x = 0; $x < $width; $x++ ) {
+				for ( $y = 0; $y < $height; $y++ ) {
+					$rgba  = imagecolorat( $src, $x, $y );
+					$alpha = ( $rgba & 0x7F000000 ) >> 24;
+
+					if ( $alpha > 0 ) {
+						$hasTransparency = true;
+						break 2;
+					}
+				}
+			}
+
+			if ( ! $hasTransparency ) {
+				unlink( $tmp_file );
+				wp_send_json_error( 'PNG has no transparent pixels.' );
+			}
+
+			$upload_dir  = wp_upload_dir();
+			$result_urls = array();
+
+			foreach ( $img_colors as $name => $rgb ) {
+				$new = imagecreatetruecolor( $width, $height );
+				imagesavealpha( $new, true );
+				imagealphablending( $new, false );
+
+				$transparent = imagecolorallocatealpha( $new, 0, 0, 0, 127 );
+				imagefill( $new, 0, 0, $transparent );
+
+				for ( $x = 0; $x < $width; $x++ ) {
+					for ( $y = 0; $y < $height; $y++ ) {
+						$rgba  = imagecolorat( $src, $x, $y );
+						$alpha = ( $rgba & 0x7F000000 ) >> 24;
+
+						// Skip fully transparent pixels
+						if ( $alpha === 127 ) {
+							continue;
+						}
+
+						// Replace pixel color directly
+						$new_r = $rgb[0];
+						$new_g = $rgb[1];
+						$new_b = $rgb[2];
+
+						$color = imagecolorallocatealpha( $new, $new_r, $new_g, $new_b, $alpha );
+						imagesetpixel( $new, $x, $y, $color );
+					}
+				}
+
+				$filename = 'colored-' . $name . '-' . time() . '.png';
+				$filepath = $upload_dir['path'] . '/' . $filename;
+
+				imagepng( $new, $filepath );
+				imagedestroy( $new );
+
+				$attachment = array(
+					'post_mime_type' => 'image/png',
+					'post_title'     => sanitize_file_name( $filename ),
+					'post_content'   => '',
+					'post_status'    => 'inherit',
+				);
+
+				$attach_id = wp_insert_attachment( $attachment, $filepath );
+				require_once ABSPATH . 'wp-admin/includes/image.php';
+				$attach_data = wp_generate_attachment_metadata( $attach_id, $filepath );
+				wp_update_attachment_metadata( $attach_id, $attach_data );
+
+				$result_urls[ $name ] = wp_get_attachment_url( $attach_id );
+			}
+
+			imagedestroy( $src );
+			unlink( $tmp_file );
+
+			wp_send_json_success( $result_urls );
+		}
+
+		/**
+		 * change theme setting for import kit
+		 *
+		 * @since 2.0.0
+		 */
+		protected function update_theme_setting() {
+			$theme_db = get_option( 'nxt-theme-options', false );
+
+			$container_type = 'container-fluid';
+			$fluid_spacing  = array(
+				'md'      => array(
+					'left'  => '0',
+					'right' => '0',
+				),
+				'sm'      => array(
+					'left'  => '',
+					'right' => '',
+				),
+				'xs'      => array(
+					'left'  => '',
+					'right' => '',
+				),
+				'md-unit' => 'px',
+				'sm-unit' => 'px',
+				'xs-unit' => 'px',
+			);
+
+			if ( isset( $theme_db ) ) {
+				$nexter_setting                          = $theme_db;
+				$nexter_setting['site-header-container'] = $container_type;
+				$nexter_setting['site-footer-container'] = $container_type;
+				$nexter_setting['site-layout-container'] = $container_type;
+				$nexter_setting['site-page-container']   = $container_type;
+
+				$nexter_setting['header-fluid-spacing'] = $fluid_spacing;
+				$nexter_setting['footer-fluid-spacing'] = $fluid_spacing;
+				$nexter_setting['site-fluid-spacing']   = $fluid_spacing;
+				$nexter_setting['page-fluid-spacing']   = $fluid_spacing;
+
+				update_option( 'nxt-theme-options', $nexter_setting );
+			} else {
+				$nexter_setting = array(
+					'site-header-container'  => 'container-fluid',
+					'header-fluid-spacing'   => array(
+						'md'      => array(
+							'left'  => '0',
+							'right' => '0',
+						),
+						'sm'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'xs'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'md-unit' => 'px',
+						'sm-unit' => 'px',
+						'xs-unit' => 'px',
+					),
+					'site-footer-container'  => 'container-fluid',
+					'footer-fluid-spacing'   => array(
+						'md'      => array(
+							'left'  => '0',
+							'right' => '0',
+						),
+						'sm'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'xs'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'md-unit' => 'px',
+						'sm-unit' => 'px',
+						'xs-unit' => 'px',
+					),
+					'site-layout-container'  => 'container-fluid',
+					'site-fluid-spacing'     => array(
+						'md'      => array(
+							'left'  => '0',
+							'right' => '0',
+						),
+						'sm'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'xs'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'md-unit' => 'px',
+						'sm-unit' => 'px',
+						'xs-unit' => 'px',
+					),
+					'site-page-container'    => 'container-fluid',
+					'page-fluid-spacing'     => array(
+						'md'      => array(
+							'left'  => '0',
+							'right' => '0',
+						),
+						'sm'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'xs'      => array(
+							'left'  => '',
+							'right' => '',
+						),
+						'md-unit' => 'px',
+						'sm-unit' => 'px',
+						'xs-unit' => 'px',
+					),
+					'site-page-container'    => '',
+					'site-posts-container'   => '',
+					'site-archive-container' => '',
+				);
+
+				add_option( 'nxt-theme-options', $nexter_setting );
+			}
+
+			$response = array(
+				'message'     => esc_html__( 'Theme Setting updated', 'wdesignkit' ),
+				'description' => esc_html__( 'Theme Setting updated', 'wdesignkit' ),
+				'success'     => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * change site setting for import kit
+		 *
+		 * @since 2.0.0
+		 */
+		protected function update_site_setting() {
+			$temp_id      = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+			$temp_type    = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'page';
+			$site_name    = isset( $_POST['site_name'] ) ? sanitize_text_field( wp_unslash( $_POST['site_name'] ) ) : '';
+			$site_tagline = isset( $_POST['site_tagline'] ) ? sanitize_text_field( wp_unslash( $_POST['site_tagline'] ) ) : '';
+
+			$this->wdkit_nxt_thembuilder_update();
+
+			if ( $temp_id ) {
+				update_option( 'show_on_front', $temp_type );
+				update_option( 'page_on_front', $temp_id );
+
+				if ( ! empty( $site_name ) ) {
+					update_option( 'blogname', $site_name );
+				}
+
+				if ( ! empty( $site_tagline ) ) {
+					update_option( 'blogdescription', $site_tagline );
+				}
+
+				$response = array(
+					'message'     => esc_html__( 'Site link updated', 'wdesignkit' ),
+					'description' => esc_html__( 'Site link updated', 'wdesignkit' ),
+					'site_link'   => get_site_url(),
+					'success'     => true,
+				);
+			} else {
+				$response = array(
+					'message'     => esc_html__( 'Site not found', 'wdesignkit' ),
+					'description' => esc_html__( 'Site not found', 'wdesignkit' ),
+					'success'     => false,
+				);
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * update theme builder
+		 *
+		 * @since 2.0.4
+		 */
+		public function wdkit_nxt_thembuilder_update() {
+
+			$page_information = isset( $_POST['page_information'] ) ? sanitize_text_field( wp_unslash( $_POST['page_information'] ) ) : '';
+			$page_information = json_decode( $page_information, true );
+
+			if ( ! empty( $page_information ) && is_array( $page_information ) ) {
+				// Step 1: banavo mapping [ old_id => new_id ]
+				$id_mapping = array();
+				foreach ( $page_information as $page_info ) {
+					if ( ! empty( $page_info['old_page_id'] ) ) {
+						$id_mapping[ $page_info['old_page_id'] ] = $page_info['inserted_id'];
+					}
+				}
+
+				// Step 2: loop karo and update exclude
+				foreach ( $page_information as $page_info ) {
+
+					$post_id     = $page_info['inserted_id'] ?? '';
+					$old_post_id = $page_info['old_page_id'] ?? '';
+					$post_type   = $page_info['post_type'] ?? '';
+
+					if ( empty( $old_post_id ) ) {
+						continue; // only update where old id exists
+					}
+
+					if ( $post_type != 'nxt_builder' ) {
+						continue;
+					}
+
+					$include_specific = get_post_meta( $post_id, 'nxt-hooks-layout-specific', true );
+					if ( ! empty( $include_specific ) && is_array( $include_specific ) ) {
+
+						foreach ( $include_specific as $key => $val ) {
+
+							// check karo ke koi old_id ka post match kare che ke nahi
+							foreach ( $id_mapping as $old_id => $new_id ) {
+								$search  = 'post-' . $old_id;
+								$replace = 'post-' . $new_id;
+
+								if ( $val === $search ) {
+									$include_specific[ $key ] = $replace;
+								}
+							}
+						}
+
+						// save back updated array
+						update_post_meta( $post_id, 'nxt-hooks-layout-specific', $include_specific );
+					}
+
+					// Get exclude meta
+					$exclude_specific = get_post_meta( $post_id, 'nxt-hooks-layout-exclude-specific', true );
+					if ( ! empty( $exclude_specific ) && is_array( $exclude_specific ) ) {
+
+						foreach ( $exclude_specific as $key => $val ) {
+
+							// check karo ke koi old_id ka post match kare che ke nahi
+							foreach ( $id_mapping as $old_id => $new_id ) {
+								$search  = 'post-' . $old_id;
+								$replace = 'post-' . $new_id;
+
+								if ( $val === $search ) {
+									$exclude_specific[ $key ] = $replace;
+								}
+							}
+						}
+
+						// save back updated array
+						update_post_meta( $post_id, 'nxt-hooks-layout-exclude-specific', $exclude_specific );
+					}
+				}
+			}
+		}
+
+		/**
+		 *
+		 * select team image for import kit
+		 *
+		 * @since 2.2.2
+		 */
+		public function wdkit_check_user_credit() {
+			$array_data = array(
+				'token' => isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '',
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'ai/credits/get' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				$response = array(
+					'success'     => false,
+					'message'     => esc_html__( 'Data Not Found', 'wdesignkit' ),
+					'description' => esc_html__( 'Data not found', 'wdesignkit' ),
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$response = json_decode( wp_json_encode( $response['data'] ), true );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		public function wdkit_nxt_thembuilder_reset() {
+			$post_id         = isset( $_POST['post_id'] ) ? sanitize_text_field( $_POST['post_id'] ) : '';
+			$sections_layout = get_post_meta( $post_id, 'nxt-hooks-layout-sections', true );
+
+			if ( ( ! empty( $sections_layout ) && ( $sections_layout == 'header' || $sections_layout == 'footer' || $sections_layout == 'breadcrumb' || $sections_layout == 'hooks' ) ) ) {
+				if ( get_post_meta( $post_id, 'nxt-add-display-rule' ) ) {
+					delete_post_meta( $post_id, 'nxt-add-display-rule' );
+				}
+
+				if ( get_post_meta( $post_id, 'nxt-hooks-layout-specific' ) ) {
+					update_post_meta( $post_id, 'nxt-hooks-layout-specific', '' );
+				}
+
+				if ( get_post_meta( $post_id, 'nxt-exclude-display-rule' ) ) {
+					update_post_meta( $post_id, 'nxt-exclude-display-rule', '' );
+				}
+
+				if ( get_post_meta( $post_id, 'nxt-hooks-layout-exclude-specific' ) ) {
+					update_post_meta( $post_id, 'nxt-hooks-layout-exclude-specific', '' );
+				}
+			}
+		}
+
 
 		/**
 		 * Share with Me Template and widgets
@@ -2838,6 +3986,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				array_push( $builder, 'gutenberg' );
 			}
 
+			if ( Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_core', 'widget' ) ) {
+				array_push( $builder, 'gutenberg_core' );
+			}
+
 			foreach ( $builder as $key => $name ) {
 				$elementor_dir = WDKIT_BUILDER_PATH . '/' . $name;
 
@@ -2847,8 +3999,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 					if ( ! empty( $elementor_list ) ) {
 						foreach ( $elementor_list as $key => $value ) {
-							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key]['data']    = $value;
-							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key]['builder'] = $name;
+							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key ]['data']    = $value;
+							$a_c_s_d_s_c[ filemtime( "{$elementor_dir}/{$value}" ) . $key ]['builder'] = $name;
 						}
 					}
 				}
@@ -2917,6 +4069,47 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		}
 
 		/**
+		 * Get Workspace data
+		 *
+		 * @since 2.2.5
+		 */
+		public function wdkit_get_workspace_data() {
+
+			$wid   = isset( $_POST['wid'] ) ? sanitize_text_field( $_POST['wid'] ) : '';
+			$token = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
+
+			if ( empty( $wid ) ) {
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Workspace ID Not Found', 'wdesignkit' ),
+					'description' => esc_html__( 'Workspace ID is required', 'wdesignkit' ),
+				);
+			}
+
+			if ( empty( $token ) ) {
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Token Not Found', 'wdesignkit' ),
+					'description' => esc_html__( 'Token is required', 'wdesignkit' ),
+				);
+			}
+
+			$args = array(
+				'token' => $token,
+				'wid'   => $wid,
+			);
+
+			$this->wdkit_api = $this->wdkit_api_v2;
+
+			$url = "workspace/{$wid}/get";
+
+			$response = $this->wkit_api_call( $args, $url );
+
+			wp_send_json( $response['data'] );
+			wp_die();
+		}
+
+		/**
 		 *
 		 * Custom_upload_dir
 		 *
@@ -2944,10 +4137,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wkit_widget_json() {
-			$widget_type = !empty( $_POST['widget_type'] ) ? wp_unslash( $_POST['widget_type'] ) : '';
-			$folder_name = !empty( $_POST['folder_name'] ) ? wp_unslash( $_POST['folder_name'] ) : '';
-			$file_name = !empty( $_POST['file_name'] ) ? ( wp_unslash( $_POST['file_name'] ) ) : '';
-			
+			$widget_type = ! empty( $_POST['widget_type'] ) ? wp_unslash( $_POST['widget_type'] ) : '';
+			$folder_name = ! empty( $_POST['folder_name'] ) ? wp_unslash( $_POST['folder_name'] ) : '';
+			$file_name   = ! empty( $_POST['file_name'] ) ? ( wp_unslash( $_POST['file_name'] ) ) : '';
+
 			if ( empty( $widget_type ) || empty( $folder_name ) || empty( $file_name ) ) {
 				return array(
 					'success'     => false,
@@ -2956,7 +4149,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			$json_path     = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}/{$file_name}";
+			$json_path = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}/{$file_name}";
 
 			$json_data = wp_json_file_decode( "$json_path.json" );
 			if ( ! empty( $json_data ) ) {
@@ -2966,7 +4159,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					'message'     => esc_html__( 'Widget get Successfully', 'wdesignkit' ),
 					'description' => esc_html__( 'Widget JSON get Successfully', 'wdesignkit' ),
 				);
-			} else { 
+			} else {
 				$result = (object) array(
 					'success'     => false,
 					'message'     => esc_html__( 'Widget not get', 'wdesignkit' ),
@@ -3028,7 +4221,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$img_url   = ! empty( $response['data']['image'] ) ? $response['data']['image'] : '';
 			$json_data = ! empty( $response['data']['json'] ) ? json_decode( $response['data']['json'], true ) : '';
 
-			if( empty( $response['success'] ) ){
+			if ( empty( $response['success'] ) ) {
 				wp_send_json( $responce );
 				wp_die();
 			}
@@ -3048,10 +4241,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			\WP_Filesystem();
 			global $wp_filesystem;
 
-			if( !is_array($json_data) ){
+			if ( ! is_array( $json_data ) ) {
 				$json_data = json_decode( $json_data, true );
 			}
-			
+
 			$title   = ! empty( $json_data['widget_data']['widgetdata']['name'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['name'] ) : '';
 			$builder = ! empty( $json_data['widget_data']['widgetdata']['type'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['type'] ) : '';
 			$w_uniq  = ! empty( $json_data['widget_data']['widgetdata']['widget_id'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['widget_id'] ) : '';
@@ -3095,7 +4288,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_add_widget() {
 			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'widget_info', 'none' ) : '';
-			$data = json_decode( stripslashes( $data ) );
+			$data = base64_decode( $data );
+			$data = json_decode( $data );
 
 			$title   = isset( $data->title ) ? sanitize_text_field( $data->title ) : '';
 			$builder = isset( $data->builder ) ? sanitize_text_field( $data->builder ) : '';
@@ -3120,6 +4314,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'w_version' => isset( $data->w_version ) ? $data->w_version : '',
 				'w_updates' => ! empty( $data->w_updates ) ? serialize( $data->w_updates ) : serialize( array() ),
 				'r_id'      => isset( $data->r_id ) ? $data->r_id : 0,
+				'unique_id' => get_option( 'wdkit_unique_id' ) ?? '',
 			);
 
 			$response = $this->wkit_api_call( $array_data, 'save_widget' );
@@ -3144,6 +4339,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$img_url  = ! empty( $response['data']['imgurl'] ) ? $response['data']['imgurl'] : '';
 
 			if ( ! empty( $img_url ) && 'error' !== $res ) {
+
 				$img_body = wp_remote_get( $img_url );
 				$img_ext  = pathinfo( $img_url )['extension'];
 				include_once ABSPATH . 'wp-admin/includes/file.php';
@@ -3226,7 +4422,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected static function wkit_get_settings_panel() {
-			$new_version = '';
+			$new_version     = '';
 			$current_version = WDKIT_VERSION;
 			$response        = wp_remote_get( 'https://api.wordpress.org/plugins/info/1.0/wdesignkit.json' );
 
@@ -3254,22 +4450,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$get_setting = get_option( 'wkit_settings_panel', false );
 
 			$setting_data = array(
-				'builder'            => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
-				'template'           => isset( $get_setting['template'] ) ? $get_setting['template'] : true,
-				'gutenberg_builder'  => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
-				'elementor_builder'  => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
-				'bricks_builder'     => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
-				'gutenberg_template' => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
-				'elementor_template' => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
-				'plugin_version'     => $version_check
+				'builder'                => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
+				'template'               => isset( $get_setting['template'] ) ? $get_setting['template'] : true,
+				'gutenberg_builder'      => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
+				'gutenberg_core_builder' => isset( $get_setting['gutenberg_core_builder'] ) ? $get_setting['gutenberg_core_builder'] : false,
+				'elementor_builder'      => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
+				'bricks_builder'         => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
+				'gutenberg_template'     => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
+				'elementor_template'     => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
+				'code_snippet'           => isset( $get_setting['code_snippet'] ) ? $get_setting['code_snippet'] : true,
+				'plugin_version'         => $version_check,
 			);
 
-			if(isset( $get_setting['remove_db'] )){
-				$setting_data['remove_db'] =  $get_setting['remove_db'];
+			if ( isset( $get_setting['remove_db'] ) ) {
+				$setting_data['remove_db'] = $get_setting['remove_db'];
 			}
 
-			if(isset( $get_setting['debugger_mode'] )){
-				$setting_data['debugger_mode'] =  $get_setting['debugger_mode'];
+			if ( isset( $get_setting['debugger_mode'] ) ) {
+				$setting_data['debugger_mode'] = $get_setting['debugger_mode'];
 			}
 
 			return $setting_data;
@@ -3282,43 +4480,43 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wkit_white_label() {
 
-			$get_wl_data = !empty( $_POST['WhiteLabelData'] ) ? wp_unslash( $_POST['WhiteLabelData'] ) : array();
+			$get_wl_data = ! empty( $_POST['WhiteLabelData'] ) ? wp_unslash( $_POST['WhiteLabelData'] ) : array();
 
-			if ( !empty( $get_wl_data ) ) {
-				$white_label_data = json_decode($get_wl_data, true);
-				$plugin_name = $white_label_data['plugin_name'];	
-			}else{
+			if ( ! empty( $get_wl_data ) ) {
+				$white_label_data = json_decode( $get_wl_data, true );
+				$plugin_name      = $white_label_data['plugin_name'];
+			} else {
 				$result = array(
-					'success'     => false,
-					'message'     => esc_html__('Data Not Found', 'wdesignkit'),
+					'success' => false,
+					'message' => esc_html__( 'Data Not Found', 'wdesignkit' ),
 				);
 
 				wp_send_json( $result );
-				wp_die();			
+				wp_die();
 			}
 
-			if (!empty($plugin_name)) {
-				$get_white_label = get_option('wkit_white_label', false);
-				if (!empty($get_white_label)) {
+			if ( ! empty( $plugin_name ) ) {
+				$get_white_label = get_option( 'wkit_white_label', false );
+				if ( ! empty( $get_white_label ) ) {
 					update_option( 'wkit_white_label', $white_label_data );
-				}else{
+				} else {
 					add_option( 'wkit_white_label', $white_label_data );
 				}
-			}else{
+			} else {
 				$result = array(
-					'success'     => false,
-					'message'     => esc_html__('Plugin Name Not Found', 'wdesignkit'),
+					'success' => false,
+					'message' => esc_html__( 'Plugin Name Not Found', 'wdesignkit' ),
 				);
 
 				wp_send_json( $result );
-				wp_die();			
+				wp_die();
 			}
 
-			$get_updated_data = get_option('wkit_white_label', false);
-			$response = array(
-				'message'     => 'Data Added successfully',
-				'success'     => true,
-				'data'        => $get_updated_data,
+			$get_updated_data = get_option( 'wkit_white_label', false );
+			$response         = array(
+				'message' => 'Data Added successfully',
+				'success' => true,
+				'data'    => $get_updated_data,
 			);
 
 			wp_send_json( $response );
@@ -3330,14 +4528,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.1.8
 		 */
 		public function wkit_reset_wl() {
-			$wl_data = get_option('wkit_white_label');
+			$wl_data = get_option( 'wkit_white_label' );
 
-			if ( !empty( $wl_data ) ) {
-				delete_option('wkit_white_label');
+			if ( ! empty( $wl_data ) ) {
+				delete_option( 'wkit_white_label' );
 
 				$result = array(
-					'success'     => true,
-					'message'     => esc_html__('Reset White Label Successfully', 'wdesignkit'),
+					'success' => true,
+					'message' => esc_html__( 'Reset White Label Successfully', 'wdesignkit' ),
 				);
 
 				wp_send_json( $result );
@@ -3361,7 +4559,36 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = $this->wkit_api_call( $args, 'wkit_activate_key' );
 
-			wp_send_json( $response['data'] );
+			if ( ! empty( $response['data'] ) ) {
+				$response = json_decode( wp_json_encode( $response['data'] ), true );
+
+				if ( ! empty( $response['data']['tpae_licence'] ) && is_serialized( $response['data']['tpae_licence'] ) ) {
+					$response['data']['tpae_licence'] = unserialize( $response['data']['tpae_licence'] );
+				}
+
+				if ( ! empty( $response['data']['tpag_licence'] ) && is_serialized( $response['data']['tpag_licence'] ) ) {
+					$response['data']['tpag_licence'] = unserialize( $response['data']['tpag_licence'] );
+				}
+
+				if ( ! empty( $response['data']['uichemy_licence'] ) && is_serialized( $response['data']['uichemy_licence'] ) ) {
+					$response['data']['uichemy_licence'] = unserialize( $response['data']['uichemy_licence'] );
+				}
+
+				if ( ! empty( $response['data']['wdkit_licence'] ) && is_serialized( $response['data']['wdkit_licence'] ) ) {
+					$response['data']['wdkit_licence'] = unserialize( $response['data']['wdkit_licence'] );
+
+					// Store WDesignKit license status locally for quick access
+					if ( ! empty( $response['data']['wdkit_licence'] ) && is_array( $response['data']['wdkit_licence'] ) ) {
+						update_option( 'wdkit_licence_data', $response['data']['wdkit_licence'] );
+					}
+				}
+
+				if ( ! empty( $response['data']['wdkit_licence_extra'] ) && is_serialized( $response['data']['wdkit_licence_extra'] ) ) {
+					$response['data']['wdkit_licence_extra'] = unserialize( $response['data']['wdkit_licence_extra'] );
+				}
+			}
+
+			wp_send_json( $response );
 			wp_die();
 		}
 
@@ -3383,6 +4610,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			);
 
 			$response = $this->wkit_api_call( $args, 'licence_delete' );
+
+			// Remove local WDesignKit license data if deleting WDesignKit license
+			if ( 'wdkit' === $licencename ) {
+				delete_option( 'wdkit_licence_data' );
+			}
 
 			wp_send_json( $response['data'] );
 			wp_die();
@@ -3465,7 +4697,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$current_ver = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : '';
 			$rv          = $this->wdkit_prev_version();
 
-			if ( empty( $current_ver ) || ! in_array( $current_ver, $rv) ) {
+			if ( empty( $current_ver ) || ! in_array( $current_ver, $rv ) ) {
 				return array(
 					'message' => esc_html__( 'Invalid Nonce or version not found', 'wdesignkit' ),
 					'status'  => 'error',
@@ -3536,6 +4768,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				if ( 'session' !== $logout_type ) {
 					delete_transient( 'wdkit_auth_' . $email );
+					// Clear stored license data on logout so banner shows again
+					delete_option( 'wdkit_licence_data' );
 					$response = WDesignKit_Data_Query::get_data( 'logout', $args );
 				}
 			}
@@ -3666,12 +4900,16 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$args['plugin_exclude'] = isset( $data['plugin_exclude'] ) ? wp_unslash( $data['plugin_exclude'] ) : array();
 			}
 
+			if ( isset( $data['ai_compatibility'] ) ) {
+				$args['ai_compatibility'] = isset( $data['ai_compatibility'] ) ? wp_unslash( $data['ai_compatibility'] ) : array();
+			}
+
 			// if ( isset( $data['global_color'] ) ) {
-			// 	$args['global_color'] = isset( $data['global_color'] ) ? wp_unslash( $data['global_color'] ) : array();
+			// $args['global_color'] = isset( $data['global_color'] ) ? wp_unslash( $data['global_color'] ) : array();
 			// }
 
 			// if ( isset( $data['global_font_family'] ) ) {
-			// 	$args['global_font_family'] = isset( $data['global_font_family'] ) ? wp_unslash( $data['global_font_family'] ) : array();
+			// $args['global_font_family'] = isset( $data['global_font_family'] ) ? wp_unslash( $data['global_font_family'] ) : array();
 			// }
 
 			if ( isset( $data['global_data'] ) ) {
@@ -3707,6 +4945,32 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			return $args;
+		}
+
+				/**
+				 * Dark Mode
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param string store darkmode value in database.
+				 */
+		protected function wdkit_dark_mode() {
+			$dark_mode = ! empty( $_POST['dark_mode'] ) ? sanitize_text_field( $_POST['dark_mode'] ) : 'light';
+
+			if ( get_option( 'wdkit_dark_mode' ) ) {
+				update_option( 'wdkit_dark_mode', $dark_mode );
+			} else {
+				add_option( 'wdkit_dark_mode', $dark_mode );
+			}
+
+			$response = array(
+				'message' => esc_html__( 'Dark Mode Updated', 'wdesignkit' ),
+				'status'  => 'Success',
+				'success' => true,
+			);
+
+			wp_send_json( $response );
+			wp_die();
 		}
 	}
 

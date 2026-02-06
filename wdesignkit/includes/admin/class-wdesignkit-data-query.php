@@ -38,7 +38,7 @@ if ( ! class_exists( 'WDesignKit_Data_Query' ) ) {
 		 *
 		 * @var string
 		 */
-		private static $url = WDKIT_SERVER_SITE_URL . 'api/wp/';
+		private static $url = WDKIT_SERVER_API_URL . 'api/wp/';
 
 		/**
 		 *  Initiator

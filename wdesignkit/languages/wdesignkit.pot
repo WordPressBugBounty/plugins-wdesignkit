@@ -1,15 +1,15 @@
-# Copyright (C) 2025 POSIMYTH
+# Copyright (C) 2026 POSIMYTH
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 1.2.17\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.2.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-22T07:40:00+00:00\n"
+"POT-Creation-Date: 2026-01-28T10:46:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -26,7 +26,7 @@ msgstr ""
 
 #. Description of the plugin
 #: wdesignkit.php
-msgid "Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 50+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more."
+msgid "Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 100+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more."
 msgstr ""
 
 #. Author of the plugin
@@ -39,256 +39,461 @@ msgstr ""
 msgid "https://posimyth.com/"
 msgstr ""
 
-#: includes/admin/class-api.php:131
+#: includes/admin/api/class-wdkit-code-snippet.php:70
+#: includes/admin/api/class-wdkit-theme-builder.php:69
+#: includes/admin/class-api.php:147
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:76
 #: includes/admin/hooks/class-wdkit-login-ajax.php:70
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:70
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:75
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:82
 msgid "Insufficient permissions."
 msgstr ""
 
-#: includes/admin/class-api.php:136
+#: includes/admin/api/class-wdkit-code-snippet.php:77
+#: includes/admin/api/class-wdkit-theme-builder.php:75
+#: includes/admin/class-api.php:152
 #: includes/admin/hooks/class-wdkit-login-ajax.php:74
+#: build/index.js:1
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/class-api.php:336
-#: includes/admin/hooks/class-wdkit-login-ajax.php:270
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:274
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:926
-msgid "API Not Found"
+#: includes/admin/api/class-wdkit-code-snippet.php:204
+#: includes/admin/api/class-wdkit-code-snippet.php:577
+msgid "Failed to fetch snippet."
 msgstr ""
 
-#. Translators: %s is a placeholder for the error message
-#: includes/admin/class-api.php:352
-#: includes/admin/hooks/class-wdkit-login-ajax.php:286
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:290
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:942
-#, php-format
-msgid "API request error: %s"
+#: includes/admin/api/class-wdkit-code-snippet.php:233
+msgid "Failed to fetch filter options."
 msgstr ""
 
-#: includes/admin/class-api.php:365
-#: includes/admin/hooks/class-wdkit-login-ajax.php:299
-#: includes/admin/hooks/class-wdkit-preset-ajax.php:303
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:955
-#: build/index.js:1
-msgid "Success"
+#: includes/admin/api/class-wdkit-code-snippet.php:262
+msgid "Failed to fetch existing snippet."
 msgstr ""
 
-#: includes/admin/class-api.php:533
-msgid "Server Error"
+#: includes/admin/api/class-wdkit-code-snippet.php:317
+msgid "Post not found."
 msgstr ""
 
-#: includes/admin/class-api.php:534
-msgid "Server Error, Data Not Found"
+#: includes/admin/api/class-wdkit-code-snippet.php:323
+msgid "Invalid post ID."
 msgstr ""
 
-#: includes/admin/class-api.php:887
-#: includes/admin/class-api.php:1532
-msgid "Elementor kit not found"
+#: includes/admin/api/class-wdkit-code-snippet.php:349
+msgid "Failed to favorite/unfavorite snippet."
 msgstr ""
 
-#: includes/admin/class-api.php:888
-#: includes/admin/class-api.php:1533
-msgid "No active Elementor kit found"
+#: includes/admin/api/class-wdkit-code-snippet.php:371
+msgid "Failed to delete snippet."
 msgstr ""
 
-#: includes/admin/class-api.php:939
-#: includes/admin/class-api.php:1502
-msgid "Global data Found"
-msgstr ""
-
-#: includes/admin/class-api.php:940
-#: includes/admin/class-api.php:1503
-msgid "Global Color and Typography found"
-msgstr ""
-
-#: includes/admin/class-api.php:1544
-#: includes/admin/class-api.php:3293
+#: includes/admin/api/class-wdkit-code-snippet.php:388
+#: includes/admin/class-api.php:1809
+#: includes/admin/class-api.php:1887
+#: includes/admin/class-api.php:3805
+#: includes/admin/class-api.php:4491
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:137
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:170
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:280
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:113
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:136
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:207
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:221
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:132
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:253
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:143
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:266
 msgid "Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1545
-msgid "No meta data found in kit"
+#: includes/admin/api/class-wdkit-code-snippet.php:389
+msgid "Post ID Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1559
-#: includes/admin/class-api.php:1576
-msgid "Global data Updated"
+#: includes/admin/api/class-wdkit-code-snippet.php:517
+msgid "Failed to save snippet."
 msgstr ""
 
-#: includes/admin/class-api.php:1560
-#: includes/admin/class-api.php:1577
-msgid "Global Color and Typography Updated"
+#: includes/admin/api/class-wdkit-code-snippet.php:534
+msgid "Kit ID is required."
 msgstr ""
 
-#: includes/admin/class-api.php:1583
+#: includes/admin/api/class-wdkit-code-snippet.php:549
+msgid "Failed to fetch snippet kit."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:603
+msgid "Failed to fetch snippet favorite."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:639
+#: includes/admin/api/class-wdkit-code-snippet.php:648
+msgid "Failed to download snippet from server."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:660
+msgid "Invalid snippet file."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:671
+msgid "Invalid snippet type."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:710
+#: includes/admin/api/class-wdkit-code-snippet.php:775
+msgid "Snippet imported."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:729
+msgid "Failed to insert snippet."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:785
+msgid "No snippet content received from server."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:822
+#: includes/admin/api/class-wdkit-theme-builder.php:169
+#: includes/admin/class-api.php:430
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:454
+#: includes/admin/hooks/class-wdkit-login-ajax.php:372
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:274
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1036
+msgid "API Not Found"
+msgstr ""
+
+#. Translators: %s is a placeholder for the error message
+#: includes/admin/api/class-wdkit-code-snippet.php:838
+#: includes/admin/api/class-wdkit-theme-builder.php:186
+#: includes/admin/class-api.php:446
+#: includes/admin/hooks/class-wdkit-login-ajax.php:388
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:290
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1052
+#, php-format
+msgid "API request error: %s"
+msgstr ""
+
+#: includes/admin/api/class-wdkit-theme-builder.php:86
+msgid "Invalid request type."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-theme-builder.php:148
+msgid "Failed to fetch theme builder data."
+msgstr ""
+
+#: includes/admin/class-api.php:459
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:483
+#: includes/admin/hooks/class-wdkit-login-ajax.php:401
+#: includes/admin/hooks/class-wdkit-preset-ajax.php:303
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1065
+#: build/index.js:1
+msgid "Success"
+msgstr ""
+
+#: includes/admin/class-api.php:626
+msgid "Server Error"
+msgstr ""
+
+#: includes/admin/class-api.php:627
+msgid "Server Error, Data Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:1007
+#: includes/admin/class-api.php:1008
+#: includes/admin/class-api.php:3806
+msgid "Data not found"
+msgstr ""
+
+#: includes/admin/class-api.php:1034
+#: includes/admin/class-api.php:1035
+#: build/index.js:1
+msgid "API Error"
+msgstr ""
+
+#: includes/admin/class-api.php:1060
+#: includes/admin/class-api.php:1750
+#: includes/admin/class-api.php:1797
+#: includes/admin/class-api.php:1875
+msgid "Elementor kit not found"
+msgstr ""
+
+#: includes/admin/class-api.php:1061
+#: includes/admin/class-api.php:1751
+#: includes/admin/class-api.php:1798
+#: includes/admin/class-api.php:1876
+msgid "No active Elementor kit found"
+msgstr ""
+
+#: includes/admin/class-api.php:1152
+#: includes/admin/class-api.php:1728
+#: includes/admin/class-api.php:1772
+msgid "Global data Found"
+msgstr ""
+
+#: includes/admin/class-api.php:1153
+#: includes/admin/class-api.php:1729
+#: includes/admin/class-api.php:1773
+msgid "Global Color and Typography found"
+msgstr ""
+
+#: includes/admin/class-api.php:1810
+msgid "No site data found in kit"
+msgstr ""
+
+#: includes/admin/class-api.php:1825
+#: includes/admin/class-api.php:1839
+msgid "Site data Updated"
+msgstr ""
+
+#: includes/admin/class-api.php:1826
+#: includes/admin/class-api.php:1840
+msgid "Site Globals Updated"
+msgstr ""
+
+#: includes/admin/class-api.php:1846
+#: includes/admin/class-api.php:1926
 msgid "Builder Not Found !"
 msgstr ""
 
-#: includes/admin/class-api.php:1584
+#: includes/admin/class-api.php:1847
+#: includes/admin/class-api.php:1927
 msgid "Template Builder not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1621
-#: includes/admin/class-api.php:1622
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:795
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:796
+#: includes/admin/class-api.php:1888
+msgid "No meta data found in kit"
+msgstr ""
+
+#: includes/admin/class-api.php:1902
+#: includes/admin/class-api.php:1919
+msgid "Global data Updated"
+msgstr ""
+
+#: includes/admin/class-api.php:1903
+#: includes/admin/class-api.php:1920
+msgid "Global Color and Typography Updated"
+msgstr ""
+
+#: includes/admin/class-api.php:1966
+#: includes/admin/class-api.php:1967
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:850
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:851
 msgid "Page Not Found!"
 msgstr ""
 
-#: includes/admin/class-api.php:1638
-#: includes/admin/class-api.php:1639
+#: includes/admin/class-api.php:1983
+#: includes/admin/class-api.php:1984
 msgid "Page Created"
 msgstr ""
 
-#: includes/admin/class-api.php:1653
-#: includes/admin/class-api.php:1654
+#: includes/admin/class-api.php:1998
+#: includes/admin/class-api.php:1999
 msgid "post deleted"
 msgstr ""
 
-#: includes/admin/class-api.php:1857
+#: includes/admin/class-api.php:2211
+#: includes/admin/class-api.php:2333
 msgid "Theme activated successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:1858
+#: includes/admin/class-api.php:2212
+#: includes/admin/class-api.php:2334
 msgid "Theme successfully activated"
 msgstr ""
 
-#: includes/admin/class-api.php:1865
+#: includes/admin/class-api.php:2220
+#: includes/admin/class-api.php:2340
 msgid "Theme Not Activated !"
 msgstr ""
 
-#: includes/admin/class-api.php:1873
+#: includes/admin/class-api.php:2230
+msgid "Somthing Wrong"
+msgstr ""
+
+#: includes/admin/class-api.php:2231
+msgid "Error Somthing Wrong"
+msgstr ""
+
+#: includes/admin/class-api.php:2232
+msgid "inactive"
+msgstr ""
+
+#: includes/admin/class-api.php:2245
 msgid "Theme Name not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1874
+#: includes/admin/class-api.php:2246
 msgid "Can Not Found Theme Name you Enterd."
 msgstr ""
 
-#: includes/admin/class-api.php:1925
+#: includes/admin/class-api.php:2392
 msgid "Container Activated Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:1926
+#: includes/admin/class-api.php:2393
 msgid "Elementor Container Activated Successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:1947
-#: includes/admin/class-api.php:2268
-#: includes/admin/class-api.php:2380
+#: includes/admin/class-api.php:2493
+#: includes/admin/class-api.php:2815
+#: includes/admin/class-api.php:2939
 msgid "Invalid import"
 msgstr ""
 
-#: includes/admin/class-api.php:1948
-#: includes/admin/class-api.php:2269
-#: includes/admin/class-api.php:2381
+#: includes/admin/class-api.php:2494
+#: includes/admin/class-api.php:2816
+#: includes/admin/class-api.php:2940
 msgid "Invalid import: Check your details and try again."
 msgstr ""
 
-#: includes/admin/class-api.php:2324
-#: includes/admin/class-api.php:2325
+#: includes/admin/class-api.php:2878
+#: includes/admin/class-api.php:2879
 msgid "Widget array not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2334
+#: includes/admin/class-api.php:2888
 msgid "Relevant Plugin not Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2335
+#: includes/admin/class-api.php:2889
 msgid "Relevant Plugin not Installed / Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2350
+#: includes/admin/class-api.php:2905
 msgid "Enabled widgets successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2351
+#: includes/admin/class-api.php:2906
 msgid "Used widgets have been enabled successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2686
+#: includes/admin/class-api.php:2911
+#: includes/admin/class-api.php:2912
+msgid "Failed to enable widgets"
+msgstr ""
+
+#: includes/admin/class-api.php:3350
 msgid "Relevant Page Builder not installed or activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2954
+#: includes/admin/class-api.php:3361
+#: build/index.js:1
+msgid "Something went wrong"
+msgstr ""
+
+#: includes/admin/class-api.php:3406
+#: includes/admin/class-api.php:3407
+msgid "Plugin Setting updated"
+msgstr ""
+
+#: includes/admin/class-api.php:3412
+#: includes/admin/class-api.php:3413
+msgid "Plugin not found"
+msgstr ""
+
+#: includes/admin/class-api.php:3658
+#: includes/admin/class-api.php:3659
+msgid "Theme Setting updated"
+msgstr ""
+
+#: includes/admin/class-api.php:3693
+#: includes/admin/class-api.php:3694
+msgid "Site link updated"
+msgstr ""
+
+#: includes/admin/class-api.php:3700
+#: includes/admin/class-api.php:3701
+msgid "Site not found"
+msgstr ""
+
+#: includes/admin/class-api.php:4084
+msgid "Workspace ID Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:4085
+msgid "Workspace ID is required"
+msgstr ""
+
+#: includes/admin/class-api.php:4092
+msgid "Token Not Found"
+msgstr ""
+
+#: includes/admin/class-api.php:4093
+msgid "Token is required"
+msgstr ""
+
+#: includes/admin/class-api.php:4147
 msgid "Widget JSON not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2955
+#: includes/admin/class-api.php:4148
 msgid "widget JSON file not found."
 msgstr ""
 
-#: includes/admin/class-api.php:2966
+#: includes/admin/class-api.php:4159
 msgid "Widget get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2967
+#: includes/admin/class-api.php:4160
 msgid "Widget JSON get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2972
+#: includes/admin/class-api.php:4165
 msgid "Widget not get"
 msgstr ""
 
-#: includes/admin/class-api.php:2973
+#: includes/admin/class-api.php:4166
 msgid "Widget JSON not get"
 msgstr ""
 
-#: includes/admin/class-api.php:3001
-#: includes/admin/class-api.php:3129
-#: includes/admin/class-api.php:3185
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:171
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:672
+#: includes/admin/class-api.php:4194
+#: includes/admin/class-api.php:4324
+#: includes/admin/class-api.php:4381
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:183
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:720
 msgid "server error"
 msgstr ""
 
-#: includes/admin/class-api.php:3005
+#: includes/admin/class-api.php:4198
 msgid " Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:3039
+#: includes/admin/class-api.php:4232
 msgid "No Response Found"
 msgstr ""
 
-#: includes/admin/class-api.php:3040
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:176
+#: includes/admin/class-api.php:4233
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:188
 msgid "Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:3081
+#: includes/admin/class-api.php:4274
 msgid "no message"
 msgstr ""
 
-#: includes/admin/class-api.php:3134
+#: includes/admin/class-api.php:4329
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:3310
+#: includes/admin/class-api.php:4508
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:3340
+#: includes/admin/class-api.php:4538
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:3470
+#: includes/admin/class-api.php:4702
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:3506
+#: includes/admin/class-api.php:4738
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:3515
+#: includes/admin/class-api.php:4747
 msgid "Rollback Successful, Plugin Re-activated"
+msgstr ""
+
+#: includes/admin/class-api.php:4967
+msgid "Dark Mode Updated"
 msgstr ""
 
 #: includes/admin/class-wdkit-depends-installer.php:137
@@ -326,18 +531,78 @@ msgstr ""
 msgid "Failed to activate WDesignKit"
 msgstr ""
 
-#: includes/admin/class-wdkit-enqueue.php:238
+#: includes/admin/class-wdkit-enqueue.php:312
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:104
-#: build/index.js:1
 msgid "WDesignKit"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-login-ajax.php:133
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:138
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:171
+msgid "Images not found"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:206
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:207
+msgid "Something Wrong"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:281
+msgid "Ai data not found"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:317
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:318
+msgid "site Setting updated"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:337
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:338
+msgid "Post id not found"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:353
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:354
+msgid "Post Deleted Successfully"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:359
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:360
+msgid "Post can not deleted"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:426
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:427
+msgid "Post count retrieved successfully"
+msgstr ""
+
+#. Translators: %s is a placeholder for the error message
+#: includes/admin/hooks/class-wdkit-import-temp-ajax.php:470
+msgid "API request error: "
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-login-ajax.php:139
+#: includes/admin/hooks/class-wdkit-login-ajax.php:345
 msgid "Success! Login successful."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-login-ajax.php:134
+#: includes/admin/hooks/class-wdkit-login-ajax.php:140
+#: includes/admin/hooks/class-wdkit-login-ajax.php:346
 msgid "Login successful. Keep it up!"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-login-ajax.php:271
+#: includes/admin/hooks/class-wdkit-login-ajax.php:272
+msgid "Please provide a valid email address."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-login-ajax.php:288
+#: includes/admin/hooks/class-wdkit-login-ajax.php:289
+msgid "Failed to send reset email. Please try again."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-login-ajax.php:296
+#: includes/admin/hooks/class-wdkit-login-ajax.php:297
+msgid "Password reset email sent successfully!"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:114
@@ -356,103 +621,129 @@ msgstr ""
 msgid "Sorry , Cannot Download"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:133
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:144
 msgid "Widget List Not Found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:254
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:292
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:641
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:267
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:310
 msgid "something went wrong! please try again later."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:291
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:309
 msgid "Builder Type not found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:454
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:501
 #: build/index.js:1
-msgid "Update Saved Successfully"
+msgid "Updates Saved!"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:455
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:502
 #: build/index.js:1
-msgid "Success! Update Saved"
+msgid "Your changes have been saved successfully."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:520
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:567
 msgid "Widget Already Exist!"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:521
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:568
 msgid "Widget Already Exist in plugin"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:532
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:571
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:579
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:619
 msgid "Operation Fial!"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:533
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:572
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:580
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:620
 msgid "Widget can not imported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:561
-#: build/index.js:1
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:609
 msgid "Widget imported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:562
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:610
 msgid "Widget imported successfully"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:601
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:649
 msgid "Widget Type Fail"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:602
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:650
 msgid "Widget Type Not Exists"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:630
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:678
 msgid "Widget Exported"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:631
-msgid "Widget Exported successfully"
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:679
+msgid "Your widget has been exported successfully."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:640
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:688
 msgid "Widget Exported Fail"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:676
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:677
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:689
+msgid "Something went wrong! please try again later."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:724
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:725
 msgid "Widget Not Deleted"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:700
-msgid "widget deleted"
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:749
+msgid "Widget Deleted"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:701
-msgid "Widget deleted successfully"
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:750
+msgid "Your widget has been deleted successfully."
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:721
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:722
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:770
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:771
 msgid "Invalid widget data"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:810
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:811
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:865
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:866
 msgid "Invalid serialize_blocks"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:838
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:839
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:893
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:894
 msgid "widget Type Not Found"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:922
+msgid "No widget IDs provided"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:923
+msgid "Please provide widget r_id values"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:940
+msgid "Server error"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:945
+msgid "Failed to check widget versions"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:957
+msgid "Version check completed"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:958
+msgid "Widget versions retrieved successfully"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:113
@@ -609,6 +900,54 @@ msgstr ""
 msgid "API returned error"
 msgstr ""
 
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:127
+msgid "Skip multiple plugin subscriptions - Upgrade to WDesignKit Pro at 40% OFF."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:128
+msgid "Our Winter Sale is live! Upgrade this season and get upto 40% OFF on the pro version."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:130
+msgid "Get Deal"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:138
+msgid "Upgrade to Lifetime Unlimited Sites Plan and Save $120 Today! - Winter Sale 40% OFF"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:139
+msgid "Upgrade now to Lifetime Plan for Unlimited Sites, Continuous Plugin Updates, Lifetime Premium Support and much more at an unbeatable price."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:140
+msgid "Upgrade Now"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:157
+msgid "Cloud Workspace - Upload & Share"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:158
+msgid "150+ Widgets"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:159
+msgid "Widget Builder for Elementor, Gutenberg & Bricks"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:160
+msgid "Cloud Code Snippets & Figma Designs"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:164
+msgid "View More Offers"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-wintersale-banner.php:205
+msgid "You are not allowed to perform this action"
+msgstr ""
+
 #: includes/widget-load/elementor/wb-controller.php:88
 msgid "You Haven't Saved Templates Yet."
 msgstr ""
@@ -651,107 +990,63 @@ msgid "Submit"
 msgstr ""
 
 #: build/index.js:1
-msgid "Standard Style"
+msgid "Modern Hover Post"
 msgstr ""
 
 #: build/index.js:1
-msgid "Standard Import"
+msgid "Search..."
 msgstr ""
 
 #: build/index.js:1
-msgid "Global Style"
+msgid "The Plus Addons for Elementor Pro Plugin Required"
 msgstr ""
 
 #: build/index.js:1
-msgid "Import with Global Color"
+msgid "Nexter Blocks Pro Plugin Required"
 msgstr ""
 
 #: build/index.js:1
-msgid "Ag"
+msgid "Get Pro Version to Download"
 msgstr ""
 
 #: build/index.js:1
-msgid "The global color and typography you haven't selected will be added as new in your site. Do you want to proceed ?"
+msgid "Select Workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Import"
+msgid "Cancel"
 msgstr ""
 
 #: build/index.js:1
-msgid "Next"
+msgid " Create "
 msgstr ""
 
 #: build/index.js:1
-msgid "Note:"
+msgid "Delete"
 msgstr ""
 
 #: build/index.js:1
-msgid "This will apply universal design elements, including typography, colors, spacing, and component styling, across all projects. Ensure compatibility with existing styles to maintain design consistency."
+msgid "Remove"
 msgstr ""
 
 #: build/index.js:1
-msgid "Import Templates"
+msgid "Template Imported Successfully"
 msgstr ""
 
 #: build/index.js:1
-msgid "Replace with"
+msgid "Your selected template is ready. Start customizing and building your page right away."
 msgstr ""
 
 #: build/index.js:1
-msgid "Back"
+msgid "view template"
 msgstr ""
 
 #: build/index.js:1
-msgid "Update Settings"
+msgid "Unfavorite"
 msgstr ""
 
 #: build/index.js:1
-msgid "Please Confirm"
-msgstr ""
-
-#: build/index.js:1
-msgid "Are you sure want to permanently delete"
-msgstr ""
-
-#: build/index.js:1
-msgid "No"
-msgstr ""
-
-#: build/index.js:1
-msgid "Yes"
-msgstr ""
-
-#: build/index.js:1
-msgid "Credit Limit Reached!"
-msgstr ""
-
-#: build/index.js:1
-msgid "This Template got disabled until you have more credits to make it active."
-msgstr ""
-
-#: build/index.js:1
-msgid "Buy Credits"
-msgstr ""
-
-#: build/index.js:1
-msgid "UnFavourite"
-msgstr ""
-
-#: build/index.js:1
-msgid "Favourite"
-msgstr ""
-
-#: build/index.js:1
-msgid "Section"
-msgstr ""
-
-#: build/index.js:1
-msgid "Full Page"
-msgstr ""
-
-#: build/index.js:1
-msgid "Page Kit"
+msgid "Favorite"
 msgstr ""
 
 #: build/index.js:1
@@ -763,27 +1058,7 @@ msgid "Private"
 msgstr ""
 
 #: build/index.js:1
-msgid "Pro"
-msgstr ""
-
-#: build/index.js:1
-msgid "Get Pro Version to Download"
-msgstr ""
-
-#: build/index.js:1
-msgid "Template Deactivate"
-msgstr ""
-
-#: build/index.js:1
-msgid "This Template is Deactivated"
-msgstr ""
-
-#: build/index.js:1
-msgid "Remove Favorite"
-msgstr ""
-
-#: build/index.js:1
-msgid "Add Favorite"
+msgid "AI Compatible"
 msgstr ""
 
 #: build/index.js:1
@@ -795,231 +1070,27 @@ msgid "Copy to Workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Delete"
-msgstr ""
-
-#: build/index.js:1
 msgid "Move to Workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Remove"
+msgid "No Result Found"
 msgstr ""
 
 #: build/index.js:1
-msgid "post views"
+msgid "The page you're looking for doesn't exist or has been moved from here."
 msgstr ""
 
 #: build/index.js:1
-msgid "post download"
+msgid "Showing"
 msgstr ""
 
 #: build/index.js:1
-msgid "builder icon"
+msgid "of"
 msgstr ""
 
 #: build/index.js:1
-msgid "Website Upgrade in Progress."
-msgstr ""
-
-#: build/index.js:1
-msgid "Our  website is undergoing a transformation to serve you better."
-msgstr ""
-
-#: build/index.js:1
-msgid "Limit reached of active sites. Deactivate one or upgrade your plan to unlock access."
-msgstr ""
-
-#: build/index.js:1
-msgid "Importing Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Yay! Your kit has been successfully imported"
-msgstr ""
-
-#: build/index.js:1
-msgid "Ops! Your templates are failed to import. Please Try Again."
-msgstr ""
-
-#: build/index.js:1
-msgid "Why Failed?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Pages :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Success."
-msgstr ""
-
-#: build/index.js:1
-msgid "Failed."
-msgstr ""
-
-#: build/index.js:1
-msgid "Sections :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Nothing related found!"
-msgstr ""
-
-#: build/index.js:1
-msgid "Presets"
-msgstr ""
-
-#: build/index.js:1
-msgid "Browse Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Save Template"
-msgstr ""
-
-#: build/index.js:1
-msgid "Browse Widgets"
-msgstr ""
-
-#: build/index.js:1
-msgid "My Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Shared with Me"
-msgstr ""
-
-#: build/index.js:1
-msgid "Manage Workspace"
-msgstr ""
-
-#: build/index.js:1
-msgid "Manage Licence"
-msgstr ""
-
-#: build/index.js:1
-msgid "My Widgets"
-msgstr ""
-
-#: build/index.js:1
-msgid "Logout"
-msgstr ""
-
-#: build/index.js:1
-msgid "Login"
-msgstr ""
-
-#: build/index.js:1
-msgid "Select Workspace"
-msgstr ""
-
-#: build/index.js:1
-msgid "Move"
-msgstr ""
-
-#: build/index.js:1
-msgid "Copy"
-msgstr ""
-
-#: build/index.js:1
-msgid "Downloaded Successfully!"
-msgstr ""
-
-#: build/index.js:1
-msgid "Start using or editing it further."
-msgstr ""
-
-#: build/index.js:1
-msgid "public"
-msgstr ""
-
-#: build/index.js:1
-msgid "private"
-msgstr ""
-
-#: build/index.js:1
-msgid "View All"
-msgstr ""
-
-#: build/index.js:1
-msgid "View"
-msgstr ""
-
-#: build/index.js:1
-msgid "Importing..."
-msgstr ""
-
-#: build/index.js:1
-msgid "Something wen't wrong"
-msgstr ""
-
-#: build/index.js:1
-msgid "Try Again"
-msgstr ""
-
-#: build/index.js:1
-msgid "Install Manually."
-msgstr ""
-
-#: build/index.js:1
-msgid "Learn How?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Do you want to continue without activating the Elementor container?"
-msgstr ""
-
-#: build/index.js:1
-msgid "To download this template, you will need to install below listed plugins"
-msgstr ""
-
-#: build/index.js:1
-msgid "The plus addons for elementor"
-msgstr ""
-
-#: build/index.js:1
-msgid "Continue Anyway"
-msgstr ""
-
-#: build/index.js:1
-msgid "Install All"
-msgstr ""
-
-#: build/index.js:1
-msgid "No need to install any Plugin."
-msgstr ""
-
-#: build/index.js:1
-msgid "You have selected design which doesn't need any plugin to install. Press Next."
-msgstr ""
-
-#: build/index.js:1
-msgid "System Container Activated Successfully. Please Refresh to Apply the changes on the site"
-msgstr ""
-
-#: build/index.js:1
-msgid "Your system's container is not currently active. To use this design , you need to enable it."
-msgstr ""
-
-#: build/index.js:1
-msgid "Container"
-msgstr ""
-
-#: build/index.js:1
-msgid "It will skip plugin installation and your imported page might not look as expected"
-msgstr ""
-
-#: build/index.js:1
-msgid "Installing"
-msgstr ""
-
-#: build/index.js:1
-msgid "List of Pages "
-msgstr ""
-
-#: build/index.js:1
-msgid "List of Sections "
+msgid "Filters"
 msgstr ""
 
 #: build/index.js:1
@@ -1027,251 +1098,11 @@ msgid "Page Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "Option 1"
+msgid "Free/Pro"
 msgstr ""
 
 #: build/index.js:1
-msgid "Option 2"
-msgstr ""
-
-#: build/index.js:1
-msgid "Option 3"
-msgstr ""
-
-#: build/index.js:1
-msgid "Page"
-msgstr ""
-
-#: build/index.js:1
-msgid "Kits"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plugin Required"
-msgstr ""
-
-#: build/index.js:1
-msgid "Login / SignUp"
-msgstr ""
-
-#: build/index.js:1
-msgid "Profile"
-msgstr ""
-
-#: build/index.js:1
-msgid "Logged out successfully!"
-msgstr ""
-
-#: build/index.js:1
-msgid "You're logged out! Remember your login details and sign in again."
-msgstr ""
-
-#: build/index.js:1
-msgid "Add New Workspace"
-msgstr ""
-
-#: build/index.js:1
-msgid "Workspace Name"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter Workspace Name"
-msgstr ""
-
-#: build/index.js:1
-msgid "Note :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Incorrect Login Details"
-msgstr ""
-
-#: build/index.js:1
-msgid "Yes, I am"
-msgstr ""
-
-#: build/index.js:1
-msgid "No, I forgot password"
-msgstr ""
-
-#: build/index.js:1
-msgid "You need to signup for "
-msgstr ""
-
-#: build/index.js:1
-msgid "Forgot Password"
-msgstr ""
-
-#: build/index.js:1
-msgid "Want to know more?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Continue with"
-msgstr ""
-
-#: build/index.js:1
-msgid "Extend Your Design Capacity with "
-msgstr ""
-
-#: build/index.js:1
-msgid "Login to "
-msgstr ""
-
-#: build/index.js:1
-msgid "Explore, Download, or Manage Your Designs and Widgets."
-msgstr ""
-
-#: build/index.js:1
-msgid "Invalid Login Details"
-msgstr ""
-
-#: build/index.js:1
-msgid "Login Error: Check your details and try again."
-msgstr ""
-
-#: build/index.js:1
-msgid "Google"
-msgstr ""
-
-#: build/index.js:1
-msgid "Facebook"
-msgstr ""
-
-#: build/index.js:1
-msgid "Connect via Login Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "Or Sign Up with Email"
-msgstr ""
-
-#: build/index.js:1
-msgid "Please fill all fields"
-msgstr ""
-
-#: build/index.js:1
-msgid "Missing information! Complete all fields."
-msgstr ""
-
-#: build/index.js:1
-msgid "The login Details you entered is not correct. Please verify and try again"
-msgstr ""
-
-#: build/index.js:1
-msgid "Email"
-msgstr ""
-
-#: build/index.js:1
-msgid "Password"
-msgstr ""
-
-#: build/index.js:1
-msgid "Remember Me"
-msgstr ""
-
-#: build/index.js:1
-msgid "Forgot Password?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Logged in"
-msgstr ""
-
-#: build/index.js:1
-msgid "Log in"
-msgstr ""
-
-#: build/index.js:1
-msgid "Don't have an account? "
-msgstr ""
-
-#: build/index.js:1
-msgid "Sign Up"
-msgstr ""
-
-#: build/index.js:1
-msgid "Wrong or Expired Login Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "I know Purchase key and Login Key is different."
-msgstr ""
-
-#: build/index.js:1
-msgid "How to get Login Key?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Let me Try again"
-msgstr ""
-
-#: build/index.js:1
-msgid "I need to recheck Login Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "Login With Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter your Login Key to get access"
-msgstr ""
-
-#: build/index.js:1
-msgid "Login Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "Invalid Login Key"
-msgstr ""
-
-#: build/index.js:1
-msgid "The login key you entered is not valid. Please verify and try again"
-msgstr ""
-
-#: build/index.js:1
-msgid "API Key Required"
-msgstr ""
-
-#: build/index.js:1
-msgid "Please provide an API key to activate Plugin."
-msgstr ""
-
-#: build/index.js:1
-msgid "Logged In"
-msgstr ""
-
-#: build/index.js:1
-msgid "Back to Login"
-msgstr ""
-
-#: build/index.js:1
-msgid "You need existing account to use this method. "
-msgstr ""
-
-#: build/index.js:1
-msgid "Signup"
-msgstr ""
-
-#: build/index.js:1
-msgid "Filter by"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Page Builder :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Free / Pro :"
+msgid "All"
 msgstr ""
 
 #: build/index.js:1
@@ -1279,7 +1110,15 @@ msgid "Free"
 msgstr ""
 
 #: build/index.js:1
-msgid "Type :"
+msgid "Pro"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Type"
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Kits"
 msgstr ""
 
 #: build/index.js:1
@@ -1303,83 +1142,7 @@ msgid "to open the dashboard."
 msgstr ""
 
 #: build/index.js:1
-msgid "Page Kits"
-msgstr ""
-
-#: build/index.js:1
-msgid "Plugins :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Tag :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search Tags"
-msgstr ""
-
-#: build/index.js:1
-msgid "Visit Site"
-msgstr ""
-
-#: build/index.js:1
-msgid "Modern Hover Post"
-msgstr ""
-
-#: build/index.js:1
-msgid "1 Review"
-msgstr ""
-
-#: build/index.js:1
-msgid "Elementor"
-msgstr ""
-
-#: build/index.js:1
-msgid "Filters"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search"
-msgstr ""
-
-#: build/index.js:1
-msgid "Free / Pro"
-msgstr ""
-
-#: build/index.js:1
-msgid "Type"
-msgstr ""
-
-#: build/index.js:1
 msgid "Plugins"
-msgstr ""
-
-#: build/index.js:1
-msgid "Tags"
-msgstr ""
-
-#: build/index.js:1
-msgid "Applied Filter :"
-msgstr ""
-
-#: build/index.js:1
-msgid "Clear All"
-msgstr ""
-
-#: build/index.js:1
-msgid "Pages"
-msgstr ""
-
-#: build/index.js:1
-msgid "Favourites"
-msgstr ""
-
-#: build/index.js:1
-msgid "Select All"
-msgstr ""
-
-#: build/index.js:1
-msgid "Shared With Me"
 msgstr ""
 
 #: build/index.js:1
@@ -1387,15 +1150,187 @@ msgid "Templates"
 msgstr ""
 
 #: build/index.js:1
+msgid "Pages"
+msgstr ""
+
+#: build/index.js:1
+msgid "Kits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Pro Access Needed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Elementor Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installed Elementor Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installation failed for Elementor Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Nexter Blocks Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installed Nexter Blocks Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installation failed for Nexter Blocks Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Bricks Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installed Bricks Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installation failed for Bricks Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Downloading Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "Download Completed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Nexter Blocks Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Bricks Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Downloaded Successfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your selected widget is ready. Start customizing and building your page right away."
+msgstr ""
+
+#: build/index.js:1
+msgid "view widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "PRO"
+msgstr ""
+
+#: build/index.js:1
 msgid "Widgets"
 msgstr ""
 
 #: build/index.js:1
-msgid "by"
+msgid "Code Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Coming Soon"
+msgstr ""
+
+#: build/index.js:1
+msgid "Workspace Name Required"
+msgstr ""
+
+#: build/index.js:1
+msgid "Workspace Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter workspace name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "by WDesignKit"
+msgstr ""
+
+#: build/index.js:1
+msgid "2 Users"
+msgstr ""
+
+#: build/index.js:1
+msgid "2 Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "2 Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "by "
+msgstr ""
+
+#: build/index.js:1
+msgid "View"
+msgstr ""
+
+#: build/index.js:1
+msgid "Workspace Deleted"
+msgstr ""
+
+#: build/index.js:1
+msgid "The selected workspace has been removed permanently."
 msgstr ""
 
 #: build/index.js:1
 msgid "Users"
+msgstr ""
+
+#: build/index.js:1
+msgid "User"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yes, Delete it"
+msgstr ""
+
+#: build/index.js:1
+msgid "Credit Limit Reached!"
+msgstr ""
+
+#: build/index.js:1
+msgid "This Template got disabled until you have more credits to make it active."
+msgstr ""
+
+#: build/index.js:1
+msgid "Buy Credits"
 msgstr ""
 
 #: build/index.js:1
@@ -1415,11 +1350,51 @@ msgid "You need to purchase now to add more workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Create Workspace"
+msgid "Provide a workspace name to get started."
 msgstr ""
 
 #: build/index.js:1
 msgid "Buy Now"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yay! Snippet Successfully Downloaded"
+msgstr ""
+
+#: build/index.js:1
+msgid "We have downloaded your selected snippet. Now you can use it in your code snippets."
+msgstr ""
+
+#: build/index.js:1
+msgid "view snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Admin Role Required to Download"
+msgstr ""
+
+#: build/index.js:1
+msgid "For security reasons, only administrator users can download snippets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet Bundle"
+msgstr ""
+
+#: build/index.js:1
+msgid "Global"
+msgstr ""
+
+#: build/index.js:1
+msgid "Error"
+msgstr ""
+
+#: build/index.js:1
+msgid "Failed to update favorite status. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Edit in New Tab"
 msgstr ""
 
 #: build/index.js:1
@@ -1443,11 +1418,55 @@ msgid "Manage Members"
 msgstr ""
 
 #: build/index.js:1
-msgid "Copy To WorkSpace"
+msgid "Move to workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Move To WorkSpace"
+msgid "Copy to workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create "
+msgstr ""
+
+#: build/index.js:1
+msgid "WDesignKit Logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Presets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Browse Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "My Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Browse Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "My Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Browse Snippets"
+msgstr ""
+
+#: build/index.js:1
+msgid "My Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Snippet"
 msgstr ""
 
 #: build/index.js:1
@@ -1455,15 +1474,43 @@ msgid "Workspace"
 msgstr ""
 
 #: build/index.js:1
+msgid "Manage Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Shared with Me"
+msgstr ""
+
+#: build/index.js:1
+msgid "Manage Licence"
+msgstr ""
+
+#: build/index.js:1
 msgid "General Settings"
 msgstr ""
 
 #: build/index.js:1
-msgid "Dashboard"
+msgid "Feature Disabled. Enable from Settings Panel."
 msgstr ""
 
 #: build/index.js:1
 msgid "Manage Profile"
+msgstr ""
+
+#: build/index.js:1
+msgid "Logout Complete!"
+msgstr ""
+
+#: build/index.js:1
+msgid "You’ve been signed out. Remember your credentials for your next login."
+msgstr ""
+
+#: build/index.js:1
+msgid "Logout"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login"
 msgstr ""
 
 #: build/index.js:1
@@ -1487,6 +1534,14 @@ msgid "Page should have some content"
 msgstr ""
 
 #: build/index.js:1
+msgid "Successfully Uploaded"
+msgstr ""
+
+#: build/index.js:1
+msgid "To Edit fully visit WdesignKit admin and make it live."
+msgstr ""
+
+#: build/index.js:1
 msgid "New Template"
 msgstr ""
 
@@ -1495,11 +1550,63 @@ msgid "Existing Template"
 msgstr ""
 
 #: build/index.js:1
+msgid "No"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yes"
+msgstr ""
+
+#: build/index.js:1
+msgid "Replace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save"
+msgstr ""
+
+#: build/index.js:1
+msgid "Make changes to your profile here. Click save when you're done."
+msgstr ""
+
+#: build/index.js:1
+msgid "Replace Template"
+msgstr ""
+
+#: build/index.js:1
 msgid "Are you sure you want to replace this template ?"
 msgstr ""
 
 #: build/index.js:1
-msgid "Search Template"
+msgid "Upload Image on Server"
+msgstr ""
+
+#: build/index.js:1
+msgid "Only lifetime, Professional & studio users can access this feature."
+msgstr ""
+
+#: build/index.js:1
+msgid "Uploading Processing..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Our system will import your selected templates images soon."
+msgstr ""
+
+#: build/index.js:1
+msgid "Importing JSON Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Templates Images Uploading"
+msgstr ""
+
+#: build/index.js:1
+msgid "Image limit exceeded"
+msgstr ""
+
+#: build/index.js:1
+msgid "Retry"
 msgstr ""
 
 #: build/index.js:1
@@ -1515,23 +1622,11 @@ msgid "selected Template is Not Found"
 msgstr ""
 
 #: build/index.js:1
-msgid "Search Template can not found"
+msgid "Note: Replacing this template will erase your current design. This action is irreversible, and the old design will be permanently lost."
 msgstr ""
 
 #: build/index.js:1
-msgid "Do you want to replace this?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Note : "
-msgstr ""
-
-#: build/index.js:1
-msgid "Replacing the template will erase the current design. This action cannot be undone, and the old design will be permanently lost."
-msgstr ""
-
-#: build/index.js:1
-msgid "Replace"
+msgid "Please select the template you want to replace"
 msgstr ""
 
 #: build/index.js:1
@@ -1547,11 +1642,11 @@ msgid "My Workspace"
 msgstr ""
 
 #: build/index.js:1
-msgid "Template Type"
+msgid "Page Template"
 msgstr ""
 
 #: build/index.js:1
-msgid "Page Template"
+msgid "Section"
 msgstr ""
 
 #: build/index.js:1
@@ -1563,27 +1658,15 @@ msgid "Select Category"
 msgstr ""
 
 #: build/index.js:1
-msgid "Plugins Used"
+msgid "Add New Workspace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Required Plugins"
 msgstr ""
 
 #: build/index.js:1
 msgid "No Plugin List"
-msgstr ""
-
-#: build/index.js:1
-msgid "Upload Template"
-msgstr ""
-
-#: build/index.js:1
-msgid "Successfully Uploaded"
-msgstr ""
-
-#: build/index.js:1
-msgid "To Edit fully visit WdesignKit admin and make it live."
-msgstr ""
-
-#: build/index.js:1
-msgid "Edit Fully"
 msgstr ""
 
 #: build/index.js:1
@@ -1599,11 +1682,27 @@ msgid "Themify"
 msgstr ""
 
 #: build/index.js:1
+msgid "Widget import fail"
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget import fail! data not get "
+msgstr ""
+
+#: build/index.js:1
+msgid "Widget Imported"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your widget has been imported successfully."
+msgstr ""
+
+#: build/index.js:1
 msgid "Insert valid Image"
 msgstr ""
 
 #: build/index.js:1
-msgid "Image size must be less tahn 2 mb."
+msgid "Image size must be less than 2 mb."
 msgstr ""
 
 #: build/index.js:1
@@ -1615,7 +1714,7 @@ msgid "Widget Icon"
 msgstr ""
 
 #: build/index.js:1
-msgid "Search for icons"
+msgid " Search icons"
 msgstr ""
 
 #: build/index.js:1
@@ -1647,14 +1746,6 @@ msgid "Install Now"
 msgstr ""
 
 #: build/index.js:1
-msgid "Are you sure you want to delete?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Please select an option from below:"
-msgstr ""
-
-#: build/index.js:1
 msgid "Permanently Delete"
 msgstr ""
 
@@ -1671,11 +1762,43 @@ msgid "This will remove your Widget from your current website. If you need to us
 msgstr ""
 
 #: build/index.js:1
-msgid "Yes, Delete it!"
+msgid "Latest Version : "
 msgstr ""
 
 #: build/index.js:1
-msgid "Add Sync Details"
+msgid "Note"
+msgstr ""
+
+#: build/index.js:1
+msgid "We've upgraded the widget from"
+msgstr ""
+
+#: build/index.js:1
+msgid "to"
+msgstr ""
+
+#: build/index.js:1
+msgid "to enhance performance and improve your experience."
+msgstr ""
+
+#: build/index.js:1
+msgid "View Change Log"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yes, Update It"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yay! Widget is Successfully Updated"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your"
+msgstr ""
+
+#: build/index.js:1
+msgid "widget has been updated. You can now customise the new version as you like!"
 msgstr ""
 
 #: build/index.js:1
@@ -1695,11 +1818,7 @@ msgid "Please enter description"
 msgstr ""
 
 #: build/index.js:1
-msgid "Add more"
-msgstr ""
-
-#: build/index.js:1
-msgid "Cancel"
+msgid "Add More"
 msgstr ""
 
 #: build/index.js:1
@@ -1707,7 +1826,7 @@ msgid "Widget Pushed"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Pushed Successfully!"
+msgid "The widget has been pushed and is available for use."
 msgstr ""
 
 #: build/index.js:1
@@ -1715,19 +1834,11 @@ msgid "Operation fail"
 msgstr ""
 
 #: build/index.js:1
-msgid "Something went wrong"
-msgstr ""
-
-#: build/index.js:1
-msgid "Duplicate Widget"
-msgstr ""
-
-#: build/index.js:1
 msgid "Enter New Widget Name"
 msgstr ""
 
 #: build/index.js:1
-msgid "Only numbers and alphabet are allowed for this field,Widget name must be smaller then 25 charaters and first letter can't be digit."
+msgid "Only numbers and alphabet are allowed for this field,Widget name must be smaller then 50 charaters and first letter can't be digit."
 msgstr ""
 
 #: build/index.js:1
@@ -1735,15 +1846,11 @@ msgid "Enter Widget Name"
 msgstr ""
 
 #: build/index.js:1
-msgid "This new widget will have unique class, So It will work independently from previous widget."
+msgid "Use only letters & numbers. Max 50 characters First letter can't be a digit."
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Duplicated"
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget Duplicated successfully."
+msgid "Note : This new widget will have unique class, So It will work independently from previous widget."
 msgstr ""
 
 #: build/index.js:1
@@ -1759,31 +1866,7 @@ msgid "Transferring all your HTML,CSS and JS to New one"
 msgstr ""
 
 #: build/index.js:1
-msgid "Congratulations!"
-msgstr ""
-
-#: build/index.js:1
-msgid "Congratulations! New Widget"
-msgstr ""
-
-#: build/index.js:1
-msgid "created from Widget"
-msgstr ""
-
-#: build/index.js:1
-msgid "Successfully!"
-msgstr ""
-
-#: build/index.js:1
-msgid "Convert Widget"
-msgstr ""
-
-#: build/index.js:1
-msgid "Current Widget"
-msgstr ""
-
-#: build/index.js:1
-msgid "Convert to"
+msgid " has been successfully duplicated. Customize it as needed."
 msgstr ""
 
 #: build/index.js:1
@@ -1791,7 +1874,11 @@ msgid "Select Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "This new widget will have have unique class, So It will work independently from previous widget."
+msgid "Note: This new widget will have unique class, So It will work independently from previous widget."
+msgstr ""
+
+#: build/index.js:1
+msgid "Next"
 msgstr ""
 
 #: build/index.js:1
@@ -1807,15 +1894,15 @@ msgid "Do you want to load jQuery ?"
 msgstr ""
 
 #: build/index.js:1
+msgid "Current Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "Convert to"
+msgstr ""
+
+#: build/index.js:1
 msgid "Widget controllers remain unchanged after scanning"
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget Converted"
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget Converted successfully."
 msgstr ""
 
 #: build/index.js:1
@@ -1839,15 +1926,7 @@ msgid "Converting your widget"
 msgstr ""
 
 #: build/index.js:1
-msgid "to"
-msgstr ""
-
-#: build/index.js:1
-msgid "Successfully  converted"
-msgstr ""
-
-#: build/index.js:1
-msgid "Your"
+msgid "Yay! Widget is Successfully Converted"
 msgstr ""
 
 #: build/index.js:1
@@ -1859,27 +1938,27 @@ msgid "Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "Create Widget"
+msgid "BETA"
 msgstr ""
 
 #: build/index.js:1
-msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller than 25 characters and first letter can't be digit."
+msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller than 50 characters and first letter can't be digit."
 msgstr ""
 
 #: build/index.js:1
-msgid "Drag & Drop or Upload Image File Here"
+msgid "Drag & drop or upload an image file here"
 msgstr ""
 
 #: build/index.js:1
-msgid "(Only .JPG and .PNG Allowed)"
+msgid "(Only .JPG and .PNG allowed)."
 msgstr ""
 
 #: build/index.js:1
-msgid "Choose Page Builder"
+msgid "Widget Created Successfully"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Added Successfully"
+msgid "The widget is now available in your list."
 msgstr ""
 
 #: build/index.js:1
@@ -1891,11 +1970,7 @@ msgid "Widget is not created."
 msgstr ""
 
 #: build/index.js:1
-msgid "Import Widget"
-msgstr ""
-
-#: build/index.js:1
-msgid "Select or Drop Your File Here (.ZIP Only)"
+msgid "Create Widget"
 msgstr ""
 
 #: build/index.js:1
@@ -1907,31 +1982,7 @@ msgid "Zip file invalid or Missing. Upload Again!"
 msgstr ""
 
 #: build/index.js:1
-msgid "Close"
-msgstr ""
-
-#: build/index.js:1
-msgid "Successfully Imported."
-msgstr ""
-
-#: build/index.js:1
-msgid "Yay! Your Widget has been successfully imported."
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget import fail"
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget import fail! data not get "
-msgstr ""
-
-#: build/index.js:1
-msgid "Widget imported Succesfully"
-msgstr ""
-
-#: build/index.js:1
-msgid "Search Widgets"
+msgid "Import"
 msgstr ""
 
 #: build/index.js:1
@@ -1939,15 +1990,19 @@ msgid "Login to use this option."
 msgstr ""
 
 #: build/index.js:1
+msgid "Import Widget"
+msgstr ""
+
+#: build/index.js:1
 msgid "This Widget got disabled until you have more credits to make it active."
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Successfully Retrived"
+msgid "Widget Successfully Retrived ."
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Successfully Retrived ."
+msgid "Updating..."
 msgstr ""
 
 #: build/index.js:1
@@ -1959,11 +2014,15 @@ msgid "Remote"
 msgstr ""
 
 #: build/index.js:1
+msgid " + "
+msgstr ""
+
+#: build/index.js:1
 msgid "Local + Remote"
 msgstr ""
 
 #: build/index.js:1
-msgid "Edit in New Tab"
+msgid "Update Available"
 msgstr ""
 
 #: build/index.js:1
@@ -1971,7 +2030,27 @@ msgid "Download ZIP"
 msgstr ""
 
 #: build/index.js:1
+msgid "Update to"
+msgstr ""
+
+#: build/index.js:1
 msgid "Push Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "Update Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "No update information available."
+msgstr ""
+
+#: build/index.js:1
+msgid "Failed to update widget files."
+msgstr ""
+
+#: build/index.js:1
+msgid "An error occurred while updating the widget."
 msgstr ""
 
 #: build/index.js:1
@@ -2024,6 +2103,22 @@ msgstr ""
 
 #: build/index.js:1
 msgid "The label that appears above of the field."
+msgstr ""
+
+#: build/index.js:1
+msgid "Type"
+msgstr ""
+
+#: build/index.js:1
+msgid "Choose between Normal or RawHTML output type."
+msgstr ""
+
+#: build/index.js:1
+msgid "Normal"
+msgstr ""
+
+#: build/index.js:1
+msgid "RawHTML"
 msgstr ""
 
 #: build/index.js:1
@@ -2603,6 +2698,14 @@ msgid "Read More"
 msgstr ""
 
 #: build/index.js:1
+msgid "12 Hours"
+msgstr ""
+
+#: build/index.js:1
+msgid "Whether to enable the 12 Hours Time."
+msgstr ""
+
+#: build/index.js:1
 msgid "Watch Video"
 msgstr ""
 
@@ -2619,11 +2722,11 @@ msgid "You Can Not put this controller here"
 msgstr ""
 
 #: build/index.js:1
-msgid "To use live preview, install the required plugin and publish the widget."
+msgid "Live preview is unavailable for draft widgets. Publish the widget to enable live preview."
 msgstr ""
 
 #: build/index.js:1
-msgid "Live preview is unavailable for draft widgets. Publish the widget to enable live preview."
+msgid "To use live preview, install the required plugin and publish the widget."
 msgstr ""
 
 #: build/index.js:1
@@ -2631,11 +2734,19 @@ msgid "Live preview requires the relevant plugin. Please install it first."
 msgstr ""
 
 #: build/index.js:1
-msgid "Live Preview"
+msgid "Preview"
 msgstr ""
 
 #: build/index.js:1
-msgid "WDesignKit Logo"
+msgid "Variables"
+msgstr ""
+
+#: build/index.js:1
+msgid "Variable"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
 msgstr ""
 
 #: build/index.js:1
@@ -2647,7 +2758,7 @@ msgid "You need to write or perform any of your activity inside the loop"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
+msgid "•"
 msgstr ""
 
 #: build/index.js:1
@@ -2667,7 +2778,11 @@ msgid "Insert CSS Library"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enter the URL of Your External CSS Library, Which You Want to Load in this Widget."
+msgid "Enter the URL of an external CSS library (CDN). You can search for a CSS CDN online or paste the link directly here."
+msgstr ""
+
+#: build/index.js:1
+msgid "Search CDNs..."
 msgstr ""
 
 #: build/index.js:1
@@ -2675,23 +2790,19 @@ msgid "Not Result Found"
 msgstr ""
 
 #: build/index.js:1
-msgid "Sorry, the cdn you are looking for doesn't exist."
-msgstr ""
-
-#: build/index.js:1
 msgid "Insert JS Library"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enter the URL of Your External JS Library, Which You Want to Load in this Widget."
+msgid "Enter the URL of an external JS library (CDN). You can search for a JS CDN online or paste the link directly here."
 msgstr ""
 
 #: build/index.js:1
-msgid "Edit Widget Information"
+msgid "Close"
 msgstr ""
 
 #: build/index.js:1
-msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller then 25 charaters and first letter can't be digit."
+msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller then 50 charaters and first letter can't be digit."
 msgstr ""
 
 #: build/index.js:1
@@ -2703,19 +2814,15 @@ msgid "Create New Category"
 msgstr ""
 
 #: build/index.js:1
-msgid "Add more categories of Elementor Editor area."
-msgstr ""
-
-#: build/index.js:1
-msgid "Add More"
-msgstr ""
-
-#: build/index.js:1
 msgid "Only .jpg and .png are allowed"
 msgstr ""
 
 #: build/index.js:1
 msgid "Upload Widget's featured image to show in widget listing. Only .jpg and .png images allowed."
+msgstr ""
+
+#: build/index.js:1
+msgid "Search icons"
 msgstr ""
 
 #: build/index.js:1
@@ -2739,7 +2846,19 @@ msgid "Enter URL for users to get more information about this widget."
 msgstr ""
 
 #: build/index.js:1
-msgid "SAVE"
+msgid "Edit Widget Information"
+msgstr ""
+
+#: build/index.js:1
+msgid "Update your widget details and click Save when done."
+msgstr ""
+
+#: build/index.js:1
+msgid "Sync Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "Are you sure you want to sync this widget ?"
 msgstr ""
 
 #: build/index.js:1
@@ -2756,10 +2875,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Push"
-msgstr ""
-
-#: build/index.js:1
-msgid "Save"
 msgstr ""
 
 #: build/index.js:1
@@ -2843,15 +2958,15 @@ msgid "conic"
 msgstr ""
 
 #: build/index.js:1
+msgid "Repeater"
+msgstr ""
+
+#: build/index.js:1
 msgid "Add Controller"
 msgstr ""
 
 #: build/index.js:1
 msgid "Write Your Note here...."
-msgstr ""
-
-#: build/index.js:1
-msgid "Normal"
 msgstr ""
 
 #: build/index.js:1
@@ -2963,11 +3078,11 @@ msgid "Widget not found try again later"
 msgstr ""
 
 #: build/index.js:1
-msgid "Free/Pro :"
+msgid "Sub Builders"
 msgstr ""
 
 #: build/index.js:1
-msgid "Categories :"
+msgid "Free / Pro"
 msgstr ""
 
 #: build/index.js:1
@@ -2984,18 +3099,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Role Manager"
-msgstr ""
-
-#: build/index.js:1
-msgid "White Label"
-msgstr ""
-
-#: build/index.js:1
-msgid "Coming Soon"
-msgstr ""
-
-#: build/index.js:1
-msgid "Enable"
 msgstr ""
 
 #: build/index.js:1
@@ -3016,6 +3119,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Remove Database"
+msgstr ""
+
+#: build/index.js:1
+msgid "White Label"
 msgstr ""
 
 #: build/index.js:1
@@ -3095,7 +3202,7 @@ msgid "Use this media"
 msgstr ""
 
 #: build/index.js:1
-msgid "Upload your Icon File Only .png, .jpg, .svg supported"
+msgid "Upload Icon File (Only .PNG, .JPG, and .SVG are supported)"
 msgstr ""
 
 #: build/index.js:1
@@ -3107,11 +3214,47 @@ msgid "Save Settings"
 msgstr ""
 
 #: build/index.js:1
+msgid "Create and customize your own widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Manage and control all features."
+msgstr ""
+
+#: build/index.js:1
+msgid "Browse and use ready-made templates."
+msgstr ""
+
+#: build/index.js:1
+msgid "Restore a previous version easily."
+msgstr ""
+
+#: build/index.js:1
+msgid "Wipe Settings before Uninstall"
+msgstr ""
+
+#: build/index.js:1
+msgid "Delete the selected database permanently."
+msgstr ""
+
+#: build/index.js:1
+msgid "Customize branding with your own identity.   "
+msgstr ""
+
+#: build/index.js:1
 msgid "Elementor Widget Builder"
 msgstr ""
 
 #: build/index.js:1
 msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg Widget Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable Gutenberg Core Widget builder and all Gutenberg Core Widgets."
 msgstr ""
 
 #: build/index.js:1
@@ -3135,7 +3278,7 @@ msgid "Design Template"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Our Templates Feature, which includes, Templates Download, Templates Upload, Workspace and everything related to Templates features."
+msgid "Enable/Disable Templates Feature Manage all template-related options, including downloading, uploading, and workspace functionalities."
 msgstr ""
 
 #: build/index.js:1
@@ -3143,7 +3286,11 @@ msgid "Widget Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Widget builder Feature, Which include your No Code Widgets builder, Download/Upload of Widgets for Elementor and Gutenberg."
+msgid "Enable/Disable Widget Builder Control access to the No-Code Widget Builder, including widget creation, and upload/download options for Elementor, Gutenberg and Bricks."
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable or disable the Code Snippet feature. Disabling it will also turn off Browse Snippets, My Snippets, and workspace snippet options."
 msgstr ""
 
 #: build/index.js:1
@@ -3151,7 +3298,7 @@ msgid "Elementor Page Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Elementor Page builder and all Elementor widgets."
+msgid "Enable/Disable Elementor Builder Control the Elementor page builder. Only enabled templates will remain active."
 msgstr ""
 
 #: build/index.js:1
@@ -3159,7 +3306,7 @@ msgid "Gutenberg Page Builder"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Gutenberg Page builder and all Gutenberg Widgets."
+msgid "Enable/Disable Gutenberg Builder Control the Gutenberg page builder. Only enabled templates will remain active."
 msgstr ""
 
 #: build/index.js:1
@@ -3179,19 +3326,11 @@ msgid "Delete all WDesignKit plugin data (templates/widgets)"
 msgstr ""
 
 #: build/index.js:1
-msgid "Once the selected data is deleted, it cannot be restored."
-msgstr ""
-
-#: build/index.js:1
-msgid "Page Disabled"
+msgid "Note: This button will delete all of WDesignKit's settings from Database. You will then need to enter all your settings again. You can also do this before deactivating/deinstalling WDesignKit if you wish."
 msgstr ""
 
 #: build/index.js:1
 msgid "Go to Settings"
-msgstr ""
-
-#: build/index.js:1
-msgid "Page not Found"
 msgstr ""
 
 #: build/index.js:1
@@ -3203,11 +3342,195 @@ msgid "Save in WDesignKit"
 msgstr ""
 
 #: build/index.js:1
+msgid "Explore 500+ Newly Added Template Kits, Pages & Sections"
+msgstr ""
+
+#: build/index.js:1
+msgid "Newly added Widget Builder Design with revamp version"
+msgstr ""
+
+#: build/index.js:1
+msgid "Features for storing the workspace in cloud for smooth collaboration"
+msgstr ""
+
+#: build/index.js:1
+msgid "carousel_img"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create an account"
+msgstr ""
+
+#: build/index.js:1
+msgid "Back to login"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note :"
+msgstr ""
+
+#: build/index.js:1
+msgid "Details are not valid"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Yes, I’m new"
+msgstr ""
+
+#: build/index.js:1
+msgid "No, I forgot my password"
+msgstr ""
+
+#: build/index.js:1
+msgid "You need to signup for "
+msgstr ""
+
+#: build/index.js:1
+msgid "Forgot Password"
+msgstr ""
+
+#: build/index.js:1
+msgid "Want to know more?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid Login Details"
+msgstr ""
+
+#: build/index.js:1
+msgid "The login Details you entered is not correct. Please verify and try again"
+msgstr ""
+
+#: build/index.js:1
+msgid "Continue with"
+msgstr ""
+
+#: build/index.js:1
+msgid "Welcome Back! Log in to continue"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter your credentials to access your account."
+msgstr ""
+
+#: build/index.js:1
+msgid "Email"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please fill this field"
+msgstr ""
+
+#: build/index.js:1
+msgid "Email is not valid."
+msgstr ""
+
+#: build/index.js:1
+msgid "Password"
+msgstr ""
+
+#: build/index.js:1
+msgid "Remember Me"
+msgstr ""
+
+#: build/index.js:1
+msgid "Forgot Password?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Logged in"
+msgstr ""
+
+#: build/index.js:1
+msgid "Log in"
+msgstr ""
+
+#: build/index.js:1
+msgid "OR CONTINUE WITH"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login Error: Check your details and try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "google-logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Google"
+msgstr ""
+
+#: build/index.js:1
+msgid "facebook-logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Facebook"
+msgstr ""
+
+#: build/index.js:1
+msgid "Continue via Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Wrong or Expired Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "I know Purchase key and Login Key is different."
+msgstr ""
+
+#: build/index.js:1
+msgid "How to get Login Key?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Let me Try again"
+msgstr ""
+
+#: build/index.js:1
+msgid "I need to recheck Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid Login Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "The login key you entered is not valid. Please verify and try again"
+msgstr ""
+
+#: build/index.js:1
+msgid "Login With Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter your login key to access your account."
+msgstr ""
+
+#: build/index.js:1
+msgid "Logged In"
+msgstr ""
+
+#: build/index.js:1
+msgid "Back to Login"
+msgstr ""
+
+#: build/index.js:1
 msgid "Welcome to WDesignKit"
 msgstr ""
 
 #: build/index.js:1
 msgid "Page Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor"
 msgstr ""
 
 #: build/index.js:1
@@ -3275,7 +3598,11 @@ msgid "Site Language"
 msgstr ""
 
 #: build/index.js:1
-msgid "The following details will help us serve you better, and will not be shared with any third party or used to spam you in any way."
+msgid "The following details will help us serve you better, and will not be shared with any third-party or used to spam you in anyway."
+msgstr ""
+
+#: build/index.js:1
+msgid "Back"
 msgstr ""
 
 #: build/index.js:1
@@ -3291,7 +3618,7 @@ msgid "Get Free Support"
 msgstr ""
 
 #: build/index.js:1
-msgid "Whats New?"
+msgid "What’s New?"
 msgstr ""
 
 #: build/index.js:1
@@ -3300,10 +3627,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Suggest New Features"
-msgstr ""
-
-#: build/index.js:1
-msgid "Report Bug"
 msgstr ""
 
 #: build/index.js:1
@@ -3355,27 +3678,47 @@ msgid "Your widget Downloaded Successfully"
 msgstr ""
 
 #: build/index.js:1
-msgid "Invalid key entered"
+msgid "No Key Entered"
 msgstr ""
 
 #: build/index.js:1
-msgid "Key error, check and fix"
+msgid "Please enter a valid key to continue."
 msgstr ""
 
 #: build/index.js:1
-msgid "Credits"
+msgid "Storage Credits"
 msgstr ""
 
 #: build/index.js:1
-msgid "Go Pro"
+msgid "Buy More Credits"
 msgstr ""
 
 #: build/index.js:1
-msgid "Buy Extra Credits"
+msgid "AI Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "AI Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "AI Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "AI Snippets"
 msgstr ""
 
 #: build/index.js:1
 msgid "Add Licence Key"
+msgstr ""
+
+#: build/index.js:1
+msgid "How to get key?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select key name"
 msgstr ""
 
 #: build/index.js:1
@@ -3391,15 +3734,7 @@ msgid "Apply Key"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enter Licence Key"
-msgstr ""
-
-#: build/index.js:1
 msgid "Activate"
-msgstr ""
-
-#: build/index.js:1
-msgid "How to get key?"
 msgstr ""
 
 #: build/index.js:1
@@ -3407,31 +3742,27 @@ msgid "Existing Licence Keys"
 msgstr ""
 
 #: build/index.js:1
-msgid "To utilize the credits associated with this license key, it must be in an 'Active' status. If it has expired, access will be restricted, and you won't be able to use it."
-msgstr ""
-
-#: build/index.js:1
 msgid "Licence Key"
 msgstr ""
 
 #: build/index.js:1
-msgid "Status"
+msgid "Credits"
 msgstr ""
 
 #: build/index.js:1
-msgid "No licence keys found. Add your WDesignKit, Nexter Blocks, The Plus Addons, UiChemy or other keys to activate and get benefits of pro version."
+msgid "Action"
+msgstr ""
+
+#: build/index.js:1
+msgid "No licence keys found"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add your WDesignKit, Nexter Blocks, The Plus Addons, UiChemy or other keys to activate and get benefits of pro version."
 msgstr ""
 
 #: build/index.js:1
 msgid "How to get a key?"
-msgstr ""
-
-#: build/index.js:1
-msgid "Are you sure you want to deactivate the"
-msgstr ""
-
-#: build/index.js:1
-msgid "Pro License Key ?"
 msgstr ""
 
 #: build/index.js:1
@@ -3444,6 +3775,14 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Login to use WDesignKit Widgets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please fill all fields"
+msgstr ""
+
+#: build/index.js:1
+msgid "Missing information! Complete all fields."
 msgstr ""
 
 #: build/index.js:1
@@ -3515,11 +3854,19 @@ msgid "Please activate your WDesignKit Pro license to start using advanced Pro w
 msgstr ""
 
 #: build/index.js:1
+msgid "Invalid key entered"
+msgstr ""
+
+#: build/index.js:1
+msgid "Key error, check and fix"
+msgstr ""
+
+#: build/index.js:1
 msgid "Why Do I Need to Upgrade to The Plus Addons for Elementor Pro?"
 msgstr ""
 
 #: build/index.js:1
-msgid "The Plus Addons for Elementor offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it!For any questions, connect with us via our website live chat—we'll get back to you soon."
+msgid "The Plus Addons for Elementor offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
 msgstr ""
 
 #: build/index.js:1
@@ -3527,7 +3874,7 @@ msgid "Why Do I Need to Upgrade to Nexter Blocks Pro?"
 msgstr ""
 
 #: build/index.js:1
-msgid "Nexter Blocks offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it!For any questions, connect with us via our website live chat—we'll get back to you soon."
+msgid "Nexter Blocks offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
 msgstr ""
 
 #: build/index.js:1
@@ -3548,18 +3895,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Click to know more"
-msgstr ""
-
-#: build/index.js:1
-msgid "Preset Imported Successfully!"
-msgstr ""
-
-#: build/index.js:1
-msgid " Enjoy customizing your design in Gutenberg!"
-msgstr ""
-
-#: build/index.js:1
-msgid " Enjoy customizing your design in Elementor!"
 msgstr ""
 
 #: build/index.js:1
@@ -3607,15 +3942,15 @@ msgid "Elementor Pro"
 msgstr ""
 
 #: build/index.js:1
-msgid "The Plus Addons For Elementor"
+msgid "The Plus Addons for Elementor"
 msgstr ""
 
 #: build/index.js:1
-msgid "The Plus Addons For Elementor Pro"
+msgid "The Plus Addons for Elementor Pro"
 msgstr ""
 
 #: build/index.js:1
-msgid "Sticky Header Effects For Elementor"
+msgid "Sticky Header Effects for Elementor"
 msgstr ""
 
 #: build/index.js:1
@@ -3631,11 +3966,19 @@ msgid "Gutenberg Blocks"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Presets"
+msgid "Search Presets"
 msgstr ""
 
 #: build/index.js:1
-msgid "Search Presets"
+msgid "Status"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search"
+msgstr ""
+
+#: build/index.js:1
+msgid "No Result Found."
 msgstr ""
 
 #: build/index.js:1
@@ -3716,6 +4059,758 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Note :- If you're looking for a Free option, simply select the Filter Free option in Template. You can still import templates made using the Free Navigation Menu Widget from The Plus Addons for Elementor."
+msgstr ""
+
+#: build/index.js:1
+msgid "Bad Request"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid request parameters. Please check your filters."
+msgstr ""
+
+#: build/index.js:1
+msgid "Page Builders"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search Templates"
+msgstr ""
+
+#: build/index.js:1
+msgid "Import Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Failed to fetch template data. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Template content is empty. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Template import failed. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Template was not created. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Title"
+msgstr ""
+
+#: build/index.js:1
+msgid "Choose What Your Site Needs"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select the features you want, and we’ll set them up for you automatically."
+msgstr ""
+
+#: build/index.js:1
+msgid "Nexter Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Recommended"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note: This setup installs the required plugins and theme. It may replace your current settings, so we recommend "
+msgstr ""
+
+#: build/index.js:1
+msgid "making a backup first."
+msgstr ""
+
+#: build/index.js:1
+msgid "I’ve read this and want to continue."
+msgstr ""
+
+#: build/index.js:1
+msgid "facebook"
+msgstr ""
+
+#: build/index.js:1
+msgid "twitter"
+msgstr ""
+
+#: build/index.js:1
+msgid "instagram"
+msgstr ""
+
+#: build/index.js:1
+msgid "linkedin"
+msgstr ""
+
+#: build/index.js:1
+msgid "LinkedIn"
+msgstr ""
+
+#: build/index.js:1
+msgid "youtube"
+msgstr ""
+
+#: build/index.js:1
+msgid "Invalid Email Format"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please enter a valid email address to continue"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Font"
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. Apple Inc."
+msgstr ""
+
+#: build/index.js:1
+msgid "Tagline"
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. Think Different"
+msgstr ""
+
+#: build/index.js:1
+msgid "Logo"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload Logo (Recommended size: 512 × 512 px, PNG with transparent background for best results in WordPress)"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select Global Fonts & Colours"
+msgstr ""
+
+#: build/index.js:1
+msgid "Font Style"
+msgstr ""
+
+#: build/index.js:1
+msgid "Ag"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select Font Pair: "
+msgstr ""
+
+#: build/index.js:1
+msgid "A"
+msgstr ""
+
+#: build/index.js:1
+msgid "g"
+msgstr ""
+
+#: build/index.js:1
+msgid "Primary Font"
+msgstr ""
+
+#: build/index.js:1
+msgid "Secondary Font"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select Colors Pallete"
+msgstr ""
+
+#: build/index.js:1
+msgid "Primary Color"
+msgstr ""
+
+#: build/index.js:1
+msgid "Secondary Color"
+msgstr ""
+
+#: build/index.js:1
+msgid "Light"
+msgstr ""
+
+#: build/index.js:1
+msgid "Dark"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Additional Content"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add more information to get even better first version of website. This might useful in AI Content Import templates. Few templates doesn't support those fields for now. These information are just for your content for template. We do not store any of those information on our side."
+msgstr ""
+
+#: build/index.js:1
+msgid "Address"
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. 123 Street...."
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. admin@gmail.com"
+msgstr ""
+
+#: build/index.js:1
+msgid "Phone Number"
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. +1 (213) 449-4470"
+msgstr ""
+
+#: build/index.js:1
+msgid "Social Media"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please enter full URL E.g. httpps://x.com, httpps://facebook.com, httpps://instagram.com"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Required"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get Pro"
+msgstr ""
+
+#: build/index.js:1
+msgid "This is only a visual preview. The real website will be created with your details in the next step."
+msgstr ""
+
+#: build/index.js:1
+msgid "Preview isn’t available for this website-kit."
+msgstr ""
+
+#: build/index.js:1
+msgid "Generate Blog Posts"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get 6 blog posts related to your business information."
+msgstr ""
+
+#: build/index.js:1
+msgid "Generate Ai Blog Posts"
+msgstr ""
+
+#: build/index.js:1
+msgid "Get 6 blog posts related to your business information created by AI."
+msgstr ""
+
+#: build/index.js:1
+msgid " Note: We install Nexter Blocks for these posts to create"
+msgstr ""
+
+#: build/index.js:1
+msgid "Content & Media Setup"
+msgstr ""
+
+#: build/index.js:1
+msgid "Choose how you want to import content with your template."
+msgstr ""
+
+#: build/index.js:1
+msgid "Import Demo Content"
+msgstr ""
+
+#: build/index.js:1
+msgid "Bring in the exact same text, images, and layout as shown in the demo template. It gives you a complete, ready to use design instantly, and you can easily swap the content with your own whenever you’re ready."
+msgstr ""
+
+#: build/index.js:1
+msgid "Beta"
+msgstr ""
+
+#: build/index.js:1
+msgid "Smart AI Content"
+msgstr ""
+
+#: build/index.js:1
+msgid "Import templates with automatically generated text, images, and blog posts tailored to your niche. A smarter way to start with content that feels unique, branded, and closer to your real business needs."
+msgstr ""
+
+#: build/index.js:1
+msgid "Available Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Import as Wireframe"
+msgstr ""
+
+#: build/index.js:1
+msgid "If enabled, it won’t load original images and will use placeholder images instead, which you can replace later."
+msgstr ""
+
+#: build/index.js:1
+msgid "Your site limit for this month has been reached."
+msgstr ""
+
+#: build/index.js:1
+msgid "Your site limit for today has been reached."
+msgstr ""
+
+#: build/index.js:1
+msgid "Buy Extra AI Credits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Minimum 30 credits required to import the full AI kit."
+msgstr ""
+
+#: build/index.js:1
+msgid "Login required to access this feature."
+msgstr ""
+
+#: build/index.js:1
+msgid "Tell Us About Your Website"
+msgstr ""
+
+#: build/index.js:1
+msgid "Share a few details so we can generate the right content for you."
+msgstr ""
+
+#: build/index.js:1
+msgid "About Website"
+msgstr ""
+
+#: build/index.js:1
+msgid "E.g. Agency Website, NGO ..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Language"
+msgstr ""
+
+#: build/index.js:1
+msgid "Website Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Briefly describe your site, what it does, who it’s for, and the main pages you need (like Home, About, Services, Contact)."
+msgstr ""
+
+#: build/index.js:1
+msgid "AI is thinking"
+msgstr ""
+
+#: build/index.js:1
+msgid "Write using AI"
+msgstr ""
+
+#: build/index.js:1
+msgid "Choose Your Website Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select images to use in your website design. You can pick from our library or upload your own."
+msgstr ""
+
+#: build/index.js:1
+msgid "Suggested Keywords"
+msgstr ""
+
+#: build/index.js:1
+msgid "Stock Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Lummi Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload Your Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Selected Images "
+msgstr ""
+
+#: build/index.js:1
+msgid "Landscape"
+msgstr ""
+
+#: build/index.js:1
+msgid "Portrait"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select Images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Use these images"
+msgstr ""
+
+#: build/index.js:1
+msgid "Add Your Images Here (Supported: PNG, JPG, JPEG | Limit: 20 MB)"
+msgstr ""
+
+#: build/index.js:1
+msgid "PNG, JPG, JPEG"
+msgstr ""
+
+#: build/index.js:1
+msgid "Oops! No Images Selected"
+msgstr ""
+
+#: build/index.js:1
+msgid "Looks like there are no images matching your search.You can try a different keyword or upload your own images."
+msgstr ""
+
+#: build/index.js:1
+msgid "Upload Your images"
+msgstr ""
+
+#: build/index.js:1
+msgid "It seems you haven’t selected any image yet !"
+msgstr ""
+
+#: build/index.js:1
+msgid "Load More"
+msgstr ""
+
+#: build/index.js:1
+msgid "Global Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Theme Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Plugins & Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Importing Site Content"
+msgstr ""
+
+#: build/index.js:1
+msgid "Setting Up Pages & Layout"
+msgstr ""
+
+#: build/index.js:1
+msgid "Finalizing Settings"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installed "
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing "
+msgstr ""
+
+#: build/index.js:1
+msgid " not installed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to Import Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Retry !"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to get Template JSON"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to Generate AI content"
+msgstr ""
+
+#: build/index.js:1
+msgid "Header and Footer section"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to import Template JSON"
+msgstr ""
+
+#: build/index.js:1
+msgid "Template Imported successfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to import Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "Importing Blog Posts"
+msgstr ""
+
+#: build/index.js:1
+msgid "Fail to get import Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "We’re Setting Up Your Website"
+msgstr ""
+
+#: build/index.js:1
+msgid "Relax while we prepare everything you need - plugins, theme, and content. This might take few minutes."
+msgstr ""
+
+#: build/index.js:1
+msgid "Skip"
+msgstr ""
+
+#: build/index.js:1
+msgid "Retry Missing Pages"
+msgstr ""
+
+#: build/index.js:1
+msgid "Retry Missing Page"
+msgstr ""
+
+#: build/index.js:1
+msgid "🎉 Success! Your Website is Ready"
+msgstr ""
+
+#: build/index.js:1
+msgid "Everything’s set up. You can start customizing or explore your new site right away."
+msgstr ""
+
+#: build/index.js:1
+msgid "Preview Site"
+msgstr ""
+
+#: build/index.js:1
+msgid "Sign Up!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Create your account to get started."
+msgstr ""
+
+#: build/index.js:1
+msgid "Email is not valid"
+msgstr ""
+
+#: build/index.js:1
+msgid "Sign Up"
+msgstr ""
+
+#: build/index.js:1
+msgid "By clicking continue, you agree to our "
+msgstr ""
+
+#: build/index.js:1
+msgid "Terms of Service"
+msgstr ""
+
+#: build/index.js:1
+msgid "and"
+msgstr ""
+
+#: build/index.js:1
+msgid "Privacy Policy."
+msgstr ""
+
+#: build/index.js:1
+msgid "Reset Password"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter your email to receive a password reset link."
+msgstr ""
+
+#: build/index.js:1
+msgid "Reset Now"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet Type"
+msgstr ""
+
+#: build/index.js:1
+msgid "Related Tags"
+msgstr ""
+
+#: build/index.js:1
+msgid "No related tags found."
+msgstr ""
+
+#: build/index.js:1
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr ""
+
+#: build/index.js:1
+msgid "This Snippet got disabled until you have more credits to make it active."
+msgstr ""
+
+#: build/index.js:1
+msgid "No Favorites Yet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Click the heart icon on any snippet to add it to your favorites."
+msgstr ""
+
+#: build/index.js:1
+msgid "Delete Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Are you sure you want to delete this snippet?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Replace Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Are you sure you want to replace this snippet ?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Snippet Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Please enter a snippet name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet saved successfully to cloud!"
+msgstr ""
+
+#: build/index.js:1
+msgid "Save Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "We couldn’t save your snippet. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "New Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Existing Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet Name"
+msgstr ""
+
+#: build/index.js:1
+msgid "Loading..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippet Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enter Snippet Description"
+msgstr ""
+
+#: build/index.js:1
+msgid "Search "
+msgstr ""
+
+#: build/index.js:1
+msgid "Recently Added"
+msgstr ""
+
+#: build/index.js:1
+msgid "Untitled Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Do you want to replace this?"
+msgstr ""
+
+#: build/index.js:1
+msgid "Note : Replacing the snippet will erase the current design. This action cannot be undone, and the old design will be permanently lost."
+msgstr ""
+
+#: build/index.js:1
+msgid "Please select the snippet you want to replace"
+msgstr ""
+
+#: build/index.js:1
+msgid "Failed to fetch kit snippets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Failed to load kit snippets. Please try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "snippets downloaded successfully."
+msgstr ""
+
+#: build/index.js:1
+msgid "pro snippets require pro plugin:"
+msgstr ""
+
+#: build/index.js:1
+msgid "snippets failed to download:"
+msgstr ""
+
+#: build/index.js:1
+msgid "Download Complete"
+msgstr ""
+
+#: build/index.js:1
+msgid "Download Failed"
+msgstr ""
+
+#: build/index.js:1
+msgid "Snippets couldn’t be downloaded. Try again."
+msgstr ""
+
+#: build/index.js:1
+msgid "Yay! Snippets Downloaded Successfully"
+msgstr ""
+
+#: build/index.js:1
+msgid "Your downloaded snippets are now ready to use in your code snippets."
+msgstr ""
+
+#: build/index.js:1
+msgid "view snippets"
+msgstr ""
+
+#: build/index.js:1
+msgid "Select All"
+msgstr ""
+
+#: build/index.js:1
+msgid "Download"
+msgstr ""
+
+#: build/index.js:1
+msgid "Profile Picture"
+msgstr ""
+
+#: build/index.js:1
+msgid "Website Upgrade in Progress."
+msgstr ""
+
+#: build/index.js:1
+msgid "Our  website is undergoing a transformation to serve you better."
+msgstr ""
+
+#: build/index.js:1
+msgid "Limit reached of active sites. Deactivate one or upgrade your plan to unlock access."
 msgstr ""
 
 #: build/index.js:1

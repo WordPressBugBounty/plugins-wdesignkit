@@ -54,14 +54,38 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'wdkit_admin_menu' ) );
 
+			add_action( 'admin_enqueue_scripts', array( $this, 'wdkit_enqueue_styles_library' ), 10 );
+
 			add_action( 'admin_enqueue_scripts', array( $this, 'wdkit_admin_scripts' ), 10, 1 );
 			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_admin_scripts' ), 10, 1 );
 			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_enqueue_styles' ), 10 );
 
+			// Gutenberg editor styles
+			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_gutenberg_editor_style' ), 10 );
+
 			if ( class_exists( '\Elementor\Plugin' ) ) {
+				add_action( 'elementor/editor/before_enqueue_styles', array( $this, 'wdkit_elementor_editor_style' ) );
+				add_action( 'elementor/editor/after_enqueue_styles', array( $this, 'wdkit_elementor_hide_help_tab' ) );
 				add_action( 'elementor/preview/enqueue_styles', array( $this, 'wdkit_elementor_preview_style' ) );
 				add_action( 'elementor/editor/before_enqueue_scripts', array( $this, 'wdkit_elementor_scripts' ) );
 			}
+
+			// Bricks editor styles
+			add_action( 'wp_enqueue_scripts', array( $this, 'wdkit_bricks_editor_style' ), 10, 1 );
+		}
+
+
+		/**
+		 * Enqueue the WDesignKit font library styles.
+		 * 
+		 * This function loads the custom font styles for the WDesignKit plugin,
+		 * including the icon font definitions and styling.
+		 * 
+		 * @since 1.0.0
+		 * @return void
+		 */
+		public function wdkit_enqueue_styles_library() {
+			wp_enqueue_style( 'wdkit-library', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
 		}
 
 		/**
@@ -131,6 +155,48 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		}
 
 		/**
+		 * Elementor Editor Panel Style Loaded
+		 */
+		public function wdkit_elementor_editor_style() {
+			wp_enqueue_style( 'wdkit-elementor-editor-css', WDKIT_URL . 'assets/css/elementor/wdkit_enqueue_editor_styles.css', array(), WDKIT_VERSION );
+
+			// Hide WDesignKit logo icon when white label is enabled
+			$white_label = get_option( 'wkit_white_label', false );
+			if ( ! empty( $white_label['help_link'] ) ) {
+				wp_add_inline_style( 'wdkit-elementor-editor-css', '.elementor-element .icon i.tpae-wdkit-logo:after { display: none !important; }' );
+			}
+		}
+
+		/**
+		 * Bricks Editor Panel Style Loaded
+		 */
+		public function wdkit_bricks_editor_style() {
+			// Only load in Bricks editor
+			if ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
+				wp_enqueue_style( 'wdkit-bricks-editor-css', WDKIT_URL . 'assets/css/bricks/wdkit_enqueue_editor_styles.css', array(), WDKIT_VERSION );
+
+				// Hide WDesignKit logo icon when white label is enabled
+				$white_label = get_option( 'wkit_white_label', false );
+				if ( ! empty( $white_label['help_link'] ) ) {
+					wp_add_inline_style( 'wdkit-bricks-editor-css', '.element-data .element-icon i.tpae-wdkit-logo:after { display: none !important; } .bricks-panel-controls .control-group[data-control-group*="Need"]{display:none!important;}' );
+				}
+			}
+		}
+
+		/**
+		 * Gutenberg Editor Panel Style Loaded
+		 */
+		public function wdkit_gutenberg_editor_style() {
+			wp_enqueue_style( 'wdkit-gutenberg-editor-css', WDKIT_URL . 'assets/css/gutenberg/wdkit_enqueue_editor_styles.css', array(), WDKIT_VERSION );
+
+			// Hide WDesignKit logo icon + Need Help panel when white label is enabled
+			$white_label = get_option( 'wkit_white_label', false );
+			if ( ! empty( $white_label['help_link'] ) ) {
+				wp_add_inline_style( 'wdkit-gutenberg-editor-css', '.block-editor-block-types-list__list-item .block-editor-block-icon i.tpae-wdkit-logo:after, .tpgb-head-panel-tabs .components-panel__body.wdkit-panel-need-help { display: none !important; }' );
+			}
+		}
+
+		/**
 		 * Elementor Preview Style Loaded
 		 *
 		 *  @since  1.0.0
@@ -148,9 +214,16 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_admin_scripts( $hook ) {
 
+			wp_enqueue_style( 'wdkit-library-preview', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
 			wp_enqueue_style( 'wdkit-out-dashborad', WDKIT_URL . 'assets/css/dashborad/wdkit-dashborad.css', array(), WDKIT_VERSION, false );
 
-			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) ) {
+			// Check if we're on a Nexter Extension page
+			$is_nexter_page = isset( $_GET['page'] ) && $_GET['page'] === 'nxt_code_snippets';
+
+			// Check if we're on a Theme Builder page (via post_type or page parameter)
+			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && $_GET['post_type'] === 'nxt_builder' ) || ( isset( $_GET['page'] ) && $_GET['page'] === 'nxt_builder' );
+			
+			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && !$is_nexter_page && !$is_theme_builder_page ) {
 				return;
 			}
 
@@ -181,7 +254,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );
 			$white_label   = get_option( 'wkit_white_label', false );
-
+			$dark_mode     = get_option( 'wdkit_dark_mode', 'light' );
 
 			wp_localize_script(
 				'wdkit-editor-js',
@@ -192,6 +265,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'WDKIT_URL'           => WDKIT_URL,
 					'WDKIT_ASSETS'        => WDKIT_ASSETS,
 					'wdkit_server_url'    => WDKIT_SERVER_SITE_URL,
+					'wdkit_site_api_url'  => WDKIT_SERVER_API_URL,
 					'wdkit_wp_version'    => get_bloginfo( 'version' ),
 					'home_url'            => esc_url( home_url( '/' ) ),
 					'kit_nonce'           => wp_create_nonce( 'wdkit_nonce' ),
@@ -202,7 +276,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'post_type_list'      => $this->wdkit_get_post_type_list(),
 					'WDKIT_onbording_end' => $onbording_end,
 					'wdkit_white_label'   => $white_label,
-
+					'WDKIT_dark_mode'     => $dark_mode,
 					/** Widget Builder Path */
 					'WDKIT_SITE_URL'      => WDKIT_GET_SITE_URL,
 					'WDKIT_DOC_URL'       => WDKIT_DOCUMENT,
@@ -210,7 +284,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'WDKIT_BUILDER_PATH'  => WDKIT_BUILDER_PATH,
 					'WDKIT_VERSION'       => WDKIT_VERSION,
 
-					'gutenberg_template'  => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' ),
+					'gutenberg_template'  => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' )
 				)
 			);
 
@@ -250,6 +324,22 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_menu_page_template() {
 			echo '<div id="wdesignkit-app"></div>';
+		}
+
+		/**
+		 * Hide "Need Help" tab in Elementor widgets section when white label is enabled
+		 *
+		 * @since   2.2.4
+		 */
+		public function wdkit_elementor_hide_help_tab() {
+			$white_label = get_option( 'wkit_white_label', false );
+			
+			if ( ! empty( $white_label['help_link'] ) ) {
+				wp_add_inline_style(
+					'elementor-editor',
+					'.elementor-control.elementor-control-Need.Help.elementor-control-type-section{display:none!important;}'
+				);
+			}
 		}
 	}
 

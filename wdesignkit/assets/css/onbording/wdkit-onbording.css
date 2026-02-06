@@ -37,7 +37,13 @@
 .wdkit-reason-txt-deails {
     display: block;
     width: 100%;
-    margin-top: 20px
+    margin-top: 20px;
+}
+
+.wdkit-reason-txt-deails:focus{
+    box-shadow: none;
+    outline: none;
+    border-color: 1px solid #020202;
 }
 
 #wdkit-deactive-modal {
@@ -146,16 +152,24 @@
 }
 
 #wdkit-deactive-modal .wdkit-modal-footer .wdkit-modal-submit {
-    background-color: #040483;
+    background-color: #020202;
     color: #fff
 }
 
 #wdkit-deactive-modal .wdkit-modal-footer .wdkit-modal-submit:hover {
-    background-color: #030369;
+    background-color: #282828;
 }
 
 #wdkit-deactive-modal .wdkit-modal-footer .wdkit-modal-deactive {
-    color: #515962
+    color: #808080;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    transition: .3s linear;
+}
+
+#wdkit-deactive-modal .wdkit-modal-footer .wdkit-modal-deactive:hover{
+    color: #020202;
+    border-color: #020202;
 }
 
 .wdkit-modal-input {
@@ -176,6 +190,7 @@
     align-items: center;
     margin: 0;
     margin-right: 5px;
+    background-color: transparent;
 }
 
 .wdkit-reason-txt-text {
@@ -185,22 +200,25 @@
 #wdkit-deactive-modal input[type=radio]:focus,
 .wdkit-modal-deactive:focus,
 .wdkit-modal-submit:focus {
-    border-color: #6f14f1 !important;
+    border-color: #020202 !important;
     box-shadow: none !important
 }
 
 #wdkit-deactive-modal input[type=radio]:checked::before {
-    background: #6f14f1
+    background: #020202;
+    width: 8px;
+    height: 8px;
 }
 
 .wdkit-help-link span {
     font-size: 13px;
     font-style: italic;
-    font-weight: 500
+    font-weight: 500;
+    color: #808080;
 }
 
 .wdkit-help-link span>a {
-    color: #c22076;
+    color: #020202;
     text-decoration: none;
     line-height: 1.8
 }

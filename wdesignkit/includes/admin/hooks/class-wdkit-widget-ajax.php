@@ -42,7 +42,14 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 *
 		 * @var staring $wdkit_api
 		 */
-		public $wdkit_api = WDKIT_SERVER_SITE_URL . 'api/wp/';
+		public $wdkit_api = WDKIT_SERVER_API_URL . 'api/wp/';
+
+		/**
+		 * Member Variable
+		 *
+		 * @var string $widget_folder_u_r_l
+		 */
+		public $widget_folder_u_r_l = '';
 
 		/**
 		 *  Initiator
@@ -101,6 +108,9 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				case 'wkit_widget_preview':
 					$response = $this->wkit_widget_preview();
 					break;
+				case 'wkit_check_widget_versions':
+					$response = $this->wkit_check_widget_versions();
+					break;
 			}
 
 			wp_send_json( $response );
@@ -117,6 +127,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$array_data = array(
 				'CurrentPage' => isset( $_POST['page'] ) ? (int) $_POST['page'] : 1,
 				'builder'     => isset( $_POST['buildertype'] ) ? wp_unslash( $_POST['buildertype'] ) : '',
+				'sub_builder' => isset( $_POST['sub_builder'] ) ? wp_unslash( $_POST['sub_builder'] ) : '',
 				'category'    => isset( $_POST['category'] ) ? sanitize_text_field( wp_unslash( $_POST['category'] ) ) : '',
 				'ParPage'     => isset( $_POST['perpage'] ) ? (int) $_POST['perpage'] : 12,
 				'search'      => isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '',
@@ -162,6 +173,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				'id'   => isset( $data->w_uniq ) ? sanitize_text_field( $data->w_uniq ) : '',
 				'u_id' => isset( $data->u_id ) ? sanitize_text_field( $data->u_id ) : '',
 				'type' => isset( $data->d_type ) ? sanitize_text_field( $data->d_type ) : '',
+				'unique_id' => get_option( 'wdkit_unique_id' ) ?? '',
 			);
 
 			$response = $this->wkit_api_call( $array_data, $api_type );
@@ -244,6 +256,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			}
 
 			$data   = ! empty( $_POST['value'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'value', 'cr_widget' ) : '';
+			// $data   = ! empty( $data ) ? stripslashes( $data ) : '';
 			$return = ! empty( $data ) ? json_decode( $data ) : '';
 
 			$all_val = ! empty( $return ) ? $return : '';
@@ -285,6 +298,11 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			$old_folder  = ! empty( $old_widget ) ? str_replace( ' ', '-', $old_widget ) : '';
 			$widget_type = ! empty( $data->widget_data->widgetdata->type ) ? sanitize_text_field( $data->widget_data->widgetdata->type ) : '';
+
+			// For gutenberg_core plugin, use the plugin value as widget_type for folder path
+			if ( 'gutenberg_core' === $plugin ) {
+				$widget_type = 'gutenberg_core';
+			}
 
 			if ( empty( $widget_type ) ) {
 				$responce = array(
@@ -385,6 +403,30 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					$wp_filesystem->put_contents( "$widget_folder_u_r_l.css", $gutenberg_css );
 				}
 				$wp_filesystem->put_contents( "$widget_folder_u_r_l.js", $gutenberg_js );
+			} elseif ( 'gutenberg_core' === $plugin ) {
+
+				$widget_file_list = scandir( $widget_file_url );
+				$widget_file_list = array_diff( $widget_file_list, array( '.', '..' ) );
+
+				foreach ( $widget_file_list as $sub_dir_value ) {
+					$file      = new SplFileInfo( $sub_dir_value );
+					$check_ext = $file->getExtension();
+					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
+
+					if ( 'js' === $extiona || 'css' === $extiona || 'json' === $extiona || 'php' === $extiona ) {
+						$wp_filesystem->rmdir( "$widget_file_url/$sub_dir_value", true );
+					}
+				}
+
+				if ( ! empty( $external_js_file ) ) {
+					$wp_filesystem->put_contents( "$widget_file_url/index.js", $external_js_file );
+				}
+				$wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $gutenberg_php_file );
+				$wp_filesystem->put_contents( "$widget_folder_u_r_l.json", $json_file );
+				if ( ! empty( $gutenberg_css ) ) {
+					$wp_filesystem->put_contents( "$widget_folder_u_r_l.css", $gutenberg_css );
+				}
+				$wp_filesystem->put_contents( "$widget_folder_u_r_l.js", $gutenberg_js );
 			}
 
 			if ( ! empty( $image ) && ! empty( $image['tmp_name'] ) ) {
@@ -446,13 +488,18 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				global $wp_filesystem;
 				WP_Filesystem();
 				$wp_filesystem->rmdir( $builder_type_path . $old_folder, true );
-			} elseif ( $old_folder !== $folder_name ) {
-				rename( WDKIT_BUILDER_PATH . "/$widget_type/$old_folder", WDKIT_BUILDER_PATH . "/$widget_type/$folder_name" );
+			} elseif ( ! empty( $old_folder ) && $old_folder !== $folder_name ) {
+				$old_path = wp_normalize_path( trailingslashit( WDKIT_BUILDER_PATH ) . $widget_type . '/' . $old_folder );
+				$new_path = wp_normalize_path( trailingslashit( WDKIT_BUILDER_PATH ) . $widget_type . '/' . $folder_name );
+				
+				if ( is_dir( $old_path ) && ! is_dir( $new_path ) ) {
+					rename( $old_path, $new_path );
+				}
 			}
 
 			$responce = array(
-				'message'     => esc_html__( 'Update Saved Successfully', 'wdesignkit' ),
-				'description' => esc_html__( 'Success! Update Saved', 'wdesignkit' ),
+				'message'     => esc_html__( 'Updates Saved!', 'wdesignkit' ),
+				'description' => esc_html__( 'Your changes have been saved successfully.', 'wdesignkit' ),
 				'success'     => true,
 			);
 
@@ -539,6 +586,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 					$folder_name = str_replace( ' ', '-', $widget_name );
 					$file_name   = str_replace( ' ', '_', $widget_name );
+
 					if ( ! is_dir( WDKIT_BUILDER_PATH . "/{$widget_type}" ) ) {
 						wp_mkdir_p( WDKIT_BUILDER_PATH . "/{$widget_type}" );
 					}
@@ -628,7 +676,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					'success'     => true,
 					'url'         => $download_url,
 					'message'     => esc_html__( 'Widget Exported', 'wdesignkit' ),
-					'description' => esc_html__( 'Widget Exported successfully', 'wdesignkit' ),
+					'description' => esc_html__( 'Your widget has been exported successfully.', 'wdesignkit' ),
 				);
 
 				wp_send_json( $result );
@@ -638,7 +686,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					'success'     => false,
 					'url'         => '',
 					'message'     => esc_html__( 'Widget Exported Fail', 'wdesignkit' ),
-					'description' => esc_html__( 'something went wrong! please try again later.', 'wdesignkit' ),
+					'description' => esc_html__( 'Something went wrong! please try again later.', 'wdesignkit' ),
 				);
 
 				return $result;
@@ -684,6 +732,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			$dir_name    = isset( $data->name ) ? sanitize_text_field( $data->name ) : '';
 			$widget_type = isset( $data->builder ) ? sanitize_text_field( $data->builder ) : '';
+
 			$dir         = WDKIT_BUILDER_PATH . "/{$widget_type}/{$dir_name}";
 
 			require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -697,8 +746,8 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			} else {
 				$result = (object) array(
 					'success'     => true,
-					'message'     => esc_html__( 'widget deleted', 'wdesignkit' ),
-					'description' => esc_html__( 'Widget deleted successfully', 'wdesignkit' ),
+					'message'     => esc_html__( 'Widget Deleted', 'wdesignkit' ),
+					'description' => esc_html__( 'Your widget has been deleted successfully.', 'wdesignkit' ),
 				);
 
 				return $result;
@@ -730,12 +779,16 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$widget_id   = !empty( $widget_data['widget_id'] ) ? sanitize_title($widget_data['widget_id']) : '';
 			$widget_type = !empty( $widget_data['widget_type'] ) ? sanitize_key($widget_data['widget_type']) : '';
 			$page_data =  !empty( $widget_data['page_data'] ) ? sanitize_key($widget_data['page_data']) : '';
+
+			if ( $widget_type == "gutenberg_core" ){
+				$widget_type = "gutenberg";
+			}
 		
 			if ( 'elementor' === $widget_type ) {
 				$existing_page = get_posts([
 					'post_type'      => 'page',
-					'meta_key'       => '_is_preview_page',
-					'meta_value'     => true,
+					'meta_key'       => '_wkit_preview_widget_id',
+					'meta_value'     => $widget_id,
 					'posts_per_page' => 1,
 				]);
 
@@ -750,6 +803,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						'post_content' => '',
 						'meta_input'   => [
 							'_is_preview_page'     => true,
+							'_wkit_preview_widget_id' => $widget_id,
 							'_elementor_edit_mode' => 'builder',
 							'_wp_page_template'    => 'elementor_canvas',
 						],
@@ -767,8 +821,8 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			} else if ( "gutenberg" === $widget_type ) {
 				$existing_page = get_posts([
 					'post_type'      => 'page',
-					'meta_key'       => 'gutenberg_preview',
-					'meta_value'     => true,
+					'meta_key'       => '_wkit_preview_widget_id',
+					'meta_value'     => $widget_id,
 					'posts_per_page' => 1,
 				]);
 			
@@ -785,6 +839,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						'post_content' => '',
 						'meta_input'   => [
 							'gutenberg_preview'  => true,
+							'_wkit_preview_widget_id' => $widget_id,
 							'_wp_page_template'  => 'default',
 						],
 					]);
@@ -851,7 +906,62 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			wp_send_json($response);
 			wp_die();
 		}
-			
+
+		/**
+		 * Check widget versions by r_id
+		 *
+		 * @since 2.1.6
+		 */
+		public function wkit_check_widget_versions() {
+			$r_ids = isset( $_POST['r_ids'] ) ? sanitize_text_field( wp_unslash( $_POST['r_ids'] ) ) : '';
+			$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+
+			if ( empty( $r_ids ) ) {
+				$response = array(
+					'success' => false,
+					'message' => esc_html__( 'No widget IDs provided', 'wdesignkit' ),
+					'description' => esc_html__( 'Please provide widget r_id values', 'wdesignkit' ),
+					'versions' => array(),
+				);
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$array_data = array(
+				'id' => $r_ids,
+				'token' => $token,
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'widget/version/get' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				$massage = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'Server error', 'wdesignkit' );
+
+				$result = array(
+					'success'     => false,
+					'message'     => $massage,
+					'description' => esc_html__( 'Failed to check widget versions', 'wdesignkit' ),
+					'versions'    => array(),
+				);
+
+				wp_send_json( $result );
+				wp_die();
+			}
+
+			$versions = json_decode( wp_json_encode( $response['data'] ), true );
+
+			$result = array(
+				'success'     => true,
+				'message'     => esc_html__( 'Version check completed', 'wdesignkit' ),
+				'description' => esc_html__( 'Widget versions retrieved successfully', 'wdesignkit' ),
+				'versions'    => ! empty( $versions ) ? $versions : array(),
+			);
+
+			wp_send_json($result);
+			wp_die();
+		}
 		public function wdkit_update_elementor_data($page_id, $page_data, $widget_id, $widget_name) {
 			$experiments_manager = Elementor\Plugin::$instance->experiments;
 

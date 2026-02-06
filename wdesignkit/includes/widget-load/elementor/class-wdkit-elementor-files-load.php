@@ -108,7 +108,8 @@ if ( ! class_exists( 'Wdkit_Elementor_Files_Load' ) ) {
 				}
 
 				if (! is_dir( trailingslashit( $dir ) . $value ) ){
-					return false;
+					// return false;
+					continue;
 				}
 
 				if ( ! strpos( $value, '.' ) ) {

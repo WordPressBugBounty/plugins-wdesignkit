@@ -62,6 +62,7 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 			$this->wdkit_elementor_load();
 			$this->wdkit_gutenberg_load();
 			$this->wdkit_bricks_load();
+			$this->wdkit_gutenberg_core_load();
 		}
 
 		/**
@@ -82,7 +83,20 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 		 */
 		public function wdkit_gutenberg_load() {
 			if ( Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg', 'widget' ) ) {
-				require_once WDKIT_INCLUDES . 'widget-load/gutenberg/class-wdkit-gutenberg-files-load.php';
+				if ( empty( $_GET["post"] ) || ( function_exists("use_block_editor_for_post" ) && !empty( $_GET["post"] ) && use_block_editor_for_post( $_GET["post"] ))) {
+					require_once WDKIT_INCLUDES . 'widget-load/gutenberg/class-wdkit-gutenberg-files-load.php';
+				}
+			}
+		}
+
+		/**
+		 * This function is called to load Gutenberg Core files, categories, and everything needed for WDesignKit to build with Gutenberg.
+		 *
+		 * @since 1.2.5
+		 */
+		public function wdkit_gutenberg_core_load() {
+			if ( Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_core', 'widget' ) ) {
+				require_once WDKIT_INCLUDES . 'widget-load/gutenberg_core/class-wdkit-gutenberg-core-files-load.php';
 			}
 		}
 

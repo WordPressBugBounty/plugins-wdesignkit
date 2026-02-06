@@ -37,7 +37,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 		 *
 		 * @var staring $wdkit_api
 		 */
-		public $wdkit_api = WDKIT_SERVER_SITE_URL . 'api/wp/';
+		public $wdkit_api = WDKIT_SERVER_API_URL . 'api/wp/';
 
 		/**
 		 *  Initiator
@@ -83,6 +83,12 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 					break;
 				case 'social_login':
 					$response = $this->wdkit_social_login();
+					break;
+				case 'forgot_password':
+					$response = $this->wdkit_forgot_password();
+					break;
+				case 'wdkit_user_signup':
+					$data = $this->wdkit_user_signup();
 					break;
 			}
 
@@ -251,6 +257,102 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			wp_die();
 		}
 
+		/**
+		 *
+		 * This Function is used for forgot password functionality
+		 *
+		 * @since 2.0.0
+		 */
+		public function wdkit_forgot_password() {
+			$user_email = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
+			$site_url   = isset( $_POST['site_url'] ) ? esc_url_raw( wp_unslash( $_POST['site_url'] ) ) : '';
+
+			if ( empty( $user_email ) ) {
+				$message = esc_html__( 'Please provide a valid email address.', 'wdesignkit' );
+				$description = esc_html__( 'Please provide a valid email address.', 'wdesignkit' );
+				$response = $this->wdkit_response( false, $message, $description );
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$array_data = array(
+				'email' => $user_email,
+				'site_url'   => $site_url,
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'password/forgot' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				$message = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'Failed to send reset email. Please try again.', 'wdesignkit' );
+				$description = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'Failed to send reset email. Please try again.', 'wdesignkit' );
+				$response = $this->wdkit_response( false, $message, $description );
+
+				wp_send_json( $response );
+				wp_die();
+			}
+
+			$message = ! empty( $response['data']->message ) ? $response['data']->message : esc_html__( 'Password reset email sent successfully!', 'wdesignkit' );
+			$description = ! empty( $response['data']->description ) ? $response['data']->description : esc_html__( 'Password reset email sent successfully!', 'wdesignkit' );
+			$success = ! empty( $response['data']->success ) ? $response['data']->success : false;
+
+			$response = $this->wdkit_response( $success, $message, $description );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Handle user signup functionality
+		 * 
+		 * @since 2.0.0
+		 */
+		protected function wdkit_user_signup(){
+			$username = ! empty( $_POST['username'] ) ? sanitize_text_field($_POST['username']) : '';
+			$user_password = ! empty( $_POST['password'] ) ? sanitize_text_field($_POST['password']) : '';
+			$user_email    = ! empty( $_POST['email'] ) ? sanitize_email($_POST['email']) : '';
+			$user_key = strstr( $user_email, '@', true );
+			$response = '';
+
+			delete_transient( 'wdkit_auth_' . $user_key );
+
+			$get_login = get_transient( 'wdkit_auth_' . $user_key );
+
+			if ( ! empty( $user_email ) && ! empty( $user_password ) && false === $get_login ) {
+				$signup_array = array(
+					'fullname'        => $username,
+					'password'        => $user_password,
+					'user_email'     => $user_email,
+				);
+
+				$response = WDesignKit_Data_Query::get_data(
+					'signup',
+					$signup_array
+				);
+
+				if ( ! empty( $response ) && ! empty( $response['success'] ) ) {
+					if ( ! empty( $response['message'] ) && ! empty( $response['token'] ) ) {
+						if ( false === get_transient( 'wdkit_auth_' . $user_key ) ) {
+							$this->wdkit_set_time_out( $user_key, $user_email, $response['token'], '' );
+						}
+					}
+				}
+			} elseif ( ! empty( $get_login ) && ! empty( $get_login['token'] ) ) {
+				$response = array_merge(
+					array(
+						'success'     => true,
+						'message'     => esc_html__( 'Success! Login successful.', 'wdesignkit' ),
+						'description' => esc_html__( 'Login successful. Keep it up!', 'wdesignkit' ),
+					),
+					$get_login
+				);
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+		
 		/* All below functions are helper functions for this file */
 
 		/**
@@ -315,7 +417,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			);
 		}
 
-        /**
+		/**
 		 * This Function is used for API call
 		 *
 		 * @since 1.0.0
@@ -346,7 +448,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 				);
 			}
 		}
-
+		
 		/**
 		 * Error JSON message
 		 *
@@ -358,6 +460,18 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			wp_die();
 		}
 
+		public function wdkit_response( $success, $message, $description, $data = [] ) {
+
+			$result = array(
+				'success' => $success,
+				'message' => $message,
+				'description' => $description,
+				'data' => $data,
+			);
+		
+			return $result;
+		}
+		
     }
 
     Wdkit_Login_Ajax::get_instance();

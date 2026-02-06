@@ -37,7 +37,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 		 *
 		 * @var staring $wdkit_api
 		 */
-		public $wdkit_api = WDKIT_SERVER_SITE_URL . 'api/wp/';
+		public $wdkit_api = WDKIT_SERVER_API_URL . 'api/wp/';
 
 		/**
 		 *  Initiator

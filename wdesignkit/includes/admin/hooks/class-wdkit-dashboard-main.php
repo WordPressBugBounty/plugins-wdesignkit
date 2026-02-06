@@ -47,10 +47,13 @@ if ( ! class_exists( 'Wdkit_Dashboard_Main' ) ) {
 		 * Define the core functionality of the plugin.
 		 */
 		public function __construct() {
-			require_once WDKIT_INCLUDES . 'admin/hooks/class-wdkit-preset-ajax.php';
-			require_once WDKIT_INCLUDES . 'admin/hooks/class-wdkit-login-ajax.php';
-			require_once WDKIT_INCLUDES . 'admin/hooks/class-wdkit-widget-ajax.php';
-            require_once WDKIT_INCLUDES . 'admin/class-api.php';
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-import-temp-ajax.php';
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-preset-ajax.php';
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-login-ajax.php';
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-widget-ajax.php';
+            include WDKIT_INCLUDES . 'admin/class-api.php';
+            include WDKIT_INCLUDES . 'admin/api/class-wdkit-code-snippet.php';
+			include WDKIT_INCLUDES . 'admin/api/class-wdkit-theme-builder.php';
 		}
     }
 

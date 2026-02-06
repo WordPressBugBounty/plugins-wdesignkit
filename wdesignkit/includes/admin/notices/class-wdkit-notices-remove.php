@@ -63,18 +63,32 @@ if ( ! class_exists( 'Wdkit_Notices_Remove' ) ) {
 		 * 
 		 * @since 1.0.17
 		 */
-		public function __construct() {}
+		public function __construct() {
+			$this->wdkit_cmsale_notice_dismissed_2025();
+		}
 
 		/**
 		 * Delete Onbording Databash entry
 		 *
-		 * @since 1.0.17
+		 * @since 2.1.5
 		 */
 		public function wdkit_onbording_end() {
 			$option_value = get_option( 'wkit_onbording_end' );
 
 			if ( false !== $option_value ) {
 				delete_option( 'wkit_onbording_end' );
+			}
+		}
+
+		/**
+		 * Delete CMSale Notice Dismissed
+		 *
+		 * @since 2.1.5
+		 */
+		public function wdkit_cmsale_notice_dismissed_2025() {
+			$option_value = get_option( 'wdkit_cmsale_notice_dismissed' );
+			if ( false !== $option_value ) {
+				delete_option( 'wdkit_cmsale_notice_dismissed' );
 			}
 		}
 	}

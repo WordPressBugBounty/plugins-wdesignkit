@@ -51,6 +51,7 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 		 */
 		public function __construct() {
 			add_action( 'wdkit_admin_create_default', array( $this, 'wdkit_create_default' ), 10 );
+			add_action( 'wdkit_active_settings', array( $this, 'wdkit_active_settings_function' ), 10, 2 );
 		}
 
 		/**
@@ -66,11 +67,13 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 					'builder'            => true,
 					'template'           => true,
 					'gutenberg_builder'  => true,
+					'gutenberg_core_builder' => false,
 					'elementor_builder'  => true,
 					'bricks_builder'     => false,
 					'debugger_mode'      => false,
 					'gutenberg_template' => true,
 					'elementor_template' => true,
+					'code_snippet'       => true,
 				);
 
 				add_option( 'wkit_settings_panel', $settings_options );
@@ -80,6 +83,49 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 			if ( empty( $wkit_builder ) ) {
 				add_option( 'wkit_builder', array( 'WDesignKit' ), '', 'yes' );
 			}
+		}
+
+		/**
+		 * Active Settings Function
+		 *
+		 * @since 1.0.0
+		 */
+		public function wdkit_active_settings_function( $settings = array(), $builder = '' ) {
+
+			$wkit_settings_panel = get_option( 'wkit_settings_panel', false );
+
+			if ( $wkit_settings_panel == false || empty( $wkit_settings_panel ) ) {
+				do_action( 'wdkit_admin_create_default' );
+				$wkit_settings_panel = get_option( 'wkit_settings_panel', array() );
+			}
+
+			// Merge DB values with new settings.
+			$updated_settings = array_merge( $wkit_settings_panel, $settings );
+
+			if ( in_array( 'nexter-blocks', $builder ) ) {
+
+				if ( is_plugin_active( 'the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php' ) ) {
+					$updated_settings['gutenberg_builder'] = true;
+					$updated_settings['gutenberg_template'] = true;
+				}else{
+					$updated_settings['gutenberg_builder'] = false;
+					$updated_settings['gutenberg_template'] = false;
+				}
+			}
+
+			if ( in_array( 'elementor', $builder ) ) {
+
+				if ( is_plugin_active( 'elementor/elementor.php' ) ) {
+					$updated_settings['elementor_builder'] = true;
+					$updated_settings['elementor_template'] = true;
+				}else{
+					$updated_settings['elementor_builder'] = false;
+					$updated_settings['elementor_template'] = false;
+				}
+			}
+
+			// Save updated settings back to the database.
+			update_option( 'wkit_settings_panel', $updated_settings );
 		}
 
 		/**

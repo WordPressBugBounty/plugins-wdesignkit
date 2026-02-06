@@ -92,7 +92,7 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 		 */
 		public function wdkit_settings_pro_link( $links ) {
 
-			$settings    = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wdesign-kit#/login' ), __( 'Settings', 'wdesignkit' ) );
+			$settings    = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wdesign-kit#/settings' ), __( 'Settings', 'wdesignkit' ) );
 			$upgrade_pro = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight: bold;">%s</a>', esc_url( 'https://wdesignkit.com/pricing?utm_source=wpbackend&utm_medium=pluginpage&utm_campaign=admin' ), __( 'Upgrade PRO', 'wdesignkit' ) );
 			$need_help   = sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( 'https://store.posimyth.com/get-support-wdesignkit' ), __( 'Need Help?', 'wdesignkit' ) );
 

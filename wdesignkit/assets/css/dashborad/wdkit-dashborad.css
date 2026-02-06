@@ -11,3 +11,7 @@
     max-width: 25px;
     padding: 0;
 }
+
+#adminmenu .toplevel_page_wdesign-kit.current .wp-menu-image img {
+    opacity: 1;
+}

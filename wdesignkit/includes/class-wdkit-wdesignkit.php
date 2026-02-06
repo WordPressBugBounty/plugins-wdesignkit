@@ -79,6 +79,7 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 
 			$builder  = ! empty( $wkit_settings_panel['builder'] ) ? $wkit_settings_panel['builder'] : false;
 			$template = ! empty( $wkit_settings_panel['template'] ) ? $wkit_settings_panel['template'] : false;
+			$code_snippet = ! empty( $wkit_settings_panel['code_snippet'] ) ? $wkit_settings_panel['code_snippet'] : false;
 			$b_d_type = false;
 			if ( 'elementor' === $type ) {
 				$b_d_type = ! empty( $wkit_settings_panel['elementor_builder'] ) ? $wkit_settings_panel['elementor_builder'] : false;
@@ -86,6 +87,8 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 				$b_d_type = ! empty( $wkit_settings_panel['gutenberg_builder'] ) ? $wkit_settings_panel['gutenberg_builder'] : false;
 			} elseif ( 'bricks' === $type ) {
 				$b_d_type = ! empty( $wkit_settings_panel['bricks_builder'] ) ? $wkit_settings_panel['bricks_builder'] : false;
+			} elseif ( 'gutenberg_core' === $type ) {
+				$b_d_type = ! empty( $wkit_settings_panel['gutenberg_core_builder'] ) ? $wkit_settings_panel['gutenberg_core_builder'] : false;
 			} elseif ( 'builder' === $type ) {
 				$b_d_type = $builder;
 			} elseif ( 'template' === $type ) {
@@ -94,6 +97,8 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 				$b_d_type = ! empty( $wkit_settings_panel['gutenberg_template'] ) ? $wkit_settings_panel['gutenberg_template'] : false;
 			} elseif ( 'elementor_template' === $type ) {
 				$b_d_type = ! empty( $wkit_settings_panel['elementor_template'] ) ? $wkit_settings_panel['elementor_template'] : false;
+			} elseif ( 'code_snippet' === $type ) {
+				$b_d_type = ! empty( $wkit_settings_panel['code_snippet'] ) ? $wkit_settings_panel['code_snippet'] : false;
 			} else {
 				$b_d_type = false;
 			}
@@ -101,6 +106,8 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			if ( 'widget' === $features_manager && empty( $builder ) || empty( $b_d_type ) ) {
 				return false;
 			} elseif ( 'template' === $features_manager && empty( $template ) || empty( $b_d_type ) ) {
+				return false;
+			} elseif ( 'code_snippet' === $features_manager && empty( $code_snippet ) || empty( $b_d_type ) ) {
 				return false;
 			}
 
@@ -173,6 +180,7 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';
 		}
+
 	}
 
 	Wdkit_Wdesignkit::get_instance();

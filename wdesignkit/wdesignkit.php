@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder
  * Plugin URI: https://wdesignkit.com/
- * Description: Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 50+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more.
- * Version: 1.2.17
+ * Description: Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 100+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more.
+ * Version: 2.2.6
  * Author: POSIMYTH
  * Author URI: https://posimyth.com/
  * Text Domain: wdesignkit
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WDKIT_VERSION', '1.2.17' );
+define( 'WDKIT_VERSION', '2.2.6' );
 define( 'WDKIT_FILE', __FILE__ );
 define( 'WDKIT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WDKIT_PBNAME', plugin_basename( __FILE__ ) );
@@ -30,6 +30,7 @@ define( 'WDKIT_INCLUDES', WDKIT_PATH . '/includes/' );
 define( 'WDKIT_ASSETS', WDKIT_URL . 'assets/' );
 define( 'WDKIT_TEXT_DOMAIN', 'wdesignkit' );
 define( 'WDKIT_SERVER_SITE_URL', 'https://wdesignkit.com/' );
+define( 'WDKIT_SERVER_API_URL', 'https://api.wdesignkit.com/' );
 define( 'WDKIT_DOCUMENT', 'https://learn.wdesignkit.com/docs/' );
 
 /** Widget Builder path*/
@@ -37,4 +38,4 @@ define( 'WDKIT_SERVER_PATH', wp_upload_dir()['baseurl'] . '/wdesignkit' );
 define( 'WDKIT_BUILDER_PATH', wp_upload_dir()['basedir'] . '/wdesignkit' );
 define( 'WDKIT_GET_SITE_URL', get_site_url() );
 
-include WDKIT_PATH . 'includes/class-wdkit-wdesignkit.php';
+require WDKIT_PATH . 'includes/class-wdkit-wdesignkit.php';

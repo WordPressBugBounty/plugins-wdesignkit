@@ -56,8 +56,223 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
 		public function __construct() {
 			add_action( 'enqueue_block_editor_assets', array( $this, 'editor_assets' ) );
 			$this->wdkit_register_gutenberg_widgets();
+
+			add_filter( 'render_block', [ $this, 'render_block' ], 1000, 2 );
 		}
 
+		public function tpgb_validate_block_instance( $block, $block_content ) {
+
+            if ( empty( $block['attrs']['block_id'] ) ) {
+                return false;
+            }
+
+            $prefix = substr( sanitize_key( $block['attrs']['block_id'] ), 0, 5 );
+
+            if ( strpos( $block_content, 'tpgb-block-' . $prefix ) === false ) {
+                return false;
+            }
+
+            return $prefix;
+        }
+
+        public function render_block( $block_content, $block ) {
+
+            $attrs = $block['attrs'] ?? [];
+        
+            // Heading Block
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-heading' ) {
+        
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+        
+                $new_title = ! empty( $attrs['exTitle'] ) ? $attrs['exTitle'] : '';
+                $t_tag     = ! empty( $attrs['tTag'] ) ? $attrs['tTag'] : 'h3';
+
+                if ( ! empty( $new_title ) ) {
+
+                    $pattern = '/<' . preg_quote( $t_tag, '/' ) . '([^>]*)>(.*?)<\/' . preg_quote( $t_tag, '/' ) . '>/is';
+
+                    $block_content = preg_replace_callback(
+                        $pattern,
+                        function ( $matches ) use ( $t_tag, $new_title ) {
+                            return '<' . $t_tag . $matches[1] . '>' . wp_kses_post( $new_title ) . '</' . $t_tag . '>';
+                        },
+                        $block_content
+                    );
+                }
+            }
+        
+            // Pro Paragraph Block
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-pro-paragraph' ) {
+        
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+        
+                $title   = ! empty( $attrs['exTitle'] ) ? $attrs['exTitle'] : '';
+                $content = ! empty( $attrs['exproCnt'] ) ? $attrs['exproCnt'] : '';
+        
+                $title_tag = ! empty( $attrs['titleTag'] ) ? $attrs['titleTag'] : 'h3';
+                $desc_tag  = ! empty( $attrs['descTag'] ) ? $attrs['descTag'] : 'p';
+        
+                if ( ! empty( $title ) ) {
+                    $block_content = preg_replace(
+                        '/<' . preg_quote( $title_tag, '/' ) . '([^>]*)class="([^"]*pro-heading-inner[^"]*)"([^>]*)>.*?<\/' . preg_quote( $title_tag, '/' ) . '>/is',
+                        '<' . $title_tag . '$1class="$2"$3>' . wp_kses_post( $title ) . '</' . $title_tag . '>',
+                        $block_content
+                    );
+                }
+        
+                if ( ! empty( $content ) ) {
+                    $block_content = preg_replace(
+                        '/<div([^>]*)class="([^"]*pro-paragraph-inner[^"]*)"([^>]*)>.*?<\/div>/is',
+                        '<div$1class="$2"$3><' . $desc_tag . '>' . wp_kses_post( $content ) . '</' . $desc_tag . '></div>',
+                        $block_content
+                    );
+                }
+            }
+        
+            // Button Block
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-button-core' ) {
+
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+            
+                $btnLink = ! empty( $attrs['bLink']['url'] ) ? esc_url( $attrs['bLink']['url'] ) : '';
+                $btn_text = ! empty( $attrs['exbtxt'] ) ? $attrs['exbtxt'] : '';
+            
+                // Replace button text
+                if ( ! empty( $btn_text ) ) {
+                    $block_content = preg_replace(
+                        '/<span([^>]*)class="([^"]*tpgb-btn-txt[^"]*)"([^>]*)>.*?<\/span>/is',
+                        '<span$1class="$2"$3>' . wp_kses_post( $btn_text ) . '</span>',
+                        $block_content
+                    );
+                }
+            
+                // Replace href in <a> tag having tpgb-btn-link class
+                if ( ! empty( $btnLink ) ) {
+                    $block_content = preg_replace_callback(
+                        '/<a\b([^>]*)class="([^"]*tpgb-btn-link[^"]*)"([^>]*)>/is',
+                        function ( $matches ) use ( $btnLink ) {
+                
+                            $attrs = $matches[1] . 'class="' . $matches[2] . '"' . $matches[3];
+                
+                            // If href exists → replace it
+                            if ( preg_match( '/href="[^"]*"/i', $attrs ) ) {
+                                $attrs = preg_replace(
+                                    '/href="[^"]*"/i',
+                                    'href="' . esc_url( $btnLink ) . '"',
+                                    $attrs
+                                );
+                            } 
+                            // If href does NOT exist → add it
+                            else {
+                                $attrs .= ' href="' . esc_url( $btnLink ) . '"';
+                            }
+                
+                            return '<a' . $attrs . '>';
+                        },
+                        $block_content
+                    );
+                }
+            }
+
+
+            // Accordion Block
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-accordion' ) {
+        
+                if ( empty( $attrs['accordianList'] ) ) {
+                    return $block_content;
+                }
+        
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+        
+                $block_content = $this->tpgb_safe_replace_accordion_items(
+                    $block_content,
+                    $attrs['accordianList']
+                );
+            }
+            // Image Block
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-image' && ! empty( $attrs['tImg']['url'] ) ) {
+
+                if ( strpos( $attrs['tImg']['url'], 'tpgb-dynamicurl=tImg!#' ) !== false ) {
+					return $block_content;
+				}
+
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+        
+                $img_url = esc_url( $attrs['tImg']['url'] );
+        
+                $block_content = preg_replace(
+                    '/(<img(?=[^>]*class="[^"]*tpgb-img-inner[^"]*")[^>]*\s+src=")[^"]*(")/i',
+                    '$1' . $img_url . '$2',
+                    $block_content,
+                    1
+                );
+            }
+        
+            return $block_content;
+        }
+
+
+        public function tpgb_safe_replace_accordion_items( $block_content, $accordianList ) {
+
+            // Match EACH accordion item safely
+            preg_match_all(
+                '/<div class="tpgb-accor-item\b[\s\S]*?<\/div>\s*<\/div>/i',
+                $block_content,
+                $matches
+            );
+        
+            if ( empty( $matches[0] ) ) {
+                return $block_content;
+            }
+        
+            foreach ( $matches[0] as $index => $item_html ) {
+        
+                if ( empty( $accordianList[ $index ] ) ) {
+                    continue;
+                }
+        
+                $item = $accordianList[ $index ];
+        
+                // Replace TITLE inside THIS item only
+                if ( ! empty( $item['title'] ) ) {
+                    $item_html = preg_replace(
+                        '/(<h[1-6][^>]*class="[^"]*accordion-title[^"]*"[^>]*>)(.*?)(<\/h[1-6]>)/i',
+                        '$1' . wp_kses_post( $item['title'] ) . '$3',
+                        $item_html,
+                        1
+                    );
+                }
+        
+                // Replace DESCRIPTION inside THIS item only
+                if ( ! empty( $item['desc'] ) ) {
+                    $item_html = preg_replace(
+                        '/(<div[^>]*class="[^"]*tpgb-content-editor[^"]*"[^>]*>)([\s\S]*?)(<\/div>)/i',
+                        '$1' . wp_kses_post( $item['desc'] ) . '$3',
+                        $item_html,
+                        1
+                    );
+                }
+        
+                // Replace the original item with updated one
+                $block_content = str_replace(
+                    $matches[0][ $index ],
+                    $item_html,
+                    $block_content
+                );
+            }
+        
+            return $block_content;
+        }
 		/**
 		 * Load Gutenburg Builder js and css for controller.
 		 *

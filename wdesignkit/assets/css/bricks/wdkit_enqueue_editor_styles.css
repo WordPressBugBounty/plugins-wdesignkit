@@ -1,0 +1,18 @@
+.element-data .element-icon i.tpae-wdkit-logo:after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    width: 25px;
+    height: 20px;
+    opacity: .5;
+    background-image: url("../../images/svg/builder-logo.svg");
+    background-repeat: no-repeat;
+}
+
+.bricks-panel .bricks-panel-controls [data-controlkey^="heading_"] [data-control="info"] {
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+    color: unset !important;
+}
