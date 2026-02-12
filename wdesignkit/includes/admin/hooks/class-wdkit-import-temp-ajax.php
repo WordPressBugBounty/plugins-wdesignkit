@@ -93,6 +93,9 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				case 'wkit_generate_post_data':
 					$response = $this->wkit_generate_post_data();
 					break;
+				case 'wkit_remove_dummy_post':
+					$response = $this->wkit_remove_dummy_post();
+					break;
 				case 'wkit_create_widget':
 					$response = $this->wkit_create_widget();
 					break;
@@ -217,6 +220,63 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		}
 
 		/**
+		 * Insert Remove Hello World post
+		 *
+		 * @since 2.2.7
+		 */
+		protected function wkit_remove_dummy_post (){
+			// Security check (recommended)
+			if ( ! current_user_can( 'delete_posts' ) ) {
+				wp_send_json([
+					'success'     => false,
+					'message'     => 'Permission denied',
+					'description' => 'Permission denied',
+				]);
+			}
+
+			$args = array(
+				'post_type'      => 'post',
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'title'          => 'Hello world!',
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'category',
+						'field'    => 'slug',
+						'terms'    => 'uncategorized',
+					),
+				),
+			);
+
+			$query = new WP_Query( $args );
+
+			if ( $query->have_posts() ) {
+				while ( $query->have_posts() ) {
+					$query->the_post();
+
+					$post_id = get_the_ID();
+
+					// Force delete (skip trash)
+					wp_delete_post( $post_id, true );
+				}
+
+				wp_reset_postdata();
+				wp_send_json([
+					'success'     => true,
+					'message'     => 'Post Removed Successfully !',
+					'description' => 'Dummy post successfully removed',
+				]);
+			}
+				
+			wp_send_json([
+				'success'     => false,
+				'message'     => 'No matching post found',
+				'description' => 'Dummy post not found',
+			]);
+			wp_die();
+		}
+
+		/**
 		 * Insert dummy post type if not available
 		 *
 		 * @since 2.0.0
@@ -266,6 +326,7 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				'type' => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
 				'title' => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
 				'language' => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
+				'agency' => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
 				'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
 				'builder' => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
 				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',

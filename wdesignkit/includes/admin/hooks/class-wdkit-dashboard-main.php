@@ -54,6 +54,7 @@ if ( ! class_exists( 'Wdkit_Dashboard_Main' ) ) {
             include WDKIT_INCLUDES . 'admin/class-api.php';
             include WDKIT_INCLUDES . 'admin/api/class-wdkit-code-snippet.php';
 			include WDKIT_INCLUDES . 'admin/api/class-wdkit-theme-builder.php';
+			include WDKIT_INCLUDES . 'admin/api/class-wdkit-empty-search-handling.php';
 		}
     }
 

@@ -81,22 +81,21 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
         
             // Heading Block
             if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-heading' ) {
-        
+
                 if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
                     return $block_content;
                 }
-        
+            
                 $new_title = ! empty( $attrs['exTitle'] ) ? $attrs['exTitle'] : '';
-                $t_tag     = ! empty( $attrs['tTag'] ) ? $attrs['tTag'] : 'h3';
-
+            
                 if ( ! empty( $new_title ) ) {
-
-                    $pattern = '/<' . preg_quote( $t_tag, '/' ) . '([^>]*)>(.*?)<\/' . preg_quote( $t_tag, '/' ) . '>/is';
-
+            
+                    $pattern = '/<([a-z0-9]+)([^>]*class=["\'][^"\']*tp-core-heading[^"\']*["\'][^>]*)>(.*?)<\/\1>/is';
+            
                     $block_content = preg_replace_callback(
                         $pattern,
-                        function ( $matches ) use ( $t_tag, $new_title ) {
-                            return '<' . $t_tag . $matches[1] . '>' . wp_kses_post( $new_title ) . '</' . $t_tag . '>';
+                        function ( $matches ) use ( $new_title ) {
+                            return '<' . $matches[1] . $matches[2] . '>' . wp_kses_post( $new_title ) . '</' . $matches[1] . '>';
                         },
                         $block_content
                     );
@@ -192,10 +191,7 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
                     return $block_content;
                 }
         
-                $block_content = $this->tpgb_safe_replace_accordion_items(
-                    $block_content,
-                    $attrs['accordianList']
-                );
+                $block_content = $this->tpgb_safe_replace_accordion_items( $block_content,$attrs['accordianList'] , $attrs);
             }
             // Image Block
             if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-image' && ! empty( $attrs['tImg']['url'] ) ) {
@@ -217,12 +213,63 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
                     1
                 );
             }
+
+            // blockquote
+            if ( isset( $block['blockName'] ) && $block['blockName'] === 'tpgb/tp-blockquote' ) {
+    
+                // Validate block instance
+                if ( ! $this->tpgb_validate_block_instance( $block, $block_content ) ) {
+                    return $block_content;
+                }
+
+                // Check and replace content if it's provided
+                if ( ! empty( $attrs['content'] ) ) {
+                    
+                    // Sanitize the content to ensure safety
+                    $content = wp_kses_post( $attrs['content'] );
+
+                    // Check if the content is AI-generated and replace
+                    if ( strpos( $content, 'data-tpgb-dynamic' ) !== false ) {
+                        return $block_content;
+                    }
+
+                    // Replace the content inside the <span class="quote-text">
+                    $block_content = preg_replace(
+                        '/(<span[^>]*class="quote-text"[^>]*>)(.*?)(<\/span>)/is',
+                        '$1' . $content . '$3',
+                        $block_content,
+                        1
+                    );
+                }
+
+                // Check and replace author name if it's provided
+                if ( ! empty( $attrs['authorName'] ) ) {
+                    
+                    // Sanitize the author name
+                    $author = wp_kses_post( $attrs['authorName'] );
+
+                    // Check if the author name is AI-generated
+                    if ( strpos( $author, 'data-tpgb-dynamic' ) !== false ) {
+                        return $block_content;
+                    }
+
+                    // If author div exists, replace content
+                    if ( strpos( $block_content, 'tpgb-quote-author' ) !== false ) {
+                        $block_content = preg_replace(
+                            '/(<div[^>]*class="[^"]*tpgb-quote-author[^"]*"[^>]*>)(.*?)(<\/div>)/is',
+                            '$1' . $author . '$3',
+                            $block_content,
+                            1
+                        );
+                    }
+                }
+            }
         
             return $block_content;
         }
 
 
-        public function tpgb_safe_replace_accordion_items( $block_content, $accordianList ) {
+        public function tpgb_safe_replace_accordion_items( $block_content, $accordianList, $attrs ) {
 
             // Match EACH accordion item safely
             preg_match_all(
@@ -254,7 +301,7 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
                 }
         
                 // Replace DESCRIPTION inside THIS item only
-                if ( ! empty( $item['desc'] ) ) {
+                if ( isset($attrs['accorType']) && $attrs['accorType'] == 'content' && ! empty( $item['desc'] ) ) {
                     $item_html = preg_replace(
                         '/(<div[^>]*class="[^"]*tpgb-content-editor[^"]*"[^>]*>)([\s\S]*?)(<\/div>)/i',
                         '$1' . wp_kses_post( $item['desc'] ) . '$3',

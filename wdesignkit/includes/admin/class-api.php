@@ -261,6 +261,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wkit_generate_post_data':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_generate_post_data' );
 					break;
+				case 'wkit_remove_dummy_post':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_remove_dummy_post' );
+					break;
 				case 'update_latest_plugin':
 					$data = $this->wdkit_update_latest_plugin();
 					break;
@@ -2244,7 +2247,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					$responce = array(
 						'message'     => esc_html__( 'Theme Name not Found', 'wdesignkit' ),
 						'description' => esc_html__( 'Can Not Found Theme Name you Enterd.', 'wdesignkit' ),
-						'success'     => true,
+						'success'     => false,
 					);
 				}
 			}
@@ -3195,6 +3198,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							$temp_id = $template_id;
 						} else {
 							$temp_id = '';
+						}
+
+						if (class_exists('Tpgb_Library') && method_exists('Tpgb_Library', 'remove_backend_dir_files')) {
+							Tpgb_Library()->remove_backend_dir_files();
 						}
 
 						wp_send_json(
