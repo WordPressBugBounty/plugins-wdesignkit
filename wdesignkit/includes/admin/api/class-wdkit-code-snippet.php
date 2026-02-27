@@ -127,6 +127,10 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 					$data = $this->wdkit_get_user_roles();
 					break;
 
+				case 'snippet_bundle_count':
+					$data = $this->wdkit_snippet_bundle_count();
+					break;
+
 				default:
 					break;
 			}
@@ -611,7 +615,7 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 		 */
 		public function wkit_download_code_snippet() {
 			$array_data = array(
-				'id' => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
+				'id'        => isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '',
 				'unique_id' => get_option( 'wdkit_unique_id' ) ?? '',
 			);
 
@@ -858,6 +862,44 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 				'massage' => $error_message,
 				'status'  => $status_code,
 				'success' => false,
+			);
+		}
+
+		/**
+		 * Increment snippet bundle view or download count.
+		 *
+		 * @return array
+		 */
+		public function wdkit_snippet_bundle_count() {
+			$token       = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+			$id          = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+			$action_type = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
+
+			if ( empty( $token ) || empty( $id ) || empty( $action_type ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Missing required parameters.', 'wdesignkit' ),
+				);
+			}
+
+			$array_data = array(
+				'token'       => $token,
+				'id'          => $id,
+				'action_type' => $action_type,
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'snippet/bundle/count' );
+
+			if ( ! empty( $response['success'] ) ) {
+				return array(
+					'success' => true,
+					'message' => isset( $response['message'] ) ? $response['message'] : __( 'Bundle Count Incremented', 'wdesignkit' ),
+				);
+			}
+
+			return array(
+				'success' => false,
+				'message' => isset( $response['massage'] ) ? $response['massage'] : __( 'Failed to increment bundle count.', 'wdesignkit' ),
 			);
 		}
 	}

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.2.7\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.2.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-11T11:25:56+00:00\n"
+"POT-Creation-Date: 2026-02-27T11:17:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -58,36 +58,36 @@ msgstr ""
 msgid "Something went wrong."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:204
-#: includes/admin/api/class-wdkit-code-snippet.php:577
+#: includes/admin/api/class-wdkit-code-snippet.php:208
+#: includes/admin/api/class-wdkit-code-snippet.php:581
 msgid "Failed to fetch snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:233
+#: includes/admin/api/class-wdkit-code-snippet.php:237
 msgid "Failed to fetch filter options."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:262
+#: includes/admin/api/class-wdkit-code-snippet.php:266
 msgid "Failed to fetch existing snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:317
+#: includes/admin/api/class-wdkit-code-snippet.php:321
 msgid "Post not found."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:323
+#: includes/admin/api/class-wdkit-code-snippet.php:327
 msgid "Invalid post ID."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:349
+#: includes/admin/api/class-wdkit-code-snippet.php:353
 msgid "Failed to favorite/unfavorite snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:371
+#: includes/admin/api/class-wdkit-code-snippet.php:375
 msgid "Failed to delete snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:388
+#: includes/admin/api/class-wdkit-code-snippet.php:392
 #: includes/admin/class-api.php:1812
 #: includes/admin/class-api.php:1890
 #: includes/admin/class-api.php:3812
@@ -104,53 +104,53 @@ msgstr ""
 msgid "Data Not Found"
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:389
+#: includes/admin/api/class-wdkit-code-snippet.php:393
 msgid "Post ID Not Found"
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:517
+#: includes/admin/api/class-wdkit-code-snippet.php:521
 msgid "Failed to save snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:534
+#: includes/admin/api/class-wdkit-code-snippet.php:538
 msgid "Kit ID is required."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:549
+#: includes/admin/api/class-wdkit-code-snippet.php:553
 msgid "Failed to fetch snippet kit."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:603
+#: includes/admin/api/class-wdkit-code-snippet.php:607
 msgid "Failed to fetch snippet favorite."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:639
-#: includes/admin/api/class-wdkit-code-snippet.php:648
+#: includes/admin/api/class-wdkit-code-snippet.php:643
+#: includes/admin/api/class-wdkit-code-snippet.php:652
 msgid "Failed to download snippet from server."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:660
+#: includes/admin/api/class-wdkit-code-snippet.php:664
 msgid "Invalid snippet file."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:671
+#: includes/admin/api/class-wdkit-code-snippet.php:675
 msgid "Invalid snippet type."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:710
-#: includes/admin/api/class-wdkit-code-snippet.php:775
+#: includes/admin/api/class-wdkit-code-snippet.php:714
+#: includes/admin/api/class-wdkit-code-snippet.php:779
 msgid "Snippet imported."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:729
+#: includes/admin/api/class-wdkit-code-snippet.php:733
 msgid "Failed to insert snippet."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:785
+#: includes/admin/api/class-wdkit-code-snippet.php:789
 msgid "No snippet content received from server."
 msgstr ""
 
-#: includes/admin/api/class-wdkit-code-snippet.php:822
+#: includes/admin/api/class-wdkit-code-snippet.php:826
 #: includes/admin/api/class-wdkit-empty-search-handling.php:120
 #: includes/admin/api/class-wdkit-theme-builder.php:169
 #: includes/admin/class-api.php:433
@@ -162,7 +162,7 @@ msgid "API Not Found"
 msgstr ""
 
 #. Translators: %s is a placeholder for the error message
-#: includes/admin/api/class-wdkit-code-snippet.php:838
+#: includes/admin/api/class-wdkit-code-snippet.php:842
 #: includes/admin/api/class-wdkit-empty-search-handling.php:136
 #: includes/admin/api/class-wdkit-theme-builder.php:186
 #: includes/admin/class-api.php:449
@@ -171,6 +171,18 @@ msgstr ""
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:1052
 #, php-format
 msgid "API request error: %s"
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:881
+msgid "Missing required parameters."
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:896
+msgid "Bundle Count Incremented"
+msgstr ""
+
+#: includes/admin/api/class-wdkit-code-snippet.php:902
+msgid "Failed to increment bundle count."
 msgstr ""
 
 #: includes/admin/api/class-wdkit-empty-search-handling.php:82
@@ -909,54 +921,6 @@ msgstr ""
 
 #: includes/admin/notices/class-wdkit-review-form.php:201
 msgid "API returned error"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:127
-msgid "Skip multiple plugin subscriptions - Upgrade to WDesignKit Pro at 40% OFF."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:128
-msgid "Our Winter Sale is live! Upgrade this season and get upto 40% OFF on the pro version."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:130
-msgid "Get Deal"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:138
-msgid "Upgrade to Lifetime Unlimited Sites Plan and Save $120 Today! - Winter Sale 40% OFF"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:139
-msgid "Upgrade now to Lifetime Plan for Unlimited Sites, Continuous Plugin Updates, Lifetime Premium Support and much more at an unbeatable price."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:140
-msgid "Upgrade Now"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:157
-msgid "Cloud Workspace - Upload & Share"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:158
-msgid "150+ Widgets"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:159
-msgid "Widget Builder for Elementor, Gutenberg & Bricks"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:160
-msgid "Cloud Code Snippets & Figma Designs"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:164
-msgid "View More Offers"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-wintersale-banner.php:205
-msgid "You are not allowed to perform this action"
 msgstr ""
 
 #: includes/widget-load/elementor/wb-controller.php:88
@@ -3053,7 +3017,7 @@ msgid "Oops! Elementor Page Builder is not activated. Please install it now to u
 msgstr ""
 
 #: build/index.js:1
-msgid "Oops! Nexter blocks is not activated. Please install it now to unlock full functionality."
+msgid "Oops! Nexter Gutenberg blocks is not activated. Please install it now to unlock full functionality."
 msgstr ""
 
 #: build/index.js:1
@@ -3137,7 +3101,7 @@ msgid "White Label"
 msgstr ""
 
 #: build/index.js:1
-msgid "Only lifetime & studio users can access this feature."
+msgid "Only Studio and Agency Bundle users can access this feature."
 msgstr ""
 
 #: build/index.js:1
@@ -3253,7 +3217,7 @@ msgid "Customize branding with your own identity.   "
 msgstr ""
 
 #: build/index.js:1
-msgid "Elementor Widget Builder"
+msgid "Elementor"
 msgstr ""
 
 #: build/index.js:1
@@ -3261,7 +3225,7 @@ msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
 msgstr ""
 
 #: build/index.js:1
-msgid "Gutenberg Widget Builder"
+msgid "Core Gutenberg"
 msgstr ""
 
 #: build/index.js:1
@@ -3269,15 +3233,15 @@ msgid "Enable/Disable Gutenberg Core Widget builder and all Gutenberg Core Widge
 msgstr ""
 
 #: build/index.js:1
-msgid "Nexter Widget Builder"
+msgid "Nexter Gutenberg"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Nexter Widget builder and all Gutenberg Widgets."
+msgid "Enable/Disable Nexter Gutenberg Widget builder and all Nexter Gutenberg Widgets."
 msgstr ""
 
 #: build/index.js:1
-msgid "Bricks Widget Builder"
+msgid "Bricks"
 msgstr ""
 
 #: build/index.js:1
@@ -3541,15 +3505,7 @@ msgid "Page Templates"
 msgstr ""
 
 #: build/index.js:1
-msgid "Elementor"
-msgstr ""
-
-#: build/index.js:1
 msgid "Gutenberg"
-msgstr ""
-
-#: build/index.js:1
-msgid "Bricks"
 msgstr ""
 
 #: build/index.js:1
@@ -3558,6 +3514,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Bricks Elements Builder"
+msgstr ""
+
+#: build/index.js:1
+msgid "Elementor Widget Builder"
 msgstr ""
 
 #: build/index.js:1

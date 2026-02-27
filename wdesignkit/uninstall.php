@@ -42,6 +42,7 @@ if ( ! empty( $get_setting['remove_db']['remove_entries'] ) && $get_setting['rem
 		delete_option( 'wkit_settings_panel' );
 		delete_option( 'wkit_onbording_end' );
 		delete_option( 'wdkit_dark_mode' );
+		delete_option( 'wdkit_wintersale_notice_dismissed' );
 
 		$users = get_users();
 		if ( ! empty( $users ) ) {

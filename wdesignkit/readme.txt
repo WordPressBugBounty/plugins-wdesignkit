@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 2.2.7
+Stable tag: 2.2.8
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -92,7 +92,21 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.2.7 - 28 Jan 2026
+2.2.8 - 27 Feb 2026
+Improved: Tooltip content enhanced for better clarity
+Improved: Nexter Blocks icon updated
+Improved: Responsive UI on License page optimized
+Improved: White Label flow logic refined
+Improved: White Label validation logic updated to validate using white_label meta value instead of static licence_type check
+Fixed: Default value issue in Number Controller
+Fixed: Letter capitalization inconsistencies
+Fixed: Inconsistencies in Credit and Widget Builder name labels.
+Fixed: Product logo display issue
+Fixed: Builder name input box issue
+Fixed: Responsive issue on Storage page
+Fixed: Minor Bug Fixes & Improvements.
+
+2.2.7 - 12 Feb 2026
 New: Add an Industry select dropdown in the Site Information section.
 Improved: Plugin and theme installation process in Kit import.
 Improved: Blog post import process in Kit import.
