@@ -51,6 +51,7 @@ if ( ! class_exists( 'Wdkit_Dashboard_Main' ) ) {
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-preset-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-login-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-widget-ajax.php';
+			include WDKIT_INCLUDES . 'admin/class-nexter-block-render.php';
             include WDKIT_INCLUDES . 'admin/class-api.php';
             include WDKIT_INCLUDES . 'admin/api/class-wdkit-code-snippet.php';
 			include WDKIT_INCLUDES . 'admin/api/class-wdkit-theme-builder.php';

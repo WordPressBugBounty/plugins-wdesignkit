@@ -3101,11 +3101,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						);
 						wp_die();
 					} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
-						$parse_blocks = parse_blocks( stripslashes( $content ) );
 
 						$editor  = ( 'wdkit' === $args['editor'] ) ? 'gutenberg' : $args['editor'];
-						$content = $this->wdkit_media_import( $parse_blocks, $editor );
-						$content = addslashes( serialize_blocks( $content ) );
+						$blocks = parse_blocks( stripslashes( $content ) );
+						
+						$blocks = $this->wdkit_media_import( $blocks, $editor );
+
+						$processor = new WDKIT_Nexter_Block_Processor();
+						$blocks    = $processor->run( $blocks );
+						$content = serialize_blocks( $blocks );
+						
+						$content =  $this->replace_unicode_glitch( serialize_blocks( $blocks ) );
 
 						if ( ! empty( $category_list ) && is_array( $category_list ) ) {
 							$category_ids = array_map( 'intval', $category_list );
@@ -3122,8 +3128,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								'post_status'  => 'publish',
 								'post_type'    => $post_type,
 								'post_title'   => $post_title,
-								'post_content' => $content,
 								'post_name'    => $post_slug,
+								'post_content' => $content,
 							)
 						);
 
@@ -3200,10 +3206,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							$temp_id = '';
 						}
 
+						wp_update_post([
+							'ID' => $inserted_post,
+						]);
+
 						if (class_exists('Tpgb_Library') && method_exists('Tpgb_Library', 'remove_backend_dir_files')) {
 							Tpgb_Library()->remove_backend_dir_files();
 						}
 
+						clean_post_cache( $inserted_post );
 						wp_send_json(
 							array(
 								$temp_id      => $temp_detail,
@@ -3370,6 +3381,34 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			);
 			wp_die();
 		}
+
+		/**
+		 * Replace unicode glitch
+		 *
+		 * @since 2.0.0
+		 */
+		private function replace_unicode_glitch( $content ) {
+
+			// Fix escaped unicode like \u003c → <
+			$content = preg_replace_callback(
+				'/\\\\u([0-9a-fA-F]{4})/',
+				function ( $match ) {
+					return html_entity_decode(
+						mb_convert_encoding(
+							pack('H*', $match[1]),
+							'UTF-8',
+							'UCS-2BE'
+						),
+						ENT_QUOTES,
+						'UTF-8'
+					);
+				},
+				$content
+			);
+		
+			return $content;
+		}
+
 
 		/**
 		 * change plugins setting for import kit
