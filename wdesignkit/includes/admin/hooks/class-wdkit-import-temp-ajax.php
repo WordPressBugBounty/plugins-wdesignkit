@@ -93,6 +93,12 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				case 'wkit_generate_post_data':
 					$response = $this->wkit_generate_post_data();
 					break;
+				case 'wkit_cteate_product':
+					$response = $this->wkit_cteate_product();
+					break;
+				case 'wkit_generate_product_data':
+					$response = $this->wkit_generate_product_data();
+					break;
 				case 'wkit_remove_dummy_post':
 					$response = $this->wkit_remove_dummy_post();
 					break;
@@ -110,6 +116,9 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 					break;
 				case 'check_post_count':
 					$response = $this->wkit_check_post_count();
+					break;
+				case 'wkit_check_product_count':
+					$response = $this->wkit_check_product_count();
 					break;
 			}
 
@@ -277,6 +286,206 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		}
 
 		/**
+		 * Insert dummy product data if not available
+		 *
+		 * @since 2.0.0
+		 */
+		protected function wkit_generate_product_data (){
+			
+			$array_data = array(
+				'site_type' => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
+				'site_desc' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
+				'site_title' => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
+				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'ai/template/product/generate' );
+			$data = !empty( $response['data'] ) ? $response['data'] : [];
+
+			$success  = ! empty( $data->success ) ? $data->success : false;
+
+			if ( empty($success) ) {
+				wp_send_json([
+					'success'     => false,
+					'message'     => !empty( $data->message ) ? $data->message : 'API connection failed',
+					'description' => !empty( $data->description ) ? $data->description : 'API connection failed',
+				]);
+				wp_die();
+			}
+
+			wp_send_json([
+				'success'     => true,
+				'message'     => !empty( $data->message ) ? $data->message : 'Product Data Generated Successfully',
+				'description' => !empty( $data->description ) ? $data->description : 'Product Data Generated Successfully',
+				'response'    => $data->data,
+			]);
+			wp_die();
+		}
+
+		/**
+		 * Insert Products if not available
+		 *
+		 * @since 2.0.0
+		 */
+		protected function wkit_cteate_product() {
+
+			try {
+				$product_title   = isset($_POST['product_title']) ? sanitize_text_field($_POST['product_title']) : '';
+				$product_image   = isset($_POST['product_image']) ? esc_url_raw($_POST['product_image']) : '';
+				$product_desc    = isset($_POST['product_desc']) ? sanitize_textarea_field($_POST['product_desc']) : '';
+				$product_price   = isset($_POST['product_price']) ? floatval($_POST['product_price']) : 0;
+				$product_type    = isset($_POST['product_type']) ? sanitize_text_field($_POST['product_type']) : '';
+				$product_category = isset($_POST['product_category']) ? json_decode(wp_unslash($_POST['product_category']), true) : [];
+
+				if (empty($product_title)) {
+					throw new Exception('Product title is required');
+				}
+
+				if ($product_price <= 0) {
+					throw new Exception('Invalid product price');
+				}
+
+				$category_ids = [];
+
+				if (!empty($product_category)) {
+					foreach ($product_category as $category) {
+
+						$term = term_exists($category, 'product_cat');
+
+						if (!$term) {
+							$term = wp_insert_term($category, 'product_cat');
+						}
+
+						if (is_wp_error($term)) {
+							throw new Exception('Category error: ' . $term->get_error_message());
+						}
+
+						$category_ids[] = is_array($term) ? $term['term_id'] : $term;
+					}
+				}
+
+				if ($product_type == 'variation') {
+
+					// Ensure attribute exists
+					if (!taxonomy_exists('pa_color')) {
+						register_taxonomy(
+							'pa_color',
+							'product',
+							[
+								'label' => 'Color',
+								'hierarchical' => false,
+								'show_ui' => false,
+							]
+						);
+					}
+
+					$product = new WC_Product_Variable();
+					$product->set_name($product_title);
+					$product->set_status('publish');
+
+					if (!empty($category_ids)) {
+						$product->set_category_ids($category_ids);
+					}
+
+					/* Attribute */
+					$attribute = new WC_Product_Attribute();
+					$attribute->set_name('pa_color');
+					$attribute->set_options(['Red', 'Green', 'Blue']);
+					$attribute->set_visible(true);
+					$attribute->set_variation(true);
+
+					$product->set_attributes([$attribute]);
+
+					if( !empty( $product_image )){
+						$image_id = $this->upload_image_from_url($product_image);
+	
+						if ($image_id) {
+							$product->set_image_id($image_id); // main product image
+						}
+					}
+
+					$parent_id = $product->save();
+
+					if (!$parent_id) {
+						throw new Exception('Failed to create variable product');
+					}
+
+					/* Variations */
+					$variations = [
+						['color' => 'Red',   'price' => $product_price - 1,  'stock' => 'instock'],
+						['color' => 'Green', 'price' => $product_price + 1, 'stock' => 'instock'],
+						['color' => 'Blue',  'price' => $product_price,      'stock' => 'outofstock'],
+					];
+
+					foreach ($variations as $var) {
+						$variation = new WC_Product_Variation();
+						$variation->set_parent_id($parent_id);
+						$variation->set_attributes(['pa_color' => $var['color']]);
+						$variation->set_regular_price($var['price']);
+						$variation->set_stock_status($var['stock']);
+
+						$variation_id = $variation->save();
+
+						if (!$variation_id) {
+							throw new Exception('Failed to create variation: ' . $var['color']);
+						}
+					}
+
+					$product_id = $parent_id;
+
+				} else {
+					$product = new WC_Product_Simple();
+
+					$product->set_name($product_title);
+					$product->set_status('publish');
+					$product->set_description($product_desc);
+					$product->set_regular_price($product_price);
+
+					if (!empty($category_ids)) {
+						$product->set_category_ids($category_ids);
+					}
+
+					if ($product_type == 'discount') {
+						$sale_price = $product_price * 0.85;
+						$product->set_sale_price($sale_price);
+					}
+
+					if ($product_type == 'out_of_stock') {
+						$product->set_stock_status('outofstock');
+					}
+					
+					if( !empty( $product_image )){
+						$image_id = $this->upload_image_from_url($product_image);
+	
+						if ($image_id) {
+							$product->set_image_id($image_id); // main product image
+						}
+					}
+
+					$product_id = $product->save();
+
+					if (!$product_id) {
+						throw new Exception('Failed to create product');
+					}
+				}
+
+				wp_send_json([
+					'success'    => true,
+					'product_id' => $product_id,
+					'message'    => 'Product created successfully',
+				]);
+
+			} catch (Exception $e) {
+				wp_send_json([
+					'success' => false,
+					'message' => $e->getMessage(),
+				]);
+			}
+
+			wp_die();
+		}
+
+		/**
 		 * Insert dummy post type if not available
 		 *
 		 * @since 2.0.0
@@ -431,6 +640,33 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 
 		/**
 		 *
+		 * check how much product are in site    
+		 *
+		 * @since 2.0.0
+		 */
+		protected function wkit_check_product_count() {
+			$args = [
+				'post_type'      => 'product',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids', // Only fetch IDs for performance
+			];
+
+			$product = get_posts($args);
+
+			$response = [
+				'count'        => count($product),
+				'message'     => esc_html__( 'Product count retrieved successfully', 'wdesignkit' ),
+				'description' => esc_html__( 'Product count retrieved successfully', 'wdesignkit' ),
+				'success'     => true,
+			];
+
+			wp_send_json($response);
+			wp_die();
+		}
+
+		/**
+		 *
 		 * darft all theme builder page and normal page    
 		 *
 		 * @since 2.0.0
@@ -491,6 +727,29 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 
 			wp_send_json($response);
 			wp_die();
+		}
+
+		/**
+		 *
+		 * This Function is used for upload image in media folder
+		 *
+		 * @since 2.2.10
+		 *
+		 * @param array $data give array.
+		 * @param array $name store data.
+		 */
+		function upload_image_from_url($image_url) {
+			require_once(ABSPATH . 'wp-admin/includes/file.php');
+			require_once(ABSPATH . 'wp-admin/includes/media.php');
+			require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+			$attachment_id = media_sideload_image($image_url, 0, null, 'id');
+
+			if (is_wp_error($attachment_id)) {
+				return false;
+			}
+
+			return $attachment_id;
 		}
 
 

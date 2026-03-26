@@ -169,7 +169,7 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 				$detail['email'] = $email;
 			}
 
-			$response = wp_remote_post('https://wdesignkit.com/api/wp/userreview', [
+			$response = wp_remote_post('https://api.wdesignkit.com/api/wp/userreview', [
 				'method'  => 'POST',
 				'timeout' => 30,
 				'headers' => [

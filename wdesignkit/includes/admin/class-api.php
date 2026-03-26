@@ -40,7 +40,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @var staring widgets_with_post_category
 		 */
 		public $widgets_with_post_category = array(
-			'post_category',
+			'post_category', 'include_products',
 		);
 
 		/**
@@ -249,6 +249,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'check_post_count':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'check_post_count' );
 					break;
+				case 'wkit_check_product_count':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_check_product_count' );
+					break;
 				case 'select_team_img':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'select_team_img' );
 					break;
@@ -260,6 +263,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_generate_post_data':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_generate_post_data' );
+					break;
+				case 'wkit_generate_product_data':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_generate_product_data' );
+					break;
+				case 'wkit_cteate_product':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_cteate_product' );
 					break;
 				case 'wkit_remove_dummy_post':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'wkit_remove_dummy_post' );
@@ -281,6 +290,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'import_page_section':
 					$data = $this->import_page_section_content();
+					break;
+				case 'wkit_update_elementor_template':
+					$data = $this->wkit_update_elementor_template();
 					break;
 				case 'update_plugin_setting':
 					$data = $this->update_plugin_setting();
@@ -3012,6 +3024,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				foreach ( $data as $key => &$value ) {
 					if ( $key === 'post_category' ) {
 						$data[ $key ] = array();
+					} else if ($key === 'include_products'){
+						$data[ $key ] = "";
 					} else {
 						$this->wdkit_content_remover( $value );
 					}
@@ -3021,6 +3035,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				foreach ( $data as $key => &$value ) {
 					if ( $key === 'post_category' ) {
 						$data->$key = array();
+					} else if ($key === 'include_products'){
+						$data->$key = "";
 					} else {
 						$this->wdkit_content_remover( $value );
 					}
@@ -3030,6 +3046,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			return $data;
 		}
 
+		protected function wkit_update_elementor_template(){
+			
+			if ( isset( $_POST['data'] ) ) {
+				$content = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ), true ) : '';
+			}
+
+			if ( isset( $_POST['template_id'] ) ) {
+				$template_id = ! empty( $_POST['template_id'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_id'] ), true ) ) : '';
+			}
+
+			$document = \Elementor\Plugin::$instance->documents->get($template_id);
+
+			$document->save([
+				'elements' => $content
+			]);
+		}
 
 		/**
 		 * Import single template and section from plugin only
@@ -3065,6 +3097,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$template_id = ! empty( $_POST['template_id'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_id'] ), true ) ) : '';
 			}
 
+			if ( isset( $_POST['temp_type'] ) ) {
+				$temp_type = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'normal';
+			}
+
 			if ( isset( $_POST['data'] ) ) {
 				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ) ) : '';
 			}
@@ -3090,6 +3126,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$post_slug    = isset( $post_content->slug ) ? sanitize_text_field( $post_content->slug ) : '';
 				$file_type    = isset( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
 				$content      = isset( $post_content->content ) ? wp_slash( $post_content->content ) : '';
+				$temp_con     = '';
 
 				if ( 'gutenberg' === $args['editor'] || ( 'wdkit' === $args['editor'] && ! empty( $file_type ) && 'wp_block' === $file_type ) ) {
 					if ( empty( $content ) ) {
@@ -3319,6 +3356,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 							$inserted_id = $new_document->get_main_id();
 
+							if( $temp_type == 'navigation' ){
+								$temp_con = $content;
+							}
+
 							if ( ! empty( $args['custom_meta'] ) && 'true' == $args['custom_meta'] ) {
 								$custom_meta = isset( $post_content->custom_meta ) ? json_decode( wp_json_encode( $post_content->custom_meta ), true ) : '';
 								if ( ! empty( $custom_meta ) ) {
@@ -3353,6 +3394,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							wp_send_json(
 								array(
 									$temp_id      => $temp_detail,
+									'content'     => $temp_con,
 									'description' => 'Yay! Your Section has been Successfully Imported.',
 									'message'     => 'Successfully Imported.',
 									'inserted_id' => $inserted_id,
@@ -3717,11 +3759,16 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function update_site_setting() {
 			$temp_id      = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+			$shop_id      = isset( $_POST['shop_id'] ) ? sanitize_text_field( wp_unslash( $_POST['shop_id'] ) ) : '';
 			$temp_type    = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'page';
 			$site_name    = isset( $_POST['site_name'] ) ? sanitize_text_field( wp_unslash( $_POST['site_name'] ) ) : '';
 			$site_tagline = isset( $_POST['site_tagline'] ) ? sanitize_text_field( wp_unslash( $_POST['site_tagline'] ) ) : '';
 
 			$this->wdkit_nxt_thembuilder_update();
+
+			if ( ! empty( $shop_id ) ) {
+				update_option( 'woocommerce_shop_page_id', $shop_id );
+			}
 
 			if ( $temp_id ) {
 				update_option( 'show_on_front', $temp_type );
