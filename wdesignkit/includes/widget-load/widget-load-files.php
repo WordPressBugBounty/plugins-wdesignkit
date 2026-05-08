@@ -82,10 +82,30 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 		 * @since 1.0.0
 		 */
 		public function wdkit_gutenberg_load() {
-			if ( Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg', 'widget' ) ) {
-				if ( empty( $_GET["post"] ) || ( function_exists("use_block_editor_for_post" ) && !empty( $_GET["post"] ) && use_block_editor_for_post( $_GET["post"] ))) {
-					require_once WDKIT_INCLUDES . 'widget-load/gutenberg/class-wdkit-gutenberg-files-load.php';
-				}
+			if ( ! Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg', 'widget' ) ) {
+				return;
+			}
+
+			// skip all non-admin requests.
+			if ( ! is_admin() ) {
+				return;
+			}
+
+			// Skip Elementor editor — $_GET['action'] 
+			if ( isset( $_GET['action'] ) && 'elementor' === $_GET['action'] ) {
+				return;
+			}
+
+			// Whitelist: only load on admin pages where the block editor can be active.
+			// $pagenow is set by WordPress before plugins_loaded — no timing issues,
+			// no dependency on post-type registration. Covers all CPTs including
+			// ACF-registered ones. Bricks and other builders are excluded automatically
+			// because they do not use these pages.
+			global $pagenow;
+			$block_editor_pages = array( 'post.php', 'post-new.php', 'widgets.php', 'customize.php' );
+
+			if ( in_array( $pagenow, $block_editor_pages, true ) ) {
+				require_once WDKIT_INCLUDES . 'widget-load/gutenberg/class-wdkit-gutenberg-files-load.php';
 			}
 		}
 
