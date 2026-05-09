@@ -86,17 +86,21 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 				return;
 			}
 
-			// skip all non-admin requests.
+			// Frontend: always load so register_block_type() runs and the style/script
+			// handles attached to each widget (wp_register_style, render_callback) are
+			// enqueued correctly on public pages.
 			if ( ! is_admin() ) {
+				require_once WDKIT_INCLUDES . 'widget-load/gutenberg/class-wdkit-gutenberg-files-load.php';
 				return;
 			}
 
-			// Skip Elementor editor — $_GET['action'] 
+			// Skip Elementor editor — $_GET['action'] is set before plugins_loaded
+			// and is the most reliable way to detect the Elementor edit screen.
 			if ( isset( $_GET['action'] ) && 'elementor' === $_GET['action'] ) {
 				return;
 			}
 
-			// Whitelist: only load on admin pages where the block editor can be active.
+			// Admin: whitelist pages where the block editor can be active.
 			// $pagenow is set by WordPress before plugins_loaded — no timing issues,
 			// no dependency on post-type registration. Covers all CPTs including
 			// ACF-registered ones. Bricks and other builders are excluded automatically

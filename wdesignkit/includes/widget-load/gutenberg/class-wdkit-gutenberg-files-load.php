@@ -106,8 +106,8 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
 					continue;
 				}
 
-				if (! is_dir( trailingslashit( $dir ) . $value ) ){
-					return false;
+				if ( ! is_dir( trailingslashit( $dir ) . $value ) ) {
+					continue;
 				}
 
 				if ( ! strpos( $value, '.' ) ) {
@@ -153,8 +153,12 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
 	 * @param array $categories Block categories.
 	 */
 	function wdkit_register_block_category( $categories ) {
-		$category_list  = get_option( 'wkit_builder' );
+		$category_list  = get_option( 'wkit_builder', array() );
 		$new_categories = array();
+
+		if ( empty( $category_list ) || ! is_array( $category_list ) ) {
+			return $categories;
+		}
 
 		foreach ( $category_list as $value ) {
 			$new_categories[] = array(
