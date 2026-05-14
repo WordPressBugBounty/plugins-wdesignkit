@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.3.1\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.3.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-08T10:47:17+00:00\n"
+"POT-Creation-Date: 2026-05-14T09:21:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -88,10 +88,10 @@ msgid "Failed to delete snippet."
 msgstr ""
 
 #: includes/admin/api/class-wdkit-code-snippet.php:392
-#: includes/admin/class-api.php:1824
-#: includes/admin/class-api.php:1902
-#: includes/admin/class-api.php:3898
-#: includes/admin/class-api.php:4584
+#: includes/admin/class-api.php:1869
+#: includes/admin/class-api.php:1947
+#: includes/admin/class-api.php:3943
+#: includes/admin/class-api.php:4629
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:149
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:182
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:550
@@ -153,7 +153,7 @@ msgstr ""
 #: includes/admin/api/class-wdkit-code-snippet.php:826
 #: includes/admin/api/class-wdkit-empty-search-handling.php:120
 #: includes/admin/api/class-wdkit-theme-builder.php:169
-#: includes/admin/class-api.php:445
+#: includes/admin/class-api.php:448
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:774
 #: includes/admin/hooks/class-wdkit-login-ajax.php:372
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:274
@@ -165,7 +165,7 @@ msgstr ""
 #: includes/admin/api/class-wdkit-code-snippet.php:842
 #: includes/admin/api/class-wdkit-empty-search-handling.php:136
 #: includes/admin/api/class-wdkit-theme-builder.php:186
-#: includes/admin/class-api.php:461
+#: includes/admin/class-api.php:464
 #: includes/admin/hooks/class-wdkit-login-ajax.php:388
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:290
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:1052
@@ -201,7 +201,7 @@ msgstr ""
 msgid "Failed to fetch theme builder data."
 msgstr ""
 
-#: includes/admin/class-api.php:474
+#: includes/admin/class-api.php:477
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:803
 #: includes/admin/hooks/class-wdkit-login-ajax.php:401
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:303
@@ -210,312 +210,332 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: includes/admin/class-api.php:641
+#: includes/admin/class-api.php:644
 msgid "Server Error"
 msgstr ""
 
-#: includes/admin/class-api.php:642
+#: includes/admin/class-api.php:645
 msgid "Server Error, Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1022
-#: includes/admin/class-api.php:1023
-#: includes/admin/class-api.php:3899
+#: includes/admin/class-api.php:1025
+#: includes/admin/class-api.php:1026
+#: includes/admin/class-api.php:3944
 msgid "Data not found"
 msgstr ""
 
-#: includes/admin/class-api.php:1049
-#: includes/admin/class-api.php:1050
+#: includes/admin/class-api.php:1052
+#: includes/admin/class-api.php:1053
 #: build/index.js:1
 msgid "API Error"
 msgstr ""
 
 #: includes/admin/class-api.php:1075
-#: includes/admin/class-api.php:1765
-#: includes/admin/class-api.php:1812
-#: includes/admin/class-api.php:1890
-msgid "Elementor kit not found"
+msgid "No Image Provided"
 msgstr ""
 
 #: includes/admin/class-api.php:1076
-#: includes/admin/class-api.php:1766
-#: includes/admin/class-api.php:1813
-#: includes/admin/class-api.php:1891
+msgid "No Image URL provided for save."
+msgstr ""
+
+#: includes/admin/class-api.php:1085
+msgid "Upload Failed"
+msgstr ""
+
+#: includes/admin/class-api.php:1093
+msgid "Image Saved"
+msgstr ""
+
+#: includes/admin/class-api.php:1094
+msgid "Image successfully saved to Media Library."
+msgstr ""
+
+#: includes/admin/class-api.php:1120
+#: includes/admin/class-api.php:1810
+#: includes/admin/class-api.php:1857
+#: includes/admin/class-api.php:1935
+msgid "Elementor kit not found"
+msgstr ""
+
+#: includes/admin/class-api.php:1121
+#: includes/admin/class-api.php:1811
+#: includes/admin/class-api.php:1858
+#: includes/admin/class-api.php:1936
 msgid "No active Elementor kit found"
 msgstr ""
 
-#: includes/admin/class-api.php:1167
-#: includes/admin/class-api.php:1743
-#: includes/admin/class-api.php:1787
+#: includes/admin/class-api.php:1212
+#: includes/admin/class-api.php:1788
+#: includes/admin/class-api.php:1832
 msgid "Global data Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1168
-#: includes/admin/class-api.php:1744
-#: includes/admin/class-api.php:1788
+#: includes/admin/class-api.php:1213
+#: includes/admin/class-api.php:1789
+#: includes/admin/class-api.php:1833
 msgid "Global Color and Typography found"
 msgstr ""
 
-#: includes/admin/class-api.php:1825
+#: includes/admin/class-api.php:1870
 msgid "No site data found in kit"
 msgstr ""
 
-#: includes/admin/class-api.php:1840
-#: includes/admin/class-api.php:1854
+#: includes/admin/class-api.php:1885
+#: includes/admin/class-api.php:1899
 msgid "Site data Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1841
-#: includes/admin/class-api.php:1855
+#: includes/admin/class-api.php:1886
+#: includes/admin/class-api.php:1900
 msgid "Site Globals Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1861
-#: includes/admin/class-api.php:1941
+#: includes/admin/class-api.php:1906
+#: includes/admin/class-api.php:1986
 msgid "Builder Not Found !"
 msgstr ""
 
-#: includes/admin/class-api.php:1862
-#: includes/admin/class-api.php:1942
+#: includes/admin/class-api.php:1907
+#: includes/admin/class-api.php:1987
 msgid "Template Builder not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1903
+#: includes/admin/class-api.php:1948
 msgid "No meta data found in kit"
 msgstr ""
 
-#: includes/admin/class-api.php:1917
-#: includes/admin/class-api.php:1934
+#: includes/admin/class-api.php:1962
+#: includes/admin/class-api.php:1979
 msgid "Global data Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1918
-#: includes/admin/class-api.php:1935
+#: includes/admin/class-api.php:1963
+#: includes/admin/class-api.php:1980
 msgid "Global Color and Typography Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1981
-#: includes/admin/class-api.php:1982
+#: includes/admin/class-api.php:2026
+#: includes/admin/class-api.php:2027
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:850
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:851
 msgid "Page Not Found!"
 msgstr ""
 
-#: includes/admin/class-api.php:1998
-#: includes/admin/class-api.php:1999
+#: includes/admin/class-api.php:2043
+#: includes/admin/class-api.php:2044
 msgid "Page Created"
 msgstr ""
 
-#: includes/admin/class-api.php:2013
-#: includes/admin/class-api.php:2014
+#: includes/admin/class-api.php:2058
+#: includes/admin/class-api.php:2059
 msgid "post deleted"
 msgstr ""
 
-#: includes/admin/class-api.php:2226
-#: includes/admin/class-api.php:2348
+#: includes/admin/class-api.php:2271
+#: includes/admin/class-api.php:2393
 msgid "Theme activated successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2227
-#: includes/admin/class-api.php:2349
+#: includes/admin/class-api.php:2272
+#: includes/admin/class-api.php:2394
 msgid "Theme successfully activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2235
-#: includes/admin/class-api.php:2355
+#: includes/admin/class-api.php:2280
+#: includes/admin/class-api.php:2400
 msgid "Theme Not Activated !"
 msgstr ""
 
-#: includes/admin/class-api.php:2245
+#: includes/admin/class-api.php:2290
 msgid "Somthing Wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:2246
+#: includes/admin/class-api.php:2291
 msgid "Error Somthing Wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:2247
+#: includes/admin/class-api.php:2292
 msgid "inactive"
 msgstr ""
 
-#: includes/admin/class-api.php:2260
+#: includes/admin/class-api.php:2305
 msgid "Theme Name not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:2261
+#: includes/admin/class-api.php:2306
 msgid "Can Not Found Theme Name you Enterd."
 msgstr ""
 
-#: includes/admin/class-api.php:2407
+#: includes/admin/class-api.php:2452
 msgid "Container Activated Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2408
+#: includes/admin/class-api.php:2453
 msgid "Elementor Container Activated Successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:2508
-#: includes/admin/class-api.php:2830
-#: includes/admin/class-api.php:2954
+#: includes/admin/class-api.php:2553
+#: includes/admin/class-api.php:2875
+#: includes/admin/class-api.php:2999
 msgid "Invalid import"
 msgstr ""
 
-#: includes/admin/class-api.php:2509
-#: includes/admin/class-api.php:2831
-#: includes/admin/class-api.php:2955
+#: includes/admin/class-api.php:2554
+#: includes/admin/class-api.php:2876
+#: includes/admin/class-api.php:3000
 msgid "Invalid import: Check your details and try again."
 msgstr ""
 
-#: includes/admin/class-api.php:2893
-#: includes/admin/class-api.php:2894
+#: includes/admin/class-api.php:2938
+#: includes/admin/class-api.php:2939
 msgid "Widget array not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2903
+#: includes/admin/class-api.php:2948
 msgid "Relevant Plugin not Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2904
+#: includes/admin/class-api.php:2949
 msgid "Relevant Plugin not Installed / Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2920
+#: includes/admin/class-api.php:2965
 msgid "Enabled widgets successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2921
+#: includes/admin/class-api.php:2966
 msgid "Used widgets have been enabled successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2926
-#: includes/admin/class-api.php:2927
+#: includes/admin/class-api.php:2971
+#: includes/admin/class-api.php:2972
 msgid "Failed to enable widgets"
 msgstr ""
 
-#: includes/admin/class-api.php:3410
+#: includes/admin/class-api.php:3455
 msgid "Relevant Page Builder not installed or activated"
 msgstr ""
 
-#: includes/admin/class-api.php:3421
+#: includes/admin/class-api.php:3466
 #: build/index.js:1
 msgid "Something went wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:3494
-#: includes/admin/class-api.php:3495
+#: includes/admin/class-api.php:3539
+#: includes/admin/class-api.php:3540
 msgid "Plugin Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3500
-#: includes/admin/class-api.php:3501
+#: includes/admin/class-api.php:3545
+#: includes/admin/class-api.php:3546
 msgid "Plugin not found"
 msgstr ""
 
-#: includes/admin/class-api.php:3746
-#: includes/admin/class-api.php:3747
+#: includes/admin/class-api.php:3791
+#: includes/admin/class-api.php:3792
 msgid "Theme Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3786
-#: includes/admin/class-api.php:3787
+#: includes/admin/class-api.php:3831
+#: includes/admin/class-api.php:3832
 msgid "Site link updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3793
-#: includes/admin/class-api.php:3794
+#: includes/admin/class-api.php:3838
+#: includes/admin/class-api.php:3839
 msgid "Site not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4177
+#: includes/admin/class-api.php:4222
 msgid "Workspace ID Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4178
+#: includes/admin/class-api.php:4223
 msgid "Workspace ID is required"
 msgstr ""
 
-#: includes/admin/class-api.php:4185
+#: includes/admin/class-api.php:4230
 msgid "Token Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4186
+#: includes/admin/class-api.php:4231
 msgid "Token is required"
 msgstr ""
 
-#: includes/admin/class-api.php:4240
+#: includes/admin/class-api.php:4285
 msgid "Widget JSON not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4241
+#: includes/admin/class-api.php:4286
 msgid "widget JSON file not found."
 msgstr ""
 
-#: includes/admin/class-api.php:4252
+#: includes/admin/class-api.php:4297
 msgid "Widget get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4253
+#: includes/admin/class-api.php:4298
 msgid "Widget JSON get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4258
+#: includes/admin/class-api.php:4303
 msgid "Widget not get"
 msgstr ""
 
-#: includes/admin/class-api.php:4259
+#: includes/admin/class-api.php:4304
 msgid "Widget JSON not get"
 msgstr ""
 
-#: includes/admin/class-api.php:4287
-#: includes/admin/class-api.php:4417
-#: includes/admin/class-api.php:4474
+#: includes/admin/class-api.php:4332
+#: includes/admin/class-api.php:4462
+#: includes/admin/class-api.php:4519
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:183
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:720
 msgid "server error"
 msgstr ""
 
-#: includes/admin/class-api.php:4291
+#: includes/admin/class-api.php:4336
 msgid " Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:4325
+#: includes/admin/class-api.php:4370
 msgid "No Response Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4326
+#: includes/admin/class-api.php:4371
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:188
 msgid "Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:4367
+#: includes/admin/class-api.php:4412
 msgid "no message"
 msgstr ""
 
-#: includes/admin/class-api.php:4422
+#: includes/admin/class-api.php:4467
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:4601
+#: includes/admin/class-api.php:4646
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4631
+#: includes/admin/class-api.php:4676
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4795
+#: includes/admin/class-api.php:4840
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4831
+#: includes/admin/class-api.php:4876
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:4840
+#: includes/admin/class-api.php:4885
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
-#: includes/admin/class-api.php:5060
+#: includes/admin/class-api.php:5105
 msgid "Dark Mode Updated"
 msgstr ""
 
@@ -682,7 +702,7 @@ msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:579
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:619
-msgid "Operation Fial!"
+msgid "Operation Failed!"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:580
@@ -799,11 +819,11 @@ msgid "No more planning to use."
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:146
-msgid "Dont want to use any wordpress plugin."
+msgid "Don't want to use any WordPress plugin."
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:149
-msgid "Its missing the feature i require."
+msgid "It's missing the feature I require."
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:152
@@ -823,11 +843,11 @@ msgid "Skip & Deactivate"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:183
-msgid "If you require any help , "
+msgid "If you require any help,"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:186
-msgid "please add a ticket "
+msgid "please add a ticket"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
@@ -852,6 +872,7 @@ msgid "Upgrade PRO"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-plugin-page.php:97
+#: includes/admin/notices/class-wdkit-rating.php:288
 #: build/index.js:1
 msgid "Need Help?"
 msgstr ""
@@ -873,7 +894,7 @@ msgid "Join Community"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-plugin-page.php:155
-msgid "What`s New?"
+msgid "What's New?"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-plugin-page.php:156
@@ -896,16 +917,12 @@ msgstr ""
 msgid "Give Review"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-rating.php:288
-msgid "Need Help ?"
-msgstr ""
-
 #: includes/admin/notices/class-wdkit-rating.php:333
 msgid "You are not allowed to do this action"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-rating.php:345
-msgid "Success Fully Close Rating Notice"
+msgid "Successfully Closed Rating Notice"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-review-form.php:110
@@ -974,7 +991,27 @@ msgid "Modern Hover Post"
 msgstr ""
 
 #: build/index.js:1
+msgid "Clear All Filters"
+msgstr ""
+
+#: build/index.js:1
 msgid "Search..."
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Plugins and Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin Setting"
+msgstr ""
+
+#: build/index.js:1
+msgid "Theme Setting"
+msgstr ""
+
+#: build/index.js:1
+msgid "Import Template"
 msgstr ""
 
 #: build/index.js:1
@@ -987,6 +1024,22 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Get Pro Version to Download"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugins Needed for This Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "This template works best with the following plugins. Please install them to continue."
+msgstr ""
+
+#: build/index.js:1
+msgid "Setting Up Your Template"
+msgstr ""
+
+#: build/index.js:1
+msgid "We’re getting everything ready. Please wait while we install the required plugins and import your template."
 msgstr ""
 
 #: build/index.js:1
@@ -1139,6 +1192,30 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Kits"
+msgstr ""
+
+#: build/index.js:1
+msgid "Setting Up Your Widget"
+msgstr ""
+
+#: build/index.js:1
+msgid "We're getting everything ready. Please wait while we install the required plugins and import your widget."
+msgstr ""
+
+#: build/index.js:1
+msgid "Require"
+msgstr ""
+
+#: build/index.js:1
+msgid "Theme"
+msgstr ""
+
+#: build/index.js:1
+msgid "Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "To download this widget, you will need to install below listed requirements."
 msgstr ""
 
 #: build/index.js:1
@@ -1342,6 +1419,26 @@ msgid "Buy Now"
 msgstr ""
 
 #: build/index.js:1
+msgid "Install Required Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Download Snippet"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installing Required Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installed Required Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "Installation Failed"
+msgstr ""
+
+#: build/index.js:1
 msgid "Yay! Snippet Successfully Downloaded"
 msgstr ""
 
@@ -1359,6 +1456,14 @@ msgstr ""
 
 #: build/index.js:1
 msgid "For security reasons, only administrator users can download snippets."
+msgstr ""
+
+#: build/index.js:1
+msgid "Required Plugin"
+msgstr ""
+
+#: build/index.js:1
+msgid "To download this snippet, you will need to install below listed plugin"
 msgstr ""
 
 #: build/index.js:1
@@ -1566,7 +1671,7 @@ msgid "Upload Image on Server"
 msgstr ""
 
 #: build/index.js:1
-msgid "Only lifetime, Professional & studio users can access this feature."
+msgid "This feature is available for Starter, Professional, Studio, and Agency Bundle in Yearly & Lifetime plans."
 msgstr ""
 
 #: build/index.js:1
@@ -1890,11 +1995,11 @@ msgid "Widget controllers remain unchanged after scanning"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Conversion Fail!"
+msgid "Widget Conversion Failed!"
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget not Converted successfully."
+msgid "Widget not converted successfully."
 msgstr ""
 
 #: build/index.js:1
@@ -1982,7 +2087,7 @@ msgid "This Widget got disabled until you have more credits to make it active."
 msgstr ""
 
 #: build/index.js:1
-msgid "Widget Successfully Retrived ."
+msgid "Widget Successfully Retrieved."
 msgstr ""
 
 #: build/index.js:1
@@ -3074,6 +3179,10 @@ msgid "Categories"
 msgstr ""
 
 #: build/index.js:1
+msgid "Select Version"
+msgstr ""
+
+#: build/index.js:1
 msgid "Error Handling"
 msgstr ""
 
@@ -3323,6 +3432,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Save in WDesignKit"
+msgstr ""
+
+#: build/index.js:1
+msgid "Import Templates"
 msgstr ""
 
 #: build/index.js:1
@@ -4047,6 +4160,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Invalid request parameters. Please check your filters."
+msgstr ""
+
+#: build/index.js:1
+msgid "We're getting everything ready. Please wait while we install the required plugins and import your template."
 msgstr ""
 
 #: build/index.js:1
@@ -4798,6 +4915,10 @@ msgid "Failed to load kit snippets. Please try again."
 msgstr ""
 
 #: build/index.js:1
+msgid "Download Snippets"
+msgstr ""
+
+#: build/index.js:1
 msgid "snippets downloaded successfully."
 msgstr ""
 
@@ -4835,6 +4956,10 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Select All"
+msgstr ""
+
+#: build/index.js:1
+msgid "To download this snippet bundle, you will need to install below listed plugin"
 msgstr ""
 
 #: build/index.js:1

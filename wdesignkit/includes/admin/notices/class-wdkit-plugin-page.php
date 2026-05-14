@@ -152,7 +152,7 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 						'docs'             => '<a href="' . esc_url( 'https://learn.wdesignkit.com/?utm_source=wpbackend&utm_medium=pluginpage&utm_campaign=admin' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'docs', 'wdesignkit' ) . '</a>',
 						'video-tutorials'  => '<a href="' . esc_url( 'https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Video Tutorials', 'wdesignkit' ) . '</a>',
 						'join-community'   => '<a href="' . esc_url( 'https://www.facebook.com/groups/wdesignkit' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Join Community', 'wdesignkit' ) . '</a>',
-						'whats-new?'       => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/updates' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What`s New?', 'wdesignkit' ) . '</a>',
+						'whats-new?'       => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/updates' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( "What's New?", 'wdesignkit' ) . '</a>',
 						'request-feature'  => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/boards/feature-requests' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request Feature', 'wdesignkit' ) . '</a>',
 						'rate-stars'       => '<a href="' . esc_url( 'https://wordpress.org/support/plugin/wdesignkit/reviews/?filter=5' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Rate 5 Stars', 'wdesignkit' ) . '</a>',
 					);

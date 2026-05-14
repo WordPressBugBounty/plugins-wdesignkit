@@ -143,10 +143,10 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 											'reason' => __( 'No more planning to use.', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'Dont want to use any wordpress plugin.', 'wdesignkit' ),
+											'reason' => __( "Don't want to use any WordPress plugin.", 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'Its missing the feature i require.', 'wdesignkit' ),
+											'reason' => __( "It's missing the feature I require.", 'wdesignkit' ),
 										),
 										array(
 											'reason' => __( 'Other', 'wdesignkit' ),
@@ -180,11 +180,11 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 					<div class="wdkit-help-link">
 						<?php if ( empty($white_label['help_link']) ) { ?>
 							<span>
-								<?php echo esc_html__( 'If you require any help , ', 'wdesignkit' ); ?>
+								<?php echo esc_html__( 'If you require any help,', 'wdesignkit' ); ?>
 
-								<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer"> 
-									<?php echo esc_html__( 'please add a ticket ', 'wdesignkit' ); ?> 
-								</a>. 
+								<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer">
+									<?php echo esc_html__( 'please add a ticket', 'wdesignkit' ); ?>
+								</a>.
 								<?php echo esc_html__( 'We reply within 24 working hours.', 'wdesignkit' ); ?>
 							</span>
 

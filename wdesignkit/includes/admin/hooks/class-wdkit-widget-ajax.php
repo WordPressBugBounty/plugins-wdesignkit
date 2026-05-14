@@ -576,7 +576,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					} else {
 						$responce = (object) array(
 							'success'     => false,
-							'message'     => esc_html__( 'Operation Fial!', 'wdesignkit' ),
+							'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
 							'description' => esc_html__( 'Widget can not imported', 'wdesignkit' ),
 						);
 
@@ -616,7 +616,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			} else {
 				$responce = (object) array(
 					'success'     => false,
-					'message'     => esc_html__( 'Operation Fial!', 'wdesignkit' ),
+					'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
 					'description' => esc_html__( 'Widget can not imported', 'wdesignkit' ),
 				);
 

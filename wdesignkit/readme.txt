@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,12 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.3.3 - 14 May 2026
+New: Added support to replace uploaded images during template import.
+Fixed: Corrected untranslatable hard-coded strings and source typos across admin notices, widgets, and templates.
+Fixed: Gutenberg core widgets loading issue in listing page.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.3.2 - 9 May 2026
 Fixed: Frontend widget loading issue after 2.3.1 plugin release

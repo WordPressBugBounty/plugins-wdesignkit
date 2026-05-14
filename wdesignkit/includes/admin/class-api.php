@@ -198,6 +198,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'update_save_temp_image':
 					$data = $this->wdkit_update_save_temp_image();
 					break;
+				case 'save_wp_images':
+					$data = $this->wdkit_save_wp_images();
+					break;
 				case 'get_global_val':
 					$data = $this->wdkit_get_global_val();
 					break;
@@ -785,7 +788,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$idx_builder = array();
 			foreach ( $db_builder_list as $index => $value ) {
-				$builder_name = ! empty( $value['builder_name'] ) ? $value['builder_name'] : '';
+				$builder_name = ! empty( $value['builder_slug'] ) ? $value['builder_slug'] : '';
 				$w_id         = ! empty( $value['w_id'] ) ? $value['w_id'] : '';
 
 				if ( ! empty( $builder_name ) ) {
@@ -1052,6 +1055,48 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'success'     => false,
 					);
 				}
+			}
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 *
+		 * It is Use for save image to WordPress Media Library.
+		 *
+		 * @since 2.3.3
+		 */
+		protected function wdkit_save_wp_images() {
+			$image_url = isset( $_POST['image'] ) ? sanitize_text_field( $_POST['image'] ) : '';
+		
+			if ( empty( $image_url ) ) {
+				$response = array(
+					'message'     => __( 'No Image Provided', 'wdesignkit' ),
+					'description' => __( 'No Image URL provided for save.', 'wdesignkit' ),
+					'success'     => false,
+				);
+			} else {
+
+				$attachment_id = media_sideload_image( $image_url, 0, null, 'id' );
+			
+				if ( is_wp_error( $attachment_id ) ) {
+					$response = array(
+						'message'     => __( 'Upload Failed', 'wdesignkit' ),
+						'description' => $attachment_id->get_error_message(),
+						'success'     => false,
+					);
+				} else {
+					$saved_url = wp_get_attachment_url( $attachment_id );
+	
+					$response = array(
+						'message'     => __( 'Image Saved', 'wdesignkit' ),
+						'description' => __( 'Image successfully saved to Media Library.', 'wdesignkit' ),
+						'success'     => true,
+						'url'           => $saved_url,
+					);
+				}
+
 			}
 
 			wp_send_json( $response );
