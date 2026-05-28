@@ -90,7 +90,7 @@ if ( ! class_exists( 'WDesignKit_Data_Query' ) ) {
 		 * @param string $data array.
 		 * @param string $args array.
 		 */
-		public static function get_data( $type = '', $data = array(), $args = array() ) {
+		public static function get_data( $type = '', $data = array(), $args = array(), $timeout = 60 ) {
 			$headers = array( 'Content-Type' => 'application/json' );
 
 			if ( empty( $type ) ) {
@@ -106,7 +106,7 @@ if ( ! class_exists( 'WDesignKit_Data_Query' ) ) {
 			$response = wp_remote_post(
 				self::$url . $type,
 				array(
-					'timeout' => 15,
+					'timeout' => $timeout,
 					'headers' => $headers,
 					'body'    => wp_json_encode( $data ),
 				)

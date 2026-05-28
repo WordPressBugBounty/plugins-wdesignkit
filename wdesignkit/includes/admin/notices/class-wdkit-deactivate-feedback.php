@@ -100,25 +100,30 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 
 			$site_url = home_url();
 			$security = wp_create_nonce( 'wdkit-deactivate-feedback' );
-			$plugin_logo = !empty($white_label['plugin_logo']) ? $white_label['plugin_logo'] : WDKIT_URL . 'assets/images/jpg/Wdesignkit-logo.png';
 			$plugin_name = !empty($white_label['plugin_name']) ? $white_label['plugin_name'] : esc_html__( 'WDesignKit', 'wdesignkit' );
-		
+
 			?>
 			<div class="wdkit-modal" id="wdkit-deactive-modal">
 				<div class="wdkit-modal-wrap">
-				
+
 					<div class="wdkit-modal-header">
-					<img class="wdkit-deactive-logo" style="height: 16px;" src="<?php echo esc_url( $plugin_logo ); ?>" />
-					<span class="wdkit-feed-head-title">
-							<?php echo esc_html__( 'Quick Feedback', 'wdesignkit' ); ?>
-						</span>
+						<div class="wdkit-modal-header-content">
+							<h2 class="wdkit-feed-head-title">
+								<?php echo esc_html__( 'Quick Feedback Before You Go', 'wdesignkit' ); ?>
+							</h2>
+							<p class="wdkit-feed-head-subtitle">
+								<?php
+								/* translators: %s: plugin name */
+								printf( esc_html__( 'Help us improve %s, let us know why you\'re leaving.', 'wdesignkit' ), esc_html( $plugin_name ) );
+								?>
+							</p>
+						</div>
+						<button class="wdkit-modal-close" id="wdkit-modal-close-btn" aria-label="<?php echo esc_attr__( 'Close', 'wdesignkit' ); ?>">
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+						</button>
 					</div>
 
 					<div class="wdkit-modal-body">
-						<h3 class="wdkit-feed-caption">
-							<?php echo esc_html__( "If you have a moment, please let us know why you're deactivating $plugin_name :", 'wdesignkit' ); ?>
-						</h3>
-
 						<form class="wdkit-feedback-dialog-form" method="post">
 
 							<input type="hidden" name="site_url" value="<?php echo esc_url( $site_url ); ?>" />
@@ -128,75 +133,101 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 								<?php
 									$reson_data = array(
 										array(
-											'reason' => __( 'This is a temporary deactivation.', 'wdesignkit' ),
+											'reason' => __( 'Import Issues', 'wdesignkit' ),
+											'desc'   => __( 'Problems while importing templates, widgets, or snippets', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'Facing technical issues/bugs with the plugin.', 'wdesignkit' ),
+											'reason' => __( 'Temporary Deactivation', 'wdesignkit' ),
+											'desc'   => __( 'Not using it right now, but may come back later', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'Performance Issues.', 'wdesignkit' ),
+											'reason' => __( 'Collaboration Issues', 'wdesignkit' ),
+											'desc'   => __( 'Issues with team access, sharing, or workspace management', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'Found an alternative plugin.', 'wdesignkit' ),
+											'reason' => __( 'Setup & Requirements Issues', 'wdesignkit' ),
+											'desc'   => __( 'Compatibility or setup-related problems', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( 'No more planning to use.', 'wdesignkit' ),
+											'reason' => __( 'License & Activation Issues', 'wdesignkit' ),
+											'desc'   => __( 'Trouble with license activation or access', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( "Don't want to use any WordPress plugin.", 'wdesignkit' ),
+											'reason' => __( 'Something Not Working', 'wdesignkit' ),
+											'desc'   => __( 'Features not working as expected', 'wdesignkit' ),
 										),
 										array(
-											'reason' => __( "It's missing the feature I require.", 'wdesignkit' ),
+											'reason' => __( 'Missing Features', 'wdesignkit' ),
+											'desc'   => __( "Couldn't find features you were looking for", 'wdesignkit' ),
 										),
 										array(
 											'reason' => __( 'Other', 'wdesignkit' ),
+											'desc'   => __( "Something else you'd like to share", 'wdesignkit' ),
 										),
 									);
 
 									foreach ( $reson_data as $key => $value ) {
+										$card_id = 'details-' . esc_attr( $key );
 										?>
-										<div>
-											<label class="wdkit-relist">
-												<input type="radio" class="wdkit-radion-input" <?php echo 0 === $key ? 'checked="checked"' : ''; ?> id="<?php echo 'details-' . esc_attr( $key ); ?>" name="wdkit-reason-txt" value="<?php echo esc_attr( $value['reason'] ); ?>">
-												<div class="wdkit-reason-txt-text"><?php echo esc_html( $value['reason'] ); ?></div>
+										<div class="wdkit-reason-card">
+											<div class="wdkit-radio-wrap">
+												<input type="radio" class="wdkit-radion-input" id="<?php echo esc_attr( $card_id ); ?>" name="wdkit-reason-txt" value="<?php echo esc_attr( $value['reason'] . ' : ' . $value['desc'] ); ?>">
+											</div>
+											<label for="<?php echo esc_attr( $card_id ); ?>">
+												<span class="wdkit-reason-title"><?php echo esc_html( $value['reason'] ); ?></span>
+												<span class="wdkit-reason-desc"><?php echo esc_html( $value['desc'] ); ?></span>
 											</label>
 										</div>
 								<?php } ?>
 							</div>
 
-							<textarea name="wdkit-reason-txt-deails" placeholder="<?php echo esc_html__( 'Please share the reason', 'wdesignkit' ); ?>" class="wdkit-reason-txt-deails"></textarea>
+							<div class="wdkit-textarea-wrap">
+								<label class="wdkit-textarea-label" for="wdkit-reason-txt-deails">
+									<?php echo esc_html__( 'Want to share more details?', 'wdesignkit' ); ?>
+								</label>
+								<textarea id="wdkit-reason-txt-deails" name="wdkit-reason-txt-deails" placeholder="<?php echo esc_attr__( 'Share what didn\'t work or how we can improve...', 'wdesignkit' ); ?>" class="wdkit-reason-txt-deails"></textarea>
+							</div>
+
 						</form>
 					</div>
 
+					<!-- Bottom section: checkbox + help text (flex-col gap-14px per Figma) -->
+					<div class="wdkit-bottom-section">
+
+						<div class="wdkit-email-consent">
+							<input type="checkbox" id="wdkit-email-consent-chk" name="wdkit-email-consent" value="1" class="wkit-check-box">
+							<label for="wdkit-email-consent-chk">
+								<?php echo esc_html__( 'I agree to be contacted via email for support regarding this issue.', 'wdesignkit' ); ?>
+							</label>
+						</div>
+
+						<input type="hidden" id="wdkit-user-email" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>">
+
+						<?php if ( empty( $white_label['help_link'] ) ) { ?>
+						<div class="wdkit-help-link">
+							<span>
+								<?php echo esc_html__( 'Need help with anything else? Raise a', 'wdesignkit' ); ?>
+								<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer">
+									<?php echo esc_html__( 'support ticket', 'wdesignkit' ); ?>
+								</a><?php echo esc_html__( ', we usually reply within 24 working hours. Looking for quick answers? Check our', 'wdesignkit' ); ?>
+								<a href="<?php echo esc_url( 'https://learn.wdesignkit.com/' ); ?>" target="_blank" rel="noopener noreferrer">
+									<?php echo esc_html__( 'documentation', 'wdesignkit' ); ?>
+								</a><?php echo esc_html__( '.', 'wdesignkit' ); ?>
+							</span>
+						</div>
+						<?php } ?>
+
+					</div>
+
 					<div class="wdkit-modal-footer">
-						<a class="wdkit-modal-submit wdkit-btn wdkit-btn-primary" href="#">
-							<?php echo esc_html__( 'Submit & Deactivate', 'wdesignkit' ); ?>
-						</a>
 						<a class="wdkit-modal-deactive" href="#">
 							<?php echo esc_html__( 'Skip & Deactivate', 'wdesignkit' ); ?>
 						</a>
+						<a class="wdkit-modal-submit wdkit-btn wdkit-btn-primary" href="#">
+							<?php echo esc_html__( 'Submit', 'wdesignkit' ); ?>
+						</a>
 					</div>
 
-					<div class="wdkit-help-link">
-						<?php if ( empty($white_label['help_link']) ) { ?>
-							<span>
-								<?php echo esc_html__( 'If you require any help,', 'wdesignkit' ); ?>
-
-								<a href="<?php echo esc_url( 'https://wordpress.org/support/plugin/wdesignkit/' ); ?>" target="_blank" rel="noopener noreferrer">
-									<?php echo esc_html__( 'please add a ticket', 'wdesignkit' ); ?>
-								</a>.
-								<?php echo esc_html__( 'We reply within 24 working hours.', 'wdesignkit' ); ?>
-							</span>
-
-							<span> 
-								<?php echo esc_html__( 'Read', 'wdesignkit' ); ?> 
-
-								<a href="<?php echo esc_url( 'https://learn.wdesignkit.com/' ); ?>" target="_blank" rel="noopener noreferrer">
-									<?php echo esc_html__( 'Documentation.', 'wdesignkit' ); ?>   
-								</a> 
-							</span> 
-						<?php } ?>
-						</div>
 				</div>
 			</div>
 			<?php
@@ -210,7 +241,8 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 		 */
 		public function wdkit_onboarding_assets( $page ) {
 			if ( 'plugins.php' === $page ) {
-				wp_enqueue_style( 'wdkit-onbording-style', WDKIT_URL . 'assets/css/onbording/wdkit-onbording.css', array(), WDKIT_VERSION, 'all' );
+				wp_enqueue_style( 'wdkit-outfit-font', 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap', array(), null );
+				wp_enqueue_style( 'wdkit-onbording-style', WDKIT_URL . 'assets/css/onbording/wdkit-onbording.css', array( 'wdkit-outfit-font' ), WDKIT_VERSION, 'all' );
 			}
 		}
 
@@ -225,13 +257,27 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 				jQuery( document ).ready( function( $ ) {
 					'use strict';
 
-					// Modal Radio Input Click Action
-					$('.wdkit-modal-input input[type=radio]').on( 'change', function(e) {
-						$('.wdkit-reason-txt-deails').removeClass('wdkit-active');
-						$('.wdkit-modal-input').find( '.'+$(this).attr('id') ).addClass('wdkit-active');
+					// Card selection highlight + reveal textarea on radio change
+					$('.wdkit-modal-input input[type=radio]').on( 'change', function() {
+						$('.wdkit-reason-card').removeClass('wdkit-card-selected');
+						$(this).closest('.wdkit-reason-card').addClass('wdkit-card-selected');
+						$('.wdkit-textarea-wrap').slideDown( 200 );
 					});
 
-					// Modal Cancel Click Action
+
+					// Close button
+					$( document ).on( 'click', '#wdkit-modal-close-btn', function() {
+						$( '#wdkit-deactive-modal' ).removeClass( 'modal-active' );
+					});
+
+					// Close on Escape key
+					$( document ).on( 'keydown', function( e ) {
+						if ( e.key === 'Escape' && $( '#wdkit-deactive-modal' ).hasClass( 'modal-active' ) ) {
+							$( '#wdkit-deactive-modal' ).removeClass( 'modal-active' );
+						}
+					});
+
+					// Modal backdrop click to close
 					$( document ).on( 'click', '#wdkit-deactive-modal', function(e) {
 						if ( e.target === this ) {
 							$(this).removeClass('modal-active');
@@ -241,6 +287,12 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 					// Deactivate Button Click Action
 					$( document ).on( 'click', '#deactivate-wdesignkit', function(e) {
 						e.preventDefault();
+						// Reset form state on each open
+						$( '.wdkit-reason-card' ).removeClass( 'wdkit-card-selected' );
+						$( '.wdkit-modal-input input[type=radio]' ).prop( 'checked', false );
+						$( '.wdkit-textarea-wrap' ).hide();
+						$( '.wdkit-reason-txt-deails' ).val('');
+						$( '#wdkit-email-consent-chk' ).prop( 'checked', false );
 						$( '#wdkit-deactive-modal' ).addClass( 'modal-active' );
 						$( '.wdkit-modal-deactive' ).attr( 'href', $(this).attr('href') );
 						$( '.wdkit-modal-submit' ).attr( 'href', $(this).attr('href') );
@@ -249,9 +301,11 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 					// Submit to Remote Server
 					$( document ).on( 'click', '.wdkit-modal-submit', function(e) {
 						e.preventDefault();
+						if ( $(this).hasClass('wdkit-loading') || $( '.wdkit-modal-footer' ).hasClass('wdkit-footer-disabled') ) return;
 						const url = $(this).attr('href');
-						
+
 						$(this).text('').addClass('wdkit-loading');
+						$( '.wdkit-modal-footer' ).addClass('wdkit-footer-disabled');
 
 						let formObj = $( '#wdkit-deactive-modal' ).find('form.wdkit-feedback-dialog-form'),
 							queryString = formObj.serialize(),
@@ -263,10 +317,15 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 							nonce : formData.get('nonce'),
 							site_url : formData.get('site_url'),
 						}
-						
+
 						if( formData.get('wdkit-reason-txt-deails') && formData.get('wdkit-reason-txt-deails') != '' ){
 							ajaxData.tprestxt = formData.get('wdkit-reason-txt-deails');
 						}
+
+						// Send email if consent checked, otherwise send empty
+						ajaxData.email = $( '#wdkit-email-consent-chk' ).is(':checked')
+							? $( '#wdkit-user-email' ).val().trim()
+							: '';
 							
 						$.ajax({
 							url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
@@ -287,7 +346,11 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 
 					$( document ).on( 'click', '.wdkit-modal-deactive', function(e) {
 						e.preventDefault();
+						if ( $(this).hasClass('wdkit-loading') || $( '.wdkit-modal-footer' ).hasClass('wdkit-footer-disabled') ) return;
 						const url = $(this).attr('href');
+
+						$(this).text('').addClass('wdkit-loading');
+						$( '.wdkit-modal-footer' ).addClass('wdkit-footer-disabled');
 
 						let formObj = $( '#wdkit-deactive-modal' ).find('form.wdkit-feedback-dialog-form'),
 							queryString = formObj.serialize(),
@@ -330,11 +393,14 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 
 			$tprestxt = isset( $_POST['tprestxt'] ) && ! empty( $_POST['tprestxt'] ) ? sanitize_text_field( wp_unslash( $_POST['tprestxt'] ) ) : '';
 
+			$email = ! empty( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
 			$api_params = array(
 				'site_url'    => $site_url,
 				'reason_key'  => $deactreson,
 				'reason_text' => $tprestxt,
 				'version'     => WDKIT_VERSION,
+				'email'       => $email,
 			);
 
 			$response = wp_remote_post(

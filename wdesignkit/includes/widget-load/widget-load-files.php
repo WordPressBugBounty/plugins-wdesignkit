@@ -96,7 +96,7 @@ if ( ! class_exists( 'Wdkit_Widget_Load_Files' ) ) {
 
 			// Skip Elementor editor — $_GET['action'] is set before plugins_loaded
 			// and is the most reliable way to detect the Elementor edit screen.
-			if ( isset( $_GET['action'] ) && 'elementor' === $_GET['action'] ) {
+			if ( isset( $_GET['action'] ) && 'elementor' === sanitize_key( wp_unslash( $_GET['action'] ) ) ) {
 				return;
 			}
 

@@ -894,7 +894,8 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					'description' => esc_html__( 'widget Type Not Found', 'wdesignkit' ),
 				);
 
-				wp_send_json($response);
+				// Bug G fix: $response was undefined here — should send $result (set 3 lines above).
+				wp_send_json($result);
 				wp_die();
 			}
 				
@@ -1049,7 +1050,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$error_message = $response->get_error_message();
 
 				/* Translators: %s is a placeholder for the error message */
-				$error_message = printf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
+				$error_message = sprintf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
 
 				return array(
 					'massage' => $error_message,
@@ -1068,7 +1069,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 			}
 
-			$error_message = printf( 'Server error: %d', esc_html( $status_code ) );
+			$error_message = sprintf( 'Server error: %d', esc_html( $status_code ) );
 
 			if ( isset( $error_data->message ) ) {
 				$error_message .= ' (' . $error_data->message . ')';

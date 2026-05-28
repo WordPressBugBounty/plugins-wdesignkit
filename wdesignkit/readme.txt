@@ -3,9 +3,9 @@ Contributors: posimyththemes, devangvachheta, sagarpatel124
 Donate link: https://wdesignkit.com/
 Tags: page templates, elementor template, wordpress template, elementor widgets, gutenberg blocks
 Requires at least: 6.0
-Tested up to: 6.8
-Requires PHP: 7.0
-Stable tag: 2.3.3
+Tested up to: 7.0
+Requires PHP: 7.4
+Stable tag: 2.4.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.4.0 - 28 May 2026
+Compatibility: Added compatibility with WordPress v7.0
+Added: New abilities and feature enhancements
+Updated: Improved Plugin Deactivation Popup UI
 
 2.3.3 - 14 May 2026
 New: Added support to replace uploaded images during template import.

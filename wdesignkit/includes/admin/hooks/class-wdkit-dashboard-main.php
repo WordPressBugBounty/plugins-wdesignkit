@@ -47,6 +47,7 @@ if ( ! class_exists( 'Wdkit_Dashboard_Main' ) ) {
 		 * Define the core functionality of the plugin.
 		 */
 		public function __construct() {
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-kit-import-hook.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-import-temp-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-preset-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-login-ajax.php';

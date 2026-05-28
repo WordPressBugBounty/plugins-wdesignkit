@@ -183,7 +183,7 @@ if ( ! class_exists( 'Wdkit_Theme_Builder' ) ) {
 				$error_message = $response->get_error_message();
 
 				/* Translators: %s is a placeholder for the error message */
-				$error_message = printf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
+				$error_message = sprintf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
 
 				return array(
 					'massage' => $error_message,
@@ -196,7 +196,7 @@ if ( ! class_exists( 'Wdkit_Theme_Builder' ) ) {
 				return json_decode( wp_remote_retrieve_body( $response ), true );
 			}
 
-			$error_message = printf( 'Server error: %d', esc_html( $status_code ) );
+			$error_message = sprintf( 'Server error: %d', esc_html( $status_code ) );
 
 			if ( isset( $error_data->message ) ) {
 				$error_message .= ' (' . $error_data->message . ')';

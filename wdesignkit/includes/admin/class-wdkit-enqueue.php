@@ -125,9 +125,9 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			$editor = 'wdkit';
 
-			$action = ! empty( $_GET['action'] ) ? $_GET['action'] : '';
+			$action = ! empty( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
 
-			if ( $current_screen->is_block_editor() ) {
+			if ( $current_screen && $current_screen->is_block_editor() ) {
 
 				if ( array_key_exists( 'action', $_GET ) && isset( $action ) ) {
 					if ( 'elementor' === $action ) {
@@ -217,11 +217,14 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			wp_enqueue_style( 'wdkit-library-preview', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
 			wp_enqueue_style( 'wdkit-out-dashborad', WDKIT_URL . 'assets/css/dashborad/wdkit-dashborad.css', array(), WDKIT_VERSION, false );
 
+			$page  = isset( $_GET['page'] )      ? sanitize_key( wp_unslash( $_GET['page'] ) )      : '';
+			$ptype = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
+
 			// Check if we're on a Nexter Extension page
-			$is_nexter_page = isset( $_GET['page'] ) && $_GET['page'] === 'nxt_code_snippets';
+			$is_nexter_page = isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_code_snippets';
 
 			// Check if we're on a Theme Builder page (via post_type or page parameter)
-			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && $_GET['post_type'] === 'nxt_builder' ) || ( isset( $_GET['page'] ) && $_GET['page'] === 'nxt_builder' );
+			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_builder' );
 			
 			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && !$is_nexter_page && !$is_theme_builder_page ) {
 				return;
@@ -249,7 +252,9 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 * @since   1.0.0
 		 */
 		public function wdkit_enqueue_scripts( $hook ) {
-			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.js', array( 'wp-i18n', 'wp-element', 'wp-components' ), WDKIT_VERSION, true );
+			$asset_file  = WDKIT_PATH . 'build/index.asset.php';
+			$asset       = file_exists( $asset_file ) ? require $asset_file : array( 'dependencies' => array( 'wp-i18n', 'wp-element', 'wp-components' ), 'version' => WDKIT_VERSION );
+			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.js', $asset['dependencies'], $asset['version'], true );
 			wp_set_script_translations( 'wdkit-editor-js', 'wdesignkit' );
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );
@@ -261,7 +266,6 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				'wdkitData',
 				array(
 					'ajax_url'            => admin_url( 'admin-ajax.php' ),
-					'WDKIT_PATH'          => WDKIT_PATH,
 					'WDKIT_URL'           => WDKIT_URL,
 					'WDKIT_ASSETS'        => WDKIT_ASSETS,
 					'wdkit_server_url'    => WDKIT_SERVER_SITE_URL,
@@ -277,11 +281,10 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'WDKIT_onbording_end' => $onbording_end,
 					'wdkit_white_label'   => $white_label,
 					'WDKIT_dark_mode'     => $dark_mode,
-					/** Widget Builder Path */
+					/** Widget Builder — public URL only, no server filesystem paths */
 					'WDKIT_SITE_URL'      => WDKIT_GET_SITE_URL,
 					'WDKIT_DOC_URL'       => WDKIT_DOCUMENT,
 					'WDKIT_SERVER_PATH'   => WDKIT_SERVER_PATH,
-					'WDKIT_BUILDER_PATH'  => WDKIT_BUILDER_PATH,
 					'WDKIT_VERSION'       => WDKIT_VERSION,
 
 					'gutenberg_template'  => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' )
@@ -292,7 +295,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			if ( 'toplevel_page_wdesign-kit' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'builder', 'widget' ) ) {
 				wp_enqueue_script( 'widgetBuilder-script-editor-js', WDKIT_URL . 'assets/js/extra/ace.min.js', array( 'wp-element' ), WDKIT_VERSION, true );
 				wp_enqueue_script( 'widgetBuilder-script-editor-cobalt', WDKIT_URL . 'assets/js/extra/theme-cobalt.js', array( 'wp-element' ), WDKIT_VERSION, true );
-				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra//mode-html.js', array( 'wp-element' ), WDKIT_VERSION, true );
+				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra/mode-html.js', array( 'wp-element' ), WDKIT_VERSION, true );
 			}
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {

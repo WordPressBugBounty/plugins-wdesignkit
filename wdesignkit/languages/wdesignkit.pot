@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.3.3\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-14T09:21:21+00:00\n"
+"POT-Creation-Date: 2026-05-28T10:58:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -37,6 +37,16 @@ msgstr ""
 #. Author URI of the plugin
 #: wdesignkit.php
 msgid "https://posimyth.com/"
+msgstr ""
+
+#: includes/abilities/class-wdk-ability-main.php:64
+#: includes/admin/class-wdkit-enqueue.php:315
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:103
+msgid "WDesignKit"
+msgstr ""
+
+#: includes/abilities/class-wdk-ability-main.php:65
+msgid "Abilities for WDesignKit widget management and settings."
 msgstr ""
 
 #: includes/admin/api/class-wdkit-code-snippet.php:70
@@ -88,10 +98,10 @@ msgid "Failed to delete snippet."
 msgstr ""
 
 #: includes/admin/api/class-wdkit-code-snippet.php:392
-#: includes/admin/class-api.php:1869
-#: includes/admin/class-api.php:1947
-#: includes/admin/class-api.php:3943
-#: includes/admin/class-api.php:4629
+#: includes/admin/class-api.php:1872
+#: includes/admin/class-api.php:1950
+#: includes/admin/class-api.php:3946
+#: includes/admin/class-api.php:4637
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:149
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:182
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:550
@@ -153,11 +163,11 @@ msgstr ""
 #: includes/admin/api/class-wdkit-code-snippet.php:826
 #: includes/admin/api/class-wdkit-empty-search-handling.php:120
 #: includes/admin/api/class-wdkit-theme-builder.php:169
-#: includes/admin/class-api.php:448
+#: includes/admin/class-api.php:452
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:774
 #: includes/admin/hooks/class-wdkit-login-ajax.php:372
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:274
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:1036
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1037
 msgid "API Not Found"
 msgstr ""
 
@@ -165,10 +175,10 @@ msgstr ""
 #: includes/admin/api/class-wdkit-code-snippet.php:842
 #: includes/admin/api/class-wdkit-empty-search-handling.php:136
 #: includes/admin/api/class-wdkit-theme-builder.php:186
-#: includes/admin/class-api.php:464
+#: includes/admin/class-api.php:468
 #: includes/admin/hooks/class-wdkit-login-ajax.php:388
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:290
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:1052
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1053
 #, php-format
 msgid "API request error: %s"
 msgstr ""
@@ -201,341 +211,345 @@ msgstr ""
 msgid "Failed to fetch theme builder data."
 msgstr ""
 
-#: includes/admin/class-api.php:477
+#: includes/admin/class-api.php:429
+msgid "Unknown request type."
+msgstr ""
+
+#: includes/admin/class-api.php:481
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:803
 #: includes/admin/hooks/class-wdkit-login-ajax.php:401
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:303
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:1065
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:1066
 #: build/index.js:1
 msgid "Success"
 msgstr ""
 
-#: includes/admin/class-api.php:644
+#: includes/admin/class-api.php:648
 msgid "Server Error"
 msgstr ""
 
-#: includes/admin/class-api.php:645
+#: includes/admin/class-api.php:649
 msgid "Server Error, Data Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1025
-#: includes/admin/class-api.php:1026
-#: includes/admin/class-api.php:3944
+#: includes/admin/class-api.php:1028
+#: includes/admin/class-api.php:1029
+#: includes/admin/class-api.php:3947
 msgid "Data not found"
 msgstr ""
 
-#: includes/admin/class-api.php:1052
-#: includes/admin/class-api.php:1053
+#: includes/admin/class-api.php:1055
+#: includes/admin/class-api.php:1056
 #: build/index.js:1
 msgid "API Error"
 msgstr ""
 
-#: includes/admin/class-api.php:1075
+#: includes/admin/class-api.php:1078
 msgid "No Image Provided"
 msgstr ""
 
-#: includes/admin/class-api.php:1076
+#: includes/admin/class-api.php:1079
 msgid "No Image URL provided for save."
 msgstr ""
 
-#: includes/admin/class-api.php:1085
+#: includes/admin/class-api.php:1088
 msgid "Upload Failed"
 msgstr ""
 
-#: includes/admin/class-api.php:1093
+#: includes/admin/class-api.php:1096
 msgid "Image Saved"
 msgstr ""
 
-#: includes/admin/class-api.php:1094
+#: includes/admin/class-api.php:1097
 msgid "Image successfully saved to Media Library."
 msgstr ""
 
-#: includes/admin/class-api.php:1120
-#: includes/admin/class-api.php:1810
-#: includes/admin/class-api.php:1857
-#: includes/admin/class-api.php:1935
+#: includes/admin/class-api.php:1123
+#: includes/admin/class-api.php:1813
+#: includes/admin/class-api.php:1860
+#: includes/admin/class-api.php:1938
 msgid "Elementor kit not found"
 msgstr ""
 
-#: includes/admin/class-api.php:1121
-#: includes/admin/class-api.php:1811
-#: includes/admin/class-api.php:1858
-#: includes/admin/class-api.php:1936
+#: includes/admin/class-api.php:1124
+#: includes/admin/class-api.php:1814
+#: includes/admin/class-api.php:1861
+#: includes/admin/class-api.php:1939
 msgid "No active Elementor kit found"
 msgstr ""
 
-#: includes/admin/class-api.php:1212
-#: includes/admin/class-api.php:1788
-#: includes/admin/class-api.php:1832
+#: includes/admin/class-api.php:1215
+#: includes/admin/class-api.php:1791
+#: includes/admin/class-api.php:1835
 msgid "Global data Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1213
-#: includes/admin/class-api.php:1789
-#: includes/admin/class-api.php:1833
+#: includes/admin/class-api.php:1216
+#: includes/admin/class-api.php:1792
+#: includes/admin/class-api.php:1836
 msgid "Global Color and Typography found"
 msgstr ""
 
-#: includes/admin/class-api.php:1870
+#: includes/admin/class-api.php:1873
 msgid "No site data found in kit"
 msgstr ""
 
-#: includes/admin/class-api.php:1885
-#: includes/admin/class-api.php:1899
+#: includes/admin/class-api.php:1888
+#: includes/admin/class-api.php:1902
 msgid "Site data Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1886
-#: includes/admin/class-api.php:1900
+#: includes/admin/class-api.php:1889
+#: includes/admin/class-api.php:1903
 msgid "Site Globals Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1906
-#: includes/admin/class-api.php:1986
+#: includes/admin/class-api.php:1909
+#: includes/admin/class-api.php:1989
 msgid "Builder Not Found !"
 msgstr ""
 
-#: includes/admin/class-api.php:1907
-#: includes/admin/class-api.php:1987
+#: includes/admin/class-api.php:1910
+#: includes/admin/class-api.php:1990
 msgid "Template Builder not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:1948
+#: includes/admin/class-api.php:1951
 msgid "No meta data found in kit"
 msgstr ""
 
-#: includes/admin/class-api.php:1962
-#: includes/admin/class-api.php:1979
+#: includes/admin/class-api.php:1965
+#: includes/admin/class-api.php:1982
 msgid "Global data Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:1963
-#: includes/admin/class-api.php:1980
+#: includes/admin/class-api.php:1966
+#: includes/admin/class-api.php:1983
 msgid "Global Color and Typography Updated"
 msgstr ""
 
-#: includes/admin/class-api.php:2026
-#: includes/admin/class-api.php:2027
+#: includes/admin/class-api.php:2029
+#: includes/admin/class-api.php:2030
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:850
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:851
 msgid "Page Not Found!"
 msgstr ""
 
-#: includes/admin/class-api.php:2043
-#: includes/admin/class-api.php:2044
+#: includes/admin/class-api.php:2046
+#: includes/admin/class-api.php:2047
 msgid "Page Created"
 msgstr ""
 
-#: includes/admin/class-api.php:2058
-#: includes/admin/class-api.php:2059
+#: includes/admin/class-api.php:2061
+#: includes/admin/class-api.php:2062
 msgid "post deleted"
 msgstr ""
 
-#: includes/admin/class-api.php:2271
-#: includes/admin/class-api.php:2393
+#: includes/admin/class-api.php:2274
+#: includes/admin/class-api.php:2396
 msgid "Theme activated successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2272
-#: includes/admin/class-api.php:2394
+#: includes/admin/class-api.php:2275
+#: includes/admin/class-api.php:2397
 msgid "Theme successfully activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2280
-#: includes/admin/class-api.php:2400
+#: includes/admin/class-api.php:2283
+#: includes/admin/class-api.php:2403
 msgid "Theme Not Activated !"
 msgstr ""
 
-#: includes/admin/class-api.php:2290
+#: includes/admin/class-api.php:2293
 msgid "Somthing Wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:2291
+#: includes/admin/class-api.php:2294
 msgid "Error Somthing Wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:2292
+#: includes/admin/class-api.php:2295
 msgid "inactive"
 msgstr ""
 
-#: includes/admin/class-api.php:2305
+#: includes/admin/class-api.php:2308
 msgid "Theme Name not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:2306
+#: includes/admin/class-api.php:2309
 msgid "Can Not Found Theme Name you Enterd."
 msgstr ""
 
-#: includes/admin/class-api.php:2452
+#: includes/admin/class-api.php:2455
 msgid "Container Activated Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2453
+#: includes/admin/class-api.php:2456
 msgid "Elementor Container Activated Successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:2553
-#: includes/admin/class-api.php:2875
-#: includes/admin/class-api.php:2999
+#: includes/admin/class-api.php:2556
+#: includes/admin/class-api.php:2878
+#: includes/admin/class-api.php:3002
 msgid "Invalid import"
 msgstr ""
 
-#: includes/admin/class-api.php:2554
-#: includes/admin/class-api.php:2876
-#: includes/admin/class-api.php:3000
+#: includes/admin/class-api.php:2557
+#: includes/admin/class-api.php:2879
+#: includes/admin/class-api.php:3003
 msgid "Invalid import: Check your details and try again."
 msgstr ""
 
-#: includes/admin/class-api.php:2938
-#: includes/admin/class-api.php:2939
+#: includes/admin/class-api.php:2941
+#: includes/admin/class-api.php:2942
 msgid "Widget array not found"
 msgstr ""
 
-#: includes/admin/class-api.php:2948
+#: includes/admin/class-api.php:2951
 msgid "Relevant Plugin not Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2949
+#: includes/admin/class-api.php:2952
 msgid "Relevant Plugin not Installed / Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:2965
+#: includes/admin/class-api.php:2968
 msgid "Enabled widgets successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2966
+#: includes/admin/class-api.php:2969
 msgid "Used widgets have been enabled successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:2971
-#: includes/admin/class-api.php:2972
+#: includes/admin/class-api.php:2974
+#: includes/admin/class-api.php:2975
 msgid "Failed to enable widgets"
 msgstr ""
 
-#: includes/admin/class-api.php:3455
+#: includes/admin/class-api.php:3458
 msgid "Relevant Page Builder not installed or activated"
 msgstr ""
 
-#: includes/admin/class-api.php:3466
+#: includes/admin/class-api.php:3469
 #: build/index.js:1
 msgid "Something went wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:3539
-#: includes/admin/class-api.php:3540
+#: includes/admin/class-api.php:3542
+#: includes/admin/class-api.php:3543
 msgid "Plugin Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3545
-#: includes/admin/class-api.php:3546
+#: includes/admin/class-api.php:3548
+#: includes/admin/class-api.php:3549
 msgid "Plugin not found"
 msgstr ""
 
-#: includes/admin/class-api.php:3791
-#: includes/admin/class-api.php:3792
+#: includes/admin/class-api.php:3794
+#: includes/admin/class-api.php:3795
 msgid "Theme Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3831
-#: includes/admin/class-api.php:3832
+#: includes/admin/class-api.php:3834
+#: includes/admin/class-api.php:3835
 msgid "Site link updated"
 msgstr ""
 
-#: includes/admin/class-api.php:3838
-#: includes/admin/class-api.php:3839
+#: includes/admin/class-api.php:3841
+#: includes/admin/class-api.php:3842
 msgid "Site not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4222
+#: includes/admin/class-api.php:4226
 msgid "Workspace ID Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4223
+#: includes/admin/class-api.php:4227
 msgid "Workspace ID is required"
 msgstr ""
 
-#: includes/admin/class-api.php:4230
+#: includes/admin/class-api.php:4234
 msgid "Token Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4231
+#: includes/admin/class-api.php:4235
 msgid "Token is required"
 msgstr ""
 
-#: includes/admin/class-api.php:4285
+#: includes/admin/class-api.php:4289
 msgid "Widget JSON not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4286
+#: includes/admin/class-api.php:4290
 msgid "widget JSON file not found."
 msgstr ""
 
-#: includes/admin/class-api.php:4297
+#: includes/admin/class-api.php:4301
 msgid "Widget get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4298
+#: includes/admin/class-api.php:4302
 msgid "Widget JSON get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4303
+#: includes/admin/class-api.php:4307
 msgid "Widget not get"
 msgstr ""
 
-#: includes/admin/class-api.php:4304
+#: includes/admin/class-api.php:4308
 msgid "Widget JSON not get"
 msgstr ""
 
-#: includes/admin/class-api.php:4332
-#: includes/admin/class-api.php:4462
-#: includes/admin/class-api.php:4519
+#: includes/admin/class-api.php:4338
+#: includes/admin/class-api.php:4470
+#: includes/admin/class-api.php:4527
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:183
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:720
 msgid "server error"
 msgstr ""
 
-#: includes/admin/class-api.php:4336
+#: includes/admin/class-api.php:4342
 msgid " Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:4370
+#: includes/admin/class-api.php:4377
 msgid "No Response Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4371
+#: includes/admin/class-api.php:4378
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:188
 msgid "Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:4412
+#: includes/admin/class-api.php:4420
 msgid "no message"
 msgstr ""
 
-#: includes/admin/class-api.php:4467
+#: includes/admin/class-api.php:4475
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:4646
+#: includes/admin/class-api.php:4654
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4676
+#: includes/admin/class-api.php:4684
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4840
+#: includes/admin/class-api.php:4848
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4876
+#: includes/admin/class-api.php:4884
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:4885
+#: includes/admin/class-api.php:4893
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
-#: includes/admin/class-api.php:5105
+#: includes/admin/class-api.php:5113
 msgid "Dark Mode Updated"
 msgstr ""
 
@@ -572,11 +586,6 @@ msgstr ""
 #: includes/admin/class-wdkit-depends-installer.php:250
 #: includes/admin/class-wdkit-depends-installer.php:251
 msgid "Failed to activate WDesignKit"
-msgstr ""
-
-#: includes/admin/class-wdkit-enqueue.php:312
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:104
-msgid "WDesignKit"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:150
@@ -770,96 +779,148 @@ msgstr ""
 msgid "widget Type Not Found"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:922
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:923
 msgid "No widget IDs provided"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:923
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:924
 msgid "Please provide widget r_id values"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:940
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:941
 msgid "Server error"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:945
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:946
 msgid "Failed to check widget versions"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:957
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:958
 msgid "Version check completed"
 msgstr ""
 
-#: includes/admin/hooks/class-wdkit-widget-ajax.php:958
+#: includes/admin/hooks/class-wdkit-widget-ajax.php:959
 msgid "Widget versions retrieved successfully"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:113
-msgid "Quick Feedback"
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:112
+msgid "Quick Feedback Before You Go"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:131
-msgid "This is a temporary deactivation."
+#. translators: %s: plugin name
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:117
+#, php-format
+msgid "Help us improve %s, let us know why you're leaving."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:134
-msgid "Facing technical issues/bugs with the plugin."
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:121
+#: build/index.js:1
+msgid "Close"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:136
+msgid "Import Issues"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:137
-msgid "Performance Issues."
+msgid "Problems while importing templates, widgets, or snippets"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:140
-msgid "Found an alternative plugin."
+msgid "Temporary Deactivation"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:143
-msgid "No more planning to use."
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:141
+msgid "Not using it right now, but may come back later"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:146
-msgid "Don't want to use any WordPress plugin."
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:144
+msgid "Collaboration Issues"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:145
+msgid "Issues with team access, sharing, or workspace management"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:148
+msgid "Setup & Requirements Issues"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:149
-msgid "It's missing the feature I require."
+msgid "Compatibility or setup-related problems"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:152
+msgid "License & Activation Issues"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:153
+msgid "Trouble with license activation or access"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:156
+msgid "Something Not Working"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:157
+msgid "Features not working as expected"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:160
+msgid "Missing Features"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:161
+msgid "Couldn't find features you were looking for"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:164
 msgid "Other"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:167
-msgid "Please share the reason"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:173
-msgid "Submit & Deactivate"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:176
-msgid "Skip & Deactivate"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:183
-msgid "If you require any help,"
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:165
+msgid "Something else you'd like to share"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:186
-msgid "please add a ticket"
+msgid "Want to share more details?"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
-msgid "We reply within 24 working hours."
+msgid "Share what didn't work or how we can improve..."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:192
-msgid "Read"
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:200
+msgid "I agree to be contacted via email for support regarding this issue."
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:195
-msgid "Documentation."
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:209
+msgid "Need help with anything else? Raise a"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:211
+msgid "support ticket"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:212
+msgid ", we usually reply within 24 working hours. Looking for quick answers? Check our"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:214
+msgid "documentation"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:215
+msgid "."
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:224
+msgid "Skip & Deactivate"
+msgstr ""
+
+#: includes/admin/notices/class-wdkit-deactivate-feedback.php:227
+#: assets/js/main/review-form/review-plugin-form.js:12
+msgid "Submit"
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-plugin-page.php:95
@@ -954,6 +1015,12 @@ msgstr ""
 msgid "Select Template"
 msgstr ""
 
+#. translators: %s: minimum required PHP version
+#: wdesignkit.php:30
+#, php-format
+msgid "WDesignKit requires PHP %s or higher. Please update PHP to use this plugin."
+msgstr ""
+
 #: assets/js/main/elementor/elementor-editor.js:42
 msgid "Save Page in WDesignKit"
 msgstr ""
@@ -980,10 +1047,6 @@ msgstr ""
 
 #: assets/js/main/review-form/review-plugin-form.js:11
 msgid "Include your email with your review"
-msgstr ""
-
-#: assets/js/main/review-form/review-plugin-form.js:12
-msgid "Submit"
 msgstr ""
 
 #: build/index.js:1
@@ -2884,10 +2947,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Enter the URL of an external JS library (CDN). You can search for a JS CDN online or paste the link directly here."
-msgstr ""
-
-#: build/index.js:1
-msgid "Close"
 msgstr ""
 
 #: build/index.js:1

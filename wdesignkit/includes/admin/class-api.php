@@ -425,6 +425,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wdkit_get_workspace_data':
 					$data = $this->wdkit_get_workspace_data();
 					break;
+				default:
+					$this->wdkit_error_msg( __( 'Unknown request type.', 'wdesignkit' ) );
+					return;
 			}
 
 			$this->wdkit_success_msg( $data );
@@ -437,10 +440,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array $data give array.
-		 * @param array $name store data.
+		 * @param array  $data    give array.
+		 * @param array  $name    store data.
+		 * @param int    $timeout optional HTTP timeout in seconds. Default 100.
 		 */
-		protected function wkit_api_call( $data, $name ) {
+		protected function wkit_api_call( $data, $name, $timeout = 100 ) {
 			$u_r_l = $this->wdkit_api;
 
 			if ( empty( $u_r_l ) ) {
@@ -453,7 +457,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args     = array(
 				'method'  => 'POST',
 				'body'    => $data,
-				'timeout' => 100,
+				'timeout' => $timeout,
 			);
 			$response = wp_remote_post( $u_r_l . $name, $args );
 
@@ -461,7 +465,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$error_message = $response->get_error_message();
 
 				/* Translators: %s is a placeholder for the error message */
-				$error_message = printf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
+				$error_message = sprintf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
 
 				return array(
 					'massage' => $error_message,
@@ -480,7 +484,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			$error_message = printf( 'Server error: %d', esc_html( $status_code ) );
+			$error_message = sprintf( 'Server error: %d', esc_html( $status_code ) );
 
 			if ( isset( $error_data->message ) ) {
 				$error_message .= ' (' . $error_data->message . ')';
@@ -924,13 +928,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$user_email = strtolower( sanitize_email( $args['email'] ) );
 			$response   = '';
 
+			// Bug D fix: response()->json() is Laravel syntax — causes PHP fatal. Use plain array.
 			if ( empty( $user_email ) || empty( $args['template_id'] ) ) {
-				$response = response()->json(
-					array(
-						'message'     => $this->e_msg_login,
-						'description' => $this->e_desc_login,
-						'success'     => true,
-					)
+				$response = array(
+					'message'     => $this->e_msg_login,
+					'description' => $this->e_desc_login,
+					'success'     => false,
 				);
 
 				wp_send_json( $response );
@@ -4067,7 +4070,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$email    = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 			$response = '';
 
-			if ( empty( $user_email ) ) {
+			// Bug C fix: variable was $user_email but only $email is set above — always triggered empty() guard.
+			if ( empty( $email ) ) {
 				$response = array(
 					'message'     => $this->e_msg_login,
 					'description' => $this->e_desc_login,
@@ -4323,6 +4327,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'token'    => isset( $data->token ) ? sanitize_text_field( $data->token ) : '',
 				'type'     => isset( $data->type ) ? sanitize_text_field( $data->type ) : '',
 				'w_unique' => isset( $data->w_uniq ) ? sanitize_text_field( $data->w_uniq ) : '',
+				// Bug F fix: u_id (widget owner's user ID) was missing — cloud cannot locate the widget without it.
+				'u_id'     => isset( $data->u_id ) ? sanitize_text_field( $data->u_id ) : '',
 			);
 
 			$response = $this->wkit_api_call( $array_data, 'save_widget' );
@@ -4359,8 +4365,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$img_url   = ! empty( $response['data']['image'] ) ? $response['data']['image'] : '';
 			$json_data = ! empty( $response['data']['json'] ) ? json_decode( $response['data']['json'], true ) : '';
 
+			// Bug E fix (part 1): $responce was a typo of $response — sent undefined variable (null) to frontend.
 			if ( empty( $response['success'] ) ) {
-				wp_send_json( $responce );
+				wp_send_json( $response );
 				wp_die();
 			}
 
@@ -4407,8 +4414,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
 			}
 
+			// Bug E fix (part 2): success was hardcoded false on the successful download path — always reported failure.
 			$result = (object) array(
-				'success'     => false,
+				'success'     => true,
 				'message'     => ! empty( $response['message'] ) ? $response['message'] : esc_html__( 'no message', 'wdesignkit' ),
 				'description' => '',
 				'json'        => wp_json_encode( $json_data ),

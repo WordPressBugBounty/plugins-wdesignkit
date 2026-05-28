@@ -148,10 +148,13 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 
 		/**
 		 * Load Text Domain.
-		 * Text Domain : wdkit
+		 * On WP 6.7+ core auto-loads translations via the plugin header; the
+		 * manual call is only needed for WP 6.0–6.6.
 		 */
 		public function load_textdomain() {
-			load_plugin_textdomain( 'wdesignkit', false, WDKIT_BDNAME . '/languages/' );
+			if ( version_compare( get_bloginfo( 'version' ), '6.7', '<' ) ) {
+				load_plugin_textdomain( 'wdesignkit', false, WDKIT_BDNAME . '/languages/' );
+			}
 		}
 
 		/**
@@ -179,6 +182,8 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';
+
+			require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-main.php';
 		}
 
 	}

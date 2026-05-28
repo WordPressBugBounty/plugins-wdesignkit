@@ -90,7 +90,7 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 		 *
 		 * @since 1.0.0
 		 */
-		public function wdkit_active_settings_function( $settings = array(), $builder = '' ) {
+		public function wdkit_active_settings_function( $settings = array(), $builder = array() ) {
 
 			$wkit_settings_panel = get_option( 'wkit_settings_panel', false );
 
@@ -102,7 +102,13 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 			// Merge DB values with new settings.
 			$updated_settings = array_merge( $wkit_settings_panel, $settings );
 
-			if ( in_array( 'nexter-blocks', $builder ) ) {
+			$builder = is_array( $builder ) ? $builder : array();
+
+			if ( ! function_exists( 'is_plugin_active' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+
+			if ( in_array( 'nexter-blocks', $builder, true ) ) {
 
 				if ( is_plugin_active( 'the-plus-addons-for-block-editor/the-plus-addons-for-block-editor.php' ) ) {
 					$updated_settings['gutenberg_builder'] = true;
@@ -113,7 +119,7 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 				}
 			}
 
-			if ( in_array( 'elementor', $builder ) ) {
+			if ( in_array( 'elementor', $builder, true ) ) {
 
 				if ( is_plugin_active( 'elementor/elementor.php' ) ) {
 					$updated_settings['elementor_builder'] = true;
@@ -158,7 +164,7 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 
 			if ( is_array( $data[ $key ] ) ) {
 				foreach ( $data[ $key ] as $index => $value ) {
-					$data[ $index ] = self::sanitize_array_recursive( $value );
+					$data[ $index ] = self::sanitize_array_recursive( $data[ $key ], $index );
 				}
 
 				return $data;

@@ -73,8 +73,8 @@ if ( ! class_exists( 'Wdkit_Depends_Installer' ) ) {
 
 			if ( isset( $plugin_data['freepro'] ) && 1 === $plugin_data['freepro'] ) {
 				if ( ! $installed ) {
-					$status = array(
-						'p_id'    => !empty( $plugin_data['p_id'] ) ? $plugin_data['p_id'] : '',
+					return array(
+						'p_id'    => ! empty( $plugin_data['p_id'] ) ? $plugin_data['p_id'] : '',
 						'success' => false,
 						'status'  => 'pro_plugin',
 						'message' => 'Pro Plugin',

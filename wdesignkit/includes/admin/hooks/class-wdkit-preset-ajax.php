@@ -266,7 +266,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 		 * @param array $data give array.
 		 * @param array $name store data.
 		 */
-		protected function wkit_api_call( $data, $name ) {
+		protected function wkit_api_call( $data, $name, $timeout = 100 ) {
 			$u_r_l = $this->wdkit_api;
 
 			if ( empty( $u_r_l ) ) {
@@ -279,7 +279,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 			$args     = array(
 				'method'  => 'POST',
 				'body'    => $data,
-				'timeout' => 100,
+				'timeout' => $timeout,
 			);
 			$response = wp_remote_post( $u_r_l . $name, $args );
 
@@ -287,7 +287,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 				$error_message = $response->get_error_message();
 
 				/* Translators: %s is a placeholder for the error message */
-				$error_message = printf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
+				$error_message = sprintf( esc_html__( 'API request error: %s', 'wdesignkit' ), esc_html( $error_message ) );
 
 				return array(
 					'massage' => $error_message,
@@ -306,7 +306,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 				);
 			}
 
-			$error_message = printf( 'Server error: %d', esc_html( $status_code ) );
+			$error_message = sprintf( 'Server error: %d', esc_html( $status_code ) );
 
 			if ( isset( $error_data->message ) ) {
 				$error_message .= ' (' . $error_data->message . ')';

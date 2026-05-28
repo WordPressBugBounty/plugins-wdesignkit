@@ -3,11 +3,12 @@
  * Plugin Name: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder
  * Plugin URI: https://wdesignkit.com/
  * Description: Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 100+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more.
- * Version: 2.3.3
+ * Version: 2.4.0
  * Author: POSIMYTH
  * Author URI: https://posimyth.com/
  * Text Domain: wdesignkit
  * Domain Path: /languages
+ * Requires PHP: 7.4
  * License: GPLv3
  * License URI: https://opensource.org/licenses/GPL-3.0
  *
@@ -19,7 +20,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WDKIT_VERSION', '2.3.3' );
+if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
+	add_action(
+		'admin_notices',
+		function () {
+			echo '<div class="notice notice-error"><p>' .
+				sprintf(
+					/* translators: %s: minimum required PHP version */
+					esc_html__( 'WDesignKit requires PHP %s or higher. Please update PHP to use this plugin.', 'wdesignkit' ),
+					'7.4'
+				) .
+				'</p></div>';
+		}
+	);
+	return;
+}
+
+define( 'WDKIT_VERSION', '2.4.0' );
 define( 'WDKIT_FILE', __FILE__ );
 define( 'WDKIT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WDKIT_PBNAME', plugin_basename( __FILE__ ) );
