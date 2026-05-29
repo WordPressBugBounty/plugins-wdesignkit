@@ -174,6 +174,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			// Only load in Bricks editor
 			if ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
 				wp_enqueue_style( 'wdkit-bricks-editor-css', WDKIT_URL . 'assets/css/bricks/wdkit_enqueue_editor_styles.css', array(), WDKIT_VERSION );
+				// Cross-domain copy/paste for Bricks is marked "Coming Soon" — do not enqueue yet.
 
 				// Hide WDesignKit logo icon when white label is enabled
 				$white_label = get_option( 'wkit_white_label', false );
@@ -188,6 +189,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_gutenberg_editor_style() {
 			wp_enqueue_style( 'wdkit-gutenberg-editor-css', WDKIT_URL . 'assets/css/gutenberg/wdkit_enqueue_editor_styles.css', array(), WDKIT_VERSION );
+			$this->wdkit_cross_copy_paste_script( 'gutenberg' );
 
 			// Hide WDesignKit logo icon + Need Help panel when white label is enabled
 			$white_label = get_option( 'wkit_white_label', false );
@@ -300,7 +302,65 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {
 				wp_enqueue_script( 'wdkit-frontend-editor', WDKIT_ASSETS . '/js/main/elementor/elementor-editor.js', array( 'jquery', 'wp-i18n' ), WDKIT_VERSION, true );
+				$this->wdkit_cross_copy_paste_script( 'elementor' );
 			}
+		}
+
+		/**
+		 * Enqueue cross-domain copy/paste support for active builders.
+		 *
+		 * @since 1.0.0
+		 */
+		public function wdkit_cross_copy_paste_script( $builder = '' ) {
+			$settings = get_option( 'wkit_settings_panel', array() );
+			$enabled  = array(
+				'elementor' => ! empty( $settings['cross_copy_paste_elementor'] ) || ! empty( $settings['cross_copy_paste'] ),
+				'gutenberg' => ! empty( $settings['cross_copy_paste_gutenberg'] ) || ! empty( $settings['cross_copy_paste'] ),
+				// Bricks support is "Coming Soon" — force-disabled regardless of saved setting.
+				'bricks'    => false,
+			);
+
+			if ( empty( array_filter( $enabled ) ) ) {
+				return;
+			}
+
+			if ( ! empty( $builder ) && empty( $enabled[ $builder ] ) ) {
+				return;
+			}
+
+			if ( wp_script_is( 'wdkit-cross-copy-paste', 'enqueued' ) ) {
+				return;
+			}
+
+			$deps = array( 'wp-i18n' );
+			// Gutenberg SlotFill needs these so the block toolbar's
+			// "Options" menu can host our "WDesignKit Copy / Paste" items.
+			if ( ! empty( $enabled['gutenberg'] ) ) {
+				$deps[] = 'wp-plugins';
+				$deps[] = 'wp-element';
+				$deps[] = 'wp-components';
+				$deps[] = 'wp-block-editor';
+				$deps[] = 'wp-data';
+				$deps[] = 'wp-blocks';
+				$deps[] = 'wp-dom-ready';
+			}
+
+			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . '/js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, true );
+			wp_localize_script(
+				'wdkit-cross-copy-paste',
+				'wdkitCrossCopyPaste',
+				array(
+					'enabled'   => true,
+					'version'   => WDKIT_VERSION,
+					'site'      => esc_url( home_url( '/' ) ),
+					'builders'  => $enabled,
+					// Direct AJAX access — the editor pages don't always
+					// load the dashboard wdkitData global. Needed for the
+					// wdkit_cp_check_widgets endpoint.
+					'ajax_url'  => admin_url( 'admin-ajax.php' ),
+					'kit_nonce' => wp_create_nonce( 'wdkit_nonce' ),
+				)
+			);
 		}
 
 		/**

@@ -49,6 +49,7 @@ if ( ! class_exists( 'Wdkit_Dashboard_Main' ) ) {
 		public function __construct() {
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-kit-import-hook.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-import-temp-ajax.php';
+			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-copy-paste-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-preset-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-login-ajax.php';
 			include WDKIT_INCLUDES . 'admin/hooks/class-wdkit-widget-ajax.php';

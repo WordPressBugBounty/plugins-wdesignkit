@@ -4596,16 +4596,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$get_setting = get_option( 'wkit_settings_panel', false );
 
 			$setting_data = array(
-				'builder'                => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
-				'template'               => isset( $get_setting['template'] ) ? $get_setting['template'] : true,
-				'gutenberg_builder'      => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
-				'gutenberg_core_builder' => isset( $get_setting['gutenberg_core_builder'] ) ? $get_setting['gutenberg_core_builder'] : false,
-				'elementor_builder'      => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
-				'bricks_builder'         => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
-				'gutenberg_template'     => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
-				'elementor_template'     => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
-				'code_snippet'           => isset( $get_setting['code_snippet'] ) ? $get_setting['code_snippet'] : true,
-				'plugin_version'         => $version_check,
+				'builder'                    => isset( $get_setting['builder'] ) ? $get_setting['builder'] : true,
+				'template'                   => isset( $get_setting['template'] ) ? $get_setting['template'] : true,
+				'gutenberg_builder'          => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
+				'gutenberg_core_builder'     => isset( $get_setting['gutenberg_core_builder'] ) ? $get_setting['gutenberg_core_builder'] : false,
+				'elementor_builder'          => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
+				'bricks_builder'             => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
+				'gutenberg_template'         => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
+				'elementor_template'         => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
+				'code_snippet'               => isset( $get_setting['code_snippet'] ) ? $get_setting['code_snippet'] : true,
+				'cross_copy_paste'           => isset( $get_setting['cross_copy_paste'] ) ? $get_setting['cross_copy_paste'] : false,
+				'cross_copy_paste_elementor' => isset( $get_setting['cross_copy_paste_elementor'] ) ? $get_setting['cross_copy_paste_elementor'] : false,
+				'cross_copy_paste_gutenberg' => isset( $get_setting['cross_copy_paste_gutenberg'] ) ? $get_setting['cross_copy_paste_gutenberg'] : false,
+				'cross_copy_paste_bricks'    => isset( $get_setting['cross_copy_paste_bricks'] ) ? $get_setting['cross_copy_paste_bricks'] : false,
+				'plugin_version'             => $version_check,
 			);
 
 			if ( isset( $get_setting['remove_db'] ) ) {

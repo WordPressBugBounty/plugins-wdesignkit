@@ -74,6 +74,10 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 					'gutenberg_template' => true,
 					'elementor_template' => true,
 					'code_snippet'       => true,
+					'cross_copy_paste'   => false,
+					'cross_copy_paste_elementor' => true,
+					'cross_copy_paste_gutenberg' => true,
+					'cross_copy_paste_bricks'    => false,
 				);
 
 				add_option( 'wkit_settings_panel', $settings_options );

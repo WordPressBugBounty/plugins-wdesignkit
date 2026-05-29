@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.4.0\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-28T10:58:30+00:00\n"
+"POT-Creation-Date: 2026-05-29T07:34:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -40,7 +40,7 @@ msgid "https://posimyth.com/"
 msgstr ""
 
 #: includes/abilities/class-wdk-ability-main.php:64
-#: includes/admin/class-wdkit-enqueue.php:315
+#: includes/admin/class-wdkit-enqueue.php:375
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:103
 msgid "WDesignKit"
 msgstr ""
@@ -53,6 +53,9 @@ msgstr ""
 #: includes/admin/api/class-wdkit-empty-search-handling.php:70
 #: includes/admin/api/class-wdkit-theme-builder.php:69
 #: includes/admin/class-api.php:147
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:87
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:286
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:339
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:76
 #: includes/admin/hooks/class-wdkit-login-ajax.php:70
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:70
@@ -101,7 +104,7 @@ msgstr ""
 #: includes/admin/class-api.php:1872
 #: includes/admin/class-api.php:1950
 #: includes/admin/class-api.php:3946
-#: includes/admin/class-api.php:4637
+#: includes/admin/class-api.php:4641
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:149
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:182
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:550
@@ -529,27 +532,27 @@ msgstr ""
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:4654
+#: includes/admin/class-api.php:4658
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:4684
+#: includes/admin/class-api.php:4688
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:4848
+#: includes/admin/class-api.php:4852
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4884
+#: includes/admin/class-api.php:4888
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:4893
+#: includes/admin/class-api.php:4897
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
-#: includes/admin/class-api.php:5113
+#: includes/admin/class-api.php:5117
 msgid "Dark Mode Updated"
 msgstr ""
 
@@ -586,6 +589,44 @@ msgstr ""
 #: includes/admin/class-wdkit-depends-installer.php:250
 #: includes/admin/class-wdkit-depends-installer.php:251
 msgid "Failed to activate WDesignKit"
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:79
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:279
+msgid "Security check failed."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:96
+msgid "Invalid builder."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:104
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:301
+msgid "Payload too large."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:293
+msgid "Empty content."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:307
+msgid "Invalid JSON payload."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:313
+msgid "Elementor not active."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:332
+msgid "Invalid nonce."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:332
+msgid "Security check failed. Please refresh and try again."
+msgstr ""
+
+#: includes/admin/hooks/class-wdkit-copy-paste-ajax.php:339
+msgid "You do not have permission to perform this action."
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:150
@@ -3278,6 +3319,10 @@ msgid "White Label"
 msgstr ""
 
 #: build/index.js:1
+msgid "Cross Domain Copy/Paste"
+msgstr ""
+
+#: build/index.js:1
 msgid "Only Studio and Agency Bundle users can access this feature."
 msgstr ""
 
@@ -3394,6 +3439,10 @@ msgid "Customize branding with your own identity.   "
 msgstr ""
 
 #: build/index.js:1
+msgid "Enable copy and paste between different domains."
+msgstr ""
+
+#: build/index.js:1
 msgid "Elementor"
 msgstr ""
 
@@ -3479,6 +3528,18 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Note: This button will delete all of WDesignKit's settings from Database. You will then need to enter all your settings again. You can also do this before deactivating/deinstalling WDesignKit if you wish."
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Elementor editor."
+msgstr ""
+
+#: build/index.js:1
+msgid "Gutenberg"
+msgstr ""
+
+#: build/index.js:1
+msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Gutenberg editor."
 msgstr ""
 
 #: build/index.js:1
@@ -3683,10 +3744,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Page Templates"
-msgstr ""
-
-#: build/index.js:1
-msgid "Gutenberg"
 msgstr ""
 
 #: build/index.js:1
