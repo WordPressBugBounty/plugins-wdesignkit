@@ -116,14 +116,29 @@ function wdesignkit_mcp_download_widget(array $input): array {
     // Auto-resolve u_id from the active WDesignKit cloud session when not supplied by the caller.
     // The cloud stores the user's own ID in the auth transient alongside the token.
     if ($u_id === '' && $logged_in) {
+        // Normalise transient value regardless of storage backend (PHP serialised, JSON, stdClass).
+        $normalise_dl_auth = static function ($raw): array {
+            if (is_array($raw)) {
+                return $raw;
+            }
+            if ($raw instanceof \stdClass) {
+                return (array) $raw;
+            }
+            if (is_string($raw) && $raw !== '') {
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+            return [];
+        };
+
         // Primary lookup: transient keyed to current WP user's email prefix.
         $current_wp_user = wp_get_current_user();
         if ($current_wp_user && $current_wp_user->user_email) {
             $user_key  = strstr($current_wp_user->user_email, '@', true);
-            $auth_data = get_transient('wdkit_auth_' . $user_key);
-            if (is_array($auth_data)) {
-                $u_id = (string) ($auth_data['user_id'] ?? $auth_data['id'] ?? '');
-            }
+            $auth_data = $normalise_dl_auth(get_transient('wdkit_auth_' . $user_key));
+            $u_id      = (string) ($auth_data['user_id'] ?? $auth_data['id'] ?? '');
         }
         // Fallback: scan all wdkit_auth_* transients and match by token.
         if ($u_id === '' && $token !== '') {
@@ -136,8 +151,8 @@ function wdesignkit_mcp_download_widget(array $input): array {
                 ARRAY_A
             );
             foreach (($rows ?: []) as $row) {
-                $data = @maybe_unserialize($row['option_value']);
-                if (is_array($data) && !empty($data['token']) && $data['token'] === $token) {
+                $data = $normalise_dl_auth(@maybe_unserialize($row['option_value']));
+                if (!empty($data['token']) && $data['token'] === $token) {
                     $u_id = (string) ($data['user_id'] ?? $data['id'] ?? '');
                     if ($u_id !== '') {
                         break;

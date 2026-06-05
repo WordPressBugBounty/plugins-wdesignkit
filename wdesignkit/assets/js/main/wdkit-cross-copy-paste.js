@@ -29,6 +29,12 @@
 	// global if available (kept for older enqueue paths).
 	var ajax = config.ajax_url || (window.wdkitData && window.wdkitData.ajax_url) || '';
 	var nonce = config.kit_nonce || (window.wdkitData && window.wdkitData.kit_nonce) || '';
+	// Base URL of the WDesignKit dashboard (hash-router) page. Missing
+	// widgets are installed by opening its `/create/widget/:w_unique` route
+	// in a hidden iframe. Fall back to deriving it from the ajax URL when
+	// the localized value isn't present.
+	var dashboardUrl = config.dashboard_url
+		|| (ajax ? ajax.replace('admin-ajax.php', 'admin.php?page=wdesign-kit') : '');
 
 	// ---------------------------------------------------------------
 	// Generic helpers
@@ -176,12 +182,13 @@
 	// "ElementTypeNotFound: Element type not found: 'wb-xxxxx'".
 	//
 	// This block detects them, asks the server which are missing, and
-	// auto-installs the missing ones by loading the existing
-	// /download/widget/:w_unique dashboard route inside a hidden
-	// iframe (which re-uses all the React-side download + file-creation
-	// machinery without us having to port 1500 lines of widget
-	// codegen).  Each iframe posts `closePopup` to the parent window
-	// when its download finishes; we listen for that to mark progress.
+	// auto-installs the missing ones by loading the dashboard's
+	// /create/widget/:w_unique route inside a hidden iframe (which
+	// re-uses all the React-side download + file-creation machinery
+	// without us having to port 1500 lines of widget codegen).  Each
+	// iframe posts a `wdkit_widget_create_result` message back to the
+	// parent window when it finishes; we listen for that to mark
+	// per-widget success / failure progress.
 	// ---------------------------------------------------------------
 
 	function extractWdkitWidgetIdsElementor(content) {
@@ -276,6 +283,363 @@
 		return checkInstalledWidgets(ids, builder).then(function (check) {
 			var missing = check.missing || [];
 			return { ok: 0 === missing.length, missing: missing };
+		});
+	}
+
+	// ---------------------------------------------------------------
+	// Widget download (auto-install missing WDesignKit widgets)
+	//
+	// Each missing widget is installed by opening the dashboard's React
+	// `Widget_creator` route (/create/widget/:w_unique) in a hidden iframe.
+	// That route downloads the widget and writes its files using the
+	// existing file-creation machinery, then posts a
+	// `wdkit_widget_create_result` message back to us with the outcome.
+	// The server may reject a download — e.g. a PRO widget on a free
+	// account — in which case the message carries { success:false, name,
+	// message } so we can surface the exact widget + reason in the popup.
+	// ---------------------------------------------------------------
+
+	/**
+	 * Download a single missing widget. Always resolves (never rejects)
+	 * with a popup row: { w_unique, name, status: 'done'|'fail', msg }.
+	 *
+	 * The actual download + file-creation is delegated to the dashboard's
+	 * React `Widget_creator` route (/create/widget/:w_unique), loaded in a
+	 * hidden iframe. That route re-uses all the existing widget codegen and
+	 * posts a `wdkit_widget_create_result` message back with the outcome —
+	 * so we don't re-implement ~1500 lines of file-creation here, and the
+	 * popup can show the exact success / failure reason it reports.
+	 */
+	function downloadWidget(w) {
+		var fallbackName = (__('Downloading Widget', 'wdesignkit'));
+
+		var loginData = null;
+		try {
+			loginData = JSON.parse(window.localStorage.getItem('wdkit-login'));
+		} catch (e) { }
+
+		if (!loginData || !loginData.token) {
+			return Promise.resolve({
+				w_unique: w.w_unique,
+				name: fallbackName,
+				status: 'fail',
+				msg: __('Please log in to WDesignKit to download this widget.', 'wdesignkit'),
+			});
+		}
+
+		if (!dashboardUrl) {
+			return Promise.resolve({
+				w_unique: w.w_unique,
+				name: fallbackName,
+				status: 'fail',
+				msg: __('Download is not available right now.', 'wdesignkit'),
+			});
+		}
+
+		// Only accept messages coming from the dashboard's own origin.
+		var expectedOrigin = '';
+		try {
+			expectedOrigin = new URL(dashboardUrl, window.location.href).origin;
+		} catch (e) { }
+
+		return new Promise(function (resolve) {
+			var settled = false;
+			var iframe = document.createElement('iframe');
+			var timer = null;
+
+			function cleanup() {
+				window.removeEventListener('message', onMessage);
+				if (timer) { clearTimeout(timer); timer = null; }
+				try { iframe.parentNode && iframe.parentNode.removeChild(iframe); } catch (e) { }
+			}
+
+			function finish(row) {
+				if (settled) { return; }
+				settled = true;
+				cleanup();
+				resolve(row);
+			}
+
+			function onMessage(event) {
+				if (expectedOrigin && event.origin !== expectedOrigin) {
+					return;
+				}
+				var d = event.data;
+				if (!d || 'object' !== typeof d || 'wdkit_widget_create_result' !== d.type) {
+					return;
+				}
+				// Ignore results for a different widget (multiple installs
+				// run sequentially, but be defensive about stray messages).
+				if (d.w_unique && w.w_unique && String(d.w_unique) !== String(w.w_unique)) {
+					return;
+				}
+				if (d.success) {
+					finish({ w_unique: w.w_unique, name: d.name || fallbackName, status: 'done', assets: d.assets || null });
+				} else {
+					finish({
+						w_unique: w.w_unique,
+						name: d.name || fallbackName,
+						status: 'fail',
+						msg: d.message || __('Download failed.', 'wdesignkit'),
+					});
+				}
+			}
+
+			window.addEventListener('message', onMessage);
+
+			// Fail-safe: never leave a row spinning forever if the iframe
+			// never reports back (e.g. the dashboard failed to boot).
+			timer = setTimeout(function () {
+				finish({
+					w_unique: w.w_unique,
+					name: fallbackName,
+					status: 'fail',
+					msg: __('Download timed out. Please try again.', 'wdesignkit'),
+				});
+			}, 60000);
+
+			iframe.setAttribute('aria-hidden', 'true');
+			iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;left:-9999px;top:-9999px;opacity:0;';
+			iframe.src = dashboardUrl + '#/create/widget/' + encodeURIComponent(w.w_unique);
+			document.body.appendChild(iframe);
+		});
+	}
+
+	/**
+	 * Download every missing widget, showing live progress in the popup
+	 * (spinner per row while downloading, then check / cross). Resolves
+	 * to the final array of rows so the caller can decide success vs error.
+	 */
+	function downloadMissingWidgets(missing) {
+		// Seed rows in the "downloading" (pending) state.
+		var rows = missing.map(function (w) {
+			return {
+				w_unique: w.w_unique,
+				name: (__('Downloading Widget', 'wdesignkit')),
+				status: 'pending',
+			};
+		});
+
+		function renderProgress() {
+			showPopup({
+				status: 'loading',
+				message: __('Downloading required widgets…', 'wdesignkit'),
+				widgets: rows,
+			});
+		}
+
+		renderProgress();
+
+		// Download sequentially so each row flips done/fail in order and the
+		// server isn't hit with a burst of parallel requests.
+		var index = 0;
+		function next() {
+			if (index >= missing.length) {
+				return Promise.resolve(rows);
+			}
+			var i = index++;
+			return downloadWidget(missing[i]).then(function (row) {
+				rows[i] = row;
+				renderProgress();
+				return next();
+			});
+		}
+
+		return next();
+	}
+
+	// ---------------------------------------------------------------
+	// Runtime widget registration (load freshly-installed widgets into the
+	// live editor WITHOUT a page reload, so the paste renders them)
+	//
+	// Elementor: ask the editor to (re)fetch the widget config for any
+	//   widget it doesn't yet have cached. This populates
+	//   `elementor.widgetsCache` with the new `wb-*` type so
+	//   `document/elements/create` no longer throws ElementTypeNotFound; the
+	//   widget's own CSS/JS are enqueued automatically when Elementor renders
+	//   it in the preview.
+	//
+	// Gutenberg: inject the widget's generated editor script (which calls
+	//   `registerBlockType('wdkit/wb-…')`) plus its stylesheet, so the block
+	//   becomes available to `insertBlocks`.
+	// ---------------------------------------------------------------
+
+	function injectScriptOnce(doc, url) {
+		return new Promise(function (resolve) {
+			if (!doc || !url) { resolve(false); return; }
+			try {
+				if (doc.querySelector('script[data-wdkit-widget-src="' + url + '"]')) {
+					resolve(true);
+					return;
+				}
+				var s = doc.createElement('script');
+				s.src = url;
+				s.async = false;
+				s.setAttribute('data-wdkit-widget-src', url);
+				s.onload = function () { resolve(true); };
+				s.onerror = function () { resolve(false); };
+				(doc.head || doc.documentElement).appendChild(s);
+			} catch (e) {
+				resolve(false);
+			}
+		});
+	}
+
+	function injectStylesheetOnce(doc, url) {
+		try {
+			if (!doc || !url) { return; }
+			if (doc.querySelector('link[data-wdkit-widget-css="' + url + '"]')) { return; }
+			var l = doc.createElement('link');
+			l.rel = 'stylesheet';
+			l.href = url;
+			l.setAttribute('data-wdkit-widget-css', url);
+			(doc.head || doc.documentElement).appendChild(l);
+		} catch (e) { }
+	}
+
+	/**
+	 * Populate elementor.widgetsCache with any widget types not yet cached
+	 * (i.e. the ones we just installed). Mirrors the editor's own
+	 * requestWidgetsConfig() but resolves a Promise so we can await it.
+	 */
+	function elementorEnsureWidgets() {
+		if (!window.elementor) {
+			return Promise.resolve();
+		}
+
+		return new Promise(function (resolve) {
+			var settled = false;
+			function done() { if (!settled) { settled = true; resolve(); } }
+
+			try {
+				var cache = elementor.widgetsCache || {};
+				if (window.elementorCommon && elementorCommon.ajax && elementorCommon.ajax.addRequest) {
+					var exclude = {};
+					Object.keys(cache).forEach(function (name) {
+						if (cache[name] && cache[name].controls) {
+							exclude[name] = true;
+						}
+					});
+					elementorCommon.ajax.addRequest('get_widgets_config', {
+						data: { exclude: exclude },
+						success: function (data) {
+							try { elementor.addWidgetsCache(data); } catch (e) { }
+							done();
+						},
+						error: function () { done(); },
+					});
+					// Safety net so a stalled request never hangs the paste.
+					setTimeout(done, 10000);
+					return;
+				}
+
+				// Fallback: full widget refresh (reloads only the preview canvas).
+				if ('function' === typeof elementor.refreshWidgets) {
+					var p = elementor.refreshWidgets();
+					if (p && p.then) {
+						p.then(done, done);
+						setTimeout(done, 10000);
+						return;
+					}
+				}
+			} catch (e) { }
+
+			done();
+		});
+	}
+
+	function loadGutenbergWidgetAssets(assets) {
+		if (!assets || !assets.js) {
+			return Promise.resolve();
+		}
+
+		var docs = [document];
+		try {
+			var gb = findGutenbergEditorIframe();
+			if (gb && gb.contentDocument) {
+				docs.push(gb.contentDocument);
+			}
+		} catch (e) { }
+
+		if (assets.css) {
+			docs.forEach(function (doc) { injectStylesheetOnce(doc, assets.css); });
+		}
+
+		// registerBlockType must run where wp.blocks lives — the top window.
+		return injectScriptOnce(document, assets.js);
+	}
+
+	/**
+	 * Load every freshly-installed widget into the live editor so the
+	 * subsequent paste renders it without a page reload.
+	 */
+	function registerInstalledWidgets(rows, builder) {
+		var done = (rows || []).filter(function (r) { return r && 'done' === r.status; });
+		if (!done.length) {
+			return Promise.resolve();
+		}
+
+		if ('elementor' === builder) {
+			return elementorEnsureWidgets();
+		}
+
+		if ('gutenberg' === builder) {
+			return Promise.all(done.map(function (r) {
+				return loadGutenbergWidgetAssets(r.assets);
+			})).then(function () { return true; }).catch(function () { return true; });
+		}
+
+		return Promise.resolve();
+	}
+
+	/**
+	 * Run the missing-widget download flow, then show a success popup (and
+	 * run onAllInstalled) or an error popup naming the widget(s) that failed.
+	 *
+	 * @param {Array}    missing         List of { w_unique, name } from checkRequiredWidgets.
+	 * @param {Function} onAllInstalled  Called when every widget downloaded OK.
+	 * @param {string}   builder         'elementor' | 'gutenberg' — drives how the
+	 *                                   newly installed widgets are registered live.
+	 */
+	function handleMissingWidgets(missing, onAllInstalled, builder) {
+		return downloadMissingWidgets(missing).then(function (rows) {
+			var failed = rows.filter(function (r) { return 'fail' === r.status; });
+
+			if (!failed.length) {
+				// Register / enqueue the freshly installed widgets in the live
+				// editor so the paste renders them WITHOUT a page reload.
+				showPopup({
+					status: 'loading',
+					message: __('Preparing widgets…', 'wdesignkit'),
+				});
+				return registerInstalledWidgets(rows, builder).then(function () {
+					showPopup({
+						status: 'success',
+						message: __('Required widgets downloaded successfully.', 'wdesignkit'),
+					});
+					if ('function' === typeof onAllInstalled) {
+						return onAllInstalled();
+					}
+					return true;
+				});
+			}
+
+			// One failure → show its name + reason directly. Multiple → list
+			// each failed widget as a row with its reason.
+			if (1 === failed.length) {
+				showPopup({
+					status: 'error',
+					message: failed[0].name,
+					description: failed[0].msg || __('This widget could not be downloaded.', 'wdesignkit'),
+				});
+			} else {
+				showPopup({
+					status: 'error',
+					message: __('Some widgets could not be downloaded.', 'wdesignkit'),
+					widgets: failed,
+				});
+			}
+			return false;
 		});
 	}
 
@@ -439,6 +803,7 @@
 			'.wdkit-cross-popup-close:hover{background:#f4f4f6;color:#020202;}',
 			'.wdkit-cross-popup-icon{display:flex;align-items:center;justify-content:center;width:64px;height:64px;}',
 			'.wdkit-cross-popup-message{margin:0;color:#020202;font-size:18px;font-weight:600;text-align:center;line-height:1.4;}',
+			'.wdkit-cross-popup-desc{margin:0;color:#5a5a66;font-size:14px;font-weight:400;text-align:center;line-height:1.5;}',
 			'.wdkit-cross-popup-spinner{width:58px;height:58px;border:4px solid #FCE8F1;border-top-color:#C22076;border-radius:50%;animation:wdkitCrossSpin 1s linear infinite;}',
 			'@keyframes wdkitCrossSpin{to{transform:rotate(360deg);}}',
 			/* widget list */
@@ -463,7 +828,7 @@
 
 	function buildPopupIcon(status) {
 		if ('loading' === status) {
-			return '<div class="wdkit-cross-popup-spinner" role="status" aria-label="Loading"></div>';
+			return '<div class="wdkit-cross-popup-spinner" role="status" aria-label="' + escapeAttr(__('Loading', 'wdesignkit')) + '"></div>';
 		}
 		if ('success' === status) {
 			return '<svg width="56" height="56" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">'
@@ -532,6 +897,7 @@
 		opts = opts || {};
 		var status = opts.status || 'success';
 		var message = opts.message || '';
+		var description = opts.description || '';
 		var widgets = Array.isArray(opts.widgets) ? opts.widgets : null;
 		var actions = Array.isArray(opts.actions) ? opts.actions : null;
 		// Auto-close only for simple success/warning/error popups without
@@ -545,12 +911,13 @@
 		// Reuse the existing node when possible so back-to-back state changes
 		// (loading → success) animate smoothly instead of flickering.
 		var overlay = document.getElementById(POPUP_ID);
-		var modal, iconWrap, msgEl, widgetsEl, actionsEl;
+		var modal, iconWrap, msgEl, descEl, widgetsEl, actionsEl;
 
 		if (overlay) {
 			modal = overlay.querySelector('.wdkit-cross-popup-modal');
 			iconWrap = overlay.querySelector('.wdkit-cross-popup-icon');
 			msgEl = overlay.querySelector('.wdkit-cross-popup-message');
+			descEl = overlay.querySelector('.wdkit-cross-popup-desc');
 			widgetsEl = overlay.querySelector('.wdkit-cross-popup-widgets');
 			actionsEl = overlay.querySelector('.wdkit-cross-popup-actions');
 		} else {
@@ -564,7 +931,7 @@
 			var closeBtn = document.createElement('button');
 			closeBtn.type = 'button';
 			closeBtn.className = 'wdkit-cross-popup-close';
-			closeBtn.setAttribute('aria-label', 'Close');
+			closeBtn.setAttribute('aria-label', __('Close', 'wdesignkit'));
 			closeBtn.innerHTML = '&times;';
 			closeBtn.addEventListener('click', hidePopup);
 			modal.appendChild(closeBtn);
@@ -576,6 +943,11 @@
 			msgEl = document.createElement('p');
 			msgEl.className = 'wdkit-cross-popup-message';
 			modal.appendChild(msgEl);
+
+			descEl = document.createElement('p');
+			descEl.className = 'wdkit-cross-popup-desc';
+			descEl.style.display = 'none';
+			modal.appendChild(descEl);
 
 			widgetsEl = document.createElement('div');
 			widgetsEl.className = 'wdkit-cross-popup-widgets';
@@ -628,6 +1000,13 @@
 
 		iconWrap.innerHTML = buildPopupIcon(status);
 		msgEl.textContent = message;
+		if (description) {
+			descEl.textContent = description;
+			descEl.style.display = '';
+		} else {
+			descEl.textContent = '';
+			descEl.style.display = 'none';
+		}
 		modal.dataset.busy = ('loading' === status || widgets || actions) ? '1' : '';
 
 		// Render widget list (or hide).
@@ -790,7 +1169,7 @@
 		var data = elementorGetSelectionData(context || elementorLastContext);
 
 		if (!data) {
-			notify(__('Select an element to copy.'), 'warning');
+			notify(__('Select an element to copy.', 'wdesignkit'), 'warning');
 			return Promise.resolve(false);
 		}
 
@@ -798,7 +1177,7 @@
 		// copy works for both cross-domain paste and pastes originating
 		// from the WDesignKit demos library.
 		return writeClipboard(buildElementorClipboard(data)).then(function () {
-			notify(__('Content copied for cross-domain use.'), 'success');
+			notify(__('Content copied for cross-domain use.', 'wdesignkit'), 'success');
 			return true;
 		});
 	}
@@ -918,41 +1297,41 @@
 
 	/**
 	 * Run the actual import + insert step. Split out of elementorPaste
-	 * so the "Paste anyway" button in the missing-widgets popup can
-	 * re-invoke it after the user opts to proceed.
+	 * so it can be invoked directly, or after the required widgets have
+	 * finished downloading (see handleMissingWidgets).
 	 */
 	function elementorPasteDoInsert(content, context) {
-		showPopup({ status: 'loading', message: __('Pasting element…') });
+		showPopup({ status: 'loading', message: __('Pasting element…', 'wdesignkit') });
 
 		return elementorImportRemote(content).then(function (item) {
 			var result = elementorInsert(item, context);
 
 			if (result && result.ok) {
-				notify(__('Content pasted successfully across domains.'), 'success');
+				notify(__('Content pasted successfully across domains.', 'wdesignkit'), 'success');
 				return true;
 			}
 
 			if (result && isElementTypeNotFoundError(result.error)) {
 				var missing = extractMissingElementType(result.error);
 				var msg = missing
-					? __('Cannot paste: required widget "') + missing + __('" is not installed on this site. Please install it and try again.')
-					: __('Cannot paste: one of the required widgets is not installed on this site.');
+					? __('Cannot paste: required widget "', 'wdesignkit') + missing + __('" is not installed on this site. Please install it and try again.', 'wdesignkit')
+					: __('Cannot paste: one of the required widgets is not installed on this site.', 'wdesignkit');
 				showPopup({ status: 'error', message: msg });
 				return false;
 			}
 
-			notify(__('Could not paste — please click an existing element first.'), 'warning');
+			notify(__('Could not paste — please click an existing element first.', 'wdesignkit'), 'warning');
 			return false;
 		}).catch(function (err) {
 			console.error('[WDesignKit] paste failed:', err);
 			if (isElementTypeNotFoundError(err)) {
 				var missing = extractMissingElementType(err);
 				var msg = missing
-					? __('Cannot paste: required widget "') + missing + __('" is not installed on this site. Please install it and try again.')
-					: __('Cannot paste: one of the required widgets is not installed on this site.');
+					? __('Cannot paste: required widget "', 'wdesignkit') + missing + __('" is not installed on this site. Please install it and try again.', 'wdesignkit')
+					: __('Cannot paste: one of the required widgets is not installed on this site.', 'wdesignkit');
 				showPopup({ status: 'error', message: msg });
 			} else {
-				notify(__('Paste failed. Please try again.'), 'error');
+				notify(__('Paste failed. Please try again.', 'wdesignkit'), 'error');
 			}
 			return false;
 		});
@@ -973,41 +1352,23 @@
 			}
 
 			if (!content || !window.elementor) {
-				notify(__('No Elementor content found on the clipboard.'), 'warning');
+				notify(__('No Elementor content found on the clipboard.', 'wdesignkit'), 'warning');
 				return false;
 			}
 
 			// Pre-step: detect any WDesignKit custom widgets (wb-*) that
 			// the pasted design references but the destination site
-			// doesn't have. Auto-install is not wired up yet, so we just
-			// surface the list to the user.
+			// doesn't have, then download them (with live popup progress)
+			// before pasting. If any download fails, the error popup names
+			// the widget and shows the reason.
 			return checkRequiredWidgets(content, 'elementor').then(function (check) {
 				if (check.ok) {
 					return elementorPasteDoInsert(content, context);
 				}
 
-				var rows = check.missing.map(function (w) {
-					return { w_unique: w.w_unique, name: w.name || ('Widget ' + w.w_unique), status: 'fail' };
-				});
-
-				showPopup({
-					status: 'warning',
-					message: __('Some required widgets are not installed on this site.'),
-					widgets: rows,
-					actions: [
-						{
-							label: __('Cancel'),
-							ghost: true,
-							onClick: function () { },
-						},
-						{
-							label: __('Paste anyway'),
-							onClick: function () { elementorPasteDoInsert(content, context); },
-							closeAfter: true,
-						},
-					],
-				});
-				return false;
+				return handleMissingWidgets(check.missing, function () {
+					return elementorPasteDoInsert(content, context);
+				}, 'elementor');
 			});
 		});
 	}
@@ -1028,7 +1389,7 @@
 						actions: [
 							{
 								name: 'wdkit_cross_copy',
-								title: __('WDesignKit Copy'),
+								title: __('WDesignKit Copy', 'wdesignkit'),
 								icon: 'eicon-copy',
 								callback: function () {
 									elementorLastContext = context;
@@ -1037,7 +1398,7 @@
 							},
 							{
 								name: 'wdkit_cross_paste',
-								title: __('WDesignKit Paste'),
+								title: __('WDesignKit Paste', 'wdesignkit'),
 								icon: 'eicon-import-export',
 								callback: function () {
 									elementorLastContext = context;
@@ -1116,7 +1477,7 @@
 		var blocks = gutenbergSelectedBlocks(clientIds);
 
 		if (!blocks.length) {
-			notify(__('Select a block to copy.'), 'warning');
+			notify(__('Select a block to copy.', 'wdesignkit'), 'warning');
 			return Promise.resolve(false);
 		}
 
@@ -1130,7 +1491,7 @@
 		// what Gutenberg's native serializer produces) so a single paste
 		// path consumes both cross-domain and demo-library content.
 		return writeClipboard(serialized).then(function () {
-			notify(__('Content copied for cross-domain use.'), 'success');
+			notify(__('Content copied for cross-domain use.', 'wdesignkit'), 'success');
 			return true;
 		});
 	}
@@ -1200,7 +1561,7 @@
 
 	function gutenbergPaste(text, anchorClientId) {
 		if (!window.wp || !wp.blocks || !wp.data) {
-			notify(__('No Gutenberg content found on the clipboard.'), 'warning');
+			notify(__('No Gutenberg content found on the clipboard.', 'wdesignkit'), 'warning');
 			return false;
 		}
 
@@ -1216,7 +1577,7 @@
 		}
 
 		if (!content) {
-			notify(__('No Gutenberg content found on the clipboard.'), 'warning');
+			notify(__('No Gutenberg content found on the clipboard.', 'wdesignkit'), 'warning');
 			return false;
 		}
 
@@ -1230,11 +1591,11 @@
 		}
 
 		if (inserted) {
-			notify(__('Content pasted successfully across domains.'), 'success');
+			notify(__('Content pasted successfully across domains.', 'wdesignkit'), 'success');
 			return true;
 		}
 
-		notify(__('Could not paste — please click in the editor canvas first.'), 'warning');
+		notify(__('Could not paste — please click in the editor canvas first.', 'wdesignkit'), 'warning');
 		return false;
 	}
 
@@ -1251,7 +1612,7 @@
 		// wrapper, so just hand the text straight to it.
 		return readClipboard().then(function (text) {
 			if (!text) {
-				notify(__('No Gutenberg content found on the clipboard.'), 'warning');
+				notify(__('No Gutenberg content found on the clipboard.', 'wdesignkit'), 'warning');
 				return false;
 			}
 
@@ -1264,34 +1625,21 @@
 				}
 			}
 			if (!markup) {
-				notify(__('No Gutenberg content found on the clipboard.'), 'warning');
+				notify(__('No Gutenberg content found on the clipboard.', 'wdesignkit'), 'warning');
 				return false;
 			}
 
 			// Pre-step: detect any WDesignKit custom widgets (wb-*)
-			// referenced by the pasted block markup. Same UX as Elementor —
-			// just report missing widgets, no auto-install.
+			// referenced by the pasted block markup, then download them
+			// (with live popup progress) before pasting. Same UX as
+			// Elementor — a failed download names the widget and shows why.
 			return checkRequiredWidgets(markup, 'gutenberg').then(function (check) {
 				if (check.ok) {
 					return gutenbergPaste(text, anchorClientId);
 				}
-				var rows = check.missing.map(function (w) {
-					return { w_unique: w.w_unique, name: w.name || ('Widget ' + w.w_unique), status: 'fail' };
-				});
-				showPopup({
-					status: 'warning',
-					message: __('Some required widgets are not installed on this site.'),
-					widgets: rows,
-					actions: [
-						{ label: __('Cancel'), ghost: true, onClick: function () { } },
-						{
-							label: __('Paste anyway'),
-							onClick: function () { gutenbergPaste(text, anchorClientId); },
-							closeAfter: true,
-						},
-					],
-				});
-				return false;
+				return handleMissingWidgets(check.missing, function () {
+					return gutenbergPaste(text, anchorClientId);
+				}, 'gutenberg');
 			});
 		});
 	}
@@ -1375,7 +1723,7 @@
 							// dispatches run on a settled store.
 							setTimeout(function () { gutenbergCopy(ids); }, 80);
 						},
-					}, __('WDesignKit Copy')),
+					}, __('WDesignKit Copy', 'wdesignkit')),
 					createElement(MenuItem, {
 						icon: 'clipboard',
 						onClick: function () {
@@ -1383,7 +1731,7 @@
 							onClose();
 							setTimeout(function () { gutenbergPasteFromClipboard(ids); }, 80);
 						},
-					}, __('WDesignKit Paste'))
+					}, __('WDesignKit Paste', 'wdesignkit'))
 				);
 			});
 		};
@@ -1558,7 +1906,7 @@
 					event.clipboardData.setData('text/plain', wrapped);
 					event.preventDefault();
 					try { window.localStorage.setItem(STORAGE_KEY, wrapped); } catch (e) { }
-					notify(__('Bricks element copied for cross-domain paste.'), 'success');
+					notify(__('Bricks element copied for cross-domain paste.', 'wdesignkit'), 'success');
 					return;
 				}
 			} catch (e) { }
@@ -1579,7 +1927,7 @@
 				}
 				var wrapped = payload('bricks', text);
 				writeClipboard(wrapped).then(function () {
-					notify(__('Bricks element copied for cross-domain paste.'), 'success');
+					notify(__('Bricks element copied for cross-domain paste.', 'wdesignkit'), 'success');
 				});
 			}).catch(function () { });
 		}, 700);
@@ -1645,13 +1993,13 @@
 		return readClipboardBricks().then(function (text) {
 			var nativeText = null;
 			var data = parsePayload(text);
-			
+
 			if (data && 'bricks' === data.builder) {
 				nativeText = 'string' === typeof data.content ? data.content : JSON.stringify(data.content);
 			} else if (looksLikeBricksClipboard(text)) {
 				nativeText = text;
 			} else {
-				notify(__('Copy a Bricks element first, then paste.'), 'warning');
+				notify(__('Copy a Bricks element first, then paste.', 'wdesignkit'), 'warning');
 				return false;
 			}
 
@@ -1700,7 +2048,7 @@
 				}, 1200);
 			}, 80);
 
-			notify(__('Bricks element pasted.'), 'success');
+			notify(__('Bricks element pasted.', 'wdesignkit'), 'success');
 			return true;
 		});
 	}
@@ -1723,7 +2071,7 @@
 		// Best-effort write to system clipboard (async, may or may not arrive
 		// before Bricks reads it — the patch above is the reliable path).
 		writeClipboard(nativeText);
-		notify(__('Cross-domain content ready — pasting…'), 'success');
+		notify(__('Cross-domain content ready — pasting…', 'wdesignkit'), 'success');
 		// Do NOT preventDefault: let Bricks' own paste logic run.
 	}
 
@@ -1747,7 +2095,7 @@
 		var doc = bricksGetCanvasDoc() || document;
 		var fired = bricksDispatchKey(doc, 'c', 'KeyC', 67);
 		if (!fired) {
-			notify(__('Bricks canvas not reachable.'), 'warning');
+			notify(__('Bricks canvas not reachable.', 'wdesignkit'), 'warning');
 			return Promise.resolve(false);
 		}
 		// Bricks will write to clipboard; our copy hook wraps it.
@@ -1791,7 +2139,7 @@
 		var copyLi = document.createElement('li');
 		copyLi.className = 'wdkit-ctx-copy';
 		copyLi.innerHTML =
-			'<span class="label">' + __('WDesignKit Copy') + '</span>' +
+			'<span class="label">' + __('WDesignKit Copy', 'wdesignkit') + '</span>' +
 			'<span class="shortcut">Ctrl+Shift+C</span>';
 		copyLi.addEventListener('click', function () {
 			// Small delay: Vue's onClickCapture closes the menu first,
@@ -1802,7 +2150,7 @@
 		var pasteLi = document.createElement('li');
 		pasteLi.className = 'wdkit-ctx-paste';
 		pasteLi.innerHTML =
-			'<span class="label">' + __('WDesignKit Paste') + '</span>' +
+			'<span class="label">' + __('WDesignKit Paste', 'wdesignkit') + '</span>' +
 			'<span class="shortcut">Ctrl+Shift+V</span>';
 		pasteLi.addEventListener('click', function () {
 			setTimeout(function () { bricksPaste(); }, 80);
@@ -1929,4 +2277,5 @@
 	setTimeout(boot, 1500);
 	setTimeout(boot, 4000);
 	setTimeout(boot, 8000);
+
 })();

@@ -17,9 +17,7 @@ wp_register_ability('wdesignkit/get-login-status', [
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
-        'type'       => 'object',
-        'properties' => (object) [],
-        'additionalProperties' => false,
+        'type' => 'object',
     ],
     'output_schema' => [
         'type'       => 'object',
@@ -63,6 +61,27 @@ function wdesignkit_mcp_get_login_status(array $input): array {
     $token_expiry  = null;
     $session_state = 'not_logged_in';
 
+    // Normalise a raw transient value into an associative array.
+    // Handles three possible shapes from different storage backends:
+    //   1. PHP serialized string  → maybe_unserialize returns an array  ✓
+    //   2. JSON-encoded string    → json_decode($v, true) returns an array
+    //   3. stdClass object        → (array) cast converts public props to keys
+    $normalise_auth = static function ($raw): array {
+        if (is_array($raw)) {
+            return $raw;
+        }
+        if ($raw instanceof \stdClass) {
+            return (array) $raw;
+        }
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+        return [];
+    };
+
     // First try: use current WP user email to construct the transient key
     $current_user = wp_get_current_user();
     if ($current_user && $current_user->user_email) {
@@ -75,7 +94,7 @@ function wdesignkit_mcp_get_login_status(array $input): array {
             delete_transient('wdkit_auth_' . $user_key);
             $session_state = 'session_expired';
         } else {
-            $auth_data = get_transient('wdkit_auth_' . $user_key);
+            $auth_data = $normalise_auth(get_transient('wdkit_auth_' . $user_key));
             if (!empty($auth_data['token'])) {
                 $logged_in     = true;
                 $email         = $auth_data['user_email'] ?? $current_user->user_email;
@@ -111,8 +130,8 @@ function wdesignkit_mcp_get_login_status(array $input): array {
                 continue;
             }
 
-            $data = @maybe_unserialize($row['option_value']);
-            if (is_array($data) && !empty($data['token'])) {
+            $data = $normalise_auth(@maybe_unserialize($row['option_value']));
+            if (!empty($data['token'])) {
                 $logged_in     = true;
                 $email         = $data['user_email'] ?? null;
                 $session_state = 'logged_in';

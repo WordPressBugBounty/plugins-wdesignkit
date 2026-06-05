@@ -22,10 +22,37 @@ if (!function_exists('wdesignkit_mcp_template_get_auth')) {
      * @return array{logged_in:bool,email?:string,token?:string,message?:string}
      */
     function wdesignkit_mcp_template_get_auth(): array {
+        /**
+         * Normalise a raw transient value into an associative array.
+         * Handles three possible shapes from different storage backends:
+         *   1. PHP serialized string  → maybe_unserialize returns an array  ✓
+         *   2. JSON-encoded string    → json_decode($v, true) returns an array
+         *   3. stdClass object        → (array) cast converts public props to keys
+         * All other types (bool false for missing transient, int, etc.) → []
+         */
+        $normalise_auth = static function ($raw): array {
+            if (is_array($raw)) {
+                return $raw;
+            }
+            if ($raw instanceof \stdClass) {
+                return (array) $raw;
+            }
+            if (is_string($raw) && $raw !== '') {
+                // May be a JSON string stored by an object-cache plugin or
+                // an older code path that used json_encode instead of set_transient.
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+            return [];
+        };
+
         $current_user = wp_get_current_user();
         if ($current_user && $current_user->user_email) {
             $user_key  = strstr($current_user->user_email, '@', true);
-            $auth_data = get_transient('wdkit_auth_' . $user_key);
+            $auth_raw  = get_transient('wdkit_auth_' . $user_key);
+            $auth_data = $normalise_auth($auth_raw);
             if (!empty($auth_data['token'])) {
                 return [
                     'logged_in' => true,
@@ -51,8 +78,8 @@ if (!function_exists('wdesignkit_mcp_template_get_auth')) {
                 continue;
             }
 
-            $data = @maybe_unserialize($row['option_value']);
-            if (is_array($data) && !empty($data['token'])) {
+            $data = $normalise_auth(@maybe_unserialize($row['option_value']));
+            if (!empty($data['token'])) {
                 return [
                     'logged_in' => true,
                     'email'     => $data['user_email'] ?? '',

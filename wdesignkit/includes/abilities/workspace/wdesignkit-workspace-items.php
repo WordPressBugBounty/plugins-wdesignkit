@@ -211,8 +211,10 @@ function wdesignkit_mcp_manage_workspace_template(array $input): array {
         return ['success' => false, 'message' => 'action, template_id, and wid are required.'];
     }
 
+    // Server ManageWorkspace wstype values — 'copy' is the server's handler for
+    // adding a template to a workspace. 'temp_add' is not implemented server-side.
     $wstype_map = [
-        'add'    => 'temp_add',
+        'add'    => 'copy',
         'remove' => 'temp_remove',
         'copy'   => 'copy',
         'move'   => 'move',
@@ -240,6 +242,17 @@ function wdesignkit_mcp_manage_workspace_template(array $input): array {
 
     // Template workspace uses JSON POST (mirrors WDesignKit_Data_Query::get_data)
     $cloud = wdesignkit_mcp_template_cloud_call('manage_workspace', $args, 'json');
+
+    // The cloud returns HTTP 200 with an empty body for template operations on
+    // invalid/non-owned IDs or when the account lacks workspace permissions.
+    // An empty body cannot confirm the operation succeeded; surface the ambiguity.
+    if (array_key_exists('raw', $cloud) && ($cloud['raw'] === '' || $cloud['raw'] === null)) {
+        return [
+            'success'  => false,
+            'message'  => "Cloud returned no confirmation for template {$action}. The workspace ID or template ID may be invalid, or the operation is not permitted. Verify with wdesignkit/get-workspace-data.",
+            'response' => $cloud,
+        ];
+    }
 
     return [
         'success'  => !empty($cloud['success']),
@@ -270,9 +283,10 @@ function wdesignkit_mcp_manage_workspace_widget(array $input): array {
         return ['success' => false, 'message' => 'action, widget_id, and wid are required.'];
     }
 
-    // Widget workspace wstype values mirror wdkit_manage_widget_workspace() in class-api.php
+    // Widget workspace wstype values — 'wd-copy' is the server's handler for
+    // adding a widget to a workspace. 'wd_ws_add' is not implemented server-side.
     $wstype_map = [
-        'add'    => 'wd_ws_add',
+        'add'    => 'wd-copy',
         'remove' => 'wd_ws_remove',
         'copy'   => 'wd-copy',
         'move'   => 'wd-move',

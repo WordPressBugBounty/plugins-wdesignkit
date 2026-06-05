@@ -346,6 +346,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			}
 
 			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . '/js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, true );
+			wp_set_script_translations( 'wdkit-cross-copy-paste', 'wdesignkit' );
 			wp_localize_script(
 				'wdkit-cross-copy-paste',
 				'wdkitCrossCopyPaste',
@@ -358,6 +359,10 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					// load the dashboard wdkitData global. Needed for the
 					// wdkit_cp_check_widgets endpoint.
 					'ajax_url'  => admin_url( 'admin-ajax.php' ),
+					// WDesignKit dashboard (hash-router) page. Missing widgets
+					// are installed by loading its /create/widget/:w_unique
+					// route inside a hidden iframe.
+					'dashboard_url' => admin_url( 'admin.php?page=wdesign-kit' ),
 					'kit_nonce' => wp_create_nonce( 'wdkit_nonce' ),
 				)
 			);

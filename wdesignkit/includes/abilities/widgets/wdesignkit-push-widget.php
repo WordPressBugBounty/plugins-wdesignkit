@@ -119,26 +119,68 @@ function wdesignkit_mcp_push_widget(array $input): array {
         return ['success' => false, 'message' => "Could not read JSON config from {$builder}/{$folder}"];
     }
 
-    $widgetdata  = $json_data['widget_data']['widgetdata'] ?? [];
-    $title       = sanitize_text_field((string) ($widgetdata['name'] ?? ''));
-    $widget_id   = sanitize_text_field((string) ($widgetdata['widget_id'] ?? ''));
-    $r_id        = (int) ($widgetdata['r_id'] ?? 0);
-    $w_version   = $widgetdata['widget_version'] ?? '1.0.0';
+    $widgetdata     = $json_data['widget_data']['widgetdata'] ?? [];
+    $title          = sanitize_text_field((string) ($widgetdata['name'] ?? ''));
+    $widget_id      = sanitize_text_field((string) ($widgetdata['widget_id'] ?? ''));
+    $r_id           = (int) ($widgetdata['r_id'] ?? 0);
+    $w_version      = (string) ($widgetdata['widget_version'] ?? '1.0.0');
+    $version_detail = $widgetdata['version_detail'] ?? [];
+    if (!is_array($version_detail)) {
+        $version_detail = [];
+    }
 
     if ($title === '' || $widget_id === '') {
         return ['success' => false, 'message' => 'Widget JSON is missing name or widget_id.'];
     }
 
-    $w_image_body = '';
-    $w_imgext     = '';
-    if ($img_path && file_exists($img_path)) {
-        $w_image_body = @file_get_contents($img_path);
-        $w_imgext     = $img_ext;
+    // Pre-flight: version must be a non-empty semver string (x.y.z).
+    // The cloud SetSaveWidget() endpoint rejects empty or non-semver versions with
+    // "Not allowed version number". Catch this locally before wasting a round-trip.
+    if ($w_version === '' || !preg_match('/^\d+\.\d+\.\d+$/', $w_version)) {
+        return [
+            'success' => false,
+            'message' => "Widget '{$title}' has an invalid widget_version '{$w_version}'. Set a valid semver version (e.g. '1.0.0') using wdesignkit/update-widget before pushing.",
+        ];
     }
+
+    // Pre-flight: re-push version check.
+    // When r_id > 0 the widget is already in the marketplace. The cloud rejects
+    // pushes where the incoming w_version matches the already-published version.
+    // The UI enforces a "new version must be higher" rule — replicate it here so
+    // the caller gets a clear message instead of the opaque "Not allowed version number".
+    // We cannot know the exact cloud version without a network call, but we can
+    // detect the case where version_detail has only one entry (never bumped) and
+    // r_id > 0, which is the most common trigger of this error.
+    if ($r_id > 0 && count($version_detail) <= 1 && $w_version === '1.0.0') {
+        return [
+            'success' => false,
+            'message' => "Widget '{$title}' (r_id: {$r_id}) appears to already be published at version '1.0.0'. Bump widget_version (e.g. to '1.0.1') and update version_detail using wdesignkit/update-widget before re-pushing.",
+            'hint'    => 'The cloud rejects re-pushes with the same version number. Increment widget_version in the JSON config first.',
+        ];
+    }
+
+    // Pre-flight: thumbnail is required by the cloud save_widget endpoint.
+    // If no image file is present the cloud silently returns HTTP 200 with an
+    // empty body and the push fails without explanation.  Fail early here so
+    // the caller gets a clear, actionable message rather than the generic
+    // "empty array" response.
+    if (!$img_path || !file_exists($img_path)) {
+        return [
+            'success' => false,
+            'message' => "Widget '{$title}' has no thumbnail image. Add a thumbnail file (jpg, jpeg, png, or webp) to the widget folder before pushing to the marketplace.",
+        ];
+    }
+
+    $w_image_body = @file_get_contents($img_path);
+    $w_imgext     = $img_ext;
 
     $array_data = [
         'token'     => $auth['token'],
-        'type'      => $type,
+        // The cloud save_widget endpoint only understands 'add' — it determines
+        // new vs update by checking whether the widget already exists in the DB
+        // (matched by w_unique). The MCP 'new'/'update' distinction is irrelevant
+        // to the server; always send 'add'.
+        'type'      => 'add',
         'title'     => $title,
         'content'   => '',
         'builder'   => $builder,
@@ -147,7 +189,11 @@ function wdesignkit_mcp_push_widget(array $input): array {
         'w_image'   => $w_image_body,
         'w_imgext'  => $w_imgext,
         'w_version' => $w_version,
-        'w_updates' => serialize([]),
+        // Use the widget's actual version_detail array (mirrors the JS frontend which sends
+        // all_files.WcardData.widgetdata.version_detail). Sending serialize([]) was causing
+        // "Not allowed version number" from the cloud because an empty w_updates signals
+        // no version history, which the server treats as an invalid push.
+        'w_updates' => serialize($version_detail),
         'r_id'      => $r_id,
         'unique_id' => get_option('wdkit_unique_id', ''),
     ];
@@ -183,9 +229,18 @@ function wdesignkit_mcp_push_widget(array $input): array {
 
     if (200 !== (int) $status || empty($data['success'])) {
         $raw_msg = is_array($data) ? ($data['massage'] ?? $data['message'] ?? null) : null;
+        $msg     = is_string($raw_msg) ? $raw_msg : (is_null($raw_msg) ? "Cloud returned status {$status}." : json_encode($raw_msg));
+
+        // Enrich version-rejection errors with actionable guidance.
+        // The cloud returns "Not allowed version number" when the incoming w_version
+        // matches or is lower than the already-published version for this widget.
+        if (stripos($msg, 'version') !== false && stripos($msg, 'not allowed') !== false) {
+            $msg .= " To fix: use wdesignkit/update-widget to bump widget_version (e.g. '1.0.0' → '1.0.1') and add a new entry to version_detail, then push again.";
+        }
+
         return [
             'success'  => false,
-            'message'  => is_string($raw_msg) ? $raw_msg : (is_null($raw_msg) ? "Cloud returned status {$status}." : json_encode($raw_msg)),
+            'message'  => $msg,
             'response' => wdesignkit_mcp_ensure_object($data, $body),
         ];
     }

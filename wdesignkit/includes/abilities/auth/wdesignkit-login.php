@@ -257,9 +257,7 @@ wp_register_ability('wdesignkit/logout', [
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
-        'type'       => 'object',
-        'properties' => (object) [],
-        'additionalProperties' => false,
+        'type' => 'object',
     ],
     'output_schema' => [
         'type'       => 'object',

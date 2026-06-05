@@ -17,9 +17,7 @@ wp_register_ability('wdesignkit/list-rollback-versions', [
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
-        'type'       => 'object',
-        'properties' => (object) [],
-        'additionalProperties' => false,
+        'type' => 'object',
     ],
     'output_schema' => [
         'type'       => 'object',
