@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.5.0\n"
+"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.5.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-05T05:58:20+00:00\n"
+"POT-Creation-Date: 2026-06-09T12:20:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
@@ -855,7 +855,7 @@ msgid "Help us improve %s, let us know why you're leaving."
 msgstr ""
 
 #: includes/admin/notices/class-wdkit-deactivate-feedback.php:121
-#: assets/js/main/wdkit-cross-copy-paste.js:934
+#: assets/js/main/wdkit-cross-copy-paste.js:1070
 #: build/index.js:1
 msgid "Close"
 msgstr ""
@@ -1091,143 +1091,163 @@ msgstr ""
 msgid "Include your email with your review"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:314
-#: assets/js/main/wdkit-cross-copy-paste.js:418
+#: assets/js/main/wdkit-cross-copy-paste.js:416
+#: assets/js/main/wdkit-cross-copy-paste.js:520
 #: build/index.js:1
 msgid "Downloading Widget"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:326
+#: assets/js/main/wdkit-cross-copy-paste.js:428
 #: build/index.js:1
 msgid "Please log in to WDesignKit to download this widget."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:335
+#: assets/js/main/wdkit-cross-copy-paste.js:437
 msgid "Download is not available right now."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:383
+#: assets/js/main/wdkit-cross-copy-paste.js:485
 msgid "Download failed."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:397
+#: assets/js/main/wdkit-cross-copy-paste.js:499
 msgid "Download timed out. Please try again."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:426
+#: assets/js/main/wdkit-cross-copy-paste.js:528
 msgid "Downloading required widgets…"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:613
+#: assets/js/main/wdkit-cross-copy-paste.js:715
 msgid "Preparing widgets…"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:618
+#: assets/js/main/wdkit-cross-copy-paste.js:720
 msgid "Required widgets downloaded successfully."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:633
+#: assets/js/main/wdkit-cross-copy-paste.js:735
 msgid "This widget could not be downloaded."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:638
+#: assets/js/main/wdkit-cross-copy-paste.js:740
 msgid "Some widgets could not be downloaded."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:831
+#: assets/js/main/wdkit-cross-copy-paste.js:765
+msgid "Plugin not active"
+msgstr ""
+
+#: assets/js/main/wdkit-cross-copy-paste.js:771
+msgid "block"
+msgstr ""
+
+#: assets/js/main/wdkit-cross-copy-paste.js:772
+msgid "widget"
+msgstr ""
+
+#: assets/js/main/wdkit-cross-copy-paste.js:776
+msgid "Unable to Paste Content"
+msgstr ""
+
+#: assets/js/main/wdkit-cross-copy-paste.js:777
+msgid "This content depends on a widget or plugin that is not installed or activated on this website. Install and activate the required plugin, then try pasting again."
+msgstr ""
+
+#: assets/js/main/wdkit-cross-copy-paste.js:967
 msgid "Loading"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1172
+#: assets/js/main/wdkit-cross-copy-paste.js:1308
 msgid "Select an element to copy."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1180
-#: assets/js/main/wdkit-cross-copy-paste.js:1494
+#: assets/js/main/wdkit-cross-copy-paste.js:1316
+#: assets/js/main/wdkit-cross-copy-paste.js:1642
 msgid "Content copied for cross-domain use."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1304
+#: assets/js/main/wdkit-cross-copy-paste.js:1440
 msgid "Pasting element…"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1310
-#: assets/js/main/wdkit-cross-copy-paste.js:1594
+#: assets/js/main/wdkit-cross-copy-paste.js:1446
+#: assets/js/main/wdkit-cross-copy-paste.js:1752
 msgid "Content pasted successfully across domains."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1317
-#: assets/js/main/wdkit-cross-copy-paste.js:1330
+#: assets/js/main/wdkit-cross-copy-paste.js:1453
+#: assets/js/main/wdkit-cross-copy-paste.js:1466
 msgid "Cannot paste: required widget \""
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1317
-#: assets/js/main/wdkit-cross-copy-paste.js:1330
+#: assets/js/main/wdkit-cross-copy-paste.js:1453
+#: assets/js/main/wdkit-cross-copy-paste.js:1466
 msgid "\" is not installed on this site. Please install it and try again."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1318
-#: assets/js/main/wdkit-cross-copy-paste.js:1331
+#: assets/js/main/wdkit-cross-copy-paste.js:1454
+#: assets/js/main/wdkit-cross-copy-paste.js:1467
 msgid "Cannot paste: one of the required widgets is not installed on this site."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1323
+#: assets/js/main/wdkit-cross-copy-paste.js:1459
 msgid "Could not paste — please click an existing element first."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1334
+#: assets/js/main/wdkit-cross-copy-paste.js:1470
 msgid "Paste failed. Please try again."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1355
+#: assets/js/main/wdkit-cross-copy-paste.js:1491
 msgid "No Elementor content found on the clipboard."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1392
-#: assets/js/main/wdkit-cross-copy-paste.js:1726
-#: assets/js/main/wdkit-cross-copy-paste.js:2142
+#: assets/js/main/wdkit-cross-copy-paste.js:1540
+#: assets/js/main/wdkit-cross-copy-paste.js:1884
+#: assets/js/main/wdkit-cross-copy-paste.js:2300
 msgid "WDesignKit Copy"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1401
-#: assets/js/main/wdkit-cross-copy-paste.js:1734
-#: assets/js/main/wdkit-cross-copy-paste.js:2153
+#: assets/js/main/wdkit-cross-copy-paste.js:1549
+#: assets/js/main/wdkit-cross-copy-paste.js:1892
+#: assets/js/main/wdkit-cross-copy-paste.js:2311
 msgid "WDesignKit Paste"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1480
+#: assets/js/main/wdkit-cross-copy-paste.js:1628
 msgid "Select a block to copy."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1564
-#: assets/js/main/wdkit-cross-copy-paste.js:1580
-#: assets/js/main/wdkit-cross-copy-paste.js:1615
-#: assets/js/main/wdkit-cross-copy-paste.js:1628
+#: assets/js/main/wdkit-cross-copy-paste.js:1712
+#: assets/js/main/wdkit-cross-copy-paste.js:1728
+#: assets/js/main/wdkit-cross-copy-paste.js:1773
+#: assets/js/main/wdkit-cross-copy-paste.js:1786
 msgid "No Gutenberg content found on the clipboard."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1598
+#: assets/js/main/wdkit-cross-copy-paste.js:1756
 msgid "Could not paste — please click in the editor canvas first."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:1909
-#: assets/js/main/wdkit-cross-copy-paste.js:1930
+#: assets/js/main/wdkit-cross-copy-paste.js:2067
+#: assets/js/main/wdkit-cross-copy-paste.js:2088
 msgid "Bricks element copied for cross-domain paste."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:2002
+#: assets/js/main/wdkit-cross-copy-paste.js:2160
 msgid "Copy a Bricks element first, then paste."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:2051
+#: assets/js/main/wdkit-cross-copy-paste.js:2209
 msgid "Bricks element pasted."
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:2074
+#: assets/js/main/wdkit-cross-copy-paste.js:2232
 msgid "Cross-domain content ready — pasting…"
 msgstr ""
 
-#: assets/js/main/wdkit-cross-copy-paste.js:2098
+#: assets/js/main/wdkit-cross-copy-paste.js:2256
 msgid "Bricks canvas not reachable."
 msgstr ""
 
@@ -2036,6 +2056,10 @@ msgid "Image size must be less than 2 mb."
 msgstr ""
 
 #: build/index.js:1
+msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
+msgstr ""
+
+#: build/index.js:1
 msgid "Widget Icon"
 msgstr ""
 
@@ -2541,10 +2565,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Whether to prevent deleting the first notice."
-msgstr ""
-
-#: build/index.js:1
-msgid "Enter value for "
 msgstr ""
 
 #: build/index.js:1
@@ -3388,10 +3408,6 @@ msgid "Controls"
 msgstr ""
 
 #: build/index.js:1
-msgid " Watch Video Tutorials"
-msgstr ""
-
-#: build/index.js:1
 msgid "Widget Deactivated"
 msgstr ""
 
@@ -3417,10 +3433,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Categories"
-msgstr ""
-
-#: build/index.js:1
-msgid "Applied Filter :"
 msgstr ""
 
 #: build/index.js:1
@@ -3600,7 +3612,7 @@ msgid "Core Gutenberg"
 msgstr ""
 
 #: build/index.js:1
-msgid "Enable/Disable Gutenberg Core Widget builder and all Gutenberg Core Widgets."
+msgid "Enable/Disable Core Gutenberg Widget Builder and all Core Gutenberg Widgets."
 msgstr ""
 
 #: build/index.js:1
@@ -3972,6 +3984,10 @@ msgid "Get Free Support"
 msgstr ""
 
 #: build/index.js:1
+msgid "Get Premium Support"
+msgstr ""
+
+#: build/index.js:1
 msgid "What’s New?"
 msgstr ""
 
@@ -4001,10 +4017,6 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Affiliate-Program"
-msgstr ""
-
-#: build/index.js:1
-msgid "Earn-Free-WDesignKit-Credits"
 msgstr ""
 
 #: build/index.js:1
@@ -5261,8 +5273,4 @@ msgstr ""
 
 #: build/index.js:1
 msgid "Unable to connect to the Internet !"
-msgstr ""
-
-#: build/index.js:1
-msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
 msgstr ""

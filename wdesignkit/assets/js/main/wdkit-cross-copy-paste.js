@@ -229,6 +229,108 @@
 		return ids;
 	}
 
+	// ---------------------------------------------------------------
+	// Third-party (non-WDesignKit) widget / block detection
+	//
+	// The pasted design may reference widgets that belong to OTHER
+	// plugins (e.g. "tp-heading-title" from The Plus Addons,
+	// "premium-*", "eael-*", etc.). Unlike WDesignKit's own `wb-*`
+	// widgets, these can NOT be auto-installed — they ship with a
+	// separate plugin the user has to install themselves.
+	//
+	// When such a type isn't registered on the destination site:
+	//   - Elementor creates the parent section/container OK, then throws
+	//     `ElementTypeNotFound` asynchronously for the nested widget —
+	//     so the paste "succeeds" yet the widget never appears.
+	//   - Gutenberg drops the block in as an invalid "missing block"
+	//     placeholder.
+	//
+	// To avoid that silent failure we collect every referenced type up
+	// front, diff it against what's registered locally, and surface any
+	// non-installable missing types in the popup so the user knows which
+	// plugin to install.
+	// ---------------------------------------------------------------
+
+	/**
+	 * Collect every Elementor widgetType referenced anywhere in the
+	 * pasted content tree (deduped).
+	 */
+	function elementorCollectWidgetTypes(content) {
+		var types = [];
+		function walk(node) {
+			if (!node || typeof node !== 'object') {
+				return;
+			}
+			if ('widget' === node.elType && 'string' === typeof node.widgetType && node.widgetType) {
+				if (-1 === types.indexOf(node.widgetType)) {
+					types.push(node.widgetType);
+				}
+			}
+			if (Array.isArray(node.elements)) {
+				node.elements.forEach(walk);
+			}
+		}
+		walk(content);
+		return types;
+	}
+
+	/**
+	 * Return the widget types referenced by the content that are NOT
+	 * registered on this site AND are NOT WDesignKit `wb-*` widgets
+	 * (those are handled by the auto-installer). These are third-party
+	 * widgets the user must install themselves.
+	 */
+	function elementorForeignMissingTypes(content) {
+		var cache = (window.elementor && elementor.widgetsCache) || {};
+		// Guard: if the widget cache hasn't populated yet, skip the check
+		// rather than risk a false "missing" on a perfectly valid widget.
+		if (!Object.keys(cache).length) {
+			return [];
+		}
+		return elementorCollectWidgetTypes(content).filter(function (type) {
+			if (0 === type.indexOf('wb-')) {
+				return false; // WDesignKit widget — installable, handled elsewhere.
+			}
+			return !cache[type]; // unknown to this site → genuinely missing.
+		});
+	}
+
+	/**
+	 * Parse the Gutenberg block markup and return the names of any block
+	 * types that aren't registered on this site (excluding WDesignKit
+	 * `wdkit/wb-*` blocks, which the auto-installer handles).
+	 *
+	 * `wp.blocks.parse` turns an unregistered block into a `core/missing`
+	 * placeholder whose real name is kept in `attributes.originalName`.
+	 */
+	function gutenbergForeignMissingTypes(markup, wpInstance) {
+		var wpi = wpInstance || window.wp;
+		if (!wpi || !wpi.blocks || !wpi.blocks.parse || !markup) {
+			return [];
+		}
+		var missing = [];
+		function walk(blocks) {
+			(blocks || []).forEach(function (b) {
+				if (!b) {
+					return;
+				}
+				if ('core/missing' === b.name) {
+					var orig = (b.attributes && b.attributes.originalName) || '';
+					if (orig && 0 !== orig.indexOf('wdkit/wb-') && -1 === missing.indexOf(orig)) {
+						missing.push(orig);
+					}
+				}
+				if (b.innerBlocks && b.innerBlocks.length) {
+					walk(b.innerBlocks);
+				}
+			});
+		}
+		try {
+			walk(wpi.blocks.parse(markup));
+		} catch (e) { }
+		return missing;
+	}
+
 	/**
 	 * AJAX: ask the server which of the given widget IDs are already
 	 * installed locally. Resolves to { installed: [...], missing: [{w_unique, name}, ...] }.
@@ -640,6 +742,40 @@
 				});
 			}
 			return false;
+		});
+	}
+
+	/**
+	 * Show an error popup naming the third-party widget(s) the copied
+	 * content needs but this site doesn't have. These come from other
+	 * plugins (The Plus Addons, Essential Addons, etc.) and can't be
+	 * auto-installed by WDesignKit — the user has to install/activate the
+	 * source plugin themselves. Called instead of pasting so we never show
+	 * a false "success" while the widget silently fails to render.
+	 *
+	 * @param {string[]} types    Missing widget / block type names.
+	 * @param {string}   builder  'elementor' | 'gutenberg' (for the label).
+	 */
+	function showMissingPluginPopup(types, builder) {
+		var rows = (types || []).map(function (t) {
+			return {
+				w_unique: t,
+				name: t,
+				status: 'fail',
+				msg: __('Plugin not active', 'wdesignkit'),
+			};
+		});
+
+		var single = 1 === rows.length;
+		var label = ('gutenberg' === builder)
+			? __('block', 'wdesignkit')
+			: __('widget', 'wdesignkit');
+
+		showPopup({
+			status: 'error',
+			message:  __('Unable to Paste Content', 'wdesignkit'),
+			description: __('This content depends on a widget or plugin that is not installed or activated on this website. Install and activate the required plugin, then try pasting again.', 'wdesignkit'),
+			widgets: rows,
 		});
 	}
 
@@ -1356,7 +1492,19 @@
 				return false;
 			}
 
-			// Pre-step: detect any WDesignKit custom widgets (wb-*) that
+			// Pre-step A: detect third-party widgets (e.g. "tp-heading-title"
+			// from The Plus Addons) that this site doesn't have. These can't
+			// be auto-installed, and if we paste anyway Elementor creates the
+			// parent but throws ElementTypeNotFound for the nested widget —
+			// looking like "success" while nothing renders. Stop and tell the
+			// user which plugin to install instead.
+			var foreignMissing = elementorForeignMissingTypes(content);
+			if (foreignMissing.length) {
+				showMissingPluginPopup(foreignMissing, 'elementor');
+				return false;
+			}
+
+			// Pre-step B: detect any WDesignKit custom widgets (wb-*) that
 			// the pasted design references but the destination site
 			// doesn't have, then download them (with live popup progress)
 			// before pasting. If any download fails, the error popup names
@@ -1578,6 +1726,16 @@
 
 		if (!content) {
 			notify(__('No Gutenberg content found on the clipboard.', 'wdesignkit'), 'warning');
+			return false;
+		}
+
+		// Guard: detect block types from other plugins that this site can't
+		// render (parsed as `core/missing`). Pasting them would drop a broken
+		// "missing block" placeholder instead of the real content, so stop
+		// and tell the user which plugin to install.
+		var foreignMissing = gutenbergForeignMissingTypes(content, window.wp);
+		if (foreignMissing.length) {
+			showMissingPluginPopup(foreignMissing, 'gutenberg');
 			return false;
 		}
 
