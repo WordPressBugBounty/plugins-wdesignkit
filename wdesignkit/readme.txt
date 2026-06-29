@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.5.4
+Stable tag: 2.5.5
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,10 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.5.5 - 29 June 2026
+Fixed: Resolved the Switcher controller compatibility issue in Gutenberg Core.
+Improved: Enhanced the URL controller UI for improved usability and consistency.
 
 2.5.4 - 24 June 2026
 New: Added 10+ new controllers to the Gutenberg Core Builder, expanding design and content-building capabilities.
