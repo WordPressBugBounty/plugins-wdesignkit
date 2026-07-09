@@ -238,7 +238,7 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 			if ( ! current_user_can( 'delete_posts' ) ) {
 				wp_send_json([
 					'success'     => false,
-					'message'     => 'Permission denied',
+					'message'     => __( 'Permission denied', 'wdesignkit' ),
 					'description' => 'Permission denied',
 				]);
 			}
@@ -272,14 +272,14 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				wp_reset_postdata();
 				wp_send_json([
 					'success'     => true,
-					'message'     => 'Post Removed Successfully !',
+					'message'     => __( 'Post Removed Successfully !', 'wdesignkit' ),
 					'description' => 'Dummy post successfully removed',
 				]);
 			}
 				
 			wp_send_json([
 				'success'     => false,
-				'message'     => 'No matching post found',
+				'message'     => __( 'No matching post found', 'wdesignkit' ),
 				'description' => 'Dummy post not found',
 			]);
 			wp_die();
@@ -472,7 +472,7 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				wp_send_json([
 					'success'    => true,
 					'product_id' => $product_id,
-					'message'    => 'Product created successfully',
+					'message'    => __( 'Product created successfully', 'wdesignkit' ),
 				]);
 
 			} catch (Exception $e) {

@@ -195,10 +195,10 @@ if (!function_exists('wdesignkit_mcp_ensure_object')) {
 }
 
 wp_register_ability('wdesignkit/list-templates', [
-    'label'       => __('List WDesignKit Templates', 'sprout-mcp'),
+    'label'       => __('List WDesignKit Templates', 'wdesignkit'),
     'description' => __(
         'Browses the current user\'s saved WDesignKit cloud templates with optional filters. Supports filtering by builder, search keyword, and template type. Use this for "Browse Templates", "Apply Filter", "Update Filter", "Remove Single Filter", and "Clear All Filters" — every filter operation is just a different combination of arguments.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -241,7 +241,7 @@ wp_register_ability('wdesignkit/list-templates', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_templates',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

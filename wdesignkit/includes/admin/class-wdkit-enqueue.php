@@ -245,6 +245,14 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_enqueue_styles() {
 			wp_enqueue_style( 'wdkit-editor-css', WDKIT_URL . 'build/index.css', array(), WDKIT_VERSION );
+
+			/**
+			 * The build emits a right-to-left stylesheet (build/index-rtl.css) because the
+			 * source CSS uses physical left/right properties. WordPress does not auto-load
+			 * the -rtl variant; registering it here makes core swap in index-rtl.css on RTL
+			 * locales (Arabic, Hebrew, Farsi, Urdu) so the admin layout mirrors correctly.
+			 */
+			wp_style_add_data( 'wdkit-editor-css', 'rtl', 'replace' );
 		}
 
 		/**
@@ -254,9 +262,30 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 * @since   1.0.0
 		 */
 		public function wdkit_enqueue_scripts( $hook ) {
-			$asset_file  = WDKIT_PATH . 'build/index.asset.php';
+			$asset_file  = WDKIT_PATH . 'build/index.min.asset.php';
 			$asset       = file_exists( $asset_file ) ? require $asset_file : array( 'dependencies' => array( 'wp-i18n', 'wp-element', 'wp-components' ), 'version' => WDKIT_VERSION );
-			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.js', $asset['dependencies'], $asset['version'], true );
+
+			/**
+			 * JS translations catalog.
+			 *
+			 * The app ships as a large minified bundle (build/index.min.js) which
+			 * `wp i18n make-pot` skips (all *.min.js are skipped) and could not parse
+			 * within WordPress.org's budget anyway. build/wdk-i18n-strings.js is a
+			 * small, readable catalog of every translatable JS string (generated from
+			 * src/ by bin/generate-i18n-strings.js). WordPress.org extracts strings
+			 * from it and builds the per-locale JSON keyed to this handle; loading it
+			 * here populates the shared wp.i18n store so the whole React app is
+			 * translated. It is a dependency of the app bundle so it (and its inline
+			 * translation data) load first.
+			 */
+			$script_deps = $asset['dependencies'];
+			if ( file_exists( WDKIT_PATH . 'build/wdk-i18n-strings.js' ) ) {
+				wp_enqueue_script( 'wdkit-editor-i18n', WDKIT_URL . 'build/wdk-i18n-strings.js', array( 'wp-i18n' ), $asset['version'], true );
+				wp_set_script_translations( 'wdkit-editor-i18n', 'wdesignkit' );
+				$script_deps = array_merge( $script_deps, array( 'wdkit-editor-i18n' ) );
+			}
+
+			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.min.js', $script_deps, $asset['version'], true );
 			wp_set_script_translations( 'wdkit-editor-js', 'wdesignkit' );
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );

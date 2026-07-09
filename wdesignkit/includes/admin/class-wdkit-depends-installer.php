@@ -77,7 +77,7 @@ if ( ! class_exists( 'Wdkit_Depends_Installer' ) ) {
 						'p_id'    => ! empty( $plugin_data['p_id'] ) ? $plugin_data['p_id'] : '',
 						'success' => false,
 						'status'  => 'pro_plugin',
-						'message' => 'Pro Plugin',
+						'message' => __( 'Pro Plugin', 'wdesignkit' ),
 					);
 				}
 			}

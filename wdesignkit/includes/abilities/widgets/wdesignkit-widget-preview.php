@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/widget-preview', [
-    'label'       => __('WDesignKit Widget Preview', 'sprout-mcp'),
+    'label'       => __('WDesignKit Widget Preview', 'wdesignkit'),
     'description' => __(
         'Creates (or reuses) a temporary WordPress page to preview a widget and returns its editor URL. For Elementor widgets the page opens in the Elementor canvas editor. For Gutenberg/gutenberg_core widgets the page opens in the block editor. No page is created for builder types other than those two.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -46,7 +46,7 @@ wp_register_ability('wdesignkit/widget-preview', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_widget_preview',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -188,7 +188,12 @@ function wdesignkit_mcp_widget_preview(array $input): array {
         }
 
         if (function_exists('serialize_blocks')) {
-            $blocks          = [['blockName' => 'wdkit/' . $page_data, 'attrs' => [], 'innerHTML' => '', 'innerContent' => []]];
+            // Generated Gutenberg widgets register their block as wdkit/wb-<widget_id>
+            // (see gutenberg_file.js / gutenberg_core_file.js). Ensure the wb- prefix so
+            // the inserted block matches the registered name and renders instead of
+            // showing WordPress's "invalid content" recovery error.
+            $block_suffix    = (strpos($page_data, 'wb-') === 0) ? $page_data : 'wb-' . $page_data;
+            $blocks          = [['blockName' => 'wdkit/' . $block_suffix, 'attrs' => [], 'innerHTML' => '', 'innerContent' => []]];
             $updated_content = serialize_blocks($blocks);
             wp_update_post(['ID' => $page_id, 'post_content' => $updated_content]);
         }

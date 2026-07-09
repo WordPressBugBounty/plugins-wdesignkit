@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/save-snippet', [
-    'label'       => __('Save / Upload WDesignKit Snippet to Cloud', 'sprout-mcp'),
+    'label'       => __('Save / Upload WDesignKit Snippet to Cloud', 'wdesignkit'),
     'description' => __(
         'Reads a local nxt-code-snippet WordPress post by its post ID, packages all its meta fields, and uploads the snippet to the WDesignKit cloud marketplace. Use stype "new" for a first-time upload or "existing" with a snippet_id to update a previously uploaded snippet. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -68,7 +68,7 @@ wp_register_ability('wdesignkit/save-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_save_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -90,10 +90,10 @@ wp_register_ability('wdesignkit/save-snippet', [
 ]);
 
 wp_register_ability('wdesignkit/update-snippet-details', [
-    'label'       => __('Update WDesignKit Local Snippet Details', 'sprout-mcp'),
+    'label'       => __('Update WDesignKit Local Snippet Details', 'wdesignkit'),
     'description' => __(
         'Updates the title and/or description of a local code snippet. Works with both Nexter Pro file-based storage (provide file_id) and legacy WordPress post-based storage (provide post_id). This is a local-only operation — no cloud call is made. To sync the updated details to the cloud, follow up with wdesignkit/save-snippet using stype "existing".',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -127,7 +127,7 @@ wp_register_ability('wdesignkit/update-snippet-details', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_update_snippet_details',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

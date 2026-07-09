@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-design-templates-toggle', [
-    'label'       => __('Get WDesignKit Design Template Toggle States', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Design Template Toggle States', 'wdesignkit'),
     'description' => __(
         'Returns the current visibility state for the WDesignKit template library and per-builder template sources: Elementor templates and Gutenberg templates.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -27,7 +27,7 @@ wp_register_ability('wdesignkit/get-design-templates-toggle', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_design_templates_toggle',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -45,10 +45,10 @@ wp_register_ability('wdesignkit/get-design-templates-toggle', [
 ]);
 
 wp_register_ability('wdesignkit/toggle-design-templates', [
-    'label'       => __('Toggle WDesignKit Design Template Visibility', 'sprout-mcp'),
+    'label'       => __('Toggle WDesignKit Design Template Visibility', 'wdesignkit'),
     'description' => __(
         'Enables or disables the WDesignKit template library and per-builder template sources. Turning off a builder-specific toggle hides that builder\'s templates without disabling the builder itself. Only the keys you pass are changed.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -78,7 +78,7 @@ wp_register_ability('wdesignkit/toggle-design-templates', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_toggle_design_templates',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

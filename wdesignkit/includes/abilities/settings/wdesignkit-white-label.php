@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-white-label', [
-    'label'       => __('Get WDesignKit White Label Settings', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit White Label Settings', 'wdesignkit'),
     'description' => __(
         'Returns the current WDesignKit white-label branding configuration: custom plugin name, description, developer name, website URL, logo URL, and visibility toggles for help link, news, license tab, and rollback tab.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -28,7 +28,7 @@ wp_register_ability('wdesignkit/get-white-label', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_white_label',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -46,10 +46,10 @@ wp_register_ability('wdesignkit/get-white-label', [
 ]);
 
 wp_register_ability('wdesignkit/set-white-label', [
-    'label'       => __('Set WDesignKit White Label Settings', 'sprout-mcp'),
+    'label'       => __('Set WDesignKit White Label Settings', 'wdesignkit'),
     'description' => __(
         'Configures WDesignKit white-label branding. plugin_name is required. All other fields are optional; provided fields are merged with any existing white label configuration.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -108,7 +108,7 @@ wp_register_ability('wdesignkit/set-white-label', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_set_white_label',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -127,10 +127,10 @@ wp_register_ability('wdesignkit/set-white-label', [
 ]);
 
 wp_register_ability('wdesignkit/reset-white-label', [
-    'label'       => __('Reset WDesignKit White Label Settings', 'sprout-mcp'),
+    'label'       => __('Reset WDesignKit White Label Settings', 'wdesignkit'),
     'description' => __(
         'Deletes the entire WDesignKit white-label configuration, restoring the default plugin branding. Requires confirm: true.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -151,7 +151,7 @@ wp_register_ability('wdesignkit/reset-white-label', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_reset_white_label',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

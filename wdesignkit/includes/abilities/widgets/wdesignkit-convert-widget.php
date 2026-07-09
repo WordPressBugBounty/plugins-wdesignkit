@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/convert-widget', [
-    'label'       => __('Convert WDesignKit Widget Builder', 'sprout-mcp'),
+    'label'       => __('Convert WDesignKit Widget Builder', 'wdesignkit'),
     'description' => __(
         'Converts a widget authored for one builder (e.g. Elementor) into a different builder (e.g. Gutenberg). NOTE: Automatic cross-builder conversion is not currently supported by the WDesignKit plugin. This ability returns a structured explanation and suggests the recommended manual workflow instead.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -46,7 +46,7 @@ wp_register_ability('wdesignkit/convert-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_convert_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

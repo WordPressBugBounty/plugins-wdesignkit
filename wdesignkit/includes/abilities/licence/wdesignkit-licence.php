@@ -14,10 +14,10 @@ if (!defined('ABSPATH')) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 wp_register_ability('wdesignkit/activate-licence', [
-    'label'       => __('Activate WDesignKit Licence', 'sprout-mcp'),
+    'label'       => __('Activate WDesignKit Licence', 'wdesignkit'),
     'description' => __(
         'Activates a licence key against the WDesignKit cloud API. On success the returned licence record is stored locally in the wdkit_licence_data option so licence-gated features are immediately available. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -50,7 +50,7 @@ wp_register_ability('wdesignkit/activate-licence', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_activate_licence',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -73,10 +73,10 @@ wp_register_ability('wdesignkit/activate-licence', [
 // ──────────────────────────────────────────────────────────────────────────────
 
 wp_register_ability('wdesignkit/delete-licence', [
-    'label'       => __('Delete WDesignKit Licence', 'sprout-mcp'),
+    'label'       => __('Delete WDesignKit Licence', 'wdesignkit'),
     'description' => __(
         'Deactivates and removes a licence key from the WDesignKit cloud. For the "wdkit" licence, the local wdkit_licence_data option is also deleted. Requires cloud login and confirm: true.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -110,7 +110,7 @@ wp_register_ability('wdesignkit/delete-licence', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_delete_licence',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -132,10 +132,10 @@ wp_register_ability('wdesignkit/delete-licence', [
 // ──────────────────────────────────────────────────────────────────────────────
 
 wp_register_ability('wdesignkit/sync-licence', [
-    'label'       => __('Sync WDesignKit Licence', 'sprout-mcp'),
+    'label'       => __('Sync WDesignKit Licence', 'wdesignkit'),
     'description' => __(
         'Refreshes a licence record by re-fetching its current status from the WDesignKit cloud API. Useful after a plan upgrade or after renewing an expired licence. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -159,7 +159,7 @@ wp_register_ability('wdesignkit/sync-licence', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_sync_licence',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -181,10 +181,10 @@ wp_register_ability('wdesignkit/sync-licence', [
 // ──────────────────────────────────────────────────────────────────────────────
 
 wp_register_ability('wdesignkit/licence-overview', [
-    'label'       => __('WDesignKit Licence Credit & Storage Overview', 'sprout-mcp'),
+    'label'       => __('WDesignKit Licence Credit & Storage Overview', 'wdesignkit'),
     'description' => __(
         'Returns a combined overview of the locally stored WDesignKit licence record (plan, expiry, status) plus current AI credit balance fetched from the cloud. Set refresh: true to fetch fresh credit data; omit it to use locally cached licence data only.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -208,7 +208,7 @@ wp_register_ability('wdesignkit/licence-overview', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_licence_overview',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/check-dependencies', [
-    'label'       => __('Check Widget Dependencies', 'sprout-mcp'),
+    'label'       => __('Check Widget Dependencies', 'wdesignkit'),
     'description' => __(
         'Checks if required plugins and themes are installed and active for WDesignKit widgets. Verifies Elementor, The Plus Addons, Nexter, Bricks, and other dependencies.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -35,7 +35,7 @@ wp_register_ability('wdesignkit/check-dependencies', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_check_dependencies',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -57,10 +57,10 @@ wp_register_ability('wdesignkit/check-dependencies', [
 ]);
 
 wp_register_ability('wdesignkit/install-dependency', [
-    'label'       => __('Install Plugin Dependency', 'sprout-mcp'),
+    'label'       => __('Install Plugin Dependency', 'wdesignkit'),
     'description' => __(
         'Installs and activates a WordPress plugin from wordpress.org. Used to install required dependencies for WDesignKit widgets (e.g. Elementor, The Plus Addons).',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -87,7 +87,7 @@ wp_register_ability('wdesignkit/install-dependency', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_install_dependency',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

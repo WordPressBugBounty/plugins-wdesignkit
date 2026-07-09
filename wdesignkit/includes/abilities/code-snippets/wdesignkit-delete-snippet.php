@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/delete-snippet', [
-    'label'       => __('Delete WDesignKit Cloud Snippet', 'sprout-mcp'),
+    'label'       => __('Delete WDesignKit Cloud Snippet', 'wdesignkit'),
     'description' => __(
         'Deletes a snippet from the WDesignKit cloud marketplace by its cloud snippet ID. This removes the snippet from the cloud only — the local nxt-code-snippet WordPress post (if any) is NOT affected. Requires cloud login and confirm: true.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -41,7 +41,7 @@ wp_register_ability('wdesignkit/delete-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_delete_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

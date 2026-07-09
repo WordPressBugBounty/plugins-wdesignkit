@@ -12,10 +12,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/browse-snippets', [
-    'label'       => __('Browse WDesignKit Code Snippets', 'sprout-mcp'),
+    'label'       => __('Browse WDesignKit Code Snippets', 'wdesignkit'),
     'description' => __(
         'Lists code snippets available in the WDesignKit public marketplace. Supports filtering by search keyword, category/term, tags, plugins, free/pro status, and snippet type. All filter operations (Apply, Update, Remove single, Clear all) are different argument combinations on this one call.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -79,7 +79,7 @@ wp_register_ability('wdesignkit/browse-snippets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_browse_snippets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

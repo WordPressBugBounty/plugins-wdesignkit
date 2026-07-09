@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/remove-database', [
-    'label'       => __('WDesignKit Remove Database', 'sprout-mcp'),
+    'label'       => __('WDesignKit Remove Database', 'wdesignkit'),
     'description' => __(
         'Manages the WDesignKit database-cleanup configuration and can execute an immediate cleanup. "get" reads the current config; "configure" saves which data should be removed on uninstall; "execute" runs the cleanup immediately. Destructive execute requires confirm: true; use dry_run: true to preview.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -62,7 +62,7 @@ wp_register_ability('wdesignkit/remove-database', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_remove_database',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

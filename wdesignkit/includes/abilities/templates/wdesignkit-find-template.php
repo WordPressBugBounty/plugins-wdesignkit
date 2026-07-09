@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/find-template', [
-    'label'       => __('Find WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('Find WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Searches the user\'s existing WDesignKit cloud templates by name keyword. Hits the "existing_template" endpoint (the same one update-template targets) so the IDs returned here can be passed straight to update-template, replace-template, remove-template, or import-template.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -51,7 +51,7 @@ wp_register_ability('wdesignkit/find-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_find_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

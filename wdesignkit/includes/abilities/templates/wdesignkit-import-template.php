@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/import-template', [
-    'label'       => __('Import WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('Import WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Downloads a saved or marketplace template\'s content from the WDesignKit cloud and returns it for insertion. Set with_dummy_data: true to fetch any post/page/product fixtures bundled with the template. Set custom_meta: true to restore nxt-* post meta onto the current post when the response includes it.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -81,7 +81,7 @@ wp_register_ability('wdesignkit/import-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_import_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

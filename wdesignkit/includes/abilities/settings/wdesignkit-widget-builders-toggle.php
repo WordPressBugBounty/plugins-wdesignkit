@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-widget-builders', [
-    'label'       => __('Get WDesignKit Widget Builder States', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Widget Builder States', 'wdesignkit'),
     'description' => __(
         'Returns the current enabled/disabled state for each page builder integration: Elementor, Gutenberg, Gutenberg Core (native blocks), and Bricks. Also returns the master widget builder feature toggle.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -27,7 +27,7 @@ wp_register_ability('wdesignkit/get-widget-builders', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_widget_builders',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -45,10 +45,10 @@ wp_register_ability('wdesignkit/get-widget-builders', [
 ]);
 
 wp_register_ability('wdesignkit/toggle-widget-builders', [
-    'label'       => __('Toggle WDesignKit Widget Builders', 'sprout-mcp'),
+    'label'       => __('Toggle WDesignKit Widget Builders', 'wdesignkit'),
     'description' => __(
         'Enables or disables individual page builder integrations (Elementor, Gutenberg, Gutenberg Core, Bricks) and the master widget builder feature toggle. Only the keys you pass are changed; omitted keys retain their current values.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -86,7 +86,7 @@ wp_register_ability('wdesignkit/toggle-widget-builders', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_toggle_widget_builders',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

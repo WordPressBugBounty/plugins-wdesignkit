@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/create-workspace', [
-    'label'       => __('Create WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Create WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Creates a new cloud workspace in WDesignKit. A workspace is a shared environment for organising templates, widgets, and code snippets for team collaboration. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -41,7 +41,7 @@ wp_register_ability('wdesignkit/create-workspace', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_create_workspace',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -60,10 +60,10 @@ wp_register_ability('wdesignkit/create-workspace', [
 ]);
 
 wp_register_ability('wdesignkit/delete-workspace', [
-    'label'       => __('Delete WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Delete WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Permanently deletes a WDesignKit cloud workspace by its workspace ID. Only the workspace container is removed — cloud templates, widgets, and snippets inside it are not deleted. Requires cloud login and confirm: true.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -91,7 +91,7 @@ wp_register_ability('wdesignkit/delete-workspace', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_delete_workspace',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -109,10 +109,10 @@ wp_register_ability('wdesignkit/delete-workspace', [
 ]);
 
 wp_register_ability('wdesignkit/update-workspace', [
-    'label'       => __('Update WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Update WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Updates the title and/or primary builder of an existing WDesignKit cloud workspace. Covers both "Rename Workspace" and "Update Workspace Details". Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -143,7 +143,7 @@ wp_register_ability('wdesignkit/update-workspace', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_update_workspace',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -161,10 +161,10 @@ wp_register_ability('wdesignkit/update-workspace', [
 ]);
 
 wp_register_ability('wdesignkit/get-workspace-data', [
-    'label'       => __('Get WDesignKit Workspace Data', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Workspace Data', 'wdesignkit'),
     'description' => __(
         'Retrieves full data for a specific WDesignKit cloud workspace including its templates, widgets, code snippets, member list, roles, and totals. Uses the v2 API. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -187,7 +187,7 @@ wp_register_ability('wdesignkit/get-workspace-data', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_workspace_data',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -206,10 +206,10 @@ wp_register_ability('wdesignkit/get-workspace-data', [
 ]);
 
 wp_register_ability('wdesignkit/get-shared-with-me', [
-    'label'       => __('Get WDesignKit Shared With Me', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Shared With Me', 'wdesignkit'),
     'description' => __(
         'Lists templates and/or widgets that have been shared with the current user through WDesignKit cloud workspace collaboration. Supports type and builder filtering with pagination. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -246,7 +246,7 @@ wp_register_ability('wdesignkit/get-shared-with-me', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_shared_with_me',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

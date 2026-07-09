@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/remove-template', [
-    'label'       => __('Remove WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('Remove WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Deletes a user-saved WDesignKit cloud template by ID. Requires confirm: true to execute. Use dry_run: true to preview which template would be deleted.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -45,7 +45,7 @@ wp_register_ability('wdesignkit/remove-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_remove_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

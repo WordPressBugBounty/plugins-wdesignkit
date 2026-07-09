@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/check-widget-versions', [
-    'label'       => __('Check WDesignKit Widget Versions', 'sprout-mcp'),
+    'label'       => __('Check WDesignKit Widget Versions', 'wdesignkit'),
     'description' => __(
         'Queries the WDesignKit cloud for version information on one or more widgets identified by their marketplace record IDs (r_id). Returns the latest available version per widget so callers can detect which locally installed widgets are out of date.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -39,7 +39,7 @@ wp_register_ability('wdesignkit/check-widget-versions', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_check_widget_versions',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

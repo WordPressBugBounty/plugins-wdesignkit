@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.5.5
+Stable tag: 2.6.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,12 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.6.0 - 09 July 2026
+New: Download Widget as Plugin — export any widget as a ready-to-use WordPress plugin.
+Fixed: All abilities failed to register due to a missing permission callback dependency.
+Fixed: Bricks Widget Builder Group Controller issue in Repeater.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.5.5 - 29 June 2026
 Fixed: Resolved the Switcher controller compatibility issue in Gutenberg Core.

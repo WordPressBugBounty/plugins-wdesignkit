@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/download-snippet', [
-    'label'       => __('Download WDesignKit Marketplace Snippet', 'sprout-mcp'),
+    'label'       => __('Download WDesignKit Marketplace Snippet', 'wdesignkit'),
     'description' => __(
         'Downloads a code snippet from the WDesignKit marketplace and installs it as a local nxt-code-snippet WordPress post. Free snippets do not require login; pro snippets require cloud login and an active licence. Returns the new post ID on success.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -48,7 +48,7 @@ wp_register_ability('wdesignkit/download-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_download_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

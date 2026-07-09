@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-widget', [
-    'label'       => __('Get WDesignKit Widget Details', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Widget Details', 'wdesignkit'),
     'description' => __(
         'Gets full details of a specific widget including its JSON config, PHP code, CSS styles, and JS scripts. Use list-widgets first to find the folder name and builder type.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -44,7 +44,7 @@ wp_register_ability('wdesignkit/get-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

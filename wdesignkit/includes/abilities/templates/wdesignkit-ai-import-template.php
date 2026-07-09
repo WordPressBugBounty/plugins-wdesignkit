@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/ai-import-template', [
-    'label'       => __('AI Import WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('AI Import WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Calls the WDesignKit "ai/template_import" endpoint to generate AI-tailored template content for a given site profile. Returns the AI-rewritten copy that the caller can then feed into a builder. Maps to the "Import Template — AI Import" UI flow.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -87,7 +87,7 @@ wp_register_ability('wdesignkit/ai-import-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_ai_import_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

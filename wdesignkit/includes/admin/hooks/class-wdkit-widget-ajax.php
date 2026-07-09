@@ -111,6 +111,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				case 'wkit_check_widget_versions':
 					$response = $this->wkit_check_widget_versions();
 					break;
+				case 'wkit_widget_builder_get':
+					$response = $this->wkit_widget_builder_get();
+					break;
+				case 'wkit_plugin_download_get':
+					$response = $this->wkit_plugin_download_get();
+					break;
 			}
 
 			wp_send_json( $response );
@@ -237,6 +243,99 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			wp_send_json( $response );
 			wp_die();
+		}
+
+		/**
+		 * Get widget builder data from server for plugin download.
+		 *
+		 * @since 1.1.4
+		 */
+		public function wkit_widget_builder_get() {
+			$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+			$id    = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+
+			$array_data = array(
+				'token'     => $token,
+				'id'        => $id,
+				'unique_id' => get_option( 'wdkit_unique_id' ) ?? '',
+			);
+
+			$response = $this->wkit_api_call( $array_data, 'widget/builder/get', WDKIT_SERVER_API_URL . 'api/v2/' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				$massage = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'server error', 'wdesignkit' );
+
+				$result = (object) array(
+					'success'     => false,
+					'message'     => $massage,
+					'description' => esc_html__( 'Widget builder data not found.', 'wdesignkit' ),
+				);
+
+				wp_send_json( $result );
+				wp_die();
+			}
+
+			return $response['data'];
+		}
+
+		/**
+		 * Generate and download a widget as a standalone WordPress plugin.
+		 *
+		 * @since 1.1.4
+		 */
+		public function wkit_plugin_download_get() {
+			$fields = array(
+				'pluginName',
+				'licenceUrl',
+				'pluginSlug',
+				'pluginPrefix',
+				'authorName',
+				'authorUrl',
+				'requiredPhpVersion',
+				'requiredWpVersion',
+				'contributors',
+				'shortDescription',
+				'tags',
+				'textDomain',
+				'faq',
+				'changelog',
+				'php_file',
+				'js_file',
+				'css_file',
+				'js_react_file',
+				'widgetdata',
+				'token',
+				'id',
+			);
+
+			$array_data = array();
+			foreach ( $fields as $field ) {
+				if ( isset( $_POST[ $field ] ) ) {
+					// Code/file payloads must not be sanitized; only unslash the magic-quoted value.
+					$array_data[ $field ] = wp_unslash( $_POST[ $field ] );
+				}
+			}
+
+			$array_data['unique_id'] = get_option( 'wdkit_unique_id' ) ?? '';
+
+			$response = $this->wkit_api_call( $array_data, 'plugin/download/get', WDKIT_SERVER_API_URL . 'api/v2/' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				$massage = ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'server error', 'wdesignkit' );
+
+				$result = (object) array(
+					'success'     => false,
+					'message'     => $massage,
+					'description' => esc_html__( 'Plugin not downloaded.', 'wdesignkit' ),
+				);
+
+				wp_send_json( $result );
+				wp_die();
+			}
+
+			return $response['data'];
 		}
 
 		/**
@@ -1029,8 +1128,8 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * @param array $data give array.
 		 * @param array $name store data.
 		 */
-		public function wkit_api_call( $data, $name ) {
-			$u_r_l = $this->wdkit_api;
+		public function wkit_api_call( $data, $name, $base = '' ) {
+			$u_r_l = ! empty( $base ) ? $base : $this->wdkit_api;
 
 			if ( empty( $u_r_l ) ) {
 				return array(

@@ -72,7 +72,7 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	if ( ! class_exists( 'WDesignKit_Data_Query' ) ) {
 		return [
 			'success'     => false,
-			'message'     => 'WDesignKit plugin is not loaded.',
+			'message'     => __( 'WDesignKit plugin is not loaded.', 'wdesignkit' ),
 			'description' => '',
 			'id'          => '',
 			'response'    => [],
@@ -83,7 +83,7 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	if ( $token === '' ) {
 		return [
 			'success'     => false,
-			'message'     => 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login.',
+			'message'     => __( 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login.', 'wdesignkit' ),
 			'description' => '',
 			'id'          => '',
 			'response'    => [],
@@ -99,7 +99,7 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	if ( $template_id === '' ) {
 		return [
 			'success'     => false,
-			'message'     => 'template_id is required.',
+			'message'     => __( 'template_id is required.', 'wdesignkit' ),
 			'description' => '',
 			'id'          => '',
 			'response'    => [],
@@ -139,7 +139,7 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	if ( ! is_array( $response ) ) {
 		return [
 			'success'     => false,
-			'message'     => 'Unexpected response from WDesignKit cloud.',
+			'message'     => __( 'Unexpected response from WDesignKit cloud.', 'wdesignkit' ),
 			'description' => '',
 			'id'          => $template_id,
 			'response'    => [],
@@ -364,7 +364,7 @@ function wdkit_handle_create_full_site( array $output, array $args ): array {
 			$errors[] = [
 				'template_id' => $tpl_id,
 				'title'       => $tpl_title,
-				'message'     => 'Cloud returned invalid JSON content.',
+				'message'     => __( 'Cloud returned invalid JSON content.', 'wdesignkit' ),
 			];
 			continue;
 		}

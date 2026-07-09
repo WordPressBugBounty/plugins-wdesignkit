@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-my-snippets', [
-    'label'       => __('Get My WDesignKit Snippets', 'sprout-mcp'),
+    'label'       => __('Get My WDesignKit Snippets', 'wdesignkit'),
     'description' => __(
         'Lists the code snippets the current user has uploaded to the WDesignKit cloud marketplace. Supports search and pagination. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -46,7 +46,7 @@ wp_register_ability('wdesignkit/get-my-snippets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_my_snippets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -63,10 +63,10 @@ wp_register_ability('wdesignkit/get-my-snippets', [
 ]);
 
 wp_register_ability('wdesignkit/get-my-favourite-snippets', [
-    'label'       => __('Get My WDesignKit Favourite Snippets', 'sprout-mcp'),
+    'label'       => __('Get My WDesignKit Favourite Snippets', 'wdesignkit'),
     'description' => __(
         'Lists the code snippets the current user has marked as favourites on the WDesignKit cloud marketplace. Supports search and pagination. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -99,7 +99,7 @@ wp_register_ability('wdesignkit/get-my-favourite-snippets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_my_favourite_snippets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -116,10 +116,10 @@ wp_register_ability('wdesignkit/get-my-favourite-snippets', [
 ]);
 
 wp_register_ability('wdesignkit/favourite-snippet', [
-    'label'       => __('Favourite / Unfavourite WDesignKit Snippet', 'sprout-mcp'),
+    'label'       => __('Favourite / Unfavourite WDesignKit Snippet', 'wdesignkit'),
     'description' => __(
         'Marks or unmarks a WDesignKit marketplace snippet as a favourite for the current user. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -147,7 +147,7 @@ wp_register_ability('wdesignkit/favourite-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_favourite_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

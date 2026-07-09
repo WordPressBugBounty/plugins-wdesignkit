@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/download-preset', [
-    'label'       => __('Download WDesignKit Preset Template', 'sprout-mcp'),
+    'label'       => __('Download WDesignKit Preset Template', 'wdesignkit'),
     'description' => __(
         'Downloads a preset template\'s content from the WDesignKit cloud. For pro presets the corresponding pro plugin (THEPLUS_VERSION for Elementor or TPGBP_VERSION for Gutenberg) must be active. Set custom_meta: true to restore nxt-* post meta onto the current post when the response includes it.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -54,7 +54,7 @@ wp_register_ability('wdesignkit/download-preset', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_download_preset',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

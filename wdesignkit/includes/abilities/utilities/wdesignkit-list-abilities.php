@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/list-abilities', [
-    'label'       => __('List WDesignKit Abilities', 'sprout-mcp'),
+    'label'       => __('List WDesignKit Abilities', 'wdesignkit'),
     'description' => __(
         'Returns all registered WDesignKit abilities with their slugs, labels, descriptions, and input parameter summaries. Useful for discovering what operations are available.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -39,7 +39,7 @@ wp_register_ability('wdesignkit/list-abilities', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_abilities',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

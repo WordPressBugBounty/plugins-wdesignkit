@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/browse-presets', [
-    'label'       => __('Browse WDesignKit Preset Templates', 'sprout-mcp'),
+    'label'       => __('Browse WDesignKit Preset Templates', 'wdesignkit'),
     'description' => __(
         'Fetches a page of preset (marketplace) templates from the WDesignKit cloud. Provide a preset_id (the numeric widget/template category ID) to browse presets for a specific widget — see instructions for the full list of valid IDs. Supports the same filter knobs the WDK UI exposes — builder, free/pro, search keyword, key_words (categories/tags), and plugin id.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -72,7 +72,7 @@ wp_register_ability('wdesignkit/browse-presets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_browse_presets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

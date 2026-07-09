@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/update-widget', [
-    'label'       => __('Update WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Update WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Updates an existing widget\'s PHP code, CSS styles, JS scripts, or JSON config metadata. Each code field is a FULL file replacement. Always use get-widget first to read the current code, then provide the complete updated content.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -77,7 +77,7 @@ wp_register_ability('wdesignkit/update-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_update_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

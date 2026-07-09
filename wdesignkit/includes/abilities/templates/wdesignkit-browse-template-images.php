@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/browse-template-images', [
-    'label'       => __('Browse WDesignKit Template Images', 'sprout-mcp'),
+    'label'       => __('Browse WDesignKit Template Images', 'wdesignkit'),
     'description' => __(
         'Fetches image options for a template section\'s image slots from the WDesignKit cloud image library. Returns a list of image URLs that can be passed as the images[] parameter in wdesignkit/ai-import-template. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -50,7 +50,7 @@ wp_register_ability('wdesignkit/browse-template-images', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_browse_template_images',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

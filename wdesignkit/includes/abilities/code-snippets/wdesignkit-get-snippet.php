@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-snippet-info', [
-    'label'       => __('Get WDesignKit Snippet Info', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Snippet Info', 'wdesignkit'),
     'description' => __(
         'Returns the title and description of a locally stored code snippet by its WordPress post ID. Works with both post-based and file-based (Nexter Pro) snippet storage. No cloud login required.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -40,7 +40,7 @@ wp_register_ability('wdesignkit/get-snippet-info', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_snippet_info',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -60,10 +60,10 @@ wp_register_ability('wdesignkit/get-snippet-info', [
 ]);
 
 wp_register_ability('wdesignkit/get-existing-snippet', [
-    'label'       => __('Get Existing WDesignKit Cloud Snippets', 'sprout-mcp'),
+    'label'       => __('Get Existing WDesignKit Cloud Snippets', 'wdesignkit'),
     'description' => __(
         'Fetches the current user\'s previously uploaded cloud snippets. Used when saving a snippet to check whether it already exists on the cloud and to obtain the cloud snippet ID for an update. Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -96,7 +96,7 @@ wp_register_ability('wdesignkit/get-existing-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_existing_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

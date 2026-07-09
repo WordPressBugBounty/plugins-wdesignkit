@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/push-widget', [
-    'label'       => __('Push WDesignKit Widget to Cloud', 'sprout-mcp'),
+    'label'       => __('Push WDesignKit Widget to Cloud', 'wdesignkit'),
     'description' => __(
         'Uploads a local widget to the WDesignKit cloud marketplace. Reads the widget files from disk, packages them, and posts to the save_widget endpoint. Requires cloud login. After a successful push the cloud returns a marketplace record ID (r_id) which is written back to the local JSON so future version checks work correctly.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -46,7 +46,7 @@ wp_register_ability('wdesignkit/push-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_push_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

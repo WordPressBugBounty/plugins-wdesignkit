@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-features-manager', [
-    'label'       => __('Get WDesignKit Feature Manager States', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Feature Manager States', 'wdesignkit'),
     'description' => __(
         'Returns the current enabled/disabled state for WDesignKit plugin features: widget builder master switch, template library master switch, code-snippet module, and debug/developer mode.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -27,7 +27,7 @@ wp_register_ability('wdesignkit/get-features-manager', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_features_manager',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -45,10 +45,10 @@ wp_register_ability('wdesignkit/get-features-manager', [
 ]);
 
 wp_register_ability('wdesignkit/toggle-features-manager', [
-    'label'       => __('Toggle WDesignKit Plugin Features', 'sprout-mcp'),
+    'label'       => __('Toggle WDesignKit Plugin Features', 'wdesignkit'),
     'description' => __(
         'Enables or disables individual WDesignKit plugin features: the widget builder master switch, the template library master switch, the code-snippet module, and debug/developer mode. Only the keys you pass are changed.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -82,7 +82,7 @@ wp_register_ability('wdesignkit/toggle-features-manager', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_toggle_features_manager',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

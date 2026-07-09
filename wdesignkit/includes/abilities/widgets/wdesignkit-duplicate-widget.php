@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/duplicate-widget', [
-    'label'       => __('Duplicate WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Duplicate WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Creates a copy of a local widget under a new name. All files (JSON, PHP, CSS, JS, image) are duplicated into a new folder. The JSON config is updated with a freshly generated widget_id and the new name. The duplicate is immediately visible in wdesignkit/list-widgets. Cloud records are NOT duplicated — the copy starts as a local-only widget.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -48,7 +48,7 @@ wp_register_ability('wdesignkit/duplicate-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_duplicate_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

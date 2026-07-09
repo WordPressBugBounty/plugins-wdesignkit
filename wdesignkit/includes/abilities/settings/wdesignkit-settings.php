@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-settings', [
-    'label'       => __('Get WDesignKit Settings', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Settings', 'wdesignkit'),
     'description' => __(
         'Gets all WDesignKit plugin settings including builder toggles (Elementor, Gutenberg, Bricks), template visibility, code snippet toggle, and debug mode.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -30,7 +30,7 @@ wp_register_ability('wdesignkit/get-settings', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_settings',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -59,10 +59,10 @@ wp_register_ability('wdesignkit/get-settings', [
 ]);
 
 wp_register_ability('wdesignkit/update-settings', [
-    'label'       => __('Update WDesignKit Settings', 'sprout-mcp'),
+    'label'       => __('Update WDesignKit Settings', 'wdesignkit'),
     'description' => __(
         'Updates WDesignKit plugin settings. You can toggle individual features like Elementor builder, Gutenberg builder, template library, code snippets, and debug mode.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -124,7 +124,7 @@ wp_register_ability('wdesignkit/update-settings', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_update_settings',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

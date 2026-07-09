@@ -13,6 +13,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! function_exists( 'wdesignkit_mcp_permission_callback' ) ) {
+	/**
+	 * Permission callback for all WDesignKit MCP abilities.
+	 *
+	 * Defined and owned by WDesignKit so ability registration never depends on an
+	 * external (e.g. SproutOS) helper existing. WP_Ability::prepare_properties() validates
+	 * this callback at registration time; a missing/uncallable reference throws, which
+	 * WP_Abilities_Registry::register() swallows with a _doing_it_wrong() notice, silently
+	 * dropping the ability. Every WDesignKit ability operates on site-wide settings,
+	 * widgets, templates, or code snippets, all administrator-level, so a single
+	 * manage_options check is the correct, consistent gate.
+	 *
+	 * @param mixed $input Ability input arguments (unused).
+	 * @return bool Whether the current user may use the ability.
+	 */
+	function wdesignkit_mcp_permission_callback( $input = null ) {
+		return current_user_can( 'manage_options' );
+	}
+}
+
 if ( ! class_exists( 'Wdk_Ability_Main' ) ) {
 
 	/**

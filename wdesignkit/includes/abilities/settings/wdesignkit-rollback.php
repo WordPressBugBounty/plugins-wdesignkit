@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/list-rollback-versions', [
-    'label'       => __('List WDesignKit Rollback Versions', 'sprout-mcp'),
+    'label'       => __('List WDesignKit Rollback Versions', 'wdesignkit'),
     'description' => __(
         'Fetches the list of stable previous WDesignKit plugin versions available for rollback from wordpress.org. Excludes beta, RC, trunk, and dev versions, and any version equal to or newer than the currently installed version.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -29,7 +29,7 @@ wp_register_ability('wdesignkit/list-rollback-versions', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_rollback_versions',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -47,10 +47,10 @@ wp_register_ability('wdesignkit/list-rollback-versions', [
 ]);
 
 wp_register_ability('wdesignkit/rollback', [
-    'label'       => __('Rollback WDesignKit to Previous Version', 'sprout-mcp'),
+    'label'       => __('Rollback WDesignKit to Previous Version', 'wdesignkit'),
     'description' => __(
         'Downgrades the WDesignKit plugin to a specified previous stable version using the WordPress Plugin Upgrader. The plugin is automatically re-activated after installation. This replaces the current plugin files and cannot be undone without a further rollback or update. Requires confirm: true.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -79,7 +79,7 @@ wp_register_ability('wdesignkit/rollback', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_rollback',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

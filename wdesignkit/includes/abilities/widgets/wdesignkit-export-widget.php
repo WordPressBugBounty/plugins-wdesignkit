@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/export-widget', [
-    'label'       => __('Export WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Export WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Packages a local widget\'s JSON config (and thumbnail image if present) into a ZIP archive inside the same builder directory and returns the download URL. The resulting .zip can be imported on another site via wdesignkit/import-widget.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -42,7 +42,7 @@ wp_register_ability('wdesignkit/export-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_export_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

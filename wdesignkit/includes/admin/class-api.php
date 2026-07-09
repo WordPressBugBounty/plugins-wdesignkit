@@ -331,7 +331,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					wp_send_json(
 						array(
 							'success'     => false,
-							'message'     => 'No block names received or filter not found.',
+							'message'     => __( 'No block names received or filter not found.', 'wdesignkit' ),
 							'description' => 'Ensure blockNames are posted and the filter is attached.',
 						)
 					);
@@ -364,6 +364,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_check_widget_versions':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_check_widget_versions' );
+					break;
+				case 'wkit_plugin_download_get':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_plugin_download_get' );
 					break;
 				case 'wkit_manage_widget_workspace':
 					$data = $this->wdkit_manage_widget_workspace();
@@ -3181,7 +3184,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						wp_send_json(
 							array(
 								'template_id' => $template_id,
-								'message'     => 'Content is Empty.',
+								'message'     => __( 'Content is Empty.', 'wdesignkit' ),
 							)
 						);
 						wp_die();
@@ -3304,7 +3307,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							array(
 								$temp_id      => $temp_detail,
 								'description' => 'Yay! Your Section has been Successfully Imported.',
-								'message'     => 'Successfully Imported.',
+								'message'     => __( 'Successfully Imported.', 'wdesignkit' ),
 								'inserted_id' => $inserted_post,
 								'success'     => true,
 							)
@@ -3317,7 +3320,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							wp_send_json(
 								array(
 									'template_id' => $template_id,
-									'message'     => 'Content is Empty.',
+									'message'     => __( 'Content is Empty.', 'wdesignkit' ),
 								)
 							);
 							wp_die();
@@ -3444,7 +3447,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									$temp_id      => $temp_detail,
 									'content'     => $temp_con,
 									'description' => 'Yay! Your Section has been Successfully Imported.',
-									'message'     => 'Successfully Imported.',
+									'message'     => __( 'Successfully Imported.', 'wdesignkit' ),
 									'inserted_id' => $inserted_id,
 									'success'     => true,
 								)
@@ -4664,7 +4667,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$get_updated_data = get_option( 'wkit_white_label', false );
 			$response         = array(
-				'message' => 'Data Added successfully',
+				'message' => __( 'Data Added successfully', 'wdesignkit' ),
 				'success' => true,
 				'data'    => $get_updated_data,
 			);

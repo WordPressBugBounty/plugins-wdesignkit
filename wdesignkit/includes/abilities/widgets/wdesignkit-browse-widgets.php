@@ -12,10 +12,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/browse-widgets', [
-    'label'       => __('Browse WDesignKit Marketplace Widgets', 'sprout-mcp'),
+    'label'       => __('Browse WDesignKit Marketplace Widgets', 'wdesignkit'),
     'description' => __(
         'Lists widgets available in the WDesignKit public marketplace. Supports the same filter knobs exposed in the WDK UI: builder, sub-builder, category, search keyword, free/pro, and pagination. All filter operations (Apply, Update, Remove single, Clear all) are just different argument combinations on this one call.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -67,7 +67,7 @@ wp_register_ability('wdesignkit/browse-widgets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_browse_widgets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

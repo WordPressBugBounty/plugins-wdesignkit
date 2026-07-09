@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/activate-widget', [
-    'label'       => __('Activate WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Activate WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Activates a deactivated widget so it gets loaded by the page builder. The widget files remain unchanged; this only updates the activation status.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -37,7 +37,7 @@ wp_register_ability('wdesignkit/activate-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_activate_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -57,10 +57,10 @@ wp_register_ability('wdesignkit/activate-widget', [
 ]);
 
 wp_register_ability('wdesignkit/deactivate-widget', [
-    'label'       => __('Deactivate WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Deactivate WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Deactivates a widget so it stops loading on the frontend. The widget files are preserved; this only updates the activation status. Useful for temporarily disabling a widget without deleting it.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -93,7 +93,7 @@ wp_register_ability('wdesignkit/deactivate-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_deactivate_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

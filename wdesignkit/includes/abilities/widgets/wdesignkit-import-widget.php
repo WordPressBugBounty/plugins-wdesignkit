@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/import-widget', [
-    'label'       => __('Import WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Import WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Imports a widget into the local WDesignKit library from its JSON config object. Provide the full widget_data JSON (same structure as the .json file inside a .wdk ZIP export). The ability creates the correct builder folder, writes the JSON, and optionally downloads the widget thumbnail. Rejects imports when a widget with the same widget_id already exists.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -47,7 +47,7 @@ wp_register_ability('wdesignkit/import-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_import_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/list-categories', [
-    'label'       => __('List Widget Categories', 'sprout-mcp'),
+    'label'       => __('List Widget Categories', 'wdesignkit'),
     'description' => __(
         'Lists all WDesignKit widget categories. Categories are used to organize widgets in the page builder panel.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -40,7 +40,7 @@ wp_register_ability('wdesignkit/list-categories', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_categories',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -60,10 +60,10 @@ wp_register_ability('wdesignkit/list-categories', [
 ]);
 
 wp_register_ability('wdesignkit/manage-categories', [
-    'label'       => __('Manage Widget Categories', 'sprout-mcp'),
+    'label'       => __('Manage Widget Categories', 'wdesignkit'),
     'description' => __(
         'Add or remove widget categories in WDesignKit. Categories help organize widgets in the page builder panel.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -106,7 +106,7 @@ wp_register_ability('wdesignkit/manage-categories', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_manage_categories',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

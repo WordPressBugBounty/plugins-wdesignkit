@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/list-widgets', [
-    'label'       => __('List WDesignKit Widgets', 'sprout-mcp'),
+    'label'       => __('List WDesignKit Widgets', 'wdesignkit'),
     'description' => __(
         'Lists all locally created widgets across all page builders (Elementor, Gutenberg, Gutenberg Core, Bricks). Shows widget name, builder type, version, status, and folder path.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -51,7 +51,7 @@ wp_register_ability('wdesignkit/list-widgets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_widgets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/login', [
-    'label'       => __('Login to WDesignKit Cloud', 'sprout-mcp'),
+    'label'       => __('Login to WDesignKit Cloud', 'wdesignkit'),
     'description' => __(
         'Authenticates the user against the WDesignKit cloud using email and password, and stores the session token locally. Use remember_me: true for a 90-day session; false (default) for a 1-day session.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -44,7 +44,7 @@ wp_register_ability('wdesignkit/login', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_login',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -63,10 +63,10 @@ wp_register_ability('wdesignkit/login', [
 ]);
 
 wp_register_ability('wdesignkit/login-api-key', [
-    'label'       => __('Login to WDesignKit Cloud with API Key', 'sprout-mcp'),
+    'label'       => __('Login to WDesignKit Cloud with API Key', 'wdesignkit'),
     'description' => __(
         'Authenticates the user against the WDesignKit cloud using a personal API token (instead of email and password), and stores the session locally. Useful for automation and CI workflows.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -89,7 +89,7 @@ wp_register_ability('wdesignkit/login-api-key', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_login_api_key',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -108,10 +108,10 @@ wp_register_ability('wdesignkit/login-api-key', [
 ]);
 
 wp_register_ability('wdesignkit/social-login', [
-    'label'       => __('Login / Sign Up to WDesignKit Cloud via Google or Facebook', 'sprout-mcp'),
+    'label'       => __('Login / Sign Up to WDesignKit Cloud via Google or Facebook', 'wdesignkit'),
     'description' => __(
         'Completes a WDesignKit Google or Facebook OAuth login/signup using the state code produced after the user authorises in the OAuth browser popup. Covers Login with Google, Login with Facebook, Sign Up with Google, and Sign Up with Facebook — all share the same backend endpoint.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -135,7 +135,7 @@ wp_register_ability('wdesignkit/social-login', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_social_login',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -155,10 +155,10 @@ wp_register_ability('wdesignkit/social-login', [
 ]);
 
 wp_register_ability('wdesignkit/signup', [
-    'label'       => __('Sign Up for WDesignKit Cloud', 'sprout-mcp'),
+    'label'       => __('Sign Up for WDesignKit Cloud', 'wdesignkit'),
     'description' => __(
         'Creates a new WDesignKit cloud account with a full name, email address, and password, then stores the session token locally so cloud features are immediately available.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -189,7 +189,7 @@ wp_register_ability('wdesignkit/signup', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_signup',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -207,10 +207,10 @@ wp_register_ability('wdesignkit/signup', [
 ]);
 
 wp_register_ability('wdesignkit/forgot-password', [
-    'label'       => __('WDesignKit Cloud Forgot Password', 'sprout-mcp'),
+    'label'       => __('WDesignKit Cloud Forgot Password', 'wdesignkit'),
     'description' => __(
         'Sends a password reset email to the specified WDesignKit cloud account address. This is a read-only operation — no local session is modified.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -232,7 +232,7 @@ wp_register_ability('wdesignkit/forgot-password', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_forgot_password',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -250,10 +250,10 @@ wp_register_ability('wdesignkit/forgot-password', [
 ]);
 
 wp_register_ability('wdesignkit/logout', [
-    'label'       => __('Logout from WDesignKit Cloud', 'sprout-mcp'),
+    'label'       => __('Logout from WDesignKit Cloud', 'wdesignkit'),
     'description' => __(
         'Logs the currently authenticated user out of WDesignKit cloud. Deletes the local session transient, calls the cloud logout endpoint to invalidate the token, and clears the cached licence data.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -267,7 +267,7 @@ wp_register_ability('wdesignkit/logout', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_logout',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -286,10 +286,10 @@ wp_register_ability('wdesignkit/logout', [
 ]);
 
 wp_register_ability('wdesignkit/get-social-login-url', [
-    'label'       => __('Get WDesignKit Social Login URL', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Social Login URL', 'wdesignkit'),
     'description' => __(
         'Generates a Google or Facebook OAuth authorisation URL and a unique state token. Step 1 of social login: open the returned auth_url in a browser popup for the user to authorise, then pass the state to wdesignkit/social-login (Step 2) once the popup closes.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -316,7 +316,7 @@ wp_register_ability('wdesignkit/get-social-login-url', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_social_login_url',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/create-widget', [
-    'label'       => __('Create WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Create WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Creates a new widget for Elementor, Gutenberg, Gutenberg Core, or Bricks builder. Generates all required files (PHP, JSON config, CSS, JS) with proper boilerplate code. You can provide custom code for each file or use defaults.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -118,7 +118,7 @@ wp_register_ability('wdesignkit/create-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_create_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

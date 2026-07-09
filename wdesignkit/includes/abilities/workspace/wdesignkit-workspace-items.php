@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/manage-workspace-template', [
-    'label'       => __('Manage Template in WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Manage Template in WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Adds, removes, copies, or moves a cloud template within WDesignKit workspaces. Covers "Add Template to Workspace", "Remove Template from Workspace", "Copy / Move Template in Workspace", and "Delete Template from Workspace". Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -49,7 +49,7 @@ wp_register_ability('wdesignkit/manage-workspace-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_manage_workspace_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -70,10 +70,10 @@ wp_register_ability('wdesignkit/manage-workspace-template', [
 ]);
 
 wp_register_ability('wdesignkit/manage-workspace-widget', [
-    'label'       => __('Manage Widget in WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Manage Widget in WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Adds, removes, copies, or moves a cloud widget within WDesignKit workspaces. Covers "Copy / Move Widget in Workspace" and "Delete Widget from Workspace". Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -109,7 +109,7 @@ wp_register_ability('wdesignkit/manage-workspace-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_manage_workspace_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
@@ -130,10 +130,10 @@ wp_register_ability('wdesignkit/manage-workspace-widget', [
 ]);
 
 wp_register_ability('wdesignkit/manage-workspace-snippet', [
-    'label'       => __('Manage Code Snippet in WDesignKit Workspace', 'sprout-mcp'),
+    'label'       => __('Manage Code Snippet in WDesignKit Workspace', 'wdesignkit'),
     'description' => __(
         'Adds, removes, copies, or moves a cloud code snippet within WDesignKit workspaces. Covers "Copy / Move Code Snippet in Workspace". Requires cloud login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -169,7 +169,7 @@ wp_register_ability('wdesignkit/manage-workspace-snippet', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_manage_workspace_snippet',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

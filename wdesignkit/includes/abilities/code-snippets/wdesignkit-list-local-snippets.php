@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/list-local-snippets', [
-    'label'       => __('List Local WDesignKit Code Snippets', 'sprout-mcp'),
+    'label'       => __('List Local WDesignKit Code Snippets', 'wdesignkit'),
     'description' => __(
         'Lists all locally installed code snippets. Supports both Nexter Pro file-based storage (WP_CONTENT_DIR/nexter-snippet-data/) and legacy WordPress post-based storage. Returns each snippet\'s ID, name, type, status, and storage type. The returned file_id or post_id can be used with wdesignkit/get-snippet-info, wdesignkit/save-snippet, and wdesignkit/update-snippet-details. No cloud login required.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -42,7 +42,7 @@ wp_register_ability('wdesignkit/list-local-snippets', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_list_local_snippets',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

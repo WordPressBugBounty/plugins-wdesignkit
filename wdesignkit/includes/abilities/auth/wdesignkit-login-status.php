@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-login-status', [
-    'label'       => __('Get WDesignKit Login Status', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Login Status', 'wdesignkit'),
     'description' => __(
         'Checks whether the user is logged in to WDesignKit cloud. Returns login status, email, token validity, expiry time, and widget credit limits. Cloud operations like pushing widgets to marketplace require login.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -33,7 +33,7 @@ wp_register_ability('wdesignkit/get-login-status', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_login_status',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

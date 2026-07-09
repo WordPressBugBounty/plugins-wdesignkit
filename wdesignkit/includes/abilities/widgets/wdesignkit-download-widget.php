@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/download-widget', [
-    'label'       => __('Download WDesignKit Marketplace Widget', 'sprout-mcp'),
+    'label'       => __('Download WDesignKit Marketplace Widget', 'wdesignkit'),
     'description' => __(
         'Downloads a marketplace widget by its unique ID (w_uniq) and installs it in the local widget library. After a successful download the widget appears in wdesignkit/list-widgets. Maps to the "Import Widget — Browse (Public Download)" ability.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -59,7 +59,7 @@ wp_register_ability('wdesignkit/download-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_download_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

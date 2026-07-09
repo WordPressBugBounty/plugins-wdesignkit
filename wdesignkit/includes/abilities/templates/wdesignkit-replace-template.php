@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/replace-template', [
-    'label'       => __('Replace WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('Replace WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Replaces the contents of an existing user-saved cloud template with a new payload. Requires confirm: true. Behind the scenes this is an in-place update, but the ability is split out so it can carry the "you are about to overwrite saved work" guardrail. Use dry_run: true to preview the swap.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -57,7 +57,7 @@ wp_register_ability('wdesignkit/replace-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_replace_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

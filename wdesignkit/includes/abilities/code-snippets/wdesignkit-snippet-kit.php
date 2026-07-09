@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/get-snippet-kit', [
-    'label'       => __('Get WDesignKit Snippet Kit', 'sprout-mcp'),
+    'label'       => __('Get WDesignKit Snippet Kit', 'wdesignkit'),
     'description' => __(
         'Fetches individual code snippets inside a WDesignKit snippet kit (bundle). A kit is a collection of related snippets. Returns snippet summaries (id, name, description, type, free_pro) without the raw code body to stay within the 1 MB output limit. Use page/per_page to paginate large kits. No cloud login required.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -47,7 +47,7 @@ wp_register_ability('wdesignkit/get-snippet-kit', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_get_snippet_kit',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

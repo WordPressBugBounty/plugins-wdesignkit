@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/save-template', [
-    'label'       => __('Save WDesignKit Template', 'sprout-mcp'),
+    'label'       => __('Save WDesignKit Template', 'wdesignkit'),
     'description' => __(
         'Saves a page builder layout to the user\'s WDesignKit cloud library as a new template. Provide the full builder data payload (JSON string for Gutenberg, base64-decoded Elementor export for Elementor) plus the source post_id so any nxt-* custom meta is captured alongside it.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -53,7 +53,7 @@ wp_register_ability('wdesignkit/save-template', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_save_template',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],

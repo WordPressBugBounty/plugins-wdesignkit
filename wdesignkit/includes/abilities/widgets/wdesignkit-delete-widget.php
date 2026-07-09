@@ -10,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 wp_register_ability('wdesignkit/delete-widget', [
-    'label'       => __('Delete WDesignKit Widget', 'sprout-mcp'),
+    'label'       => __('Delete WDesignKit Widget', 'wdesignkit'),
     'description' => __(
         'Soft-deletes a local WDesignKit widget by moving all its files to a recoverable trash folder. Requires confirm: true to execute. Use dry_run: true to preview what will be moved without making any changes.',
-        'sprout-mcp',
+        'wdesignkit',
     ),
     'category'    => 'wdesignkit',
     'input_schema' => [
@@ -53,7 +53,7 @@ wp_register_ability('wdesignkit/delete-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_delete_widget',
-    'permission_callback' => 'sprout_mcp_permission_callback',
+    'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
