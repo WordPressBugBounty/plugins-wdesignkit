@@ -87,7 +87,7 @@ if ( ! class_exists( 'Wdkit_Bricks_Files_Load' ) ) {
 				}
 
 				if (! is_dir( trailingslashit( $dir ) . $value ) ){
-					return false;
+					continue;
 				}
 
 				if ( ! strpos( $value, '.' ) ) {

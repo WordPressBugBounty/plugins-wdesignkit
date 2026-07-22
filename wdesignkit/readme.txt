@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,19 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.6.1 - 22 July 2026
+Fixed: Improved import stability by handling failed API requests gracefully and displaying user-friendly error messages.
+Fixed: Resolved category and tag assignment issues during page and section imports.
+Fixed: Resolved Elementor global colors, typography, and site settings not updating correctly after import.
+Fixed: Improved Bricks widget scanning by skipping invalid widget files without interrupting the scan process.
+Fixed: Resolved Gutenberg style generation issues for border, dimension, slider, gradient, textarea, and related controls.
+Fixed: Improved Gutenberg dimension controls to correctly apply individual side values, border-radius, and reset behavior.
+Fixed: Resolved third-party Gutenberg block and style initialization issues after kit import.
+Improved: Enhanced template and section import reliability with automatic retry support for temporary connection failures.
+Improved: Increased import reliability for large pages and sections.
+Improved: Optimized the import workflow by removing unnecessary background processing and reducing unnecessary console warnings.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.6.0 - 09 July 2026
 New: Download Widget as Plugin — export any widget as a ready-to-use WordPress plugin.

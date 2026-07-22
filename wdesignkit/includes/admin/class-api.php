@@ -735,6 +735,16 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			);
 
 			$response = WDesignKit_Data_Query::get_data( 'get_user_info', $args );
+
+			if ( is_wp_error( $response ) ) {
+				wp_send_json( array(
+					'success'     => false,
+					'message'     => $response->get_error_message(),
+					'description' => $response->get_error_message(),
+				) );
+				wp_die();
+			}
+
 			$status   = ( ! empty( $response['status'] ) ) ? sanitize_text_field( $response['status'] ) : 'error';
 			$email    = isset( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : false;
 
@@ -893,6 +903,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$args = $this->wdkit_parse_args( $_POST );
 
 			$response = WDesignKit_Data_Query::get_data( 'browse_page', $args );
+
+			if ( is_wp_error( $response ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'message' => $response->get_error_message(),
+				) );
+				wp_die();
+			}
 
 			$manage_licence                            = array();
 			$manage_licence['theplus_elementor_addon'] = ! empty( defined( 'THEPLUS_VERSION' ) ) ? true : false;
@@ -1858,6 +1876,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( 'elementor' == $builder ) {
 				$kit_id = get_option( 'elementor_active_kit' );
+				if ( ! $kit_id && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Core\Kits\Manager' ) ) {
+					\Elementor\Core\Kits\Manager::create_default_kit();
+					$kit_id = get_option( 'elementor_active_kit' );
+				}
+
 				if ( ! $kit_id ) {
 					$response = array(
 						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
@@ -1869,16 +1892,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					wp_die();
 				}
 
+				// A freshly created kit has no `_elementor_page_settings` meta yet,
+				// so an empty result here is a valid starting point, not an error.
 				$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
-				if ( empty( $kit_meta ) ) {
-					$response = array(
-						'message'     => __( 'Data Not Found', 'wdesignkit' ),
-						'description' => __( 'No site data found in kit', 'wdesignkit' ),
-						'success'     => false,
-					);
-
-					wp_send_json( $response );
-					wp_die();
+				if ( ! is_array( $kit_meta ) ) {
+					$kit_meta = array();
 				}
 
 				$kit_meta['container_width']       = ! empty( $site_data['container_width'] ) ? $site_data['container_width'] : array();
@@ -1886,6 +1904,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$kit_meta['body_background_color'] = ! empty( $site_data['body_background_color'] ) ? $site_data['body_background_color'] : array();
 
 				update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+
+				// Regenerate Elementor's cached CSS. Writing the kit meta directly does
+				// not rebuild the kit stylesheet, so the imported body background colour
+				// and container width would otherwise never render on the frontend.
+				$this->wdkit_regenerate_elementor_kit_css();
 
 				$response = array(
 					'message'     => __( 'Site data Updated', 'wdesignkit' ),
@@ -1936,6 +1959,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				// Get colors from Elementor Site Kit
 				$kit_id = get_option( 'elementor_active_kit' );
+				if ( ! $kit_id && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Core\Kits\Manager' ) ) {
+					// No kit has ever been created on this site (the option is only
+					// ever populated by Elementor's own activation hook). Create one
+					// via Elementor's own helper so the import has somewhere to write.
+					\Elementor\Core\Kits\Manager::create_default_kit();
+					$kit_id = get_option( 'elementor_active_kit' );
+				}
+
 				if ( ! $kit_id ) {
 					$response = array(
 						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
@@ -1947,22 +1978,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					wp_die();
 				}
 
+				// A freshly created kit has no `_elementor_page_settings` meta yet,
+				// so an empty result here is a valid starting point, not an error.
 				$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
-				if ( empty( $kit_meta ) ) {
-					$response = array(
-						'message'     => __( 'Data Not Found', 'wdesignkit' ),
-						'description' => __( 'No meta data found in kit', 'wdesignkit' ),
-						'success'     => false,
-					);
-
-					wp_send_json( $response );
-					wp_die();
+				if ( ! is_array( $kit_meta ) ) {
+					$kit_meta = array();
 				}
 
-				$kit_meta['custom_colors']     = array_merge( $g_color, $kit_meta['custom_colors'] );
-				$kit_meta['custom_typography'] = array_merge( $g_typo, $kit_meta['custom_typography'] );
+				$kit_meta['custom_colors']     = array_merge( $g_color, $kit_meta['custom_colors'] ?? array() );
+				$kit_meta['custom_typography'] = array_merge( $g_typo, $kit_meta['custom_typography'] ?? array() );
 
 				update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+
+				// Regenerate Elementor's cached CSS. Writing the kit meta directly does
+				// not rebuild the kit stylesheet, so the imported global colours and
+				// fonts would otherwise never render on the frontend.
+				$this->wdkit_regenerate_elementor_kit_css();
 
 				$response = array(
 					'message'     => __( 'Global data Updated', 'wdesignkit' ),
@@ -1997,6 +2028,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			wp_send_json( $response );
 			wp_die();
+		}
+
+		/**
+		 * Regenerate Elementor's cached CSS files after the active kit's
+		 * `_elementor_page_settings` meta has been changed directly.
+		 *
+		 * Elementor renders global colours, global fonts and the body background
+		 * colour into a cached kit stylesheet. Updating the meta via
+		 * update_post_meta() does not rebuild that stylesheet, so imported site
+		 * settings never reach the frontend until the cache is cleared. This
+		 * mirrors the clear_cache() call already used by the page/section import.
+		 *
+		 * @since 2.3.2
+		 *
+		 * @return void
+		 */
+		protected function wdkit_regenerate_elementor_kit_css() {
+			if ( did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) ) {
+				\Elementor\Plugin::$instance->files_manager->clear_cache();
+			}
 		}
 
 		/**
@@ -2570,6 +2621,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			unset( $args['email'] );
 			$args['unique_id'] = get_option( 'wdkit_unique_id' ) ?? '';
 			$response    = WDesignKit_Data_Query::get_data( $api_type, $args );
+
+			if ( is_wp_error( $response ) ) {
+				wp_send_json( array(
+					'success' => false,
+					'message' => $response->get_error_message(),
+				) );
+				wp_die();
+			}
+
 			$custom_meta = isset( $_POST['custom_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_meta'] ) ) : false;
 
 			/** Custom meta Field */
@@ -3039,7 +3099,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 					$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
 
-					if ( 'error' === $response['content'] ) {
+					if ( is_wp_error( $response ) ) {
+						wp_send_json( array(
+							'success' => false,
+							'message' => $response->get_error_message(),
+						) );
+						wp_die();
+					}
+
+					if ( isset( $response['content'] ) && 'error' === $response['content'] ) {
 						wp_send_json( $response );
 						wp_die();
 					}
@@ -3124,6 +3192,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * */
 		protected function import_page_section_content() {
 
+			// Sideloading images for image-heavy pages (wdkit_media_import → Imagick
+			// thumbnail generation per image) can exceed the default 30s execution
+			// limit and fatal the request mid-import. Give this single page import
+			// more headroom; harmless no-op where set_time_limit() is disabled.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 120 );
+			}
+
 			if ( isset( $_POST['args'] ) ) {
 				$args = ! empty( $_POST['args'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['args'] ) ), true ) : array();
 			}
@@ -3148,9 +3224,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$template_id = ! empty( $_POST['template_id'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_id'] ), true ) ) : '';
 			}
 
-			if ( isset( $_POST['temp_type'] ) ) {
-				$temp_type = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'normal';
-			}
+			$temp_type = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'normal';
 
 			if ( isset( $_POST['data'] ) ) {
 				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ) ) : '';
@@ -3192,24 +3266,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 						$editor  = ( 'wdkit' === $args['editor'] ) ? 'gutenberg' : $args['editor'];
 						$blocks = parse_blocks( stripslashes( $content ) );
-						
+
 						$blocks = $this->wdkit_media_import( $blocks, $editor );
 
 						$processor = new WDKIT_Nexter_Block_Processor();
 						$blocks    = $processor->run( $blocks );
 						$content = serialize_blocks( $blocks );
-						
+
 						$content =  $this->replace_unicode_glitch( serialize_blocks( $blocks ) );
-
-						if ( ! empty( $category_list ) && is_array( $category_list ) ) {
-							$category_ids = array_map( 'intval', $category_list );
-							wp_set_post_terms( $inserted_id, $category_ids, 'category' );
-						}
-
-						if ( ! empty( $tag_list ) && is_array( $tag_list ) ) {
-							$tag_ids = array_map( 'intval', $tag_list );
-							wp_set_post_terms( $inserted_id, $tag_ids, 'post_tag' );
-						}
 
 						$inserted_post = wp_insert_post(
 							array(

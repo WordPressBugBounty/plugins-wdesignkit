@@ -9,3 +9,14 @@
     background-image: url("../../images/svg/builder-logo.svg");
     background-repeat: no-repeat;
 }
+
+/* Dimension control sliders need allowReset so clearing the number field actually
+   unsets the value (WP's RangeControl silently ignores a cleared field otherwise),
+   but the "Reset" button that prop injects isn't wanted in this layout - hide it
+   (and its wrapper, so no empty gap is left where the button used to be). */
+.wdkit-dimension-section .components-range-control__reset {
+    display: none;
+}
+.wdkit-dimension-section span:has(> .components-range-control__reset) {
+    display: none;
+}
