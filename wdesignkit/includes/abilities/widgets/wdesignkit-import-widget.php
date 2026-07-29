@@ -25,7 +25,15 @@ wp_register_ability('wdesignkit/import-widget', [
             ],
             'image_url' => [
                 'type'        => 'string',
-                'description' => 'Optional URL of the widget thumbnail image. Downloaded and stored alongside the JSON.',
+                'description' => 'Optional URL of the widget thumbnail image. Downloaded and stored alongside the JSON. Used only when image_base64 is not provided.',
+            ],
+            'image_base64' => [
+                'type'        => 'string',
+                'description' => 'Optional widget thumbnail supplied inline as base64 (raw base64, or a data:image/...;base64,... URI). Use this to import the thumbnail bundled INSIDE a .wdk ZIP export — mirrors the manual Import UI, no separately-hosted URL needed. Takes precedence over image_url.',
+            ],
+            'image_ext' => [
+                'type'        => 'string',
+                'description' => 'Optional image extension (png, jpg, jpeg, webp) for image_base64 when it is raw base64 without a data: URI. Defaults to the widget JSON img_ext, or "png".',
             ],
             'overwrite' => [
                 'type'        => 'boolean',
@@ -56,6 +64,7 @@ wp_register_ability('wdesignkit/import-widget', [
                 'Imports a widget from its JSON config into the local library.',
                 'Does NOT require cloud login — this is a local filesystem operation.',
                 'widget_json must be the full widget_data structure ({"widget_data":{"widgetdata":{…}}}) — get it from wdesignkit/get-widget or from a .wdk ZIP export.',
+                'To import a .wdk ZIP\'s bundled thumbnail, pass its bytes as image_base64 (no external URL needed); use image_url only for a remotely-hosted image.',
                 'Fails if a widget with the same widget_id already exists unless overwrite: true.',
                 'After a successful import the widget appears in wdesignkit/list-widgets.',
             ]),
@@ -160,22 +169,66 @@ function wdesignkit_mcp_import_widget(array $input): array {
         return ['success' => false, 'message' => 'Could not write widget JSON file.'];
     }
 
-    $image_saved = false;
-    $image_url   = sanitize_url((string) ($input['image_url'] ?? ''));
-    if ($image_url !== '') {
+    // Thumbnail. Prefer an inline base64 image — this is how a .wdk ZIP's OWN bundled
+    // thumbnail is imported (mirrors the manual Import UI's ZipArchive extraction). Fall
+    // back to downloading a remote image_url. Whichever is used, the JSON's w_image / img_ext
+    // are pointed at the saved local file so the library shows it and push-widget finds it.
+    $image_saved  = false;
+    $image_source = '';
+    $image_base64 = (string) ($input['image_base64'] ?? '');
+    $image_url    = sanitize_url((string) ($input['image_url'] ?? ''));
+
+    $img_bytes = '';
+    $img_ext   = '';
+
+    if ($image_base64 !== '') {
+        $b64 = $image_base64;
+        if (preg_match('#^data:image/([a-zA-Z0-9.+-]+);base64,(.*)$#s', $b64, $m)) {
+            $img_ext = $m[1];
+            $b64     = $m[2];
+        }
+        $b64     = preg_replace('/\s+/', '', (string) $b64);
+        $decoded = ($b64 !== '') ? base64_decode($b64, true) : false;
+        if ($decoded !== false && $decoded !== '') {
+            $img_bytes = $decoded;
+            if ($img_ext === '') {
+                $img_ext = (string) ($input['image_ext'] ?? ($widgetdata['img_ext'] ?? 'png'));
+            }
+            $image_source = 'bundled';
+        }
+    } elseif ($image_url !== '') {
         $img_resp = wp_remote_get($image_url, ['timeout' => 30]);
         if (!is_wp_error($img_resp)) {
-            $img_ext  = pathinfo(parse_url($image_url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION) ?: 'png';
-            $img_ext  = sanitize_file_name($img_ext);
-            $img_path = $widget_dir . '/' . $file_name . '.' . $img_ext;
-            @file_put_contents($img_path, wp_remote_retrieve_body($img_resp));
-            $image_saved = true;
+            $img_bytes    = (string) wp_remote_retrieve_body($img_resp);
+            $img_ext      = pathinfo(parse_url($image_url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION) ?: 'png';
+            $image_source = 'downloaded';
         }
     }
 
+    if ($img_bytes !== '') {
+        $img_ext = preg_replace('/[^a-z0-9]/', '', strtolower($img_ext));
+        if ($img_ext === '') {
+            $img_ext = 'png';
+        }
+        $img_path = $widget_dir . '/' . $file_name . '.' . $img_ext;
+        if (@file_put_contents($img_path, $img_bytes) !== false) {
+            $image_saved = true;
+            // Point the JSON at the local thumbnail so it renders in the library and push finds it.
+            if (defined('WDKIT_SERVER_PATH')) {
+                $widget_json['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/{$builder}/{$folder_name}/{$file_name}.{$img_ext}";
+            }
+            $widget_json['widget_data']['widgetdata']['img_ext'] = $img_ext;
+            @file_put_contents($json_path, wp_json_encode($widget_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        }
+    }
+
+    $thumb_note = $image_saved
+        ? ($image_source === 'bundled' ? ' Bundled thumbnail imported.' : ' Thumbnail downloaded.')
+        : '';
+
     return [
         'success'     => true,
-        'message'     => "Widget '{$widget_name}' imported successfully." . ($image_saved ? ' Thumbnail downloaded.' : ''),
+        'message'     => "Widget '{$widget_name}' imported successfully." . $thumb_note,
         'folder'      => $folder_name,
         'builder'     => $builder,
         'widget_id'   => $widget_id,

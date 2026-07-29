@@ -136,6 +136,81 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			wp_die();
 		}
 
+
+		/**
+		 * Memory headroom left for image work, in bytes. 0 means unlimited.
+		 */
+		private static function wdkit_available_image_memory() {
+			$limit = wp_convert_hr_to_bytes( ini_get( 'memory_limit' ) );
+
+			if ( $limit <= 0 ) {
+				return 0;
+			}
+
+			return max( 0, $limit - memory_get_usage( true ) );
+		}
+
+		/**
+		 * Stop WordPress decoding images that cannot fit in the memory available.
+		 *
+		 * Both filters are consulted by wp_create_image_subsizes() *before* it loads an image
+		 * editor, so refusing here means the oversized image is never decoded:
+		 *
+		 *   big_image_size_threshold      -> falsy skips the "-scaled" copy (needs a full decode)
+		 *   intermediate_image_sizes_advanced -> empty makes _wp_make_subsizes() return early,
+		 *                                        ahead of its wp_get_image_editor() call
+		 *
+		 * The original file is still attached and usable; only the derived sizes are skipped.
+		 * That trades ideal thumbnails for an import that completes, instead of a fatal that
+		 * takes the whole page down and repeats on every retry.
+		 *
+		 * @since 2.6.2
+		 */
+		private static function wdkit_guard_oversized_images() {
+			static $registered = false;
+
+			// Registering twice would stack duplicate closures on both filters.
+			if ( $registered ) {
+				return;
+			}
+
+			$registered = true;
+
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			add_filter(
+				'big_image_size_threshold',
+				function ( $threshold, $imagesize = array(), $file = '', $attachment_id = 0 ) {
+					if ( ! empty( $imagesize[0] ) && ! empty( $imagesize[1] )
+						&& ! Wdkit_Image_Guard::decode_fits( $imagesize[0], $imagesize[1], self::wdkit_available_image_memory() )
+					) {
+						return false;
+					}
+
+					return $threshold;
+				},
+				99,
+				4
+			);
+
+			add_filter(
+				'intermediate_image_sizes_advanced',
+				function ( $sizes, $image_meta = array(), $attachment_id = 0 ) {
+					if ( ! empty( $image_meta['width'] ) && ! empty( $image_meta['height'] )
+						&& ! Wdkit_Image_Guard::decode_fits( $image_meta['width'], $image_meta['height'], self::wdkit_available_image_memory() )
+					) {
+						return array();
+					}
+
+					return $sizes;
+				},
+				99,
+				3
+			);
+		}
+
 		/**
 		 * Get Wdkit Api Call Ajax.
 		 */
@@ -237,6 +312,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'generate_ai_content':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'generate_ai_content' );
 					break;
+				case 'generate_ai_content_batch':
+					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'generate_ai_content_batch' );
+					break;
 				case 'reset_site':
 					$data = apply_filters( 'wp_wdkit_import_temp_ajax', 'reset_site' );
 					break;
@@ -296,6 +374,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_update_elementor_template':
 					$data = $this->wkit_update_elementor_template();
+					break;
+				case 'wdkit_update_page_content':
+					$data = $this->wdkit_update_page_content();
 					break;
 				case 'update_plugin_setting':
 					$data = $this->update_plugin_setting();
@@ -686,13 +767,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$theplus_licence = get_option( 'tpaep_licence_data', array() );
 
-			if ( ! empty( $theplus_active_check ) && ! empty( $theplus_licence ) ) {
+			// Also require the TPAE Pro plugin to be active (Pro defines THEPLUS_VERSION;
+			// the free plugin defines L_THEPLUS_VERSION). This hides the "found active
+			// key" notice when the Pro plugin is removed even though its licence option
+			// still lingers in the database.
+			if ( ! empty( $theplus_active_check ) && defined( 'THEPLUS_VERSION' ) && ! empty( $theplus_licence ) ) {
 				$manage_licence['tpae'] = $theplus_licence;
 			}
 
 			$nexter_licence = get_option( 'tpgb_activate', array() );
 
-			if ( ! empty( $nexter_active_check ) && ! empty( $nexter_licence ) && ! empty( $nexter_licence['tpgb_activate_key'] ) ) {
+			// Also require the Nexter Blocks Pro plugin to be active (Pro defines
+			// TPGBP_VERSION; the free plugin defines TPGB_VERSION), so the notice hides
+			// when the Pro plugin is removed but its licence option persists.
+			if ( ! empty( $nexter_active_check ) && defined( 'TPGBP_VERSION' ) && ! empty( $nexter_licence ) && ! empty( $nexter_licence['tpgb_activate_key'] ) ) {
 				$tpgb_license_status                = get_option( 'tpgbp_license_status', array() );
 				$tpgb_license_status['license_key'] = $nexter_licence['tpgb_activate_key'];
 				$manage_licence['tpag']             = $tpgb_license_status;
@@ -1092,6 +1180,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 2.3.3
 		 */
 		protected function wdkit_save_wp_images() {
+
+			// media_sideload_image() generates every registered thumbnail size, which decodes
+			// the full source bitmap. Same guard as the page import.
+			$this->wdkit_guard_oversized_images();
+
 			$image_url = isset( $_POST['image'] ) ? sanitize_text_field( $_POST['image'] ) : '';
 		
 			if ( empty( $image_url ) ) {
@@ -1112,12 +1205,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					);
 				} else {
 					$saved_url = wp_get_attachment_url( $attachment_id );
-	
+
+					// Elementor's importer skips an image only when it finds
+					// _elementor_source_image_hash matching sha1 of the URL it is given. The
+					// content we hand it now carries this local URL, so stamp the hash of that
+					// URL too - without it Elementor re-downloads a file already on disk and
+					// leaves a "-1" duplicate behind for every image on every page that uses it.
+					if ( $saved_url ) {
+						update_post_meta( $attachment_id, '_elementor_source_image_hash', sha1( $saved_url ) );
+
+						// Same purpose for the block importer, which keys off its own meta.
+						update_post_meta( $attachment_id, 'tpgb_source_image_key', sha1( $saved_url ) );
+					}
+
 					$response = array(
 						'message'     => __( 'Image Saved', 'wdesignkit' ),
 						'description' => __( 'Image successfully saved to Media Library.', 'wdesignkit' ),
 						'success'     => true,
-						'url'           => $saved_url,
+						'url'         => $saved_url,
 					);
 				}
 
@@ -2667,6 +2772,257 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param array  $content store media content.
 		 * @param string $editor it is check editor.
 		 */
+		/**
+		 * Resolve a local upload URL back to its attachment ID.
+		 *
+		 * Handles the "-scaled" copy WordPress makes for large originals and any
+		 * "-1920x1280" size suffix, both of which attachment_url_to_postid() misses because
+		 * they are not the value stored in _wp_attached_file.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $url Local upload URL.
+		 * @return int Attachment ID, or 0.
+		 */
+		private static function wdkit_attachment_id_from_url( $url ) {
+			static $cache = array();
+
+			if ( isset( $cache[ $url ] ) ) {
+				return $cache[ $url ];
+			}
+
+			$id = (int) attachment_url_to_postid( $url );
+
+			if ( ! $id ) {
+				// Try the original file behind a -scaled or -WxH derivative.
+				$stripped = preg_replace( '/-scaled(\.[a-z0-9]+)$/i', '$1', $url );
+				$stripped = preg_replace( '/-\d+x\d+(\.[a-z0-9]+)$/i', '$1', (string) $stripped );
+
+				if ( $stripped && $stripped !== $url ) {
+					$id = (int) attachment_url_to_postid( $stripped );
+				}
+			}
+
+			// Only remember hits. Page imports run concurrently, so an attachment created by a
+			// sibling request may not exist yet when this is first asked — caching that miss
+			// would keep every later control in this request pointing at nothing.
+			if ( $id ) {
+				$cache[ $url ] = $id;
+			}
+
+			return $id;
+		}
+
+		/**
+		 * Is this media reference still pointing off-site?
+		 *
+		 * Template content arrives holding the URLs of wherever the media lived before. Those
+		 * carry that site's attachment IDs, which have no meaning here - and can collide with
+		 * unrelated local posts.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $url URL from a media control.
+		 * @return bool True when the URL points at another site's uploads.
+		 */
+		private static function wdkit_is_foreign_media_url( $url ) {
+
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			$uploads = wp_get_upload_dir();
+
+			return Wdkit_Image_Guard::is_foreign_media( $url, isset( $uploads['baseurl'] ) ? $uploads['baseurl'] : '' );
+		}
+
+		/**
+		 * Find - or make - the local attachment behind a source-site media URL.
+		 *
+		 * Elementor stamps every image it imports with `_elementor_source_image_hash`
+		 * (sha1 of the URL it came from), and its importer consults that before doing any
+		 * network work. Delegating here means a URL already imported at create time resolves
+		 * from the database, and one that never made it is fetched exactly once.
+		 *
+		 * Only ever called for foreign URLs. Handing it a local URL would re-download the
+		 * file and leave a duplicate, because the stored hash is of the *remote* URL and so
+		 * would never match.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $url       Source-site media URL.
+		 * @param int    $source_id The source site's attachment ID, used as Elementor's cache key.
+		 * @return array Local `id` and `url`, or an empty array when it cannot be resolved.
+		 */
+		private static function wdkit_localise_media_url( $url, $source_id = 0 ) {
+			static $cache = array();
+
+			if ( isset( $cache[ $url ] ) ) {
+				return $cache[ $url ];
+			}
+
+			if ( ! did_action( 'elementor/loaded' ) || ! class_exists( '\\Elementor\\Plugin' ) ) {
+				return array();
+			}
+
+			$images = \Elementor\Plugin::$instance->templates_manager->get_import_images_instance();
+
+			if ( ! $images ) {
+				return array();
+			}
+
+			// A download may happen, so keep the oversized-image guard in force.
+			self::wdkit_guard_oversized_images();
+
+			$imported = $images->import(
+				array(
+					// Elementor only checks its hash table when an id is present.
+					'id'  => $source_id ? $source_id : 1,
+					'url' => $url,
+				)
+			);
+
+			$local = ( ! empty( $imported['id'] ) && ! empty( $imported['url'] ) )
+				? array(
+					'id'  => (int) $imported['id'],
+					'url' => $imported['url'],
+				)
+				: array();
+
+			// Remember hits only: a sibling request importing concurrently may simply not have
+			// finished yet, and caching that miss would strand every later control on this page.
+			if ( $local ) {
+				$cache[ $url ] = $local;
+			}
+
+			return $local;
+		}
+
+		/**
+		 * Repair dangling attachment IDs across every page of a finished import.
+		 *
+		 * The create-time repair in wdkit_media_import() can only see attachments that already
+		 * exist. Pages import concurrently and share images — an icon first imported by one
+		 * page is referenced by several others — so a page that runs early legitimately cannot
+		 * resolve an image a sibling request has not created yet.
+		 *
+		 * This runs at the finalize step, once every page and attachment exists, and fixes
+		 * whatever the per-page pass had to leave behind.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param array $page_ids Imported post IDs.
+		 * @return int Number of pages actually rewritten.
+		 */
+		private function wdkit_sweep_attachment_ids( $page_ids ) {
+
+			if ( empty( $page_ids ) || ! did_action( 'elementor/loaded' ) ) {
+				return 0;
+			}
+
+			$fixed = 0;
+
+			foreach ( array_unique( array_map( 'intval', $page_ids ) ) as $post_id ) {
+
+				if ( ! $post_id ) {
+					continue;
+				}
+
+				$raw = get_post_meta( $post_id, '_elementor_data', true );
+
+				if ( empty( $raw ) ) {
+					continue;
+				}
+
+				$data = is_array( $raw ) ? $raw : json_decode( $raw, true );
+
+				if ( ! is_array( $data ) ) {
+					continue;
+				}
+
+				$repaired = self::wdkit_repair_attachment_ids( $data );
+
+				if ( wp_json_encode( $repaired ) === wp_json_encode( $data ) ) {
+					continue;
+				}
+
+				// Save through the document API so Elementor regenerates the page CSS — the
+				// background-image rules are only emitted once the IDs resolve.
+				$document = \Elementor\Plugin::$instance->documents->get( $post_id );
+
+				// Count only a save that actually happened. Document::save() returns false
+				// without saving when the current user cannot edit the post, and reporting
+				// those as repaired hides the fact that nothing changed.
+				if ( $document && $document->save( array( 'elements' => $repaired ) ) ) {
+					++$fixed;
+				}
+			}
+
+			if ( $fixed ) {
+				\Elementor\Plugin::$instance->files_manager->clear_cache();
+			}
+
+			return $fixed;
+		}
+
+		/**
+		 * Repair media controls whose attachment ID does not resolve.
+		 *
+		 * Elementor media controls store `{ url, id }`. Controls flagged `has_sizes` — the
+		 * container/section **background image** among them — do not render from `url` at all:
+		 * CSS generation resolves the image through the attachment ID, so a dangling ID
+		 * produces no `background-image` rule and the section renders with no image even
+		 * though its URL is perfectly correct.
+		 *
+		 * IDs arrive dangling whenever Elementor's own importer does not rewrite a control —
+		 * it carries the source site's ID, which means nothing locally. Now that the URL is
+		 * already a local upload before import, the ID can simply be looked up from it.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param mixed $node Elementor data, walked recursively.
+		 * @return mixed Data with resolvable attachment IDs.
+		 */
+		private static function wdkit_repair_attachment_ids( $node ) {
+
+			if ( ! is_array( $node ) ) {
+				return $node;
+			}
+
+			// A media control value: has a url, and an id slot to correct.
+			if ( isset( $node['url'] ) && is_string( $node['url'] ) && array_key_exists( 'id', $node ) ) {
+
+				$current = (int) $node['id'];
+				$is_live = $current && 'attachment' === get_post_type( $current );
+
+				if ( self::wdkit_is_foreign_media_url( $node['url'] ) ) {
+					// Still pointing at the source site. Ask Elementor for the local copy: its
+					// _elementor_source_image_hash lookup returns the attachment the create-time
+					// import already made, so this normally costs a single query and no download.
+					$local = self::wdkit_localise_media_url( $node['url'], $current );
+
+					if ( ! empty( $local['id'] ) && ! empty( $local['url'] ) ) {
+						$node['id']  = $local['id'];
+						$node['url'] = $local['url'];
+					}
+				} elseif ( ! $is_live && false !== strpos( $node['url'], '/wp-content/uploads/' ) ) {
+					$resolved = self::wdkit_attachment_id_from_url( $node['url'] );
+
+					if ( $resolved ) {
+						$node['id'] = $resolved;
+					}
+				}
+			}
+
+			foreach ( $node as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$node[ $key ] = self::wdkit_repair_attachment_ids( $value );
+				}
+			}
+
+			return $node;
+		}
+
 		public function wdkit_media_import( $content = array(), $editor = '' ) {
 
 			if ( empty( $content ) && empty( $editor ) ) {
@@ -2688,6 +3044,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				require_once WDKIT_INCLUDES . 'admin/class-wdkit-import-images.php';
 			}
 
+
 			if ( ! empty( $args['editor'] ) && 'gutenberg' === $args['editor'] && ! empty( $content ) ) {
 				$media_import = array( $content );
 				$media_import = self::blocks_import_media_copy_content( $media_import );
@@ -2697,6 +3054,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$media_import = self::widgets_elements_id_change( $media_import );
 				$media_import = self::widgets_import_media_copy_content( $media_import );
 				$content      = $media_import[0];
+
+				// Last: point any control Elementor left holding a foreign attachment ID at the
+				// local attachment its URL already refers to. Without this, has_sizes controls
+				// such as container background images resolve to nothing and render empty.
+				$content = self::wdkit_repair_attachment_ids( $content );
 			}
 
 			return $content;
@@ -2769,7 +3131,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$control_name = $get_control['name'];
 
 				if ( ! $control_type ) {
-					return $get_element_instance;
+					// Skip just this control. Returning here would abandon every control after
+					// it, so a single unregistered type - routine when a kit uses an addon that
+					// is not fully active yet - would silently leave the rest of the element's
+					// media pointing at the source site.
+					continue;
 				}
 
 				if ( method_exists( $control_type, $tp_mi_on_fun ) ) {
@@ -2846,68 +3212,293 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ( isset( $block_data['name'] ) && isset( $block_data['clientId'] ) && isset( $block_data['attributes'] ) ) || ( isset( $block_data['blockName'] ) && isset( $block_data['attrs'] ) && ! empty( $block_data['attrs'] ) ) ) {
 				$blocks_attr = isset( $block_data['attributes'] ) ? $block_data['attributes'] : ( isset( $block_data['attrs'] ) ? $block_data['attrs'] : array() );
-				foreach ( $blocks_attr as $block_key => $block_val ) {
-					if ( isset( $block_val['url'] ) && isset( $block_val['id'] ) && ! empty( $block_val['url'] ) ) {
-						$new_media                 = Wdkit_Import_Images::wdkit_Import_media( $block_val );
-						$blocks_attr[ $block_key ] = $new_media;
-					} elseif ( isset( $block_val['url'] ) && ! empty( $block_val['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $block_val['url'] ) ) {
-						$new_media                 = Wdkit_Import_Images::wdkit_Import_media( $block_val );
-						$blocks_attr[ $block_key ] = $new_media;
-					} elseif ( is_array( $block_val ) && ! empty( $block_val ) ) {
-						if ( ! array_key_exists( 'md', $block_val ) && ! array_key_exists( 'openTypography', $block_val ) && ! array_key_exists( 'openBorder', $block_val ) && ! array_key_exists( 'openShadow', $block_val ) && ! array_key_exists( 'openFilter', $block_val ) ) {
-							foreach ( $block_val as $key => $val ) {
-								if ( is_array( $val ) && ! empty( $val ) ) {
-
-									if ( isset( $val['url'] ) && ( isset( $val['Id'] ) || isset( $val['id'] ) ) && ! empty( $val['url'] ) ) {
-										$new_media                         = Wdkit_Import_Images::wdkit_Import_media( $val );
-										$blocks_attr[ $block_key ][ $key ] = $new_media;
-									} elseif ( isset( $val['url'] ) && ! empty( $val['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $val['url'] ) ) {
-										$new_media                         = Wdkit_Import_Images::wdkit_Import_media( $val );
-										$blocks_attr[ $block_key ][ $key ] = $new_media;
-									} else {
-										foreach ( $val as $sub_key => $sub_val ) {
-											if ( isset( $sub_val['url'] ) && ( isset( $sub_val['Id'] ) || isset( $sub_val['id'] ) ) && ! empty( $sub_val['url'] ) ) {
-												$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
-
-												if ( is_array( $sub_val ) && is_array( $new_media ) ) {
-													$blocks_attr[ $block_key ][ $key ][ $sub_key ] = array_merge( $sub_val, $new_media );
-												} else {
-													$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
-												}
-											} elseif ( isset( $sub_val['url'] ) && ! empty( $sub_val['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val['url'] ) ) {
-												$new_media                                     = Wdkit_Import_Images::wdkit_Import_media( $sub_val );
-												$blocks_attr[ $block_key ][ $key ][ $sub_key ] = $new_media;
-											} elseif ( is_array( $sub_val ) && ! empty( $sub_val ) ) {
-												foreach ( $sub_val as $sub_key1 => $sub_val1 ) {
-													if ( isset( $sub_val1['url'] ) && ( isset( $sub_val1['Id'] ) || isset( $sub_val1['id'] ) ) && ! empty( $sub_val1['url'] ) ) {
-														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
-
-														if ( is_array( $sub_val1 ) && is_array( $new_media ) ) {
-															$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = array_merge( $sub_val1, $new_media );
-														} else {
-															$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
-														}
-													} elseif ( isset( $sub_val1['url'] ) && ! empty( $sub_val1['url'] ) && preg_match( '/\.(jpg|png|jpeg|gif|svg|webp)$/', $sub_val1['url'] ) ) {
-														$new_media = Wdkit_Import_Images::wdkit_Import_media( $sub_val1 );
-														$blocks_attr[ $block_key ][ $key ][ $sub_key ][ $sub_key1 ] = $new_media;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				$blocks_attr = self::wdkit_import_block_media( $blocks_attr );
 				if ( isset( $block_data['attributes'] ) ) {
 					$block_data['attributes'] = $blocks_attr;
 				} elseif ( isset( $block_data['attrs'] ) ) {
 					$block_data['attrs'] = $blocks_attr;
 				}
+
+				$block_data = self::wdkit_relink_block_markup( $block_data );
 			}
 
 			return $block_data;
+		}
+
+		/**
+		 * Run block markup through the media import, the way the create path does.
+		 *
+		 * Used wherever block content is written from the browser: media import, then the Nexter
+		 * block processor so each block's rendered copy matches its attributes, then serialise.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $content Block markup.
+		 * @return string Block markup with local media.
+		 */
+		private function wdkit_relink_gutenberg_content( $content ) {
+
+			if ( ! is_string( $content ) || false === strpos( $content, '<!-- wp:' ) ) {
+				return $content;
+			}
+
+			// wdkit_media_import() loads this itself, but it is referenced before that below.
+			if ( ! class_exists( 'Wdkit_Import_Images' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-import-images.php';
+			}
+
+			// Thumbnail generation decodes each image, so keep the oversized-image guard in force.
+			self::wdkit_guard_oversized_images();
+
+
+			// Block attributes are JSON inside the block delimiters, so they only survive a parse
+			// when the string carries exactly one level of escaping. Arrive with an extra level and
+			// parse_blocks() reads no attributes at all - serialising that back out writes every
+			// block bare, throwing away titles, body text, icons and styling.
+			$parsable = self::wdkit_parsable_block_content( $content );
+
+			if ( null === $parsable ) {
+
+				return $content;
+			}
+
+			$blocks = parse_blocks( $parsable );
+			$blocks = $this->wdkit_media_import( $blocks, 'gutenberg' );
+
+			if ( empty( $blocks ) || ! is_array( $blocks ) ) {
+				return $content;
+			}
+
+			if ( class_exists( 'WDKIT_Nexter_Block_Processor' ) ) {
+				$processor = new WDKIT_Nexter_Block_Processor();
+				$blocks    = $processor->run( $blocks );
+			}
+
+			$serialised = serialize_blocks( $blocks );
+
+			// Last line of defence. This function exists to repoint media, so a result carrying
+			// fewer block attributes than it started with is a broken round trip, not a rewrite.
+			// Leaving the media wrong is recoverable; saving gutted content is not.
+			$before = self::wdkit_block_attr_count( $parsable );
+			$after  = self::wdkit_block_attr_count( $serialised );
+
+			if ( $after < $before ) {
+
+				return $content;
+			}
+
+			// Never hand back nothing: an empty result would blank the page.
+			return ! empty( $serialised ) ? $serialised : $content;
+		}
+
+		/**
+		 * Rebuild the block stylesheet for a page whose content we just rewrote.
+		 *
+		 * The addon keeps each block's styling in a generated per-page stylesheet, and every rule
+		 * is keyed to the block id it was written for. That file is produced when the page is
+		 * saved through the editor - not by wp_update_post() from an AJAX handler - so rewriting
+		 * content here leaves the page pointing at a stylesheet built for the previous markup.
+		 * Blocks whose ids are not in that file get no rules at all and render unstyled.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param int $post_id Page whose content changed.
+		 * @return bool True when a rebuild was triggered.
+		 */
+		private static function wdkit_rebuild_block_css( $post_id ) {
+
+			if ( ! $post_id ) {
+				return false;
+			}
+
+			foreach ( get_declared_classes() as $class ) {
+				if ( ! method_exists( $class, 'make_block_css_by_post_id' ) ) {
+					continue;
+				}
+
+				try {
+					if ( method_exists( $class, 'instance' ) ) {
+						$instance = $class::instance();
+					} elseif ( method_exists( $class, 'get_instance' ) ) {
+						$instance = $class::get_instance();
+					} else {
+						$instance = new $class();
+					}
+
+					$instance->make_block_css_by_post_id( $post_id );
+
+
+					return true;
+				} catch ( \Throwable $e ) {
+					// Styling is best-effort: a failure here must not fail the import.
+
+					return false;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * How many block attributes does this markup actually yield when parsed?
+		 *
+		 * Used as a before/after measure: block attributes are the part of block markup a round
+		 * trip can silently drop, so counting them is how we tell a rewrite from a mangling.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $content Block markup.
+		 * @return int Total attributes across every block.
+		 */
+		private static function wdkit_block_attr_count( $content ) {
+			$total = 0;
+
+			$walk = function ( $blocks ) use ( &$walk, &$total ) {
+				foreach ( $blocks as $block ) {
+					if ( ! empty( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
+						$total += count( $block['attrs'] );
+					}
+
+					if ( ! empty( $block['innerBlocks'] ) ) {
+						$walk( $block['innerBlocks'] );
+					}
+				}
+			};
+
+			$walk( parse_blocks( (string) $content ) );
+
+			return $total;
+		}
+
+		/**
+		 * Return this content in a form whose block attributes actually parse.
+		 *
+		 * Content written straight to post_content never had to parse, so an extra level of
+		 * escaping on the way in did no harm. Parsing it - which repointing media requires - makes
+		 * that escaping fatal: `{\"Title\":\"…\"}` is not JSON, so every attribute is discarded.
+		 *
+		 * Rather than assume a slash depth, this measures: if stripping one level yields more
+		 * attributes, the content was over-escaped and the stripped form is the real one.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param string $content Block markup as received.
+		 * @return string|null Markup safe to parse, or null when no form of it parses.
+		 */
+		private static function wdkit_parsable_block_content( $content ) {
+
+			$as_is = self::wdkit_block_attr_count( $content );
+
+			// Nothing claims to carry attributes, so there is nothing to lose either.
+			if ( false === strpos( $content, '{' ) ) {
+				return $content;
+			}
+
+			$stripped          = wp_unslash( $content );
+			$stripped_attrs    = self::wdkit_block_attr_count( $stripped );
+
+			if ( $stripped_attrs > $as_is ) {
+				return $stripped;
+			}
+
+			if ( $as_is > 0 ) {
+				return $content;
+			}
+
+			// Neither form parses into attributes even though the markup contains JSON: better to
+			// leave the content exactly as it arrived than to rewrite it into something bare.
+			return null;
+		}
+
+		/**
+		 * Point a block's saved markup at the media that was just localised.
+		 *
+		 * A block stores a rendered copy of itself in `innerHTML` / `innerContent`, and for many
+		 * blocks that copy is what the front end actually outputs. Importing the attributes alone
+		 * therefore fixes the editor while leaving the page still loading from the site the
+		 * template came from - and those hosts answer 403, so the image renders broken.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param array $block_data One parsed block.
+		 * @return array The block with its markup repointed.
+		 */
+		private static function wdkit_relink_block_markup( $block_data ) {
+
+			$map = Wdkit_Import_Images::get_url_map();
+
+			if ( empty( $map ) ) {
+				return $block_data;
+			}
+
+			$from = array_keys( $map );
+			$to   = array_values( $map );
+
+			if ( ! empty( $block_data['innerHTML'] ) && is_string( $block_data['innerHTML'] ) ) {
+				$block_data['innerHTML'] = str_replace( $from, $to, $block_data['innerHTML'] );
+			}
+
+			if ( ! empty( $block_data['innerContent'] ) && is_array( $block_data['innerContent'] ) ) {
+				foreach ( $block_data['innerContent'] as $index => $chunk ) {
+					if ( is_string( $chunk ) ) {
+						$block_data['innerContent'][ $index ] = str_replace( $from, $to, $chunk );
+					}
+				}
+			}
+
+			return $block_data;
+		}
+
+		/**
+		 * Import every media reference held in a block's attributes.
+		 *
+		 * Block attributes nest arbitrarily - a repeater of cards each with an image, responsive
+		 * variants, nested inner settings - so this recurses rather than reaching a fixed number
+		 * of levels down. The previous version was unrolled exactly four levels deep and also
+		 * skipped any subtree carrying an `md` key, which meant anything below that simply kept
+		 * the source site's URL and attachment ID and rendered as an empty placeholder.
+		 *
+		 * A node counts as media when it has a non-empty string `url` and either an id slot or a
+		 * URL that names an image file. That pairing is what distinguishes a media control from
+		 * a link, which also carries a `url`.
+		 *
+		 * @since 2.6.2
+		 *
+		 * @param mixed $node Block attributes, walked recursively.
+		 * @return mixed Attributes with local media.
+		 */
+		private static function wdkit_import_block_media( $node ) {
+
+			if ( ! is_array( $node ) ) {
+				return $node;
+			}
+
+			$url = isset( $node['url'] ) && is_string( $node['url'] ) ? $node['url'] : '';
+
+			if ( '' !== $url
+				&& ( array_key_exists( 'id', $node ) || array_key_exists( 'Id', $node )
+					|| preg_match( '/\.(?:jpe?g|png|gif|svg|webp|avif|bmp)$/i', (string) wp_parse_url( $url, PHP_URL_PATH ) ) )
+			) {
+				$imported = Wdkit_Import_Images::wdkit_Import_media( $node );
+
+				// Only accept a real result. The importer returns the node untouched when it
+				// cannot localise the file, and anything falsy here would wipe out the URL and
+				// leave the block with no image at all.
+				if ( ! empty( $imported['url'] ) ) {
+					$node = array_merge( $node, $imported );
+				}
+			}
+
+			// Keep walking even after importing this node. A media value carries its own `sizes`
+			// map of per-size URLs, and returning here left every one of those pointing at the
+			// site the template came from - which is what the widgets actually render from.
+			foreach ( $node as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$node[ $key ] = self::wdkit_import_block_media( $value );
+				}
+			}
+
+			return $node;
 		}
 
 		/**
@@ -3177,9 +3768,101 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$document = \Elementor\Plugin::$instance->documents->get($template_id);
 
+			// This saves content posted straight from the browser, which carries local image
+			// URLs but still the source template's attachment IDs. Without repairing them the
+			// save undoes what wdkit_media_import() fixed on create, and has_sizes controls —
+			// container background images especially — resolve to nothing and render empty.
+			$content = self::wdkit_repair_attachment_ids( $content );
+
 			$document->save([
 				'elements' => $content
 			]);
+		}
+
+		/**
+		 * Update the content of an already-created page.
+		 *
+		 * Used by the async ("Site Ready first") import path: pages are created up front with
+		 * their un-rewritten template content, then this writes the AI-rewritten content into
+		 * each page in the background. Elementor saves via the document API (same as
+		 * wkit_update_elementor_template); Gutenberg writes post_content directly.
+		 *
+		 * @since 2.6.2
+		 */
+		protected function wdkit_update_page_content() {
+			$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+			$builder = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+
+			if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+				return array(
+					'success' => false,
+					'message' => esc_html__( 'Invalid page or insufficient permission', 'wdesignkit' ),
+				);
+			}
+
+			if ( 'gutenberg' === $builder ) {
+				// Do NOT run kses here: Gutenberg block delimiters are HTML comments
+				// (<!-- wp:... -->) which kses strips. Mirror the create path, which stores
+				// the block markup slashed and unfiltered (endpoint is manage_options-gated
+				// and the content is plugin-generated).
+				$content = isset( $_POST['content'] ) ? wp_unslash( $_POST['content'] ) : '';
+
+				// This content comes straight from the browser and still carries the template
+				// site's media URLs and attachment IDs, so it has to go through the same pipeline
+				// the create path uses. Without this the save simply undid the import: the files
+				// were fetched, then overwritten by a copy still pointing at the source site.
+				//
+				// Re-running is cheap. Every URL already handled resolves from the source-hash
+				// lookup, and media that is already local resolves straight from its URL, so no
+				// image is fetched or stored twice.
+				$content = $this->wdkit_relink_gutenberg_content( $content );
+
+				$result = wp_update_post(
+					array(
+						'ID'           => $post_id,
+						'post_content' => wp_slash( $content ),
+					),
+					true
+				);
+
+				if ( is_wp_error( $result ) ) {
+					return array(
+						'success' => false,
+						'message' => $result->get_error_message(),
+					);
+				}
+
+				self::wdkit_rebuild_block_css( $post_id );
+			} else {
+				$elements = isset( $_POST['content'] ) ? json_decode( wp_unslash( $_POST['content'] ), true ) : array();
+
+				if ( ! class_exists( '\\Elementor\\Plugin' ) ) {
+					return array(
+						'success' => false,
+						'message' => esc_html__( 'Elementor not available', 'wdesignkit' ),
+					);
+				}
+
+				$document = \Elementor\Plugin::$instance->documents->get( $post_id );
+				if ( ! $document ) {
+					return array(
+						'success' => false,
+						'message' => esc_html__( 'Elementor document not found', 'wdesignkit' ),
+					);
+				}
+
+				// Same as wkit_update_elementor_template(): browser-posted content keeps the
+				// source template's attachment IDs, so repair them or this save undoes the
+				// create-time fix and background images stop rendering.
+				$elements = self::wdkit_repair_attachment_ids( $elements );
+
+				$document->save( array( 'elements' => $elements ) );
+			}
+
+			return array(
+				'success' => true,
+				'message' => esc_html__( 'Page content updated', 'wdesignkit' ),
+			);
 		}
 
 		/**
@@ -3191,6 +3874,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param array $temp_data store data.
 		 * */
 		protected function import_page_section_content() {
+
+			// Elementor sideloads every image referenced by the page from inside this request.
+			// A single oversized source image decodes to more than the whole memory limit, so
+			// guard before any of that starts.
+			$this->wdkit_guard_oversized_images();
 
 			// Sideloading images for image-heavy pages (wdkit_media_import → Imagick
 			// thumbnail generation per image) can exceed the default 30s execution
@@ -3926,6 +4614,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$page_information = json_decode( $page_information, true );
 
 			if ( ! empty( $page_information ) && is_array( $page_information ) ) {
+
+				// Every page and attachment now exists, so resolve any image ID the per-page
+				// pass could not (siblings import concurrently and share icons).
+				$this->wdkit_sweep_attachment_ids( wp_list_pluck( $page_information, 'inserted_id' ) );
+
 				// Step 1: banavo mapping [ old_id => new_id ]
 				$id_mapping = array();
 				foreach ( $page_information as $page_info ) {
@@ -4846,10 +5539,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		protected function wdkit_sync_licence_key() {
 			$token       = ! empty( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
 			$licencename = ! empty( $_POST['licencename'] ) ? sanitize_text_field( wp_unslash( $_POST['licencename'] ) ) : '';
+			// Needed to identify which extra-credit key to sync (wdkit_extra / wdkit_ai_extra
+			// are arrays matched by the api key's last digits on the server).
+			$apikey      = ! empty( $_POST['apikey'] ) ? sanitize_text_field( wp_unslash( $_POST['apikey'] ) ) : '';
 
 			$args = array(
 				'token'       => $token,
 				'licencename' => $licencename,
+				'apikey'      => $apikey,
 			);
 
 			$response = $this->wkit_api_call( $args, 'licence_sync' );

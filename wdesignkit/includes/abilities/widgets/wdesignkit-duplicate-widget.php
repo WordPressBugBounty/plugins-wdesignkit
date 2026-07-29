@@ -97,14 +97,19 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
     $orig_json   = null;
     $orig_name   = $folder;
     $orig_widget_id = '';
+    // Real original file base = the actual JSON filename (every file in the folder —
+    // php/js/css/image — shares it). Read it from disk rather than rebuilding it from the
+    // name, so the identifier rewrites match exactly what is inside the copied files.
+    $orig_file_base = '';
 
     foreach ($src_files as $f) {
         if (pathinfo($f, PATHINFO_EXTENSION) !== 'json') {
             continue;
         }
-        $json_path = $src_dir . '/' . $f;
-        $raw       = @file_get_contents($json_path);
-        $orig_json = ($raw !== false) ? json_decode($raw, true) : null;
+        $json_path      = $src_dir . '/' . $f;
+        $orig_file_base = pathinfo($f, PATHINFO_FILENAME);
+        $raw            = @file_get_contents($json_path);
+        $orig_json      = ($raw !== false) ? json_decode($raw, true) : null;
         if (is_array($orig_json)) {
             $orig_name      = $orig_json['widget_data']['widgetdata']['name'] ?? $folder;
             $orig_widget_id = $orig_json['widget_data']['widgetdata']['widget_id'] ?? '';
@@ -123,10 +128,19 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
 
     // Generate a 6-char hex widget_id — consistent with the standard WDesignKit format (e.g. "a1b2c3").
     // wp_generate_uuid4() produces a 36-char string that makes folder names excessively long.
-    $new_widget_id  = substr(bin2hex(random_bytes(3)), 0, 6);
-    $new_folder     = str_replace(' ', '-', $new_name) . '_' . $new_widget_id;
-    $new_file_base  = str_replace(' ', '_', $new_name) . '_' . $new_widget_id;
-    $dst_dir        = WDKIT_BUILDER_PATH . '/' . $builder . '/' . $new_folder;
+    $new_widget_id = substr(bin2hex(random_bytes(3)), 0, 6);
+
+    // Derive the new folder / file base with the SAME normalization create-widget uses
+    // (lowercase; spaces+underscores→dash for the folder, spaces+dashes→underscore for the
+    // file base) so the Elementor loader — which instantiates
+    // 'Wdkit_' . str_replace('-','_', filename) — resolves the duplicate's class correctly.
+    $new_folder_base = sanitize_file_name(strtolower(str_replace([' ', '_'], '-', $new_name)));
+    $new_file_base_n = sanitize_file_name(strtolower(str_replace([' ', '-'], '_', $new_name)));
+    if ($new_folder_base === '') { $new_folder_base = 'widget'; }
+    if ($new_file_base_n === '') { $new_file_base_n = 'widget'; }
+    $new_folder    = $new_folder_base . '_' . $new_widget_id;
+    $new_file_base = $new_file_base_n . '_' . $new_widget_id;
+    $dst_dir       = WDKIT_BUILDER_PATH . '/' . $builder . '/' . $new_folder;
 
     if (is_dir($dst_dir)) {
         return ['success' => false, 'message' => "Target folder already exists: {$builder}/{$new_folder}"];
@@ -136,32 +150,95 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
         return ['success' => false, 'message' => 'Could not create destination folder.'];
     }
 
-    // Copy each file, renaming to match new folder/name
-    $orig_file_base = str_replace(' ', '_', $orig_name) . '_' . $orig_widget_id;
+    if ($orig_file_base === '') {
+        $orig_file_base = $folder; // defensive; a missing JSON already returned above.
+    }
+
+    // --- Independence rewrites ----------------------------------------------------------
+    // Copying files byte-for-byte kept the ORIGINAL class name (Elementor: Wdkit_{file};
+    // Bricks: {Pascal}_Bricks), block/element names, asset paths and hashes — so the instant
+    // the duplicate co-existed with the original, PHP fataled with "Cannot declare class ...
+    // already in use" (or a block/element registered twice) and the whole site 500'd. Rewrite
+    // every self-referential identifier so the duplicate is a fully independent widget.
+    $new_class        = 'Wdkit_' . str_replace('-', '_', $new_file_base);
+    $new_class_bricks = $new_class . '_Bricks';
+    $orig_slug        = sanitize_title($orig_name);
+    $new_slug         = sanitize_title($new_name);
+
+    // Builder-aware PHP class rename (first declaration only). Elementor must match the loader's
+    // derived name exactly; Bricks just needs a unique valid class (its loader resolves the
+    // declared class dynamically). Gutenberg/gutenberg_core use functions, not a class, so the
+    // regex simply finds nothing there.
+    $rewrite_php_class = static function (string $php) use ($builder, $new_class, $new_class_bricks): string {
+        if ($builder === 'elementor') {
+            $out = preg_replace('/\bclass\s+\w+\s+extends\b/', 'class ' . $new_class . ' extends', $php, 1);
+            return is_string($out) ? $out : $php;
+        }
+        if ($builder === 'bricks') {
+            $out = preg_replace('/\bclass\s+\w+\s+extends\b/', 'class ' . $new_class_bricks . ' extends', $php, 1);
+            return is_string($out) ? $out : $php;
+        }
+        return $php;
+    };
+
+    // Ordered string rewrites for paths / block names / element $name / asset handles / hashes.
+    // Composite tokens (folder + file base both END with the OLD widget_id) run before the bare
+    // widget_id so its suffix isn't corrupted first.
+    $rewrites = [];
+    if ($folder !== $new_folder)            { $rewrites[] = [$folder, $new_folder]; }
+    if ($orig_file_base !== $new_file_base) { $rewrites[] = [$orig_file_base, $new_file_base]; }
+    if ($orig_slug !== '' && $orig_slug !== $new_slug) {
+        $rewrites[] = ['wdkit/' . $orig_slug, 'wdkit/' . $new_slug]; // Gutenberg block name
+        $rewrites[] = ['wdkit-' . $orig_slug, 'wdkit-' . $new_slug]; // Bricks $name + CSS class
+    }
+    if ($orig_widget_id !== '' && $orig_widget_id !== $new_widget_id) {
+        $rewrites[] = [$orig_widget_id, $new_widget_id];            // get_name 'wb-', handles, data-wdkitunique
+    }
+
+    $apply_rewrites = static function (string $s) use ($rewrites): string {
+        foreach ($rewrites as $p) {
+            if ($p[0] !== '') {
+                $s = str_replace($p[0], $p[1], $s);
+            }
+        }
+        return $s;
+    };
 
     foreach ($src_files as $f) {
         $src_file = $src_dir . '/' . $f;
         $ext      = pathinfo($f, PATHINFO_EXTENSION);
 
-        // Rename file using new_file_base
-        $new_filename = str_replace($orig_file_base, $new_file_base, $f);
-        // Fallback: if rename didn't match, just copy with original name
-        if ($new_filename === $f && $orig_file_base !== '') {
+        // Rename the file to the new base.
+        $new_filename = ($orig_file_base !== '') ? str_replace($orig_file_base, $new_file_base, $f) : $f;
+        if ($new_filename === $f) {
             $new_filename = $new_file_base . '.' . $ext;
         }
         $dst_file = $dst_dir . '/' . $new_filename;
 
         if ($ext === 'json') {
-            // Patch JSON: update name + widget_id
+            // Patch metadata, then rewrite identifiers so section_data / Editor_data / asset
+            // paths stay in sync with the rewritten code files.
             $new_json = $orig_json;
-            $new_json['widget_data']['widgetdata']['name']      = $new_name;
-            $new_json['widget_data']['widgetdata']['widget_id'] = $new_widget_id;
-            // Clear cloud-specific fields so it starts as local-only
+            $new_json['widget_data']['widgetdata']['name']       = $new_name;
+            $new_json['widget_data']['widgetdata']['widget_id']  = $new_widget_id;
             $new_json['widget_data']['widgetdata']['r_id']       = 0;
-            $new_json['widget_data']['widgetdata']['allow_push']  = false;
-            file_put_contents($dst_file, wp_json_encode($new_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            $new_json['widget_data']['widgetdata']['allow_push'] = false;
+            $json_out = (string) wp_json_encode($new_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            file_put_contents($dst_file, $apply_rewrites($json_out));
+        } elseif (in_array($ext, ['php', 'js', 'css'], true)) {
+            $content = @file_get_contents($src_file);
+            if ($content === false) {
+                @copy($src_file, $dst_file);
+            } else {
+                if ($ext === 'php') {
+                    $content = $rewrite_php_class($content);
+                }
+                if (file_put_contents($dst_file, $apply_rewrites($content)) === false) {
+                    @copy($src_file, $dst_file);
+                }
+            }
         } else {
-            @copy($src_file, $dst_file);
+            @copy($src_file, $dst_file); // binary assets (thumbnail image, etc.)
         }
     }
 

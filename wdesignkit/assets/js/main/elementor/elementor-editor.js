@@ -67,7 +67,7 @@
 								actions: [
 									{
 										name: "wdkit_save_section",
-										title: "Save in WDesignKit",
+										title: __("Save in WDesignKit", "wdesignkit"),
 										icon: "eicon-save",
 										callback: function () {
 											localStorage.setItem("wdkit_section", JSON.stringify(d.model.toJSON({

@@ -388,6 +388,11 @@ function wdesignkit_mcp_login(array $input): array {
         'user_id'    => $cloud_user_id,
     ], $expiry);
 
+    // Point every later cloud call at THIS account. The transient is keyed off the
+    // cloud email, which rarely matches the WP user's email, so without the pointer
+    // the session can only be found by scanning wp_options.
+    wdesignkit_mcp_remember_session($user_key);
+
     return [
         'success' => true,
         'message' => $response['message'] ?? 'Logged in successfully.',
@@ -434,6 +439,8 @@ function wdesignkit_mcp_login_api_key(array $input): array {
             'token'      => $api_key,
             'user_id'    => $cloud_user_id_api,
         ], 7776000); // 90 days
+
+        wdesignkit_mcp_remember_session($user_key);
     }
 
     return [
@@ -481,6 +488,8 @@ function wdesignkit_mcp_social_login(array $input): array {
             'token'      => $token,
             'user_id'    => $cloud_user_id_social,
         ], 7776000); // 90 days
+
+        wdesignkit_mcp_remember_session($user_key);
     }
 
     return [
@@ -540,6 +549,8 @@ function wdesignkit_mcp_signup(array $input): array {
             'token'      => $token,
             'user_id'    => $cloud_user_id_sig,
         ], 86400); // 1-day session after signup
+
+        wdesignkit_mcp_remember_session($user_key);
     }
 
     return [
@@ -640,6 +651,9 @@ function wdesignkit_mcp_logout(array $input): array {
         $user_key = strstr($email, '@', true);
         delete_transient('wdkit_auth_' . $user_key);
     }
+
+    // Drop the active-session pointer so no later call resolves the dead session
+    wdesignkit_mcp_forget_session();
 
     // Clear cached licence data
     delete_option('wdkit_licence_data');

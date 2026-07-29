@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1126 strings.
+ * 1131 strings.
  */
 
 ( function () {
@@ -153,6 +153,7 @@
 	__( "Clear All Filters", "wdesignkit" );
 	__( "Click the heart icon on any snippet to add it to your favorites.", "wdesignkit" );
 	__( "Click to know more", "wdesignkit" );
+	__( "Click to refresh and check your login status.", "wdesignkit" );
 	__( "Close", "wdesignkit" );
 	__( "Cloud Workspace", "wdesignkit" );
 	__( "Code Snippet", "wdesignkit" );
@@ -160,6 +161,7 @@
 	__( "Color & Image", "wdesignkit" );
 	__( "Color", "wdesignkit" );
 	__( "Coming Soon", "wdesignkit" );
+	__( "Complete login in the new tab first, refresh will enable automatically.", "wdesignkit" );
 	__( "Conditions", "wdesignkit" );
 	__( "Content & Media Setup", "wdesignkit" );
 	__( "Continue via Login Key", "wdesignkit" );
@@ -183,7 +185,6 @@
 	__( "Create your account to get started.", "wdesignkit" );
 	__( "Credit Limit Reached!", "wdesignkit" );
 	__( "Credits used for AI content and image generation during the import process. On average, one page consumes ~20 credits, though usage may vary by template.", "wdesignkit" );
-	__( "Credits", "wdesignkit" );
 	__( "Cross Domain Copy/Paste", "wdesignkit" );
 	__( "Current Version", "wdesignkit" );
 	__( "Current Widget", "wdesignkit" );
@@ -392,6 +393,7 @@
 	__( "Header Scroll Distance", "wdesignkit" );
 	__( "Header Shrinking", "wdesignkit" );
 	__( "Header and Footer section", "wdesignkit" );
+	__( "Header/Footer deferred", "wdesignkit" );
 	__( "Help Link", "wdesignkit" );
 	__( "Helpdesk", "wdesignkit" );
 	__( "Hide Header on Scroll Down", "wdesignkit" );
@@ -732,6 +734,8 @@
 	__( "Required Plugin", "wdesignkit" );
 	__( "Required Plugins", "wdesignkit" );
 	__( "Required WordPress Version", "wdesignkit" );
+	__( "Reset Color", "wdesignkit" );
+	__( "Reset Font", "wdesignkit" );
 	__( "Reset Now", "wdesignkit" );
 	__( "Reset Password", "wdesignkit" );
 	__( "Reset", "wdesignkit" );
@@ -771,7 +775,7 @@
 	__( "Select All", "wdesignkit" );
 	__( "Select Builder", "wdesignkit" );
 	__( "Select Category", "wdesignkit" );
-	__( "Select Colors Pallete", "wdesignkit" );
+	__( "Select Colors Palette", "wdesignkit" );
 	__( "Select Default Unit", "wdesignkit" );
 	__( "Select Font Pair: ", "wdesignkit" );
 	__( "Select Global Fonts & Colours", "wdesignkit" );
@@ -917,6 +921,7 @@
 	__( "This feature is available for Starter, Professional, Studio, and Agency Bundle in Yearly & Lifetime plans.", "wdesignkit" );
 	__( "This is only a visual preview. The real website will be created with your details in the next step.", "wdesignkit" );
 	__( "This sticky header template is built using Elementor Pro's Navigation Menu widget, which is only available with the Pro version. To use this template and unlock its full potential, you'll need to have Elementor Pro installed and activated.", "wdesignkit" );
+	__( "This template is deactivated or unavailable and could not be imported.", "wdesignkit" );
 	__( "This template works best with the following plugins. Please install them to continue.", "wdesignkit" );
 	__( "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server.", "wdesignkit" );
 	__( "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it.", "wdesignkit" );

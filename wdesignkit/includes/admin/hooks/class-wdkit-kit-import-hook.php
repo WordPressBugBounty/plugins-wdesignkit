@@ -10,7 +10,7 @@
  *       'template_id'     => 'abc123',           // required
  *       'editor'          => 'elementor',         // 'elementor' | 'gutenberg'
  *       'website_kit'     => 'my-kit-slug',       // optional
- *       'api_type'        => 'import_kit_template', // cloud endpoint
+ *       'api_type'        => 'import_template',      // cloud endpoint (note: import_kit_template has no cloud route)
  *       'custom_meta'     => false,               // restore nxt-* post meta
  *   ] );
  *
@@ -93,7 +93,10 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	$template_id = sanitize_text_field( (string) ( $args['template_id'] ?? '' ) );
 	$editor      = sanitize_text_field( (string) ( $args['editor'] ?? 'elementor' ) );
 	$website_kit = sanitize_text_field( (string) ( $args['website_kit'] ?? '' ) );
-	$api_type    = sanitize_text_field( (string) ( $args['api_type'] ?? 'import_kit_template' ) );
+	// Default to 'import_template' — get_data() posts to api/wp/{api_type}, and there is NO
+	// api/wp/import_kit_template route on the cloud (it 404s → "Unexpected response"). The
+	// working endpoint is import_template, which is also what wdkit_import_kit_template() uses.
+	$api_type    = sanitize_text_field( (string) ( $args['api_type'] ?? 'import_template' ) );
 	$custom_meta = ! empty( $args['custom_meta'] );
 
 	if ( $template_id === '' ) {
@@ -345,7 +348,8 @@ function wdkit_handle_create_full_site( array $output, array $args ): array {
 			'template_id' => $tpl_id,
 			'editor'      => $editor,
 			'website_kit' => $kit_id,
-			'api_type'    => 'import_kit_template',
+			// import_template is the working cloud route; import_kit_template has none (404).
+			'api_type'    => 'import_template',
 			'custom_meta' => false,
 		] );
 
@@ -516,6 +520,19 @@ function wdkit_handle_create_full_site( array $output, array $args ): array {
  * @return string Token string, or empty string if not logged in.
  */
 function wdkit_kit_import_resolve_token(): string {
+	// Shared with every cloud ability — see wdesignkit_mcp_find_auth_session() in
+	// includes/abilities/class-wdk-ability-main.php. It checks the account recorded at login
+	// first, so the session is found even though its transient is keyed off the CLOUD email
+	// rather than the WordPress user's. The local lookup below only tried the WP user's key and
+	// then an unordered LIMIT 10 scan, which reported "not logged in" straight after a
+	// successful login on any site that had accumulated a few stored sessions.
+	if ( function_exists( 'wdesignkit_mcp_find_auth_session' ) ) {
+		$session = wdesignkit_mcp_find_auth_session();
+
+		return ! empty( $session['found'] ) ? (string) $session['data']['token'] : '';
+	}
+
+	// Fallback for the (unexpected) case where the abilities loader has not run.
 	$current_user = wp_get_current_user();
 	if ( $current_user && $current_user->user_email ) {
 		$key  = strstr( $current_user->user_email, '@', true );
@@ -528,7 +545,7 @@ function wdkit_kit_import_resolve_token(): string {
 	global $wpdb;
 	$rows = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s LIMIT 10",
+			"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s",
 			$wpdb->esc_like( '_transient_wdkit_auth_' ) . '%'
 		),
 		ARRAY_A

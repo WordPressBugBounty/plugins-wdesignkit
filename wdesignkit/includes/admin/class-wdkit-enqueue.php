@@ -330,7 +330,8 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			}
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {
-				wp_enqueue_script( 'wdkit-frontend-editor', WDKIT_ASSETS . '/js/main/elementor/elementor-editor.js', array( 'jquery', 'wp-i18n' ), WDKIT_VERSION, true );
+				wp_enqueue_script( 'wdkit-frontend-editor', WDKIT_ASSETS . 'js/main/elementor/elementor-editor.js', array( 'jquery', 'wp-i18n' ), WDKIT_VERSION, true );
+				wp_set_script_translations( 'wdkit-frontend-editor', 'wdesignkit' );
 				$this->wdkit_cross_copy_paste_script( 'elementor' );
 			}
 		}
@@ -374,7 +375,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				$deps[] = 'wp-dom-ready';
 			}
 
-			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . '/js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, true );
+			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . 'js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, true );
 			wp_set_script_translations( 'wdkit-cross-copy-paste', 'wdesignkit' );
 			wp_localize_script(
 				'wdkit-cross-copy-paste',

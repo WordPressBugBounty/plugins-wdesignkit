@@ -15,82 +15,31 @@ if (!function_exists('wdesignkit_mcp_template_get_auth')) {
     /**
      * Resolve the WDesignKit cloud session for the current request.
      *
-     * Mirrors the lookup performed by wdesignkit/get-login-status: first try the
-     * transient keyed off the current WP user's email, then scan all
-     * wdkit_auth_* transients as a fallback.
+     * Delegates to wdesignkit_mcp_find_auth_session() (includes/abilities/class-wdk-ability-main.php)
+     * so this and wdesignkit/get-login-status can never disagree about whether a
+     * session exists — they read it through exactly the same lookup.
      *
-     * @return array{logged_in:bool,email?:string,token?:string,message?:string}
+     * @return array{logged_in:bool,email?:string,token?:string,user_id?:string,message?:string}
      */
     function wdesignkit_mcp_template_get_auth(): array {
-        /**
-         * Normalise a raw transient value into an associative array.
-         * Handles three possible shapes from different storage backends:
-         *   1. PHP serialized string  → maybe_unserialize returns an array  ✓
-         *   2. JSON-encoded string    → json_decode($v, true) returns an array
-         *   3. stdClass object        → (array) cast converts public props to keys
-         * All other types (bool false for missing transient, int, etc.) → []
-         */
-        $normalise_auth = static function ($raw): array {
-            if (is_array($raw)) {
-                return $raw;
-            }
-            if ($raw instanceof \stdClass) {
-                return (array) $raw;
-            }
-            if (is_string($raw) && $raw !== '') {
-                // May be a JSON string stored by an object-cache plugin or
-                // an older code path that used json_encode instead of set_transient.
-                $decoded = json_decode($raw, true);
-                if (is_array($decoded)) {
-                    return $decoded;
-                }
-            }
-            return [];
-        };
+        $session = wdesignkit_mcp_find_auth_session();
 
-        $current_user = wp_get_current_user();
-        if ($current_user && $current_user->user_email) {
-            $user_key  = strstr($current_user->user_email, '@', true);
-            $auth_raw  = get_transient('wdkit_auth_' . $user_key);
-            $auth_data = $normalise_auth($auth_raw);
-            if (!empty($auth_data['token'])) {
-                return [
-                    'logged_in' => true,
-                    'email'     => $auth_data['user_email'] ?? $current_user->user_email,
-                    'token'     => $auth_data['token'],
-                ];
-            }
-        }
+        if (!empty($session['found'])) {
+            $data = $session['data'];
 
-        global $wpdb;
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s LIMIT 10",
-                $wpdb->esc_like('_transient_wdkit_auth_') . '%'
-            ),
-            ARRAY_A
-        );
-
-        foreach (($rows ?: []) as $row) {
-            $key     = str_replace('_transient_', '', $row['option_name']);
-            $timeout = get_option('_transient_timeout_' . $key);
-            if ($timeout && (int) $timeout < time()) {
-                continue;
-            }
-
-            $data = $normalise_auth(@maybe_unserialize($row['option_value']));
-            if (!empty($data['token'])) {
-                return [
-                    'logged_in' => true,
-                    'email'     => $data['user_email'] ?? '',
-                    'token'     => $data['token'],
-                ];
-            }
+            return [
+                'logged_in' => true,
+                'email'     => (string) ($data['user_email'] ?? ''),
+                'token'     => (string) $data['token'],
+                'user_id'   => (string) ($data['user_id'] ?? $data['id'] ?? ''),
+            ];
         }
 
         return [
             'logged_in' => false,
-            'message'   => 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login. Use wdesignkit/get-login-status to check session state.',
+            'message'   => !empty($session['expired'])
+                ? 'Your WDesignKit cloud session has expired. Log in again with wdesignkit/login, or go to WP Admin → WDesignKit and click Login.'
+                : 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login. Use wdesignkit/get-login-status to check session state.',
         ];
     }
 }
@@ -197,7 +146,7 @@ if (!function_exists('wdesignkit_mcp_ensure_object')) {
 wp_register_ability('wdesignkit/list-templates', [
     'label'       => __('List WDesignKit Templates', 'wdesignkit'),
     'description' => __(
-        'Browses the current user\'s saved WDesignKit cloud templates with optional filters. Supports filtering by builder, search keyword, and template type. Use this for "Browse Templates", "Apply Filter", "Update Filter", "Remove Single Filter", and "Clear All Filters" — every filter operation is just a different combination of arguments.',
+        'Browses the current user\'s saved WDesignKit cloud templates with optional filters. Scope is the user\'s OWN saved templates only — this does NOT list the public marketplace / AI Kits. Supports filtering by builder, search keyword, and template type. Use this for "Browse Templates", "Apply Filter", "Update Filter", "Remove Single Filter", and "Clear All Filters" — every filter operation is just a different combination of arguments.',
         'wdesignkit',
     ),
     'category'    => 'wdesignkit',
@@ -248,6 +197,7 @@ wp_register_ability('wdesignkit/list-templates', [
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Lists the user\'s saved WDesignKit cloud templates.',
+                'Scope: the user\'s OWN saved templates only — NOT the public marketplace / AI Kits.',
                 'Requires WDesignKit cloud login (use wdesignkit/get-login-status to verify).',
                 'Filters map directly to the ClickUp Template-ability filter actions:',
                 '- Apply Filter: include the desired keys (builder, type, search).',

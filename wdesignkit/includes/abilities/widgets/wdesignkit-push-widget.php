@@ -42,6 +42,7 @@ wp_register_ability('wdesignkit/push-widget', [
         'properties' => [
             'success'  => ['type' => 'boolean'],
             'message'  => ['type' => 'string'],
+            'r_id'     => ['type' => 'integer', 'description' => 'Cloud marketplace record ID on success (0 if the cloud did not return one). Use this — not a value dug out of "response" — with wdesignkit/download-widget or wdesignkit/manage-workspace-widget to reference this widget afterwards.'],
             'response' => ['type' => 'object'],
         ],
     ],
@@ -55,6 +56,8 @@ wp_register_ability('wdesignkit/push-widget', [
                 'Pushes a local widget to the WDesignKit cloud marketplace. Requires login.',
                 'type defaults to "new". If the widget already has an r_id in its JSON, use "update".',
                 'After a successful push the local JSON is updated with the returned r_id and cloud image URL.',
+                'The response\'s top-level "r_id" field is the value to use afterwards — with wdesignkit/download-widget,',
+                'wdesignkit/manage-workspace-widget, or wdesignkit/get-my-cloud-widgets to find it again later.',
             ]),
             'readonly'    => false,
             'destructive' => false,
@@ -159,20 +162,22 @@ function wdesignkit_mcp_push_widget(array $input): array {
         ];
     }
 
-    // Pre-flight: thumbnail is required by the cloud save_widget endpoint.
-    // If no image file is present the cloud silently returns HTTP 200 with an
-    // empty body and the push fails without explanation.  Fail early here so
-    // the caller gets a clear, actionable message rather than the generic
-    // "empty array" response.
-    if (!$img_path || !file_exists($img_path)) {
-        return [
-            'success' => false,
-            'message' => "Widget '{$title}' has no thumbnail image. Add a thumbnail file (jpg, jpeg, png, or webp) to the widget folder before pushing to the marketplace.",
-        ];
-    }
+    // Thumbnail is OPTIONAL, matching the manual "Push to Cloud" UI. SetSaveWidget
+    // (wdk-server WdkitPluginController) reads w_image with a '' default and only stores
+    // a file inside if( !empty($w_image) ) — it never validates or rejects an imageless
+    // push. Blocking here made this ability stricter than the product it wraps. (bug: 86d3rc7q4)
+    $w_image_body = '';
+    $w_imgext     = '';
 
-    $w_image_body = @file_get_contents($img_path);
-    $w_imgext     = $img_ext;
+    if ($img_path && file_exists($img_path)) {
+        $w_image_body = @file_get_contents($img_path);
+        $w_imgext     = $img_ext;
+
+        if (false === $w_image_body) {
+            $w_image_body = '';
+            $w_imgext     = '';
+        }
+    }
 
     $array_data = [
         'token'     => $auth['token'],
@@ -216,13 +221,13 @@ function wdesignkit_mcp_push_widget(array $input): array {
     $data   = json_decode($body, true);
 
     // HTTP 200 with an empty/null body ( [], '', null ) means the cloud silently rejected
-    // the request — common when the widget is missing a thumbnail image, the account
-    // lacks marketplace publish rights, or a required metadata field is absent.
-    // Guard covers both json_decode('[]') → [] and json_decode('') → null.
+    // the request — the account lacks marketplace publish rights, or a required metadata
+    // field is absent. (A missing thumbnail is NOT a cause: save_widget stores the image
+    // only when one is sent.) Guard covers both json_decode('[]') → [] and json_decode('') → null.
     if (200 === (int) $status && ($data === null || (is_array($data) && empty($data)))) {
         return [
             'success'  => false,
-            'message'  => 'Invalid API response format: empty array. The cloud returned HTTP 200 but an empty response body. Check that the widget has a thumbnail image, that the WDesignKit account has marketplace publish rights, and that all required metadata fields (name, widget_id, widget_version) are present.',
+            'message'  => 'Invalid API response format: empty array. The cloud returned HTTP 200 but an empty response body. Check that the WDesignKit account has marketplace publish rights and that all required metadata fields (name, widget_id, widget_version) are present.',
             'response' => ['raw' => $body],
         ];
     }
@@ -245,22 +250,44 @@ function wdesignkit_mcp_push_widget(array $input): array {
         ];
     }
 
-    // Write back r_id and updated image URL to local JSON
+    // Write back r_id and updated image URL to local JSON.
+    // $res_data IS the cloud's "data" object already ({imgurl, id}) — reading a further
+    // ['data'] level off of it (the previous code) always missed, so img_url and the id were
+    // silently '' / 0 on every push regardless of what the cloud sent. 'id' is kit_widgets.id
+    // (added server-side in SetSaveWidget) — the identifier download-widget / get-my-cloud-widgets
+    // / manage-workspace-widget all key on; it is NOT the same thing as the widgetdata.r_id this
+    // ability's own re-publish check reads (that column tracks copy lineage, not "my widget's id"),
+    // but this ability's response has always called it r_id, so keep that external name.
     $res_data  = is_array($data['data'] ?? null) ? $data['data'] : [];
-    $img_url   = $res_data['data']['imgurl'] ?? '';
-    $new_r_id  = $res_data['data']['r_id'] ?? ($res_data['r_id'] ?? 0);
+    $img_url   = $res_data['imgurl'] ?? '';
+    $new_r_id  = $res_data['id'] ?? ($res_data['r_id'] ?? 0);
+
+    $json_dirty = false;
 
     if ($new_r_id) {
         $json_data['widget_data']['widgetdata']['r_id'] = $new_r_id;
+        $json_dirty = true;
     }
-    if ($img_url && $json_path) {
+    if ($img_url) {
         $json_data['widget_data']['widgetdata']['w_image'] = $img_url;
+        $json_dirty = true;
+    }
+
+    // The write must run whenever EITHER field changed — previously it only ran inside the
+    // $img_url check, so an imageless push (now valid: the thumbnail pre-flight was removed
+    // in 86d3rc7q4) got a real r_id back from the cloud but never persisted it, leaving the
+    // widget permanently unrecognized as already-published on every later push/download call.
+    if ($json_dirty && $json_path) {
         @file_put_contents($json_path, wp_json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 
     return [
         'success'  => true,
         'message'  => "Widget '{$title}' pushed to cloud." . ($new_r_id ? " Marketplace record ID: {$new_r_id}." : ''),
+        // Surfaced as a first-class field — callers previously had to dig it out of the raw
+        // cloud response shape (response.data.data.r_id), which QA correctly flagged as
+        // effectively undiscoverable.
+        'r_id'     => (int) $new_r_id,
         'response' => wdesignkit_mcp_ensure_object($data, $body),
     ];
 }

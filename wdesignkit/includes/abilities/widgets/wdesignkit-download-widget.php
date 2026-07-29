@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 wp_register_ability('wdesignkit/download-widget', [
     'label'       => __('Download WDesignKit Marketplace Widget', 'wdesignkit'),
     'description' => __(
-        'Downloads a marketplace widget by its unique ID (w_uniq) and installs it in the local widget library. After a successful download the widget appears in wdesignkit/list-widgets. Maps to the "Import Widget — Browse (Public Download)" ability.',
+        'Downloads a widget by its numeric cloud ID and installs it in the local widget library — either a public marketplace widget, or one of the current user\'s own cloud widgets (including private, unpublished ones) when logged in. After a successful download the widget appears in wdesignkit/list-widgets. Maps to the "Import Widget — Browse (Public Download)" ability.',
         'wdesignkit',
     ),
     'category'    => 'wdesignkit',
@@ -71,6 +71,9 @@ wp_register_ability('wdesignkit/download-widget', [
                 'Endpoint is auto-selected: "import/widget/free" when not logged in (free widgets only), "widget/download" when logged in.',
                 'For free widgets without login: pass widget_id only.',
                 'For logged-in downloads: only widget_id is needed — u_id and token are resolved automatically from the session.',
+                'To redownload a widget you pushed yourself (including private ones never published to the marketplace):',
+                'list it with wdesignkit/get-my-cloud-widgets and pass that "id" here while logged in. The cloud recognises',
+                'the owner from the session token and serves private widgets to their owner only.',
                 'After installation the widget is available in wdesignkit/list-widgets.',
             ]),
             'readonly'    => false,
@@ -115,6 +118,13 @@ function wdesignkit_mcp_download_widget(array $input): array {
 
     // Auto-resolve u_id from the active WDesignKit cloud session when not supplied by the caller.
     // The cloud stores the user's own ID in the auth transient alongside the token.
+    if ($u_id === '' && $logged_in) {
+        // The resolved session already carries the cloud user_id — take it from there
+        // rather than re-deriving the transient key, which only matches when the WP
+        // user's email local part happens to equal the cloud account's.
+        $u_id = (string) ($auth['user_id'] ?? '');
+    }
+
     if ($u_id === '' && $logged_in) {
         // Normalise transient value regardless of storage backend (PHP serialised, JSON, stdClass).
         $normalise_dl_auth = static function ($raw): array {

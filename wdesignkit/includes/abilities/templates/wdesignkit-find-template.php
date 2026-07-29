@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 wp_register_ability('wdesignkit/find-template', [
     'label'       => __('Find WDesignKit Template', 'wdesignkit'),
     'description' => __(
-        'Searches the user\'s existing WDesignKit cloud templates by name keyword. Hits the "existing_template" endpoint (the same one update-template targets) so the IDs returned here can be passed straight to update-template, replace-template, remove-template, or import-template.',
+        'Searches the user\'s existing WDesignKit cloud templates by name keyword. Scope is the user\'s OWN saved templates only — this does NOT search the public marketplace / AI Kits, so marketplace kit names correctly return zero results here. Hits the "existing_template" endpoint (the same one update-template targets) so the IDs returned here can be passed straight to update-template, replace-template, remove-template, or import-template.',
         'wdesignkit',
     ),
     'category'    => 'wdesignkit',
@@ -58,6 +58,7 @@ wp_register_ability('wdesignkit/find-template', [
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Searches existing user templates. Useful before calling update-template or remove-template when you only know the template name.',
+                'Scope: the user\'s OWN saved templates only — NOT the public marketplace / AI Kits. Searching a marketplace kit name here returns zero results by design.',
                 'Requires WDesignKit cloud login.',
                 'For browsing pages of templates without keyword search prefer wdesignkit/list-templates.',
             ]),

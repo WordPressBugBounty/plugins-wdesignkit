@@ -668,6 +668,13 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 
 				$snippet = $json['snippets'][0];
 
+				// Decode HTML entities in the snippet name so imported titles show
+				// "&" instead of the raw entity "&#038;". The cloud content stores the
+				// name HTML-encoded, and Nexter's file-based import uses it as-is.
+				if ( isset( $snippet['name'] ) ) {
+					$snippet['name'] = html_entity_decode( (string) $snippet['name'], ENT_QUOTES, 'UTF-8' );
+				}
+
 				if ( empty( $snippet['post_type'] ) || 'nxt-code-snippet' !== $snippet['post_type'] ) {
 					$data = array(
 						'success' => false,
@@ -720,7 +727,7 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 					// Fallback to old post-based method if file-based failed.
 					$post_id = wp_insert_post(
 						array(
-							'post_title'  => sanitize_text_field( html_entity_decode( wp_unslash( $snippet['name'] ) ) ),
+							'post_title'  => sanitize_text_field( $snippet['name'] ),
 							'post_type'   => 'nxt-code-snippet',
 							'post_status' => 'publish',
 						)

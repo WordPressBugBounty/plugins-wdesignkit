@@ -27,7 +27,7 @@ wp_register_ability('wdesignkit/create-widget', [
             ],
             'builder' => [
                 'type'        => 'string',
-                'description' => 'Target page builder.',
+                'description' => 'Target page builder. Use "gutenberg" for Nexter Blocks / The Plus Addons for Block Editor (TPGB) — "Nexter", "Nexter Blocks", "TPGB", and "Plus Block Editor" all map to builder=gutenberg; it builds a block on the Pmgc component framework. Use "gutenberg_core" for a plain native WordPress block with no TPGB dependency. Note: "Nexter Extension" is a separate plugin, not a builder.',
                 'enum'        => ['elementor', 'gutenberg', 'gutenberg_core', 'bricks'],
             ],
             'description' => [
@@ -147,6 +147,10 @@ wp_register_ability('wdesignkit/create-widget', [
                 '- name: 1–64 chars. Letters, numbers, spaces, hyphens, underscores ONLY.',
                 '  Special characters are REJECTED with an error — do not pass them. Names must be unique per builder.',
                 '- builder: one of elementor | gutenberg | gutenberg_core | bricks',
+                '  Builder aliases — "Nexter" / "Nexter Blocks" / "TPGB" / "The Plus Addons for Block Editor" / "Plus Block Editor" all mean builder=gutenberg.',
+                '  gutenberg = Nexter Blocks (TPGB): block built on the Pmgc component framework',
+                '  (Pmgc_PanelTabs/Pmgc_Tab inspector, Pmgc_CssGenerator styling), loaded from the gutenberg/ folder.',
+                '  "gutenberg_core" = plain native WordPress blocks (no TPGB framework). "Nexter Extension" is a SEPARATE plugin, NOT a builder — do not treat it as the target builder.',
                 '',
                 '### Code inputs (php_code, css_code, js_code, cdn_js, cdn_css, section_data, editor_html)',
                 '- php_code / css_code / js_code: COMPLETE file replacements, not partial snippets.',
@@ -423,12 +427,21 @@ function wdesignkit_mcp_create_widget(array $input): array {
             $builder, $class_name, $name, $folder_name_full, $file_name_full,
             $description, $category, $widget_hash, $version
         );
-    } elseif ($builder === 'elementor') {
-        // Auto-correct common mistakes in AI-provided Elementor PHP:
-        // wrong class name, wrong get_name() return value, missing asset-enqueue methods.
-        $php_code = wdesignkit_mcp_fix_elementor_php(
-            $php_code, $file_name_full, $widget_hash, $folder_name_full, $version
-        );
+    } else {
+        // Caller-supplied PHP must live in the global namespace. Every builder's widget
+        // loader instantiates/registers the class by its bare global name (e.g. the
+        // Elementor loader calls `new Wdkit_{file}()`), so a `namespace ...;` declaration
+        // makes the class resolve as Namespace\Wdkit_xxx and the loader fatals with
+        // "Class not found", crashing every editor/frontend load. Strip it before writing.
+        $php_code = wdesignkit_mcp_strip_php_namespace($php_code);
+
+        if ($builder === 'elementor') {
+            // Auto-correct common mistakes in AI-provided Elementor PHP:
+            // wrong class name, wrong get_name() return value, missing asset-enqueue methods.
+            $php_code = wdesignkit_mcp_fix_elementor_php(
+                $php_code, $file_name_full, $widget_hash, $folder_name_full, $version
+            );
+        }
     }
 
     $js_code = (string) ($input['js_code'] ?? '');
@@ -520,11 +533,35 @@ function wdesignkit_mcp_create_widget(array $input): array {
         $write_errors[] = 'CSS';
     }
 
+    // Thumbnail: create-widget has no image input and the JSON's w_image points at
+    // {file}.png, so without this every new widget shows a broken image in the library
+    // AND push-widget's pre-flight (which scans the folder for a jpg/png/webp) blocks the
+    // push. Seed a real default thumbnail from the bundled placeholder so both work; the
+    // caller can overwrite {file}.png later with a custom image. Best-effort — never fail
+    // widget creation over the thumbnail. (bug: 86d3rc7n8)
+    $thumb_written = false;
+    if (defined('WDKIT_PATH')) {
+        $default_thumb = WDKIT_PATH . 'assets/images/jpg/placeholder.png';
+        if (is_readable($default_thumb)) {
+            $thumb_written = @copy($default_thumb, $widget_file_base . '.png');
+        }
+    }
+
     if (!empty($write_errors)) {
         return [
             'success' => false,
             'message' => 'Failed to write files: ' . implode(', ', $write_errors) . '. Check directory permissions.',
         ];
+    }
+
+    $created_files = [
+        $file_name_full . '.php',
+        $file_name_full . '.json',
+        $file_name_full . '.js',
+        $file_name_full . '.css',
+    ];
+    if ($thumb_written) {
+        $created_files[] = $file_name_full . '.png';
     }
 
     return [
@@ -535,12 +572,7 @@ function wdesignkit_mcp_create_widget(array $input): array {
             'builder'   => $builder,
             'folder'    => $folder_name_full,
             'widget_id' => $widget_id,   // 8-char hash — use with activate/deactivate-widget
-            'files'     => [
-                $file_name_full . '.php',
-                $file_name_full . '.json',
-                $file_name_full . '.js',
-                $file_name_full . '.css',
-            ],
+            'files'     => $created_files,
             'version'   => $version,
             'css_class' => $widget_css_class,
         ],
@@ -949,6 +981,27 @@ function wdesignkit_mcp_fix_elementor_php(
 }
 
 /**
+ * Strip a top-level `namespace ...;` declaration from caller-supplied widget PHP.
+ *
+ * Every WDesignKit widget loader (Elementor, Bricks, Gutenberg) instantiates or
+ * registers the widget class by its bare global name. A namespace declaration makes
+ * the class resolve as Namespace\Wdkit_xxx, so the loader's `new Wdkit_xxx()` fatals
+ * with "Class not found" and takes down the whole site. Generated boilerplate never
+ * declares a namespace — this only guards caller-supplied php_code.
+ *
+ * Only the common semicolon form (`namespace Foo\Bar;`) is removed; `use` statements
+ * are left intact as they remain valid global aliases.
+ */
+function wdesignkit_mcp_strip_php_namespace(string $php_code): string {
+    return preg_replace(
+        '/\bnamespace\s+[A-Za-z0-9_\\\\]+\s*;/',
+        '',
+        $php_code,
+        1
+    ) ?? $php_code;
+}
+
+/**
  * Generate Gutenberg / Gutenberg Core block PHP boilerplate.
  *
  * Uses wp_upload_dir() for SSL-safe asset URLs.
@@ -969,6 +1022,46 @@ function wdesignkit_mcp_gutenberg_php(
     // Collision-safe function name: derived from full $file_name (includes unique hash)
     $func_name = str_replace(['-', '.'], '_', $file_name);
 
+    $block_title = 'gutenberg' === $builder ? 'Nexter Blocks (TPGB) Block' : 'Gutenberg Block';
+
+    // builder=gutenberg targets Nexter Blocks / TPGB. Its editor JS uses the Pmgc
+    // component framework, which lives in wkit_g_pmgc.js — registered under the handle
+    // 'wkit-editor-block-pmgc' by the WDesignKit gutenberg loader (editor_assets() in
+    // class-wdkit-gutenberg-files-load.php) and by nothing else. Declaring that handle
+    // unconditionally would make WordPress silently drop this entire script — and the
+    // block with it — on any site where WDesignKit is not active (WP_Dependencies::all_deps()
+    // discards a script whose dependency was never registered). Whether WDesignKit is
+    // present is a runtime fact of the destination site, so gate it on the constant.
+    // Mirrors the widget builder's own output in src/widget-builder/file-creation/gutenberg_file.js.
+    $deps_block = 'gutenberg' === $builder
+        ? <<<PHP
+
+        \$wdkit_block_deps = [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ];
+
+        if ( defined( 'WDKIT_VERSION' ) ) {
+            \$wdkit_block_deps[] = 'wkit-editor-block-pmgc';
+        }
+
+PHP
+        : '';
+
+    $deps_arg = 'gutenberg' === $builder
+        ? '$wdkit_block_deps'
+        : "[ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ]";
+
+    // The TPGB editor JS stores the per-instance id it styles through Pmgc_CssGenerator.
+    $attributes_block = 'gutenberg' === $builder
+        ? <<<PHP
+
+            'attributes'    => [
+                'block_id' => [
+                    'type'    => 'string',
+                    'default' => '',
+                ],
+            ],
+PHP
+        : '';
+
     return <<<PHP
 <?php
 /*
@@ -984,18 +1077,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * {$name} - Gutenberg Block
+ * {$name} - {$block_title}
  * {$description}
  */
 if ( ! function_exists( 'wdkit_{$func_name}_register_block' ) ) {
     function wdkit_{$func_name}_register_block() {
         \$upload_dir = wp_upload_dir();
         \$baseurl    = set_url_scheme( \$upload_dir['baseurl'], is_ssl() ? 'https' : 'http' );
-
+{$deps_block}
         wp_register_script(
             'wdkit-{$slug}-editor',
             \$baseurl . '/wdesignkit/{$builder}/{$folder_name}/{$file_name}.js',
-            [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ],
+            {$deps_arg},
             '{$version}',
             true
         );
@@ -1010,7 +1103,7 @@ if ( ! function_exists( 'wdkit_{$func_name}_register_block' ) ) {
         register_block_type( 'wdkit/{$slug}', [
             'editor_script' => 'wdkit-{$slug}-editor',
             'editor_style'  => 'wdkit-{$slug}-style',
-            'style'         => 'wdkit-{$slug}-style',
+            'style'         => 'wdkit-{$slug}-style',{$attributes_block}
         ] );
     }
 }
@@ -1173,7 +1266,123 @@ function wdesignkit_mcp_generate_js(
         return '';
     }
 
-    if ($builder === 'gutenberg' || $builder === 'gutenberg_core') {
+    if ($builder === 'gutenberg') {
+        // Nexter Blocks (TPGB) variant. The difference from gutenberg_core is the
+        // component framework: the inspector is built from Pmgc_PanelTabs/Pmgc_Tab and
+        // per-instance CSS is emitted through Pmgc_CssGenerator, all served by
+        // wkit_g_pmgc.js. Every Pmgc component is used behind a guard with a native
+        // fallback, so the block still registers and renders when Nexter Blocks is not
+        // installed. Mirrors src/widget-builder/file-creation/gutenberg_file.js.
+        $pmgc_id = $widget_hash !== '' ? 'wb-' . $widget_hash : 'wb-' . $slug;
+
+        return <<<JS
+/**
+ * {$name} - Nexter Blocks (TPGB) Block
+ */
+(function(blocks, element, blockEditor, components, i18n) {
+    var el = element.createElement;
+    var Fragment = element.Fragment;
+    var __ = i18n.__;
+    var InspectorControls = blockEditor.InspectorControls;
+    var TextControl = components.TextControl;
+    var TextareaControl = components.TextareaControl;
+    var PanelBody = components.PanelBody;
+
+    // Registered on window.wp by wkit_g_pmgc.js (script handle 'wkit-editor-block-pmgc'),
+    // which the WDesignKit gutenberg loader enqueues in the block editor.
+    var PmgcComponents = window.wp.Pmgc_Components || {};
+    var Pmgc_PanelTabs = PmgcComponents.Pmgc_PanelTabs;
+    var Pmgc_Tab = PmgcComponents.Pmgc_Tab;
+    var Pmgc_CssGenerator = PmgcComponents.Pmgc_CssGenerator;
+
+    blocks.registerBlockType('wdkit/{$slug}', {
+        title: __('{$safe_name}', 'wdesignkit'),
+        description: __('{$safe_desc}', 'wdesignkit'),
+        icon: el('i', { className: 'wdkit-icon tpae-wdkit-logo' }),
+        category: '{$safe_cat}',
+        attributes: {
+            block_id: { type: 'string', default: '' },
+            title: { type: 'string', default: '{$safe_name}' },
+            description: { type: 'string', default: '{$safe_desc}' }
+        },
+
+        edit: function(props) {
+            var attributes = props.attributes;
+            var block_id = props.clientId.substr(0, 6);
+
+            if (attributes.block_id !== block_id) {
+                props.setAttributes({ block_id: block_id });
+            }
+
+            var settings = [
+                el(TextControl, {
+                    key: 'title',
+                    label: __('Title', 'wdesignkit'),
+                    value: attributes.title,
+                    onChange: function(val) { props.setAttributes({ title: val }); }
+                }),
+                el(TextareaControl, {
+                    key: 'description',
+                    label: __('Description', 'wdesignkit'),
+                    value: attributes.description,
+                    onChange: function(val) { props.setAttributes({ description: val }); }
+                })
+            ];
+
+            // Nexter Blocks tabbed inspector when TPGB is available, native panel otherwise.
+            var inspector = (Pmgc_PanelTabs && Pmgc_Tab)
+                ? el(InspectorControls, null,
+                    el(Pmgc_PanelTabs, null,
+                        el(Pmgc_Tab, { tabTitle: __('Layout', 'wdesignkit') }, settings),
+                        el(Pmgc_Tab, { tabTitle: __('Style', 'wdesignkit') })
+                    )
+                )
+                : el(InspectorControls, null,
+                    el(PanelBody, { title: __('{$safe_name} Settings', 'wdesignkit') }, settings)
+                );
+
+            if (attributes.block_id && Pmgc_CssGenerator) {
+                var node = document.getElementsByClassName('tpgb-block-' + block_id);
+                if (null != node && 'undefined' !== typeof node) {
+                    Pmgc_CssGenerator(attributes, 'wdkit', '{$pmgc_id}', block_id, false, props.clientId);
+                }
+            }
+
+            return el(Fragment, null, inspector,
+                el('div', { className: 'wkit-wb-Widget_{$widget_hash} wdkit-block-' + block_id },
+                    el('h3', {}, attributes.title),
+                    el('p', {}, attributes.description)
+                )
+            );
+        },
+
+        save: function(props) {
+            var attributes = props.attributes;
+            var block_id = attributes.block_id;
+            var styleCss = Pmgc_CssGenerator
+                ? Pmgc_CssGenerator(attributes, 'wdkit', '{$pmgc_id}', block_id, true)
+                : '';
+
+            return el(Fragment, null,
+                el('div', { className: 'wkit-wb-Widget_{$widget_hash} wdkit-block-' + block_id },
+                    el('h3', {}, attributes.title),
+                    el('p', {}, attributes.description)
+                ),
+                el('style', null, styleCss)
+            );
+        }
+    });
+})(
+    window.wp.blocks,
+    window.wp.element,
+    window.wp.blockEditor,
+    window.wp.components,
+    window.wp.i18n
+);
+JS;
+    }
+
+    if ($builder === 'gutenberg_core') {
         return <<<JS
 /**
  * {$name} - Gutenberg Block

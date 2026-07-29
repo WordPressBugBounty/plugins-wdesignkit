@@ -33,6 +33,226 @@ if ( ! function_exists( 'wdesignkit_mcp_permission_callback' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wdesignkit_mcp_remember_session' ) ) {
+	/**
+	 * Record which cloud account the stored session belongs to.
+	 *
+	 * The session transient is keyed off the CLOUD email's local part, which is
+	 * usually a different address from the WordPress user running the request. Without
+	 * this pointer the only way back to the session is scanning wp_options for
+	 * _transient_wdkit_auth_* rows and hoping the right one comes back — on a site that
+	 * has been logged in with several accounts, that scan can return a stale/expired row
+	 * (or miss the fresh one entirely once a LIMIT is hit) and every cloud ability then
+	 * reports "not logged in" immediately after a successful login.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @param string $user_key Local part of the cloud account email.
+	 * @return void
+	 */
+	function wdesignkit_mcp_remember_session( $user_key ) {
+		$user_key = is_string( $user_key ) ? trim( $user_key ) : '';
+
+		if ( '' === $user_key ) {
+			return;
+		}
+
+		update_option( 'wdkit_mcp_session_user', $user_key, false );
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_mcp_forget_session' ) ) {
+	/**
+	 * Drop the active-session pointer written by wdesignkit_mcp_remember_session().
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return void
+	 */
+	function wdesignkit_mcp_forget_session() {
+		delete_option( 'wdkit_mcp_session_user' );
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_mcp_normalise_auth' ) ) {
+	/**
+	 * Normalise a raw session transient value into an associative array.
+	 *
+	 * Handles the shapes different storage backends hand back:
+	 *   1. PHP serialized string → maybe_unserialize() already returned an array
+	 *   2. JSON-encoded string   → decode it
+	 *   3. stdClass object       → cast public props to keys
+	 * Anything else (false for a missing transient, int, …) becomes an empty array.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @param mixed $raw Raw transient value.
+	 * @return array Normalised session data.
+	 */
+	function wdesignkit_mcp_normalise_auth( $raw ) {
+		if ( is_array( $raw ) ) {
+			return $raw;
+		}
+
+		if ( $raw instanceof \stdClass ) {
+			return (array) $raw;
+		}
+
+		if ( is_string( $raw ) && '' !== $raw ) {
+			$decoded = json_decode( $raw, true );
+
+			if ( is_array( $decoded ) ) {
+				return $decoded;
+			}
+		}
+
+		return array();
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_mcp_find_auth_session' ) ) {
+	/**
+	 * Locate the active WDesignKit cloud session.
+	 *
+	 * Lookup order:
+	 *   1. The account recorded at login time (wdkit_mcp_session_user) — authoritative.
+	 *   2. The transient keyed off the current WP user's email local part.
+	 *   3. A scan of every _transient_wdkit_auth_* row, preferring the live session with
+	 *      the furthest expiry. Unlike the previous LIMIT 5 / LIMIT 10 scans this cannot
+	 *      silently skip the freshest session on a site with several stored accounts.
+	 *
+	 * @since 2.6.2
+	 *
+	 * @return array{found:bool,expired:bool,key:string,data:array,timeout:int|null}
+	 */
+	function wdesignkit_mcp_find_auth_session() {
+		$empty = array(
+			'found'   => false,
+			'expired' => false,
+			'key'     => '',
+			'data'    => array(),
+			'timeout' => null,
+		);
+
+		$read = static function ( $user_key ) {
+			$user_key = is_string( $user_key ) ? trim( $user_key ) : '';
+
+			if ( '' === $user_key ) {
+				return null;
+			}
+
+			$timeout = get_option( '_transient_timeout_wdkit_auth_' . $user_key );
+			$timeout = $timeout ? (int) $timeout : null;
+
+			// Explicit expiry guard: an external object cache can hand back stale data
+			// after the timeout has passed, so compare the raw timestamp first.
+			if ( $timeout && $timeout < time() ) {
+				delete_transient( 'wdkit_auth_' . $user_key );
+
+				return array(
+					'found'   => false,
+					'expired' => true,
+					'key'     => $user_key,
+					'data'    => array(),
+					'timeout' => $timeout,
+				);
+			}
+
+			$data = wdesignkit_mcp_normalise_auth( get_transient( 'wdkit_auth_' . $user_key ) );
+
+			if ( empty( $data['token'] ) ) {
+				return null;
+			}
+
+			return array(
+				'found'   => true,
+				'expired' => false,
+				'key'     => $user_key,
+				'data'    => $data,
+				'timeout' => $timeout,
+			);
+		};
+
+		$expired_seen = false;
+
+		// 1. The account this site last logged into.
+		$session = $read( get_option( 'wdkit_mcp_session_user', '' ) );
+		if ( is_array( $session ) ) {
+			if ( ! empty( $session['found'] ) ) {
+				return $session;
+			}
+			$expired_seen = true;
+		}
+
+		// 2. The WP user running the request (only matches when both emails share a local part).
+		$current_user = wp_get_current_user();
+		if ( $current_user && $current_user->user_email ) {
+			$session = $read( strstr( $current_user->user_email, '@', true ) );
+			if ( is_array( $session ) ) {
+				if ( ! empty( $session['found'] ) ) {
+					return $session;
+				}
+				$expired_seen = true;
+			}
+		}
+
+		// 3. Every stored session, newest expiry first.
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_wdkit_auth_' ) . '%'
+			),
+			ARRAY_A
+		);
+
+		$best = null;
+
+		foreach ( ( $rows ? $rows : array() ) as $row ) {
+			$key     = str_replace( '_transient_', '', $row['option_name'] );
+			$timeout = get_option( '_transient_timeout_' . $key );
+			$timeout = $timeout ? (int) $timeout : null;
+
+			if ( $timeout && $timeout < time() ) {
+				$expired_seen = true;
+				continue;
+			}
+
+			$data = wdesignkit_mcp_normalise_auth( @maybe_unserialize( $row['option_value'] ) );
+
+			if ( empty( $data['token'] ) ) {
+				continue;
+			}
+
+			$candidate = array(
+				'found'   => true,
+				'expired' => false,
+				'key'     => str_replace( 'wdkit_auth_', '', $key ),
+				'data'    => $data,
+				'timeout' => $timeout,
+			);
+
+			// A session with no timeout never expires — always prefer it.
+			if ( null === $candidate['timeout'] ) {
+				return $candidate;
+			}
+
+			if ( null === $best || $candidate['timeout'] > $best['timeout'] ) {
+				$best = $candidate;
+			}
+		}
+
+		if ( null !== $best ) {
+			return $best;
+		}
+
+		$empty['expired'] = $expired_seen;
+
+		return $empty;
+	}
+}
+
 if ( ! class_exists( 'Wdk_Ability_Main' ) ) {
 
 	/**

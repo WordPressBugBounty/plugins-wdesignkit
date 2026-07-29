@@ -285,10 +285,13 @@ function wdesignkit_mcp_manage_workspace_widget(array $input): array {
 
     // Widget workspace wstype values — 'wd-copy' is the server's handler for
     // adding a widget to a workspace. 'wd_ws_add' is not implemented server-side.
+    // 'copy' goes to 'ws-wd-copy', the workspace-to-workspace handler: unlike
+    // 'wd-copy' it validates the source workspace and that the widget is in it,
+    // which is what this ability's copy contract (current_wid required) promises.
     $wstype_map = [
         'add'    => 'wd-copy',
         'remove' => 'wd_ws_remove',
-        'copy'   => 'wd-copy',
+        'copy'   => 'ws-wd-copy',
         'move'   => 'wd-move',
     ];
 
@@ -327,9 +330,19 @@ function wdesignkit_mcp_manage_workspace_widget(array $input): array {
         ];
     }
 
+    // The cloud splits its reason across message ("Permission Denied") and description
+    // ("You are unable to perform this action since you are a subscriber."). Returning
+    // the message alone leaves the caller with no idea what to change — join both.
+    $message = $cloud['message'] ?? $cloud['massage'] ?? ($cloud['success'] ? "Widget {$action} succeeded." : "Failed to {$action} widget.");
+    $description = isset($cloud['description']) && is_string($cloud['description']) ? trim($cloud['description']) : '';
+
+    if ($description !== '' && stripos($message, $description) === false) {
+        $message = rtrim($message, '.! ') . ' — ' . $description;
+    }
+
     return [
         'success'  => !empty($cloud['success']),
-        'message'  => $cloud['message'] ?? $cloud['massage'] ?? ($cloud['success'] ? "Widget {$action} succeeded." : "Failed to {$action} widget."),
+        'message'  => $message,
         'response' => $cloud,
     ];
 }
@@ -354,6 +367,12 @@ function wdesignkit_mcp_manage_workspace_snippet(array $input): array {
 
     if ($action === '' || $snippet_id === '' || $wid <= 0) {
         return ['success' => false, 'message' => 'action, snippet_id, and wid are required.'];
+    }
+
+    // The cloud resolves snippet_id as an integer row id — fail fast on anything else
+    // instead of sending a request that can only come back as "Snippet Not Found".
+    if (!ctype_digit($snippet_id) || (int) $snippet_id <= 0) {
+        return ['success' => false, 'message' => 'snippet_id must be a numeric cloud snippet ID (from wdesignkit/get-workspace-data code_snippets).'];
     }
 
     $wstype_map = [
@@ -385,10 +404,9 @@ function wdesignkit_mcp_manage_workspace_snippet(array $input): array {
 
     $cloud = wdesignkit_mcp_template_cloud_call('manage_workspace', $args, 'form');
 
-    // The cloud returns HTTP 200 with an empty body for snippet add/remove operations
-    // on invalid/non-owned IDs — it does not validate the snippet_id or wid before
-    // returning. An empty body cannot confirm the operation succeeded; treat it as
-    // an unverifiable result and surface the ambiguity to the caller.
+    // Safety net for older cloud builds: before the snippet_* wstype handlers existed
+    // server-side, manage_workspace fell through and answered HTTP 200 with an empty
+    // body. An empty body cannot confirm the operation succeeded; surface the ambiguity.
     if (array_key_exists('raw', $cloud) && ($cloud['raw'] === '' || $cloud['raw'] === null)) {
         return [
             'success'  => false,

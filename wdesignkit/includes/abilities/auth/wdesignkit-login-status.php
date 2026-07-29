@@ -56,97 +56,25 @@ wp_register_ability('wdesignkit/get-login-status', [
 ]);
 
 function wdesignkit_mcp_get_login_status(array $input): array {
-    $logged_in     = false;
-    $email         = null;
-    $token_expiry  = null;
-    $session_state = 'not_logged_in';
+    $email        = null;
+    $token_expiry = null;
 
-    // Normalise a raw transient value into an associative array.
-    // Handles three possible shapes from different storage backends:
-    //   1. PHP serialized string  → maybe_unserialize returns an array  ✓
-    //   2. JSON-encoded string    → json_decode($v, true) returns an array
-    //   3. stdClass object        → (array) cast converts public props to keys
-    $normalise_auth = static function ($raw): array {
-        if (is_array($raw)) {
-            return $raw;
-        }
-        if ($raw instanceof \stdClass) {
-            return (array) $raw;
-        }
-        if (is_string($raw) && $raw !== '') {
-            $decoded = json_decode($raw, true);
-            if (is_array($decoded)) {
-                return $decoded;
-            }
-        }
-        return [];
-    };
+    // Single shared lookup — see wdesignkit_mcp_find_auth_session() in
+    // includes/abilities/class-wdk-ability-main.php. Every cloud ability resolves the
+    // session through it, so this status can never contradict what push-widget or any
+    // other cloud call sees.
+    $session   = wdesignkit_mcp_find_auth_session();
+    $logged_in = !empty($session['found']);
 
-    // First try: use current WP user email to construct the transient key
-    $current_user = wp_get_current_user();
-    if ($current_user && $current_user->user_email) {
-        $user_key = strstr($current_user->user_email, '@', true);
-        $timeout  = get_option('_transient_timeout_wdkit_auth_' . $user_key);
-
-        // Explicit expiry guard: external object caches may return stale transient
-        // data after the timeout has passed. Compare the raw timestamp first.
-        if ($timeout && (int) $timeout < time()) {
-            delete_transient('wdkit_auth_' . $user_key);
-            $session_state = 'session_expired';
-        } else {
-            $auth_data = $normalise_auth(get_transient('wdkit_auth_' . $user_key));
-            if (!empty($auth_data['token'])) {
-                $logged_in     = true;
-                $email         = $auth_data['user_email'] ?? $current_user->user_email;
-                $session_state = 'logged_in';
-                if ($timeout) {
-                    $token_expiry = wp_date('Y-m-d H:i:s', (int) $timeout);
-                }
-            }
-        }
+    if ($logged_in) {
+        $session_state = 'logged_in';
+        $email         = $session['data']['user_email'] ?? null;
+    } else {
+        $session_state = !empty($session['expired']) ? 'session_expired' : 'not_logged_in';
     }
 
-    // Second try: scan transients table
-    if (!$logged_in) {
-        global $wpdb;
-        $transient_prefix = '_transient_wdkit_auth_';
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s LIMIT 5",
-                $wpdb->esc_like($transient_prefix) . '%'
-            ),
-            ARRAY_A
-        );
-
-        $found_expired = false;
-
-        foreach (($rows ?: []) as $row) {
-            $key     = str_replace('_transient_', '', $row['option_name']);
-            $timeout = get_option('_transient_timeout_' . $key);
-
-            if ($timeout && (int) $timeout < time()) {
-                // Found a transient but it's expired
-                $found_expired = true;
-                continue;
-            }
-
-            $data = $normalise_auth(@maybe_unserialize($row['option_value']));
-            if (!empty($data['token'])) {
-                $logged_in     = true;
-                $email         = $data['user_email'] ?? null;
-                $session_state = 'logged_in';
-
-                if ($timeout) {
-                    $token_expiry = wp_date('Y-m-d H:i:s', (int) $timeout);
-                }
-                break;
-            }
-        }
-
-        // If not logged in but found expired transient, report session as expired
-        if (!$logged_in && $found_expired) {
-            $session_state = 'session_expired';
-        }
+    if (!empty($session['timeout'])) {
+        $token_expiry = wp_date('Y-m-d H:i:s', (int) $session['timeout']);
     }
 
     $login_url        = admin_url('admin.php?page=wdesignkit');

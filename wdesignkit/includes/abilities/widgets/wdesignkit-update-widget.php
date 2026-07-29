@@ -218,7 +218,13 @@ function wdesignkit_mcp_update_widget(array $input): array {
 
     // --- Update code files (only fields explicitly provided) ---
     if (isset($input['php_code']) && $input['php_code'] !== '') {
-        $maybe_write($file_base . '.php', $input['php_code']);
+        // Strip any namespace declaration — the widget loader instantiates the bare
+        // global class name, so namespaced PHP would fatal with "Class not found".
+        // (create-widget applies the same guard; see wdesignkit_mcp_strip_php_namespace.)
+        $php_for_write = function_exists('wdesignkit_mcp_strip_php_namespace')
+            ? wdesignkit_mcp_strip_php_namespace((string) $input['php_code'])
+            : (string) $input['php_code'];
+        $maybe_write($file_base . '.php', $php_for_write);
     }
 
     if (isset($input['css_code']) && $input['css_code'] !== '') {
@@ -277,6 +283,58 @@ function wdesignkit_mcp_update_widget(array $input): array {
         if (!empty($input['version'])) {
             $json_data['widget_data']['widgetdata']['widget_version'] = sanitize_text_field($input['version']);
             $meta_changed = true;
+        }
+
+        // --- Resync builder panel (section_data) + Editor_data when code changes ---
+        // The WDesignKit builder panel reads section_data / Editor_data, NOT the raw code
+        // files — so updating a widget's code otherwise leaves the panel showing the old
+        // controls and preview. Mirror create-widget: re-parse register_controls() from the
+        // new PHP into section_data, regenerate the canvas HTML from it, and keep the preview
+        // CSS/JS in step with the written files.
+        $code_touched = (isset($input['php_code']) && $input['php_code'] !== '')
+            || (isset($input['css_code']) && $input['css_code'] !== '')
+            || (isset($input['js_code']) && $input['js_code'] !== '');
+
+        if ($code_touched) {
+            if (!isset($json_data['Editor_data']) || !is_array($json_data['Editor_data'])) {
+                $json_data['Editor_data'] = ['html' => '', 'css' => '', 'js' => ''];
+            }
+
+            // section_data + canvas HTML — only when new PHP is supplied and it parses.
+            // A null parse (e.g. non-Elementor register_controls) leaves the existing
+            // section_data untouched rather than clobbering it with defaults.
+            if (isset($input['php_code']) && $input['php_code'] !== ''
+                && !isset($input['section_data'])
+                && function_exists('wdesignkit_mcp_parse_php_section_data')) {
+
+                $wd_name   = (string) ($json_data['widget_data']['widgetdata']['name'] ?? $folder);
+                $wd_id     = (string) ($json_data['widget_data']['widgetdata']['widget_id'] ?? '');
+                $file_name = basename($file_base);
+
+                $_slug            = sanitize_title($wd_name);
+                $widget_css_class = 'wdkit-' . $_slug . (substr($_slug, -7) === '-widget' ? '' : '-widget');
+
+                $parsed = wdesignkit_mcp_parse_php_section_data((string) $input['php_code'], $widget_css_class);
+                if (is_array($parsed)) {
+                    $json_data['section_data'] = $parsed;
+                    $meta_changed = true;
+
+                    if (function_exists('wdesignkit_mcp_generate_editor_html_from_section_data')) {
+                        $json_data['Editor_data']['html'] = wdesignkit_mcp_generate_editor_html_from_section_data(
+                            $wd_id, $widget_css_class, $file_name, $parsed
+                        );
+                    }
+                }
+            }
+
+            if (isset($input['css_code']) && $input['css_code'] !== '') {
+                $json_data['Editor_data']['css'] = (string) $input['css_code'];
+                $meta_changed = true;
+            }
+            if (isset($input['js_code']) && $input['js_code'] !== '') {
+                $json_data['Editor_data']['js'] = (string) $input['js_code'];
+                $meta_changed = true;
+            }
         }
 
         if ($meta_changed) {

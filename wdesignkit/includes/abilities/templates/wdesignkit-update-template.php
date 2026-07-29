@@ -61,6 +61,8 @@ wp_register_ability('wdesignkit/update-template', [
                 'Updates an existing cloud template by ID. Requires WDesignKit login.',
                 'data REPLACES the saved template body — always derive it from the latest known content.',
                 'To swap one saved template\'s content for a freshly downloaded preset, prefer wdesignkit/replace-template — it adds the confirmation guardrail.',
+                'This updates the template BODY only. The cloud update endpoint has no image field: to change an',
+                'existing template\'s preview thumbnail use wdesignkit/save-template-image with the same template_id.',
             ]),
             'readonly'    => false,
             'destructive' => false,

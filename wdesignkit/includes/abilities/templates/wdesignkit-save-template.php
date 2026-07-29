@@ -40,6 +40,11 @@ wp_register_ability('wdesignkit/save-template', [
                 'type'        => 'string',
                 'description' => 'Template type (e.g. "page", "section", "block").',
             ],
+            'plugins' => [
+                'type'        => 'array',
+                'description' => 'Optional list of cloud plugin IDs (integers) this template requires — populates the template\'s plugins_id so the library shows its plugin dependencies. Get the IDs from wdesignkit/get-template-plugins.',
+                'items'       => ['type' => 'integer'],
+            ],
         ],
         'required' => ['builder', 'data'],
         'additionalProperties' => false,
@@ -114,9 +119,37 @@ function wdesignkit_mcp_save_template(array $input): array {
         'data'    => $data,
         'post_id' => $post_id,
         'builder' => $builder,
+        // The cloud SetSaveTemplate endpoint reads the display name from 'title'
+        // (request->get('title')) and ignores 'name' — sending only 'name' is why
+        // templates saved via this ability came back with a blank title. Send 'title'
+        // (keep 'name' too, harmlessly, for any other consumer).
+        'title'   => $name,
         'name'    => $name,
         'type'    => $type,
     ];
+
+    // Optional: record which cloud plugin IDs this template requires. The cloud
+    // SetSaveTemplate endpoint reads 'plugins' as a JSON string of integer plugin IDs
+    // and stores them as the template's plugins_id (previously always empty because the
+    // ability had no way to supply them).
+    $plugins_in = $input['plugins'] ?? [];
+    if (is_string($plugins_in)) {
+        $decoded    = json_decode($plugins_in, true);
+        $plugins_in = is_array($decoded) ? $decoded : [];
+    }
+    if (is_array($plugins_in)) {
+        $plugin_ids = [];
+        foreach ($plugins_in as $pid) {
+            $pid = (int) $pid;
+            if ($pid > 0) {
+                $plugin_ids[] = $pid;
+            }
+        }
+        if (!empty($plugin_ids)) {
+            // Sent as a JSON string: the cloud json_decodes 'plugins' server-side.
+            $args['plugins'] = wp_json_encode(array_values(array_unique($plugin_ids)));
+        }
+    }
 
     $response = wdesignkit_mcp_template_cloud_call('save_template', $args, 'json');
 

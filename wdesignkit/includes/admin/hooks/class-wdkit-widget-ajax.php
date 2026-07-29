@@ -287,6 +287,10 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		public function wkit_plugin_download_get() {
 			$fields = array(
 				'pluginName',
+				// The popup has a Version field and the cloud reads 'version' for the plugin
+				// header — leaving it out of this allowlist silently discarded whatever the
+				// user typed and stamped every download 1.0.0.
+				'version',
 				'licenceUrl',
 				'pluginSlug',
 				'pluginPrefix',

@@ -5,7 +5,7 @@ Tags: page templates, elementor template, wordpress template, elementor widgets,
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -91,6 +91,18 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
 
 == Changelog ==
+
+2.6.2 - 29 July 2026
+New: Created new Abilities for browsing Kits and Kit pages, importing a full Kit, and setting a template thumbnail.
+Improved: Significantly faster AI Kit import with batched AI content generation.
+Improved: Added an AI-compatible badge to template cards and the browse filter.
+Improved: Split the license key credits table into separate Storage Credit and AI Credit columns.
+Improved: Refined existing Widget & Template Abilities for better reliability.
+Fixed: Widget Abilities crash when AI-generated PHP code declared a namespace.
+Fixed: Newly created widgets showing a broken thumbnail image in the widget library.
+Fixed: Generate AI Blog Posts toggle not responding to full-row click.
+Fixed: Pages failing during Kit import.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.6.1 - 22 July 2026
 Fixed: Improved import stability by handling failed API requests gracefully and displaying user-friendly error messages.

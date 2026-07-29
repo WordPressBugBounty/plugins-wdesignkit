@@ -82,8 +82,11 @@ function wdesignkit_mcp_widget_preview(array $input): array {
         return ['success' => false, 'message' => 'folder is required.'];
     }
 
-    // Normalise gutenberg_core → gutenberg for filesystem lookup
-    $fs_builder = ($builder === 'gutenberg_core') ? 'gutenberg' : $builder;
+    // gutenberg_core widgets live under their own gutenberg_core/ directory — create-widget,
+    // list-widgets, and the gutenberg_core loader all use the raw builder name. Resolve the
+    // folder under the actual builder dir; collapsing gutenberg_core → gutenberg made the
+    // lookup fail with "Widget folder not found" for every Core Gutenberg widget. (bug: 86d3rc7nf)
+    $fs_builder = $builder;
 
     $widget_dir = WDKIT_BUILDER_PATH . '/' . $fs_builder . '/' . $folder;
 

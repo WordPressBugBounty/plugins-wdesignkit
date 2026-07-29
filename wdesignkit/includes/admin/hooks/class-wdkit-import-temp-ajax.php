@@ -108,6 +108,9 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				case 'generate_ai_content':
 					$response = $this->wkit_generate_ai_content();
 					break;
+				case 'generate_ai_content_batch':
+					$response = $this->wkit_generate_ai_content_batch();
+					break;
 				case 'reset_site':
 					$response = $this->wkit_reset_site();
 					break;
@@ -561,8 +564,55 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		}
 
 		/**
+		 * Generate AI text for an entire kit in a single request.
 		 *
-		 * darft all theme builder page and normal page    
+		 * Mirrors wkit_generate_ai_content() but accepts a `pages` array (one entry per
+		 * template needing an AI rewrite) and forwards it to the batched frontend endpoint,
+		 * which fans the per-page OpenAI calls out concurrently on the Node server. Collapses
+		 * 12-13 browser round trips into one. The per-page contract is unchanged, so the caller
+		 * can fall back to per-template generate_ai_content when this route is unavailable.
+		 *
+		 * @since 2.6.2
+		 */
+		protected function wkit_generate_ai_content_batch() {
+			$pages = isset( $_POST['pages'] ) ? json_decode( wp_unslash( $_POST['pages'] ), true ) : array();
+
+			if ( empty( $pages ) || ! is_array( $pages ) ) {
+				return array(
+					'success' => false,
+					'message' => esc_html__( 'No pages supplied for batch AI generation', 'wdesignkit' ),
+					'results' => array(),
+				);
+			}
+
+			$array_data = array(
+				'pages'       => $pages,
+				'type'        => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
+				'title'       => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
+				'language'    => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
+				'agency'      => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
+				'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
+				'builder'     => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
+				'token'       => isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '',
+			);
+
+			$response = $this->wkit_api_call( wp_json_encode( $array_data ), 'ai/template_import_batch', 'frontside' );
+			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				return array(
+					'success' => false,
+					'message' => ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'Batch AI data not found', 'wdesignkit' ),
+					'results' => array(),
+				);
+			}
+
+			return json_decode( wp_json_encode( $response['data'] ), true );
+		}
+
+		/**
+		 *
+		 * darft all theme builder page and normal page
 		 *
 		 * @since 2.0.0
 		 */
