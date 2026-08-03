@@ -62,6 +62,10 @@ wp_register_ability('wdesignkit/update-widget', [
                 'format'      => 'uri',
                 'maxLength'   => 512,
             ],
+            'validate' => [
+                'type'        => 'boolean',
+                'description' => 'When true, runs wdesignkit/validate-widget inline first and refuses the update if validation checks fail.',
+            ],
         ],
         'required' => ['builder', 'folder'],
         'additionalProperties' => false,
@@ -113,6 +117,7 @@ wp_register_ability('wdesignkit/update-widget', [
                 '1. wdesignkit/list-widgets → find builder + folder',
                 '2. wdesignkit/get-widget   → read current code',
                 '3. wdesignkit/update-widget → provide full updated file content',
+                '4. wdesignkit/sync-widget-code → run after raw php_code updates to keep section_data in sync',
             ]),
             'readonly'    => false,
             'destructive' => true,
@@ -197,6 +202,33 @@ function wdesignkit_mcp_update_widget(array $input): array {
     // --- Validate version if provided ---
     if (!empty($input['version']) && !preg_match('/^\d+\.\d+\.\d+$/', $input['version'])) {
         return ['success' => false, 'message' => 'Invalid version format. Use semver like "1.2.0".'];
+    }
+
+    // --- Pre-write code validation if requested ---
+    if (!empty($input['validate'])) {
+        if (!function_exists('wdesignkit_mcp_validate_widget')) {
+            $vw_path = __DIR__ . '/wdesignkit-validate-widget.php';
+            if (file_exists($vw_path)) {
+                require_once $vw_path;
+            }
+        }
+        if (function_exists('wdesignkit_mcp_validate_widget')) {
+            $val_res = wdesignkit_mcp_validate_widget([
+                'php_code' => $input['php_code'] ?? '',
+                'css_code' => $input['css_code'] ?? '',
+                'js_code'  => $input['js_code'] ?? '',
+                'builder'   => $builder,
+                'folder'    => $folder,
+                'name'      => $new_name ?: $folder,
+            ]);
+            if (empty($val_res['valid'])) {
+                return [
+                    'success' => false,
+                    'message' => 'Validation failed: ' . ($val_res['message'] ?? 'Widget code failed validation checks.'),
+                    'checks'  => $val_res['checks'] ?? [],
+                ];
+            }
+        }
     }
 
     // --- Tracking arrays ---

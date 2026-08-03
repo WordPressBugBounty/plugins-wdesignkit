@@ -60,7 +60,6 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'wdkit_review_form_scripts' ) );
 
 			add_action( 'wp_ajax_wdkit_submit_review', array( $this, 'wdkit_handle_review_submission' ) );
-			add_action( 'wp_ajax_nopriv_wdkit_submit_review', array( $this, 'wdkit_handle_review_submission' ) );
 		}
 
 		/**

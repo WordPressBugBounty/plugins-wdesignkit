@@ -68,12 +68,14 @@ Never guess the builder — ask if ambiguous. `convert-widget` returns the recom
 1. `list-widgets` + `check-dependencies` (install-dependency if needed)
 2. `create-widget(name, builder, description, icon, keywords)` — let it generate boilerplate; omit `php_code` here
 3. `get-widget` — read the real class name, hash, paths
-4. `update-widget` with your real code
-5. `widget-preview` to verify (Elementor / Gutenberg / gutenberg_core; other builders: activation status + live render)
+4. `validate-widget(php_code)` — validate PHP syntax, namespace rules, class naming, get_name(), and asset dependencies before writing
+5. `update-widget` with your real code (pass `validate: true` for inline pre-write validation)
+6. `sync-widget-code(builder, folder, direction="code_to_section")` — resync `section_data` from `php_code` to prevent control drift
+7. `widget-preview` to verify (Elementor / Gutenberg / gutenberg_core; other builders: activation status + live render)
 
 **create-widget contract:** `category` must already exist in `list-categories` (`manage-categories` to add). Returned `widget_id` = 8-char hash, never changes; use it with activate/deactivate, and `folder` with get/update. `cdn_js[]` / `cdn_css[]` for third-party libraries.
 
-**PHP rules (when providing php_code):** one class per file, global namespace with `use Elementor\...` imports; class name `Wdkit_{name_snake}_{hash}`; `get_name()` returns `wb-{hash}` (unique across widgets); `get_script_depends()` + `get_style_depends()` required — they load the widget's CSS/JS on the frontend. Bricks extends `\Bricks\Element`; Gutenberg calls `register_block_type()` on `init`. `section_data` is auto-parsed from `register_controls()` — only pass it to override.
+**PHP rules (when providing php_code):** one class per file, global namespace with `use Elementor\...` imports; class name `Wdkit_{name_snake}_{hash}`; `get_name()` returns `wb-{hash}` (unique across widgets); `get_script_depends()` + `get_style_depends()` required — they load the widget's CSS/JS on the frontend. Bricks extends `\Bricks\Element`; Gutenberg calls `register_block_type()` on `init`. `section_data` is auto-parsed from `register_controls()` — only pass it to override. Run `validate-widget` before updating PHP and `sync-widget-code` after raw `update-widget` code edits.
 
 **JS rule (Elementor):** runs in `element_ready` scope — use `$scope[0].querySelector('...')`, no jQuery wrapper. Omit `js_code` when no JS is needed.
 
@@ -89,7 +91,9 @@ Activation abilities only flip load status — files untouched. Use `deactivate-
 
 ### Cloud: push / download / transfer
 
-- `push-widget(builder, folder, type)` — `"new"` first push, `"update"` once an `r_id` exists (push writes `r_id` back, which powers `check-widget-versions`). Thumbnail before pushing.
+- `set-widget-thumbnail(builder, folder, image_id|image_url|image_base64)` — attach or replace the preview thumbnail for a local widget so `push-widget` can upload it.
+- `push-widget(builder, folder, type)` — `"new"` first push, `"update"` once an `r_id` exists (push writes `r_id` back, which powers `check-widget-versions`). Thumbnail required before pushing.
+- `pull-widget(r_id, builder, folder, confirm)` — re-download your own cloud widget copy over the local widget (inverse of push-widget). Guarded with `confirm: true` and `dry_run: true`.
 - `check-widget-versions` — compares the local `r_id` against the marketplace record; run it before `push "update"` to confirm there actually is a newer cloud version, and after push to confirm the sync landed.
 - `export-widget` → `.zip` → `import-widget(widget_data)` on another site. Import declines a duplicate `widget_id` — ask: new duplicate or update the existing one?
 - `download-widget` (marketplace `w_uniq`) + `browse-widgets` for the public marketplace. Match the path to what the user has: a listing vs. an exported file.
@@ -110,9 +114,11 @@ Activation abilities only flip load status — files untouched. Use `deactivate-
 Local snippets = `nxt-code-snippet` posts OR Nexter Pro file storage; `list-local-snippets` returns both with the `post_id` / `file_id` used by `get-snippet-info`, `save-snippet`, `update-snippet-details`.
 
 - `browse-snippets` / `download-snippet` — marketplace (pro needs login + licence). `get-snippet-kit` — snippets inside a bundle.
+- `import-snippet(name, type, code, ...)` — import a snippet payload directly into the local site (no cloud login required; PHP snippets start deactivated for safety; duplicate names declined unless `overwrite: true`).
 - `save-snippet` — `stype:"new"` first upload, `"existing"` + `snippet_id` to update (check `get-existing-snippet` first so the cloud library stays clean).
 - `update-snippet-details` — local-only; follow with `save-snippet "existing"` to sync the cloud copy.
-- `delete-snippet` — cloud copy only (`confirm: true`); the local post stays. Say so if the user expects both gone.
+- `delete-snippet` — cloud copy only (`confirm: true`); the local post/file stays.
+- `delete-snippet-everywhere(snippet_id|file_id|post_id|name, confirm: true)` — atomically deletes BOTH local storage (post/file) AND the cloud record in one call. Guarded with `confirm: true` and `dry_run: true`.
 
 ## THEME BUILDER (Nexter Extension)
 

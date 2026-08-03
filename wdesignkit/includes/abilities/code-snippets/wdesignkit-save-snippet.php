@@ -187,7 +187,12 @@ function wdesignkit_mcp_save_snippet(array $input): array {
     }
 
     if (!empty($file_code_list) && is_array($file_code_list)) {
-        $type     = $file_code_list['type'] ?? '';
+        $type      = strtolower((string) ($file_code_list['type'] ?? ''));
+        $lang_code = (string) ($file_code_list['langCode'] ?? '');
+        if ($type === 'php' && $lang_code !== '' && !preg_match('/^\s*<\?php/i', $lang_code)) {
+            $lang_code = "<?php\n" . $lang_code;
+        }
+
         $get_data = [
             'id'                      => $post_id,
             'name'                    => $file_code_list['name'] ?? '',
@@ -197,7 +202,7 @@ function wdesignkit_mcp_save_snippet(array $input): array {
             'tags'                    => $file_code_list['tags'] ?? '',
             'codeExecute'             => $file_code_list['codeExecute'] ?? '',
             'status'                  => $file_code_list['status'] ?? '',
-            'langCode'                => $file_code_list['langCode'] ?? '',
+            'langCode'                => $lang_code,
             'htmlHooks'               => $file_code_list['htmlHooks'] ?? '',
             'hooksPriority'           => $file_code_list['hooksPriority'] ?? '',
             'include_data'            => $file_code_list['include_data'] ?? '',

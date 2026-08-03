@@ -70,10 +70,55 @@ function wdesignkit_mcp_list_local_snippets(array $input): array {
     // ── File-based path (Nexter Pro) ─────────────────────────────────────────
     if (class_exists('Nexter_Code_Snippets_File_Based')) {
         $file_based = new \Nexter_Code_Snippets_File_Based();
-        $raw_list   = $file_based->getListCode();
+
+        // The index below is read via `include`, which OPcache can serve one write stale
+        // ("stale-by-one" — a just-imported snippet is missing until the next import).
+        // Force a fresh recompile before reading so the list is always current.
+        if (function_exists('wdesignkit_flush_snippet_index_cache')) {
+            wdesignkit_flush_snippet_index_cache();
+        }
+
+        // getListCode() only surfaces the 'publish' bucket of the index — draft/
+        // deactivated snippets (which is where every imported PHP snippet starts,
+        // for safety) are invisible to it. Read the raw index directly so both
+        // buckets are covered, falling back to getListCode() if unavailable.
+        $raw_items = [];
+        if (method_exists($file_based, 'getIndexedConfig')) {
+            $config = $file_based->getIndexedConfig(false);
+            foreach (['publish', 'draft'] as $bucket) {
+                if (!empty($config[$bucket]) && is_array($config[$bucket])) {
+                    foreach ($config[$bucket] as $file_key => $item) {
+                        if (!is_array($item)) {
+                            continue;
+                        }
+                        // Active/inactive is driven by condition.status (the toggle that
+                        // actually gates execution — see Nexter's get_file_snippets_fallback),
+                        // NOT by which index bucket the snippet lives in. Every saved
+                        // file-based snippet sits in the 'publish' bucket regardless of its
+                        // enabled state, so reading the bucket would report deactivated
+                        // snippets (e.g. freshly imported PHP snippets) as active. A snippet
+                        // is only active when it's in the publish bucket AND condition.status == 1.
+                        $is_active = ($bucket === 'publish')
+                            && ((int) ($item['condition']['status'] ?? 0) === 1);
+                        $raw_items[] = [
+                            'id'           => preg_replace('/\.php$/', '', sanitize_file_name((string) $file_key)),
+                            'name'         => (string) ($item['name'] ?? ''),
+                            'description'  => (string) ($item['description'] ?? ''),
+                            'type'         => (string) ($item['type'] ?? ''),
+                            'status'       => $is_active ? 1 : 0,
+                            'code-execute' => (string) ($item['condition']['code-execute'] ?? ''),
+                            'priority'     => (int) ($item['condition']['priority'] ?? 10),
+                            'last_updated' => (string) ($item['updated_at'] ?? ''),
+                        ];
+                    }
+                }
+            }
+        } else {
+            $raw_items = $file_based->getListCode();
+        }
 
         $snippets = [];
-        foreach ($raw_list as $item) {
+        foreach ($raw_items as $item) {
             $item_status = isset($item['status']) && $item['status'] === 1 ? 'publish' : 'draft';
 
             if ($status_filter !== '' && $item_status !== $status_filter) {

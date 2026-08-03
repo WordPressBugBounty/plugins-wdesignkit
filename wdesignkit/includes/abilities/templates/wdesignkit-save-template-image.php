@@ -117,11 +117,14 @@ function wdesignkit_mcp_save_template_image(array $input): array {
         }
         $content = $b64;
     } elseif ($image_url !== '') {
-        // wp_safe_remote_get, not wp_remote_get: the URL can come from anywhere (including a
-        // page the model just read), and this fetch runs from inside the site's network.
-        // The safe variant refuses loopback/private-range hosts, so a crafted image_url can't
-        // turn this into a request against localhost or a cloud metadata endpoint.
-        $img_resp = wp_safe_remote_get($image_url, ['timeout' => 30]);
+        // wdesignkit_safe_remote_get, not wp_safe_remote_get: the URL can come from anywhere
+        // (including a page the model just read), and this fetch runs from inside the site's
+        // network. wp_safe_remote_get() only rejects a *literal* IP host and never resolves a
+        // hostname, so it does not stop a crafted image_url that points a DNS name at
+        // 169.254.169.254 or another internal address. wdesignkit_safe_remote_get() resolves
+        // the host first and blocks loopback/private/link-local (incl. the cloud metadata
+        // range) targets.
+        $img_resp = wdesignkit_safe_remote_get($image_url, ['timeout' => 30]);
         if (is_wp_error($img_resp)) {
             return ['success' => false, 'message' => 'Could not fetch image_url: ' . $img_resp->get_error_message()];
         }

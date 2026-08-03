@@ -290,7 +290,7 @@ function wdesignkit_mcp_activate_licence(array $input): array {
 
     if ($wdkit_licence !== null) {
         if (is_string($wdkit_licence) && is_serialized($wdkit_licence)) {
-            $wdkit_licence = @unserialize($wdkit_licence);
+            $wdkit_licence = @unserialize($wdkit_licence, ['allowed_classes' => false]);
         }
         if (is_array($wdkit_licence) && !empty($wdkit_licence)) {
             update_option('wdkit_licence_data', $wdkit_licence);

@@ -2448,7 +2448,7 @@ function wdesignkit_mcp_php_build_control(
         return null; // Unsupported type — skip
     }
 
-    $json_name = $wdk_type . '_' . $php_name;
+    $json_name = $php_name;
     $label     = wdesignkit_mcp_php_get_string($args, 'label');
 
     $ctrl = [

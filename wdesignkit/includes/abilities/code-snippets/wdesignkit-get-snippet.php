@@ -131,6 +131,12 @@ function wdesignkit_mcp_get_snippet_info(array $input): array {
         $file_code_list = $file_based->getSnippetData($file_id);
 
         if (!empty($file_code_list) && is_array($file_code_list)) {
+            $lang_code = (string) ($file_code_list['langCode'] ?? '');
+            $type      = strtolower((string) ($file_code_list['type'] ?? ''));
+            if ($type === 'php' && $lang_code !== '' && !preg_match('/^\s*<\?php/i', $lang_code)) {
+                $lang_code = "<?php\n" . $lang_code;
+            }
+
             return [
                 'success' => true,
                 'message' => '',
@@ -143,7 +149,7 @@ function wdesignkit_mcp_get_snippet_info(array $input): array {
                     'status'      => $file_code_list['status'] ?? 0,
                     'tags'        => $file_code_list['tags'] ?? [],
                     'codeExecute' => $file_code_list['codeExecute'] ?? '',
-                    'langCode'    => $file_code_list['langCode'] ?? '',
+                    'langCode'    => $lang_code,
                 ],
             ];
         }
@@ -158,6 +164,12 @@ function wdesignkit_mcp_get_snippet_info(array $input): array {
             $file_based     = new \Nexter_Code_Snippets_File_Based();
             $file_code_list = $file_based->getSnippetData((string) $post_id);
             if (!empty($file_code_list) && is_array($file_code_list)) {
+                $lang_code = (string) ($file_code_list['langCode'] ?? '');
+                $type      = strtolower((string) ($file_code_list['type'] ?? ''));
+                if ($type === 'php' && $lang_code !== '' && !preg_match('/^\s*<\?php/i', $lang_code)) {
+                    $lang_code = "<?php\n" . $lang_code;
+                }
+
                 return [
                     'success' => true,
                     'message' => '',
@@ -170,7 +182,7 @@ function wdesignkit_mcp_get_snippet_info(array $input): array {
                         'status'      => $file_code_list['status'] ?? 0,
                         'tags'        => $file_code_list['tags'] ?? [],
                         'codeExecute' => $file_code_list['codeExecute'] ?? '',
-                        'langCode'    => $file_code_list['langCode'] ?? '',
+                        'langCode'    => $lang_code,
                     ],
                 ];
             }

@@ -94,6 +94,13 @@ function wdesignkit_mcp_widget_preview(array $input): array {
         return ['success' => false, 'message' => "Widget folder not found: {$fs_builder}/{$folder}"];
     }
 
+    // Realpath validation — ensure we're still inside WDKIT_BUILDER_PATH.
+    $real_widget = realpath($widget_dir);
+    $real_base   = realpath(WDKIT_BUILDER_PATH);
+    if (!$real_widget || !$real_base || strpos($real_widget, $real_base . DIRECTORY_SEPARATOR) !== 0) {
+        return ['success' => false, 'message' => 'Invalid widget path.'];
+    }
+
     // Read widget metadata from JSON
     $widget_name = $folder;
     $widget_id   = '';

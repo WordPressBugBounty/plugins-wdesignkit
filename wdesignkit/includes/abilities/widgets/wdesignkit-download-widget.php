@@ -170,6 +170,35 @@ function wdesignkit_mcp_download_widget(array $input): array {
                 }
             }
         }
+
+        // If local transient didn't contain user_id, resolve it directly from cloud session via widget/mywidgets
+        if ($u_id === '' && $token !== '' && function_exists('wdesignkit_mcp_template_cloud_call')) {
+            $cloud_info = wdesignkit_mcp_template_cloud_call('widget/mywidgets', [
+                'token'   => $token,
+                'ParPage' => 1,
+            ], 'form');
+
+            if (!empty($cloud_info['data'])) {
+                $c_data    = $cloud_info['data'];
+                $found_uid = (string) ($c_data['userinfo']['id'] ?? $c_data['user_id'] ?? '');
+                if ($found_uid === '' && !empty($c_data['widgets']) && is_array($c_data['widgets'])) {
+                    $w0        = $c_data['widgets'][0] ?? [];
+                    $found_uid = (string) ($w0['user_id'] ?? $w0['u_id'] ?? $w0['post_author'] ?? '');
+                }
+                if ($found_uid !== '') {
+                    $u_id = $found_uid;
+                    $session = function_exists('wdesignkit_mcp_find_auth_session') ? wdesignkit_mcp_find_auth_session() : [];
+                    if (!empty($session['key'])) {
+                        $t_data = get_transient('wdkit_auth_' . $session['key']);
+                        $t_data = is_array($t_data) ? $t_data : (is_string($t_data) ? json_decode($t_data, true) : []);
+                        if (is_array($t_data)) {
+                            $t_data['user_id'] = $u_id;
+                            set_transient('wdkit_auth_' . $session['key'], $t_data, 7776000);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     $args = [
@@ -239,8 +268,10 @@ function wdesignkit_mcp_download_widget(array $input): array {
         return ['success' => false, 'message' => 'Downloaded widget JSON is missing required fields (name, type, widget_id).'];
     }
 
-    $folder_name = str_replace(' ', '-', $title) . '_' . $widget_id;
-    $file_name   = str_replace(' ', '_', $title) . '_' . $widget_id;
+    $safe_title  = sanitize_file_name($title);
+    $safe_id     = sanitize_file_name($widget_id);
+    $folder_name = str_replace(' ', '-', $safe_title) . '_' . $safe_id;
+    $file_name   = str_replace(' ', '_', $safe_title) . '_' . $safe_id;
     $builder_dir = WDKIT_BUILDER_PATH . '/' . $builder;
     $widget_dir  = $builder_dir . '/' . $folder_name;
 
@@ -248,9 +279,17 @@ function wdesignkit_mcp_download_widget(array $input): array {
         return ['success' => false, 'message' => "Could not create widget folder: {$builder}/{$folder_name}"];
     }
 
+    // Realpath validation — ensure we're still inside WDKIT_BUILDER_PATH.
+    $real_widget = realpath($widget_dir);
+    $real_base   = realpath(WDKIT_BUILDER_PATH);
+    if (!$real_widget || !$real_base || strpos($real_widget, $real_base . DIRECTORY_SEPARATOR) !== 0) {
+        return ['success' => false, 'message' => 'Invalid widget path.'];
+    }
+
     // Download and save thumbnail
     if ($img_url !== '') {
-        $img_resp = wp_remote_get($img_url, ['timeout' => 30]);
+        // SSRF guard (CWE-918): validate the resolved host before fetching.
+        $img_resp = wdesignkit_safe_remote_get($img_url, ['timeout' => 30]);
         if (!is_wp_error($img_resp)) {
             $img_ext = pathinfo(parse_url($img_url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION) ?: 'png';
             $img_ext = sanitize_file_name($img_ext);

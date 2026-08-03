@@ -107,8 +107,10 @@ function wdesignkit_mcp_import_widget(array $input): array {
     }
 
     $overwrite   = !empty($input['overwrite']);
-    $folder_name = str_replace(' ', '-', $widget_name) . '_' . $widget_id;
-    $file_name   = str_replace(' ', '_', $widget_name) . '_' . $widget_id;
+    $safe_name   = sanitize_file_name($widget_name);
+    $safe_id     = sanitize_file_name($widget_id);
+    $folder_name = str_replace(' ', '-', $safe_name) . '_' . $safe_id;
+    $file_name   = str_replace(' ', '_', $safe_name) . '_' . $safe_id;
     $builder_dir = WDKIT_BUILDER_PATH . '/' . $builder;
     $widget_dir  = $builder_dir . '/' . $folder_name;
 
@@ -162,6 +164,13 @@ function wdesignkit_mcp_import_widget(array $input): array {
         return ['success' => false, 'message' => "Could not create widget folder: {$builder}/{$folder_name}"];
     }
 
+    // Realpath validation — ensure we're still inside WDKIT_BUILDER_PATH.
+    $real_widget = realpath($widget_dir);
+    $real_base   = realpath(WDKIT_BUILDER_PATH);
+    if (!$real_widget || !$real_base || strpos($real_widget, $real_base . DIRECTORY_SEPARATOR) !== 0) {
+        return ['success' => false, 'message' => 'Invalid widget path.'];
+    }
+
     $json_path = $widget_dir . '/' . $file_name . '.json';
     $written   = @file_put_contents($json_path, wp_json_encode($widget_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
@@ -197,7 +206,8 @@ function wdesignkit_mcp_import_widget(array $input): array {
             $image_source = 'bundled';
         }
     } elseif ($image_url !== '') {
-        $img_resp = wp_remote_get($image_url, ['timeout' => 30]);
+        // SSRF guard (CWE-918): validate the resolved host before fetching a caller-supplied URL.
+        $img_resp = wdesignkit_safe_remote_get($image_url, ['timeout' => 30]);
         if (!is_wp_error($img_resp)) {
             $img_bytes    = (string) wp_remote_retrieve_body($img_resp);
             $img_ext      = pathinfo(parse_url($image_url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION) ?: 'png';

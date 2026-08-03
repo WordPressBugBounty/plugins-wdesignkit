@@ -33,6 +33,165 @@ if ( ! function_exists( 'wdesignkit_mcp_permission_callback' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wdesignkit_validate_external_url' ) ) {
+	/**
+	 * SSRF guard (CWE-918): decide whether an external URL is safe to fetch.
+	 *
+	 * Resolves the URL's host to its actual IP address(es) and rejects the request
+	 * when ANY resolved address falls in a loopback, private (RFC1918), link-local
+	 * (169.254.0.0/16 — the cloud metadata range — and fe80::/10) or otherwise
+	 * reserved range. Unlike wp_safe_remote_get()/wp_http_validate_url() — which only
+	 * inspect a *literal* IP host and never resolve a hostname, and do NOT block the
+	 * 169.254.x metadata range — this performs real DNS resolution first, so a
+	 * hostname that points at an internal address is also refused.
+	 *
+	 * Fails closed: if the host cannot be resolved at all, the URL is treated as unsafe.
+	 *
+	 * @since 2.6.3
+	 *
+	 * @param string $url URL to validate.
+	 * @return bool True when the URL is a public http(s) address safe to fetch.
+	 */
+	function wdesignkit_validate_external_url( $url ) {
+		if ( ! is_string( $url ) || '' === trim( $url ) ) {
+			return false;
+		}
+
+		$parts  = wp_parse_url( $url );
+		$scheme = isset( $parts['scheme'] ) ? strtolower( $parts['scheme'] ) : '';
+		$host   = isset( $parts['host'] ) ? $parts['host'] : '';
+
+		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) || '' === $host ) {
+			return false;
+		}
+
+		// Collect every IP the host resolves to (literal IP hosts are used as-is).
+		$ips = array();
+
+		if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+			$ips[] = $host;
+		} else {
+			if ( function_exists( 'gethostbynamel' ) ) {
+				$v4 = gethostbynamel( $host );
+				if ( is_array( $v4 ) ) {
+					$ips = array_merge( $ips, $v4 );
+				}
+			}
+
+			if ( function_exists( 'dns_get_record' ) ) {
+				$v6 = @dns_get_record( $host, DNS_AAAA );
+				if ( is_array( $v6 ) ) {
+					foreach ( $v6 as $record ) {
+						if ( ! empty( $record['ipv6'] ) ) {
+							$ips[] = $record['ipv6'];
+						}
+					}
+				}
+			}
+
+			// Last resort when the above are unavailable/failed.
+			if ( empty( $ips ) ) {
+				$resolved = gethostbyname( $host ); // Returns the host unchanged on failure.
+				if ( $resolved && $resolved !== $host && filter_var( $resolved, FILTER_VALIDATE_IP ) ) {
+					$ips[] = $resolved;
+				}
+			}
+		}
+
+		// Fail closed: an unresolvable host cannot be proven public.
+		if ( empty( $ips ) ) {
+			return false;
+		}
+
+		foreach ( $ips as $ip ) {
+			// Rejects loopback/link-local/reserved (NO_RES_RANGE) and RFC1918/fc00::/7 (NO_PRIV_RANGE).
+			if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_safe_remote_get' ) ) {
+	/**
+	 * SSRF-safe wrapper around wp_safe_remote_get().
+	 *
+	 * Validates the resolved host (see wdesignkit_validate_external_url()) before any
+	 * network request is made, and caps the response body size so a hostile endpoint
+	 * cannot exhaust memory. Returns a WP_Error when the URL is refused, matching the
+	 * shape callers already expect from wp_remote_get().
+	 *
+	 * @since 2.6.3
+	 *
+	 * @param string $url  URL to fetch.
+	 * @param array  $args Optional wp_remote_get() args (merged over safe defaults).
+	 * @return array|\WP_Error Response array or WP_Error on a blocked/failed request.
+	 */
+	function wdesignkit_safe_remote_get( $url, $args = array() ) {
+		if ( ! wdesignkit_validate_external_url( $url ) ) {
+			return new \WP_Error(
+				'wdkit_blocked_url',
+				__( 'The requested URL resolves to a disallowed or internal address.', 'wdesignkit' )
+			);
+		}
+
+		$defaults = array(
+			'timeout'             => 30,
+			'redirection'         => 2,
+			'limit_response_size' => 15 * MB_IN_BYTES,
+		);
+
+		return wp_safe_remote_get( $url, wp_parse_args( $args, $defaults ) );
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_flush_snippet_index_cache' ) ) {
+	/**
+	 * Drop any stale OPcache/stat copy of the Nexter file-based snippet index.
+	 *
+	 * The index (nxt-snippet-list.php) is a generated PHP file that Nexter pulls in with
+	 * `include`, so on OPcache-backed hosts its compiled bytecode can lag the on-disk file
+	 * by one write: an import writes the file *after* the request already compiled the
+	 * previous version, and opcache.revalidate_freq delays noticing the new mtime. The
+	 * result is a "stale-by-one" list — a freshly imported snippet stays invisible to
+	 * wdesignkit/list-local-snippets until the *next* import bumps the file again.
+	 *
+	 * Calling this before reading the index (and after writing it) forces a fresh recompile.
+	 * opcache_invalidate(..., true) is an explicit invalidation, so it works even when
+	 * opcache.validate_timestamps is disabled on hardened production hosts.
+	 *
+	 * @since 2.6.3
+	 * @return void
+	 */
+	function wdesignkit_flush_snippet_index_cache() {
+		if ( ! class_exists( 'Nexter_Code_Snippets_File_Based' ) ) {
+			return;
+		}
+
+		if ( ! method_exists( 'Nexter_Code_Snippets_File_Based', 'getfileDir' ) ) {
+			return;
+		}
+
+		$dir = \Nexter_Code_Snippets_File_Based::getfileDir();
+		if ( empty( $dir ) ) {
+			return;
+		}
+
+		// Current index file plus the legacy name Nexter migrates away from.
+		foreach ( array( 'nxt-snippet-list.php', 'index.php' ) as $name ) {
+			$file = wp_normalize_path( $dir . '/' . $name );
+
+			clearstatcache( true, $file );
+
+			if ( function_exists( 'opcache_invalidate' ) && is_file( $file ) ) {
+				@opcache_invalidate( $file, true );
+			}
+		}
+	}
+}
+
 if ( ! function_exists( 'wdesignkit_mcp_remember_session' ) ) {
 	/**
 	 * Record which cloud account the stored session belongs to.

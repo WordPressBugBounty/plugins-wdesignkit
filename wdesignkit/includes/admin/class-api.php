@@ -852,7 +852,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$wdkit_licence = $response['credits']['wdkit_licence'];
 				// Handle serialized data
 				if ( is_string( $wdkit_licence ) && is_serialized( $wdkit_licence ) ) {
-					$wdkit_licence = unserialize( $wdkit_licence );
+					$wdkit_licence = unserialize( $wdkit_licence, array( 'allowed_classes' => false ) );
 				}
 				if ( ! empty( $wdkit_licence ) && is_array( $wdkit_licence ) ) {
 					update_option( 'wdkit_licence_data', $wdkit_licence );
@@ -1140,7 +1140,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			} else {
 				$temp_content = str_replace( '\\', '', $temp_content );
-				$temp_content = wp_remote_get( $temp_content )['body'];
+				// SSRF guard (CWE-918): validate the resolved host before fetching a caller-supplied URL.
+				$fetched      = wdesignkit_safe_remote_get( $temp_content );
+				$temp_content = is_wp_error( $fetched ) ? '' : wp_remote_retrieve_body( $fetched );
 				$temp_content = base64_encode( $temp_content );
 
 				$args = array(
@@ -2522,13 +2524,29 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				$result = $this->tpae_set_response( false, 'oops', 'oops', '' );
 			} else {
-				$theme_info    = unserialize( $response['body'] );
+				// api.wordpress.org's theme_information response is a serialized stdClass
+				// (accessed below via ->name / ->download_link). allowed_classes => false
+				// blocks stdClass too, turning it into an __PHP_Incomplete_Class whose
+				// properties silently don't exist — allow only stdClass, still refusing any
+				// other (potentially dangerous) class the payload might reference.
+				$theme_info    = unserialize( $response['body'], array( 'allowed_classes' => array( 'stdClass' ) ) );
 				$theme_name    = $theme_info->name;
 				$theme_zip_url = $theme_info->download_link;
 
 				global $wp_filesystem;
-				// Install the theme
-				$theme = wp_remote_get( $theme_zip_url, array( 'timeout' => 30 ) );
+				// Install the theme. SSRF guard (CWE-918): validate the resolved host before
+				// fetching the ZIP referenced by the external theme_info response. Themes can be
+				// large, so raise the response-size cap well above the wrapper's image default.
+				$theme = wdesignkit_safe_remote_get( $theme_zip_url, array( 'timeout' => 60, 'limit_response_size' => 256 * MB_IN_BYTES ) );
+
+				if ( is_wp_error( $theme ) ) {
+					return array(
+						'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
+						'description' => $theme->get_error_message(),
+						'status'      => 'inactive',
+						'success'     => false,
+					);
+				}
 
 				if ( ! function_exists( 'WP_Filesystem' ) ) {
 					require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/file.php' );
@@ -5150,9 +5168,24 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$json_data = json_decode( $json_data, true );
 			}
 
-			$title   = ! empty( $json_data['widget_data']['widgetdata']['name'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['name'] ) : '';
-			$builder = ! empty( $json_data['widget_data']['widgetdata']['type'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['type'] ) : '';
-			$w_uniq  = ! empty( $json_data['widget_data']['widgetdata']['widget_id'] ) ? sanitize_text_field( $json_data['widget_data']['widgetdata']['widget_id'] ) : '';
+			// Sanitize as filenames before use in the widget path (CWE-22): sanitize_file_name()
+			// on name/id and sanitize_key() + allowlist on the builder strip path separators and
+			// dots so a crafted cloud response cannot escape WDKIT_BUILDER_PATH.
+			$title   = ! empty( $json_data['widget_data']['widgetdata']['name'] ) ? sanitize_file_name( $json_data['widget_data']['widgetdata']['name'] ) : '';
+			$builder = ! empty( $json_data['widget_data']['widgetdata']['type'] ) ? sanitize_key( $json_data['widget_data']['widgetdata']['type'] ) : '';
+			$w_uniq  = ! empty( $json_data['widget_data']['widgetdata']['widget_id'] ) ? sanitize_file_name( $json_data['widget_data']['widgetdata']['widget_id'] ) : '';
+
+			$allowed_builders = array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' );
+			if ( '' === $title || '' === $w_uniq || ! in_array( $builder, $allowed_builders, true ) ) {
+				$responce = (object) array(
+					'success'     => false,
+					'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+				);
+
+				wp_send_json( $responce );
+				wp_die();
+			}
 
 			$folder_name       = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
 			$file_name         = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
@@ -5167,11 +5200,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			if ( ! empty( $img_url ) ) {
-				$img_body = wp_remote_get( $img_url );
-				$img_ext  = pathinfo( $img_url )['extension'];
+				// SSRF guard (CWE-918): validate the resolved host before fetching.
+				$img_body = wdesignkit_safe_remote_get( $img_url );
+				if ( ! is_wp_error( $img_body ) ) {
+					$img_ext = pathinfo( $img_url )['extension'];
 
-				$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
-				$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+					$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+				}
 			}
 
 			// Bug E fix (part 2): success was hardcoded false on the successful download path — always reported failure.
@@ -5204,7 +5240,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! empty( $w_image ) ) {
 				$w_image = str_replace( '\\', '', $w_image );
-				$w_image = wp_remote_get( $w_image )['body'];
+				// SSRF guard (CWE-918): validate the resolved host before fetching.
+				$fetched = wdesignkit_safe_remote_get( $w_image );
+				$w_image = is_wp_error( $fetched ) ? '' : wp_remote_retrieve_body( $fetched );
 			}
 
 			$array_data = array(
@@ -5246,20 +5284,23 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! empty( $img_url ) && 'error' !== $res ) {
 
-				$img_body = wp_remote_get( $img_url );
-				$img_ext  = pathinfo( $img_url )['extension'];
-				include_once ABSPATH . 'wp-admin/includes/file.php';
-				\WP_Filesystem();
-				global $wp_filesystem;
-				$folder_name = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
-				$file_name   = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
-				$file_path   = WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name";
+				// SSRF guard (CWE-918): validate the resolved host before fetching.
+				$img_body = wdesignkit_safe_remote_get( $img_url );
+				if ( ! is_wp_error( $img_body ) ) {
+					$img_ext = pathinfo( $img_url )['extension'];
+					include_once ABSPATH . 'wp-admin/includes/file.php';
+					\WP_Filesystem();
+					global $wp_filesystem;
+					$folder_name = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
+					$file_name   = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
+					$file_path   = WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name";
 
-				$u_r_l                                   = wp_json_file_decode( "$file_path.json" );
-				$u_r_l->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					$u_r_l                                   = wp_json_file_decode( "$file_path.json" );
+					$u_r_l->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
 
-				$wp_filesystem->put_contents( "$file_path.json", wp_json_encode( $u_r_l ) );
-				$wp_filesystem->put_contents( "$file_path.$img_ext", $img_body['body'] );
+					$wp_filesystem->put_contents( "$file_path.json", wp_json_encode( $u_r_l ) );
+					$wp_filesystem->put_contents( "$file_path.$img_ext", $img_body['body'] );
+				}
 			}
 
 			wp_send_json( $response );
@@ -5473,19 +5514,19 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$response = json_decode( wp_json_encode( $response['data'] ), true );
 
 				if ( ! empty( $response['data']['tpae_licence'] ) && is_serialized( $response['data']['tpae_licence'] ) ) {
-					$response['data']['tpae_licence'] = unserialize( $response['data']['tpae_licence'] );
+					$response['data']['tpae_licence'] = unserialize( $response['data']['tpae_licence'], array( 'allowed_classes' => false ) );
 				}
 
 				if ( ! empty( $response['data']['tpag_licence'] ) && is_serialized( $response['data']['tpag_licence'] ) ) {
-					$response['data']['tpag_licence'] = unserialize( $response['data']['tpag_licence'] );
+					$response['data']['tpag_licence'] = unserialize( $response['data']['tpag_licence'], array( 'allowed_classes' => false ) );
 				}
 
 				if ( ! empty( $response['data']['uichemy_licence'] ) && is_serialized( $response['data']['uichemy_licence'] ) ) {
-					$response['data']['uichemy_licence'] = unserialize( $response['data']['uichemy_licence'] );
+					$response['data']['uichemy_licence'] = unserialize( $response['data']['uichemy_licence'], array( 'allowed_classes' => false ) );
 				}
 
 				if ( ! empty( $response['data']['wdkit_licence'] ) && is_serialized( $response['data']['wdkit_licence'] ) ) {
-					$response['data']['wdkit_licence'] = unserialize( $response['data']['wdkit_licence'] );
+					$response['data']['wdkit_licence'] = unserialize( $response['data']['wdkit_licence'], array( 'allowed_classes' => false ) );
 
 					// Store WDesignKit license status locally for quick access
 					if ( ! empty( $response['data']['wdkit_licence'] ) && is_array( $response['data']['wdkit_licence'] ) ) {
@@ -5494,7 +5535,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 
 				if ( ! empty( $response['data']['wdkit_licence_extra'] ) && is_serialized( $response['data']['wdkit_licence_extra'] ) ) {
-					$response['data']['wdkit_licence_extra'] = unserialize( $response['data']['wdkit_licence_extra'] );
+					$response['data']['wdkit_licence_extra'] = unserialize( $response['data']['wdkit_licence_extra'], array( 'allowed_classes' => false ) );
 				}
 			}
 

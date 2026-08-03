@@ -210,9 +210,23 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 					$json_data = json_decode( $json );
 					$json_data = json_decode( $json_data );
-					$title     = ! empty( $json_data->widget_data->widgetdata->name ) ? sanitize_text_field( $json_data->widget_data->widgetdata->name ) : '';
-					$builder   = ! empty( $json_data->widget_data->widgetdata->type ) ? sanitize_text_field( $json_data->widget_data->widgetdata->type ) : '';
-					$widget_id = ! empty( $json_data->widget_data->widgetdata->widget_id ) ? sanitize_text_field( $json_data->widget_data->widgetdata->widget_id ) : '';
+					$title     = ! empty( $json_data->widget_data->widgetdata->name ) ? sanitize_file_name( $json_data->widget_data->widgetdata->name ) : '';
+					// sanitize_key() strips path separators and dots from the builder segment;
+					// the allowlist below then rejects anything outside the known builders so a
+					// crafted "type" can never escape WDKIT_BUILDER_PATH before wp_mkdir_p() runs.
+					$builder   = ! empty( $json_data->widget_data->widgetdata->type ) ? sanitize_key( $json_data->widget_data->widgetdata->type ) : '';
+					$widget_id = ! empty( $json_data->widget_data->widgetdata->widget_id ) ? sanitize_file_name( $json_data->widget_data->widgetdata->widget_id ) : '';
+
+					$allowed_builders = array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' );
+					if ( '' === $title || '' === $widget_id || ! in_array( $builder, $allowed_builders, true ) ) {
+						wp_send_json(
+							(object) array(
+								'success' => false,
+								'message' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+							)
+						);
+						wp_die();
+					}
 
 					$folder_name = str_replace( ' ', '-', $title ) . '_' . $widget_id;
 					$file_name   = str_replace( ' ', '_', $title ) . '_' . $widget_id;
@@ -223,12 +237,28 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						wp_mkdir_p( $builder_type_path . $folder_name );
 					}
 
-					if ( ! empty( $img_url ) ) {
-						$img_body = wp_remote_get( $img_url );
-						$img_ext  = pathinfo( $img_url )['extension'];
-						$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+					// Realpath validation — ensure we're still inside WDKIT_BUILDER_PATH.
+					$real_widget = realpath( $builder_type_path . $folder_name );
+					$real_base   = realpath( WDKIT_BUILDER_PATH );
+					if ( ! $real_widget || ! $real_base || strpos( $real_widget, $real_base . DIRECTORY_SEPARATOR ) !== 0 ) {
+						wp_send_json(
+							(object) array(
+								'success' => false,
+								'message' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+							)
+						);
+						wp_die();
+					}
 
-						$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					if ( ! empty( $img_url ) ) {
+						// SSRF guard (CWE-918): validate the resolved host before fetching.
+						$img_body = wdesignkit_safe_remote_get( $img_url );
+						if ( ! is_wp_error( $img_body ) ) {
+							$img_ext = pathinfo( $img_url )['extension'];
+							$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+
+							$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+						}
 					}
 
 					$response = (object) array(
@@ -581,9 +611,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			if ( ! empty( $d_image ) ) {
 				$d_image   = str_replace( '\\', '', $d_image );
 				$d_img_url = $d_image;
-				$img_body  = wp_remote_get( $d_img_url );
-				$img_ext   = pathinfo( $d_img_url )['extension'];
-				$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$widget_type/$folder_name/$file_name.$img_ext", $img_body['body'] );
+				// SSRF guard (CWE-918): validate the resolved host before fetching.
+				$img_body  = wdesignkit_safe_remote_get( $d_img_url );
+				if ( ! is_wp_error( $img_body ) ) {
+					$img_ext = pathinfo( $d_img_url )['extension'];
+					$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$widget_type/$folder_name/$file_name.$img_ext", $img_body['body'] );
+				}
 			}
 
 			if ( ! empty( $function_call ) && 'import' !== $function_call && ! empty( $old_folder ) && strtolower( $old_folder ) !== strtolower( $folder_name ) && is_dir( $builder_type_path . $old_folder ) ) {
@@ -644,9 +677,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						$u_r_l     = json_decode( $json_file, true );
 
 						if ( ! empty( $u_r_l['widget_data']['widgetdata']['name'] ) && ! empty( $u_r_l['widget_data']['widgetdata']['widget_id'] ) ) {
-							$widget_name = $u_r_l['widget_data']['widgetdata']['name'];
-							$widget_id   = $u_r_l['widget_data']['widgetdata']['widget_id'];
-							$widget_type = ! empty( $u_r_l['widget_data']['widgetdata']['type'] ) ? $u_r_l['widget_data']['widgetdata']['type'] : '';
+							// Sanitize as filenames before they are used to build the import path
+							// (CWE-22). sanitize_file_name()/sanitize_key() strip path separators
+							// and dots so a crafted .wdk JSON cannot escape WDKIT_BUILDER_PATH.
+							$widget_name = sanitize_file_name( $u_r_l['widget_data']['widgetdata']['name'] );
+							$widget_id   = sanitize_file_name( $u_r_l['widget_data']['widgetdata']['widget_id'] );
+							$widget_type = ! empty( $u_r_l['widget_data']['widgetdata']['type'] ) ? sanitize_key( $u_r_l['widget_data']['widgetdata']['type'] ) : '';
 						}
 					} elseif ( 'jpg' === $extiona || 'png' === $extiona || 'jpeg' === $extiona ) {
 						$img_ext   = $extiona;
@@ -690,10 +726,36 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					$folder_name = str_replace( ' ', '-', $widget_name );
 					$file_name   = str_replace( ' ', '_', $widget_name );
 
+					$allowed_builders = array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' );
+					if ( ! in_array( $widget_type, $allowed_builders, true ) ) {
+						$responce = (object) array(
+							'success'     => false,
+							'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+							'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+						);
+
+						wp_send_json( $responce );
+						wp_die();
+					}
+
 					if ( ! is_dir( WDKIT_BUILDER_PATH . "/{$widget_type}" ) ) {
 						wp_mkdir_p( WDKIT_BUILDER_PATH . "/{$widget_type}" );
 					}
 					$file_path = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}_{$widget_id}";
+
+					// Realpath containment — ensure the resolved builder dir stays inside WDKIT_BUILDER_PATH.
+					$real_base = realpath( WDKIT_BUILDER_PATH );
+					$real_type = realpath( WDKIT_BUILDER_PATH . "/{$widget_type}" );
+					if ( ! $real_base || ! $real_type || strpos( $real_type, $real_base . DIRECTORY_SEPARATOR ) !== 0 ) {
+						$responce = (object) array(
+							'success'     => false,
+							'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+							'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+						);
+
+						wp_send_json( $responce );
+						wp_die();
+					}
 
 					if ( ! empty( $imageData ) ) {
 						include_once ABSPATH . 'wp-admin/includes/file.php';
