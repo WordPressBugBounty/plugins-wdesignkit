@@ -238,7 +238,7 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 					if ( ! empty( $meta_data ) ) {
 						foreach ( $meta_data as $meta_key => $meta_val ) {
 							if ( ! empty( $meta_val[0] ) && is_serialized( $meta_val[0] ) ) {
-								$meta_val[0] = maybe_unserialize( $meta_val[0] );
+								$meta_val[0] = unserialize( $meta_val[0], array( 'allowed_classes' => false ) );
 							}
 
 							if ( get_post_meta( get_the_ID(), $meta_key, true ) === '' ) {

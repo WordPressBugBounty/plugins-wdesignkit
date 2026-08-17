@@ -227,7 +227,12 @@ if ( ! class_exists( 'Wdkit_Import_Images' ) ) {
 				return $attachment;
 			}
 
-			$response = wp_safe_remote_get( $attachment['url'] );
+			// wdesignkit_safe_remote_get(), not wp_safe_remote_get(): this importer ingests the
+			// largest volume of externally supplied URLs in the plugin, and wp_safe_remote_get()
+			// never resolves the hostname — it only rejects a literal-IP host, so a name that
+			// resolves to 127.0.0.1 or 169.254.169.254 passes straight through (SSRF, CWE-918,
+			// ClickUp 86d41ce9w). The wrapper resolves the host and blocks the reserved ranges.
+			$response = wdesignkit_safe_remote_get( $attachment['url'] );
 
 			// A 404 body is still a body: without this check the error page was written to disk
 			// as a .png and inserted as a real attachment, giving a broken image rather than an

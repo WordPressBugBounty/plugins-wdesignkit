@@ -170,7 +170,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * @since 1.1.4
 		 */
 		public function wdkit_public_download_widget() {
-			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'widget_info', 'none' ) : '';
+			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_extract_post_field( $_POST, 'widget_info', 'none' ) : '';
 			$data = json_decode( stripslashes( $data ) );
 
 			$api_type = isset( $data->api_type ) ? sanitize_text_field( $data->api_type ) : 'widget/download';
@@ -228,8 +228,13 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						wp_die();
 					}
 
-					$folder_name = str_replace( ' ', '-', $title ) . '_' . $widget_id;
-					$file_name   = str_replace( ' ', '_', $title ) . '_' . $widget_id;
+					// Canonical helpers replace spaces BEFORE sanitize_file_name(). $title above is
+					// already sanitized, so spaces had become hyphens and the underscore pass did
+					// nothing — a multi-word title wrote "My-Widget_id.json" while the builder's
+					// save path writes "My_Widget_id.php". The loader pairs them by swapping .php
+					// for .json, so the widget never registered (ClickUp 86d41cck5).
+					$folder_name = wdesignkit_widget_folder_name( $title, $widget_id );
+					$file_name   = wdesignkit_widget_file_name( $title, $widget_id );
 
 					$builder_type_path = WDKIT_BUILDER_PATH . "/{$builder}/";
 
@@ -254,11 +259,21 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						// SSRF guard (CWE-918): validate the resolved host before fetching.
 						$img_body = wdesignkit_safe_remote_get( $img_url );
 						if ( ! is_wp_error( $img_body ) ) {
-							$img_ext = pathinfo( $img_url )['extension'];
-							$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+							// The remote extension was written verbatim here, so a ".php" image URL
+							// in a cloud response landed executable PHP in the builder directory
+							// (CWE-434, ClickUp 86d41cczd). '' means the bytes are not an image.
+							$img_ext = wdesignkit_safe_image_extension( $img_url, $img_body['body'] );
 
-							$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+							if ( '' !== $img_ext ) {
+								$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+
+								$json_data->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+							}
 						}
+					}
+
+					if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+						wdesignkit_invalidate_widget_registry( $builder );
 					}
 
 					$response = (object) array(
@@ -378,6 +393,22 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * @since 1.1.4
 		 */
 		public function wkit_create_widget() {
+			// Site-level opt-out for generated widget PHP (ClickUp 86d41zavc). Defaults to allowed,
+			// so this changes nothing unless an operator explicitly filters it off:
+			//   add_filter( 'wdesignkit_allow_widget_php_write', '__return_false' );
+			// See wdesignkit_widget_php_write_allowed() for why this is a dedicated filter rather
+			// than a DISALLOW_FILE_MODS / DISALLOW_FILE_EDIT check.
+			if ( function_exists( 'wdesignkit_widget_php_write_allowed' ) && ! wdesignkit_widget_php_write_allowed() ) {
+				wp_send_json(
+					(object) array(
+						'success'     => false,
+						'message'     => esc_html__( 'File modifications are disabled on this site', 'wdesignkit' ),
+						'description' => esc_html__( 'Generated widget PHP writes have been turned off via the wdesignkit_allow_widget_php_write filter.', 'wdesignkit' ),
+					)
+				);
+				wp_die();
+			}
+
 			$image = '';
 			if ( isset( $_FILES ) && ! empty( $_FILES ) && isset( $_FILES['image'] ) && ! empty( $_FILES['image'] ) ) {
 				$image = Wdkit_Data_Hooks::get_super_global_value( $_FILES, 'image' );
@@ -388,7 +419,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$icon = Wdkit_Data_Hooks::get_super_global_value( $_FILES, 'icon' );
 			}
 
-			$data   = ! empty( $_POST['value'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'value', 'cr_widget' ) : '';
+			$data   = ! empty( $_POST['value'] ) ? $this->wdkit_extract_post_field( $_POST, 'value', 'cr_widget' ) : '';
 			// $data   = ! empty( $data ) ? stripslashes( $data ) : '';
 			$return = ! empty( $data ) ? json_decode( $data ) : '';
 
@@ -448,11 +479,44 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				wp_die();
 			}
 
-			$builder_type_path = trailingslashit( WDKIT_BUILDER_PATH ) . trailingslashit( $widget_type );
-			$widget_file_url   = $builder_type_path . $folder_name;
+			// $file_name, $folder_name and $widget_type arrive from the request body and were only
+			// passed through sanitize_text_field(), which leaves "../../../../plugins/hello"
+			// untouched — so this handler would write executable PHP anywhere the web user can
+			// reach, outside the builder directory and its .htaccess deny rule. The sibling
+			// download handler above has had these guards since 2.6.4; this one was missed
+			// (CWE-22, ClickUp 86d41cckh).
+			$safe_path = wdesignkit_widget_path_guard( $widget_type, $folder_name, $file_name );
+			if ( false === $safe_path ) {
+				wp_send_json(
+					(object) array(
+						'success'     => false,
+						'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+					)
+				);
+				wp_die();
+			}
+
+			$widget_type       = $safe_path['builder'];
+			$folder_name       = $safe_path['folder'];
+			$file_name         = $safe_path['file'];
+			$builder_type_path = trailingslashit( $safe_path['builder_dir'] );
+			$widget_file_url   = $safe_path['dir'];
 
 			if ( ! is_dir( $widget_file_url ) ) {
 				wp_mkdir_p( $widget_file_url );
+			}
+
+			// Re-check the created directory: the component guard above cannot see a symlink.
+			if ( ! wdesignkit_path_inside_builder_dir( $widget_file_url ) ) {
+				wp_send_json(
+					(object) array(
+						'success'     => false,
+						'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+					)
+				);
+				wp_die();
 			}
 
 			include_once ABSPATH . 'wp-admin/includes/file.php';
@@ -589,7 +653,11 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				}
 			} elseif ( ! empty( $old_widget ) ) {
 				$img_url = $data->widget_data->widgetdata->w_image;
-				$img_ext = ! empty( pathinfo( $img_url )['extension'] ) ? pathinfo( $img_url )['extension'] : '';
+				// Copy of an existing local thumbnail, so there are no downloaded bytes to verify —
+				// the allowlist alone keeps the stored w_image extension from naming the copy
+				// something executable (ClickUp 86d41cczd). A non-image extension yields 'png',
+				// which then fails the file_exists() check below and copies nothing.
+				$img_ext = wdesignkit_safe_image_extension( $img_url );
 
 				if ( ! empty( $img_ext ) ) {
 					$old_widget_folder = str_replace( ' ', '-', $old_widget );
@@ -614,8 +682,27 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				// SSRF guard (CWE-918): validate the resolved host before fetching.
 				$img_body  = wdesignkit_safe_remote_get( $d_img_url );
 				if ( ! is_wp_error( $img_body ) ) {
-					$img_ext = pathinfo( $d_img_url )['extension'];
-					$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$widget_type/$folder_name/$file_name.$img_ext", $img_body['body'] );
+					// The on-disk extension must never be taken verbatim from a remote URL (CWE-434) —
+					// a poisoned response pointing at a ".php" path would otherwise write executable
+					// PHP into the builder directory. Restrict to an image allowlist, falling back to
+					// png, and verify the downloaded bytes' real MIME type before writing.
+					$allowed_img_exts = array( 'jpg', 'jpeg', 'png', 'webp' );
+					$img_ext          = strtolower( pathinfo( $d_img_url, PATHINFO_EXTENSION ) );
+					$img_ext          = in_array( $img_ext, $allowed_img_exts, true ) ? $img_ext : 'png';
+
+					$tmp_check = wp_check_filetype_and_ext( '', "temp.$img_ext" );
+					$mime_ok   = ! empty( $tmp_check['ext'] ) && in_array( $tmp_check['ext'], $allowed_img_exts, true );
+
+					$finfo     = function_exists( 'finfo_open' ) ? finfo_open( FILEINFO_MIME_TYPE ) : false;
+					$real_mime = $finfo ? finfo_buffer( $finfo, $img_body['body'] ) : '';
+					if ( $finfo ) {
+						finfo_close( $finfo );
+					}
+					$allowed_mimes = array( 'image/jpeg', 'image/png', 'image/webp' );
+
+					if ( $mime_ok && ( ! $real_mime || in_array( $real_mime, $allowed_mimes, true ) ) ) {
+						$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$widget_type/$folder_name/$file_name.$img_ext", $img_body['body'] );
+					}
 				}
 			}
 
@@ -631,6 +718,10 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				if ( is_dir( $old_path ) && ! is_dir( $new_path ) ) {
 					rename( $old_path, $new_path );
 				}
+			}
+
+			if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+				wdesignkit_invalidate_widget_registry( $widget_type );
 			}
 
 			$responce = array(
@@ -723,8 +814,13 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						wp_die();
 					}
 
-					$folder_name = str_replace( ' ', '-', $widget_name );
-					$file_name   = str_replace( ' ', '_', $widget_name );
+					// .wdk zip import. Same ordering bug as the download path above: $widget_name
+					// is already sanitize_file_name()'d, so the underscore pass was a no-op and a
+					// multi-word title landed as "My-Widget_id" where the loader expects
+					// "My_Widget_id" (ClickUp 86d41cck5). The helpers include the id, so the
+					// "_{$widget_id}" that used to be appended at each use site is gone.
+					$folder_name = wdesignkit_widget_folder_name( $widget_name, $widget_id );
+					$file_name   = wdesignkit_widget_file_name( $widget_name, $widget_id );
 
 					$allowed_builders = array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' );
 					if ( ! in_array( $widget_type, $allowed_builders, true ) ) {
@@ -741,7 +837,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					if ( ! is_dir( WDKIT_BUILDER_PATH . "/{$widget_type}" ) ) {
 						wp_mkdir_p( WDKIT_BUILDER_PATH . "/{$widget_type}" );
 					}
-					$file_path = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}_{$widget_id}";
+					$file_path = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}";
 
 					// Realpath containment — ensure the resolved builder dir stays inside WDKIT_BUILDER_PATH.
 					$real_base = realpath( WDKIT_BUILDER_PATH );
@@ -765,8 +861,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 							wp_mkdir_p( $file_path );
 						}
 
-						$wp_filesystem->put_contents( "{$file_path}/{$file_name}_{$widget_id}.$img_ext", $imageData );
+						$wp_filesystem->put_contents( "{$file_path}/{$file_name}.$img_ext", $imageData );
 					}
+				}
+
+				if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+					wdesignkit_invalidate_widget_registry( $widget_type );
 				}
 
 				$responce = (object) array(
@@ -800,8 +900,11 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$data = isset( $_POST['info'] ) ? wp_unslash( $_POST['info'] ) : '';
 			$data = json_decode( stripslashes( $data ) );
 
-			$widget_name_temp = isset( $data->widget_name ) ? $data->widget_name : '';
-			$widget_type      = isset( $data->widget_type ) ? sanitize_text_field( $data->widget_type ) : '';
+			// Sanitize as filenames before they are used to build the export path
+			// (CWE-22). sanitize_file_name()/sanitize_key() strip path separators
+			// and dots so a crafted widget_name/widget_type cannot escape WDKIT_BUILDER_PATH.
+			$widget_name_temp = isset( $data->widget_name ) ? sanitize_file_name( $data->widget_name ) : '';
+			$widget_type      = isset( $data->widget_type ) ? sanitize_key( $data->widget_type ) : '';
 
 			$widget_name    = str_replace( ' ', '_', $widget_name_temp );
 			$folder         = str_replace( ' ', '-', $widget_name_temp );
@@ -821,6 +924,21 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			$downlod_path = WDKIT_BUILDER_PATH . "/{$widget_type}/";
 			$new_path     = "{$downlod_path}/{$folder}/{$widget_name}";
+
+			// Realpath containment — ensure the resolved widget path stays inside WDKIT_BUILDER_PATH.
+			$real_base = realpath( WDKIT_BUILDER_PATH );
+			$real_new  = realpath( "$new_path.json" );
+			if ( ! $real_base || ! $real_new || strpos( $real_new, $real_base . DIRECTORY_SEPARATOR ) !== 0 ) {
+				$result = (object) array(
+					'success'     => false,
+					'url'         => '',
+					'message'     => esc_html__( 'Widget Exported Fail', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+				);
+
+				wp_send_json( $result );
+				wp_die();
+			}
 
 			$download_url = WDKIT_SERVER_PATH . "/{$widget_type}/{$widget_name}.zip";
 			$zip          = new ZipArchive();
@@ -898,12 +1016,40 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$dir_name    = isset( $data->name ) ? sanitize_text_field( $data->name ) : '';
 			$widget_type = isset( $data->builder ) ? sanitize_text_field( $data->builder ) : '';
 
-			$dir         = WDKIT_BUILDER_PATH . "/{$widget_type}/{$dir_name}";
+			// Same missing guards as wkit_create_widget, but the sink here is a RECURSIVE rmdir:
+			// sanitize_text_field() leaves traversal intact, so a crafted name/builder could
+			// delete any directory the web user owns (CWE-22, ClickUp 86d41cckh). Require a
+			// builder from the allowlist and a name that is a single path segment.
+			$safe_path = wdesignkit_widget_path_guard( $widget_type, $dir_name );
+			if ( false === $safe_path || '' === $safe_path['folder'] ) {
+				wp_send_json(
+					(object) array(
+						'success'     => false,
+						'message'     => esc_html__( 'Widget Not Deleted', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+					)
+				);
+				wp_die();
+			}
+
+			$widget_type = $safe_path['builder'];
+			$dir         = $safe_path['dir'];
 
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			global $wp_filesystem;
 			WP_Filesystem();
-			$wp_filesystem->rmdir( $dir, true );
+
+			// Remove only a directory that resolves inside the builder path — the containment
+			// re-check also rules out a symlinked folder. A missing directory is not an error:
+			// a 'plugin_server' delete legitimately has no local folder, and the server call
+			// above has already succeeded, so skip the removal and report success as before.
+			if ( is_dir( $dir ) && wdesignkit_path_inside_builder_dir( $dir ) ) {
+				$wp_filesystem->rmdir( $dir, true );
+			}
+
+			if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+				wdesignkit_invalidate_widget_registry( $widget_type );
+			}
 
 			if ( 'plugin_server' === $delete_type ) {
 				wp_send_json( $response['data'] );
@@ -1278,13 +1424,15 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * @param string $condition store text data.
 		 */
 
-		public function wdkit_sanitizer_bypass( $data, $type, $condition = 'none' ) {
+		public function wdkit_extract_post_field( $data, $type, $condition = 'none' ) {
 
 			if ( 'none' === $condition ) {
 				return $data[ $type ];
 			} elseif ( 'cr_widget' === $condition ) {
 				return base64_decode($data[ $type ]);
 			}
+
+			return null;
 		}
 
 		/**

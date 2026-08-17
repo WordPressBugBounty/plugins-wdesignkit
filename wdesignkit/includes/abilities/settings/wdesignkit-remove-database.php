@@ -65,7 +65,7 @@ wp_register_ability('wdesignkit/remove-database', [
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
-        'mcp'          => ['public' => true],
+        'mcp'          => ['public' => false],
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Manages WDesignKit database cleanup.',
@@ -227,6 +227,17 @@ function wdesignkit_mcp_remove_database(array $input): array {
                 'wdkit_wintersale_notice_dismissed',
                 'wdkit_rating_banner_start_date (all users)',
             ];
+        }
+
+        // Both branches above delete wkit_deactivate_widgets, and the cached widget registry bakes
+        // that option's membership in. The cache is a no-expiry transient, so without this the
+        // widgets the reset was meant to re-enable stayed unregistered indefinitely
+        // (ClickUp 86d41cd18 — same root cause as the admin activate/deactivate path, 86d41cck1).
+        if (($new_config['widget_builder_data'] || $new_config['all_data'])
+            && function_exists('wdesignkit_invalidate_widget_registry')) {
+            foreach (['elementor', 'gutenberg', 'gutenberg_core', 'bricks'] as $builder_slug) {
+                wdesignkit_invalidate_widget_registry($builder_slug);
+            }
         }
     }
 

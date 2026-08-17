@@ -169,7 +169,17 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 			foreach ( $decoded['custom_meta'] as $meta_key => $meta_val ) {
 				$value = $meta_val[0] ?? null;
 				if ( is_string( $value ) && is_serialized( $value ) ) {
-					$value = maybe_unserialize( $value );
+					// allowed_classes => false: $value comes from the imported kit body, so a
+					// serialized object here would be instantiated and could fire a POP gadget
+					// chain in any loaded plugin or theme (CWE-502, ClickUp 86d41zauw).
+					//
+					// maybe_unserialize() CANNOT express this — WP core declares it as
+					// maybe_unserialize( $data ) and calls @unserialize( trim( $data ) ) with no
+					// options, so an options array passed to it is silently ignored and the object
+					// is still built. The is_serialized() check above already gates this call, so
+					// unserialize() direct is an exact drop-in. Legitimate values here are arrays
+					// (theme-builder conditions and similar); anything object-shaped is not.
+					$value = unserialize( $value, array( 'allowed_classes' => false ) );
 				}
 				if ( get_post_meta( $current_post_id, $meta_key, true ) === '' ) {
 					add_post_meta( $current_post_id, $meta_key, $value );
@@ -407,7 +417,10 @@ function wdkit_handle_create_full_site( array $output, array $args ): array {
 			foreach ( $decoded['custom_meta'] as $meta_key => $meta_val ) {
 				$value = $meta_val[0] ?? null;
 				if ( is_string( $value ) && is_serialized( $value ) ) {
-					$value = maybe_unserialize( $value );
+					// See the note on the identical restore loop earlier in this file: an options
+					// array cannot be passed to maybe_unserialize(), so this uses unserialize()
+					// with allowed_classes => false (CWE-502, ClickUp 86d41zauw).
+					$value = unserialize( $value, array( 'allowed_classes' => false ) );
 				}
 				update_post_meta( $inserted_id, $meta_key, $value );
 			}

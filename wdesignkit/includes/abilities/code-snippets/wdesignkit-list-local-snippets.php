@@ -158,7 +158,7 @@ function wdesignkit_mcp_list_local_snippets(array $input): array {
         'post_type'      => 'nxt-code-snippet',
         'posts_per_page' => -1,
         'post_status'    => 'any',
-        'fields'         => 'ids',
+        'fields'         => 'all', // Full post objects so get_post() below is a lookup, not a query.
     ];
 
     if ($status_filter === 'publish') {
@@ -171,12 +171,16 @@ function wdesignkit_mcp_list_local_snippets(array $input): array {
         $query_args['s'] = $search;
     }
 
-    $post_ids = get_posts($query_args);
+    $posts = get_posts($query_args);
+
+    // Primes the meta cache for every snippet in one query, so the 4 get_post_meta()
+    // calls per snippet below hit the cache instead of issuing a query each.
+    update_meta_cache('post', wp_list_pluck($posts, 'ID'));
+
     $snippets = [];
 
-    foreach ($post_ids as $pid) {
-        $pid   = (int) $pid;
-        $post  = get_post($pid);
+    foreach ($posts as $post) {
+        $pid   = (int) $post->ID;
         $type  = (string) get_post_meta($pid, 'nxt-code-type', true);
 
         $snippets[] = [

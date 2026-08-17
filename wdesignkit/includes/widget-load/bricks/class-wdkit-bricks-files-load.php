@@ -67,64 +67,13 @@ if ( ! class_exists( 'Wdkit_Bricks_Files_Load' ) ) {
 		 * @since 1.0.1
 		 */
 		public function wdkit_init() {
-			$dir = trailingslashit( WDKIT_BUILDER_PATH ) . '/bricks/';
-
-			if ( ! is_dir( $dir ) ) {
+			if ( ! defined( 'WDKIT_BUILDER_PATH' ) || ! function_exists( 'wdesignkit_get_widget_registry' ) || ! class_exists( 'Bricks\Elements' ) ) {
 				return false;
 			}
 
-			$list = ! empty( $dir ) ? scandir( $dir ) : array();
-			if ( empty( $list ) || count( $list ) <= 2 ) {
-				return false;
-			}
-
-			$get_db_widget = get_option( 'wkit_deactivate_widgets', [] );
-			$server_w_unique = array_column($get_db_widget, 'w_unique');
-
-			foreach ( $list as $key => $value ) {
-				if ( in_array( $value, array( '..', '.' ), true ) ) {
-					continue;
-				}
-
-				if (! is_dir( trailingslashit( $dir ) . $value ) ){
-					continue;
-				}
-
-				if ( ! strpos( $value, '.' ) ) {
-					$sub_dir = scandir( trailingslashit( $dir ) . $value );
-
-					foreach ( $sub_dir as $sub_dir_value ) {
-						if ( in_array( $sub_dir_value, array( '..', '.' ), true ) ) {
-							continue;
-						}
-
-						$file      = new SplFileInfo( $sub_dir_value );
-						$check_ext = $file->getExtension();
-						$ext       = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
-
-						if ( 'php' === $ext ) {
-							$json_file   = str_replace( '.php', '.json', $sub_dir_value );
-							$str_replace = str_replace( '.php', '', $sub_dir_value );
-							$str_replace = str_replace( '-', '_', $str_replace );
-
-							$json_path = trailingslashit( WDKIT_BUILDER_PATH ) . "bricks/{$value}/{$json_file}";
-							$json_data = wp_json_file_decode( $json_path );
-							$w_type    = ! empty( $json_data->widget_data->widgetdata->publish_type ) ? $json_data->widget_data->widgetdata->publish_type : '';
-							$widget_id = ! empty( $json_data->widget_data->widgetdata->widget_id ) ? $json_data->widget_data->widgetdata->widget_id : '';
-
-							if ( ! empty( $w_type ) && 'Publish' === $w_type ) {
-
-								if( ! in_array( $widget_id , $server_w_unique ) ){
-
-									$file = trailingslashit( WDKIT_BUILDER_PATH ) . "/bricks/{$value}/{$sub_dir_value}";
-	
-									if ( class_exists( 'Bricks\Elements' ) ) {
-										Bricks\Elements::register_element( $file );
-									}
-								}
-							}
-						}
-					}
+			foreach ( wdesignkit_get_widget_registry( 'bricks' ) as $entry ) {
+				if ( file_exists( $entry['file'] ) ) {
+					Bricks\Elements::register_element( $entry['file'] );
 				}
 			}
 		}

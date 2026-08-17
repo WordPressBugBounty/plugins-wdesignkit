@@ -108,7 +108,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			$login_type    = isset( $_POST['login_type'] ) ? sanitize_text_field( wp_unslash( $_POST['login_type'] ) ) : false;
 			$site_url      = isset( $_POST['site_url'] ) ? esc_url_raw( wp_unslash( $_POST['site_url'] ) ) : '';
 
-			$user_key = strstr( $user_email, '@', true );
+			$user_key = wdesignkit_cloud_session_key( $user_email );
 			$response = '';
 
 			delete_transient( 'wdkit_auth_' . $user_key );
@@ -195,7 +195,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 
 			$response   = json_decode( wp_json_encode( $response['data'] ), true );
 			$user_email = ! empty( $response['user']['user_email'] ) ? sanitize_email( $response['user']['user_email'] ) : '';
-			$user_key   = strstr( $user_email, '@', true );
+			$user_key   = wdesignkit_cloud_session_key( $user_email );
 
 			$this->wdkit_set_time_out( $user_key, $user_email, $user_token, $login_type );
 
@@ -242,7 +242,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			$response   = json_decode( wp_json_encode( $response['data'] ), true );
 			$user_email = ! empty( $response['user']['user_email'] ) ? sanitize_email( $response['user']['user_email'] ) : '';
 			$user_token = ! empty( $response['token'] ) ? sanitize_text_field( $response['token'] ) : '';
-			$user_key   = strstr( $user_email, '@', true );
+			$user_key   = wdesignkit_cloud_session_key( $user_email );
 
 			if ( ! empty( $response ) && ! empty( $user_token ) ) {
 				$this->wdkit_set_time_out( $user_key, $user_email, $user_token, $login_type );
@@ -312,7 +312,7 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			$username = ! empty( $_POST['username'] ) ? sanitize_text_field($_POST['username']) : '';
 			$user_password = ! empty( $_POST['password'] ) ? sanitize_text_field($_POST['password']) : '';
 			$user_email    = ! empty( $_POST['email'] ) ? sanitize_email($_POST['email']) : '';
-			$user_key = strstr( $user_email, '@', true );
+			$user_key = wdesignkit_cloud_session_key( $user_email );
 			$response = '';
 
 			delete_transient( 'wdkit_auth_' . $user_key );

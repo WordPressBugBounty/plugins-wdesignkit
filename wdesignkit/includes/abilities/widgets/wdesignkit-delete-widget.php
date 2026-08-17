@@ -179,6 +179,10 @@ function wdesignkit_mcp_delete_widget(array $input): array {
     // Remove now-empty widget folder.
     @rmdir($widget_dir);
 
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
+    }
+
     // Remove from deactivated list — match on widget_id only.
     if (!empty($widget_unique_id)) {
         $deactivated = get_option('wkit_deactivate_widgets', []);

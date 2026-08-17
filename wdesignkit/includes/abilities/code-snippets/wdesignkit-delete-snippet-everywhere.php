@@ -62,7 +62,7 @@ wp_register_ability('wdesignkit/delete-snippet-everywhere', [
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
-        'mcp'          => ['public' => true],
+        'mcp'          => ['public' => false],
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Deletes a code snippet from both local site storage AND the WDesignKit cloud marketplace in one call.',

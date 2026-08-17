@@ -53,10 +53,8 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		 */
 		public function __construct() {
 
-            add_action( 'wp_footer', array( $this, 'wdkit_review_form' ), 10, 1 );
             add_action( 'admin_footer', array( $this, 'wdkit_review_form' ), 10, 1 );
 
-			add_action( 'wp_enqueue_scripts', array( $this, 'wdkit_review_form_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'wdkit_review_form_scripts' ) );
 
 			add_action( 'wp_ajax_wdkit_submit_review', array( $this, 'wdkit_handle_review_submission' ) );
@@ -81,8 +79,8 @@ if ( ! class_exists( 'Wdkit_Review_Form' ) ) {
 		 */
 		public function wdkit_review_form_scripts() {
 
-			wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION . time(), 'all' );
-			wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION . time(), true );
+			wp_enqueue_style( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/css/review-form/review-plugin-form.css', [], WDKIT_VERSION, 'all' );
+			wp_enqueue_script( 'wdkit-review-form-plugin',  WDKIT_URL . 'assets/js/main/review-form/review-plugin-form.js', [], WDKIT_VERSION, true );
 
 			wp_localize_script(
 				'wdkit-review-form-plugin',

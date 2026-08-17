@@ -123,7 +123,15 @@ function wdesignkit_mcp_download_preset(array $input): array {
             foreach ($decoded['custom_meta'] as $meta_key => $meta_val) {
                 $value = $meta_val[0] ?? null;
                 if (is_string($value) && is_serialized($value)) {
-                    $value = maybe_unserialize($value);
+                    // allowed_classes => false: $value comes from the downloaded preset body, so a
+                    // serialized object here would be instantiated and could fire a POP gadget
+                    // chain in any loaded plugin or theme (CWE-502, ClickUp 86d41zauw).
+                    //
+                    // maybe_unserialize() cannot express this — WP core declares it as
+                    // maybe_unserialize( $data ) and calls @unserialize( trim( $data ) ) with no
+                    // options, so an options array passed to it is silently ignored. The
+                    // is_serialized() check above already gates this call.
+                    $value = unserialize($value, ['allowed_classes' => false]);
                 }
                 if (get_post_meta($current_post_id, $meta_key, true) === '') {
                     add_post_meta($current_post_id, $meta_key, $value);

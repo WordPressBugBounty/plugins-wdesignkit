@@ -121,6 +121,27 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 		 */
 		public static function wdkit_activation() {
 			do_action( 'wdkit_admin_create_default' );
+
+			if ( function_exists( 'wdesignkit_harden_builder_dir' ) && defined( 'WDKIT_BUILDER_PATH' ) ) {
+				wdesignkit_harden_builder_dir( WDKIT_BUILDER_PATH );
+			}
+
+			// Rebuild the widget registry from disk on every activation. The cache never expires, so
+			// anything that changed the builder directory while this plugin was inactive — a version
+			// rollback that writes widget files without knowing about the cache, a migration, an
+			// uploads restore, a direct FTP edit — otherwise left a stale cache authoritative with
+			// no self-healing path (ClickUp 86d41cd1z). The cache key also carries WDKIT_VERSION, so
+			// a version change orphans the previous entry; this covers same-version reactivation.
+			if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+				foreach ( array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' ) as $builder_slug ) {
+					wdesignkit_invalidate_widget_registry( $builder_slug );
+				}
+			}
+
+			// Scheduling belongs here rather than in the request path (ClickUp 86d41cp05).
+			if ( function_exists( 'wdesignkit_schedule_widget_trash_purge' ) ) {
+				wdesignkit_schedule_widget_trash_purge();
+			}
 		}
 
 		/**
@@ -133,6 +154,11 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 
 			if ( ! empty( $get_white_label ) ) {
 				delete_option( 'wkit_white_label' );
+			}
+
+			$timestamp = wp_next_scheduled( 'wdesignkit_purge_widget_trash_cron' );
+			if ( $timestamp ) {
+				wp_unschedule_event( $timestamp, 'wdesignkit_purge_widget_trash_cron' );
 			}
 		}
 
@@ -180,10 +206,14 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			require_once WDKIT_INCLUDES . 'admin/class-wdesignkit-data-query.php';
 			require_once WDKIT_INCLUDES . 'admin/class-wdkit-depends-installer.php';
 
+			// Must load before widget-load-files.php: the Gutenberg/Gutenberg Core loaders
+			// register their widgets synchronously in their own constructor (not on a later
+			// hook), so wdesignkit_get_widget_registry() has to already be defined by the
+			// time widget-load-files.php requires and instantiates them below.
+			require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-main.php';
+
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';
-
-			require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-main.php';
 		}
 
 	}

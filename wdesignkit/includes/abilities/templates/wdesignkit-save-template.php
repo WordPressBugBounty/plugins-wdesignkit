@@ -90,11 +90,81 @@ function wdesignkit_mcp_save_template(array $input): array {
     $name    = sanitize_text_field((string) ($input['name'] ?? ''));
     $type    = sanitize_text_field((string) ($input['type'] ?? ''));
 
+    // Map the caller's friendly type to the literal value the cloud stores and filters on
+    // ('section' / 'pagetemplate'). "block" has no confirmed cloud equivalent, so it passes
+    // through unmapped rather than being silently rewritten to something wrong.
+    $cloud_type_map = ['page' => 'pagetemplate', 'section' => 'section'];
+    $cloud_type     = $cloud_type_map[$type] ?? $type;
+
     if (!in_array($builder, ['elementor', 'gutenberg'], true)) {
         return ['success' => false, 'message' => 'builder must be "elementor" or "gutenberg".'];
     }
     if ($data === '') {
         return ['success' => false, 'message' => 'data is required — pass the full builder export payload.'];
+    }
+
+    // Wrap the payload in the envelope the cloud, the importer and the editor JS all expect —
+    // the same one the Save Template UI builds in main_save_template.js:
+    //     { file_type, title, page_id, content, el_type, settings }   with the layout in `content`.
+    //
+    // Sending the raw layout as `data` instead broke both builders, in different ways:
+    //   Elementor  — _elementor_data decodes to a LIST, and adding the string key 'custom_meta' to
+    //                a list makes wp_json_encode() emit an object, so the indices became "0","1",…
+    //   Gutenberg  — block markup is a STRING, so json_decode() returned null, the is_array()
+    //                branch was skipped, and the markup was stored bare with no envelope at all.
+    //                The editor then runs JSON.parse() on it and throws.
+    // Building the envelope first fixes both: custom_meta now goes onto an OBJECT, where an extra
+    // key cannot reshape `content`.
+    //
+    // el_type is left empty — the UI derives it from the Elementor preview DOM, which has no
+    // server-side equivalent.
+    if ('elementor' === $builder) {
+        $content = json_decode($data, true);
+        if (!is_array($content)) {
+            return [
+                'success' => false,
+                'message' => 'data is not valid Elementor JSON — pass the _elementor_data export (a JSON array), not markup.',
+            ];
+        }
+    } else {
+        // Gutenberg content is serialized block markup; keep the string unless block JSON was sent.
+        $decoded = json_decode($data, true);
+        $content = is_array($decoded) ? $decoded : $data;
+
+    }
+
+    $settings = [];
+    if ($post_id !== '') {
+        $page_settings = get_post_meta((int) $post_id, '_elementor_page_settings', true);
+        if (is_array($page_settings) && !empty($page_settings)) {
+            $settings = $page_settings;
+        }
+    }
+
+    $envelope = [
+        'file_type' => 'elementor' === $builder ? 'elementor' : 'wp_block',
+        'title'     => $name,
+        'page_id'   => $post_id !== '' ? (int) $post_id : 0,
+        'content'   => $content,
+        'el_type'   => '',
+        'settings'  => $settings,
+    ];
+
+    // The Plus Addons resolves its global button styles, radii and shadows from the kit by
+    // `_id`. Without those definitions travelling with the template, an imported section keeps
+    // the reference but loses the styling. Scoped to what this layout actually references, so a
+    // section carries its own globals rather than a copy of the whole kit.
+    $tp_globals = ('elementor' === $builder && is_array($content)) ? wdesignkit_mcp_tp_globals($content) : [];
+    if (!empty($tp_globals)) {
+        $envelope['tp_globals'] = $tp_globals;
+
+        // A Plus global can reference an Elementor global colour or font of its own. Those refs
+        // live in the lists rather than the layout, so they need capturing separately or the
+        // button style arrives pointing at an id the destination kit does not have.
+        $tp_refs = wdesignkit_mcp_tp_global_refs($tp_globals);
+        if (!empty($tp_refs['color']) || !empty($tp_refs['typography'])) {
+            $envelope['tp_global_refs'] = $tp_refs;
+        }
     }
 
     if ($post_id !== '') {
@@ -106,13 +176,11 @@ function wdesignkit_mcp_save_template(array $input): array {
         }
 
         if (!empty($custom_fields)) {
-            $decoded = json_decode($data, true);
-            if (is_array($decoded)) {
-                $decoded['custom_meta'] = $custom_fields;
-                $data = wp_json_encode($decoded);
-            }
+            $envelope['custom_meta'] = $custom_fields;
         }
     }
+
+    $data = wp_json_encode($envelope);
 
     $args = [
         'token'   => $auth['token'],
@@ -125,7 +193,18 @@ function wdesignkit_mcp_save_template(array $input): array {
         // (keep 'name' too, harmlessly, for any other consumer).
         'title'   => $name,
         'name'    => $name,
-        'type'    => $type,
+        // The cloud stores the template's type from 'template_type', NOT 'type':
+        //   $TemplateType = $request->get('template_type');
+        //   'type' => !empty($TemplateType) ? $TemplateType : 'pagetemplate',
+        // (WdkitPluginController::SetSaveTemplate lines 171 / 252). Sending only 'type' meant
+        // $TemplateType was always empty, so EVERY template saved through this ability was
+        // stored as 'pagetemplate' regardless of the caller's input — a section saved here
+        // could never be found by list-templates(type: 'section'). Send 'template_type' too.
+        //
+        // The cloud's own queries match the literal values 'section' and 'pagetemplate'
+        // (see the whereIn at SetSaveTemplate line 574), not 'page'/'block', so map first.
+        'type'          => $type,
+        'template_type' => $cloud_type,
     ];
 
     // Optional: record which cloud plugin IDs this template requires. The cloud

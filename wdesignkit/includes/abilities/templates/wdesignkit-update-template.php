@@ -93,6 +93,39 @@ function wdesignkit_mcp_update_template(array $input): array {
         return ['success' => false, 'message' => 'type is required. Pass one of: page, section, block.'];
     }
 
+    // Wrap the replacement body in the envelope the cloud, the importer and the editor JS expect —
+    // { file_type, title, page_id, content, el_type, settings } with the layout in `content`, the
+    // same shape the Save Template UI builds.
+    //
+    // Writing the raw layout instead broke both builders:
+    //   Elementor  — the layout decodes to a LIST, and adding the string key 'custom_meta' to a
+    //                list makes wp_json_encode() emit an object, turning the indices into "0","1",…
+    //   Gutenberg  — block markup is a STRING, so json_decode() returned null, the is_array()
+    //                branch never ran, and the markup was stored bare with no envelope. The editor
+    //                then runs JSON.parse() on it and throws.
+    //
+    // This ability has no `builder` input, so infer it: Elementor data decodes to an array,
+    // Gutenberg content is serialized block markup.
+    $decoded_content = json_decode($data, true);
+    $is_elementor    = is_array($decoded_content);
+
+    $settings = [];
+    if ($post_id !== '') {
+        $page_settings = get_post_meta((int) $post_id, '_elementor_page_settings', true);
+        if (is_array($page_settings) && !empty($page_settings)) {
+            $settings = $page_settings;
+        }
+    }
+
+    $envelope = [
+        'file_type' => $is_elementor ? 'elementor' : 'wp_block',
+        'title'     => '',
+        'page_id'   => $post_id !== '' ? (int) $post_id : 0,
+        'content'   => $is_elementor ? $decoded_content : $data,
+        'el_type'   => '',
+        'settings'  => $settings,
+    ];
+
     if ($post_id !== '') {
         $custom_fields = [];
         foreach ((array) get_post_custom($post_id) as $key => $value) {
@@ -101,13 +134,12 @@ function wdesignkit_mcp_update_template(array $input): array {
             }
         }
         if (!empty($custom_fields)) {
-            $decoded = json_decode($data, true);
-            if (is_array($decoded)) {
-                $decoded['custom_meta'] = $custom_fields;
-                $data = wp_json_encode($decoded);
-            }
+            // On the envelope (an object), so it cannot reshape `content`.
+            $envelope['custom_meta'] = $custom_fields;
         }
     }
+
+    $data = wp_json_encode($envelope);
 
     $args = [
         'data'        => $data,

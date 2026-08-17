@@ -107,10 +107,13 @@ function wdesignkit_mcp_import_widget(array $input): array {
     }
 
     $overwrite   = !empty($input['overwrite']);
-    $safe_name   = sanitize_file_name($widget_name);
-    $safe_id     = sanitize_file_name($widget_id);
-    $folder_name = str_replace(' ', '-', $safe_name) . '_' . $safe_id;
-    $file_name   = str_replace(' ', '_', $safe_name) . '_' . $safe_id;
+    // Canonical helpers: they replace spaces BEFORE sanitize_file_name(). Sanitising first
+    // (as this did) already collapsed spaces to hyphens, so the underscore pass was a no-op
+    // and a multi-word title produced "My-Widget_id.json" while the builder's own save path
+    // writes "My_Widget_id.php". The registry resolves the JSON by swapping .php for .json,
+    // so that pair never matched and the widget was skipped for good (ClickUp 86d41cck5).
+    $folder_name = wdesignkit_widget_folder_name($widget_name, $widget_id);
+    $file_name   = wdesignkit_widget_file_name($widget_name, $widget_id);
     $builder_dir = WDKIT_BUILDER_PATH . '/' . $builder;
     $widget_dir  = $builder_dir . '/' . $folder_name;
 
@@ -216,10 +219,15 @@ function wdesignkit_mcp_import_widget(array $input): array {
     }
 
     if ($img_bytes !== '') {
-        $img_ext = preg_replace('/[^a-z0-9]/', '', strtolower($img_ext));
-        if ($img_ext === '') {
-            $img_ext = 'png';
-        }
+        // Both branches above take the extension from caller-supplied data — a data-URI subtype or
+        // the remote URL. The old preg_replace() only stripped punctuation, so "php" survived and
+        // this write could drop executable PHP into the builder directory (CWE-434,
+        // ClickUp 86d41cczd). Verify against the decoded bytes instead; '' means not an image.
+        // The synthetic "image.<ext>" filename lets the helper read either branch's extension.
+        $img_ext = wdesignkit_safe_image_extension('image.' . strtolower((string) $img_ext), $img_bytes);
+    }
+
+    if ($img_bytes !== '' && $img_ext !== '') {
         $img_path = $widget_dir . '/' . $file_name . '.' . $img_ext;
         if (@file_put_contents($img_path, $img_bytes) !== false) {
             $image_saved = true;
@@ -235,6 +243,10 @@ function wdesignkit_mcp_import_widget(array $input): array {
     $thumb_note = $image_saved
         ? ($image_source === 'bundled' ? ' Bundled thumbnail imported.' : ' Thumbnail downloaded.')
         : '';
+
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
+    }
 
     return [
         'success'     => true,

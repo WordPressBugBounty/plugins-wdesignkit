@@ -350,7 +350,7 @@ function wdesignkit_mcp_login(array $input): array {
         return ['success' => false, 'message' => 'email and password are required.'];
     }
 
-    $user_key = strstr($email, '@', true);
+    $user_key = wdesignkit_cloud_session_key($email);
 
     // Clear any existing session for this user
     delete_transient('wdkit_auth_' . $user_key);
@@ -429,7 +429,7 @@ function wdesignkit_mcp_login_api_key(array $input): array {
     // Response data: user->user_email
     $user_data  = $response['user'] ?? [];
     $user_email = strtolower(sanitize_email((string) ($user_data['user_email'] ?? '')));
-    $user_key   = $user_email !== '' ? strstr($user_email, '@', true) : '';
+    $user_key   = $user_email !== '' ? wdesignkit_cloud_session_key($user_email) : '';
 
     if ($user_key !== '') {
         // $user_data already extracted above: $response['user'] ?? []
@@ -479,7 +479,7 @@ function wdesignkit_mcp_social_login(array $input): array {
     $user_data  = $response['user'] ?? [];
     $user_email = strtolower(sanitize_email((string) ($user_data['user_email'] ?? '')));
     $token      = sanitize_text_field((string) ($response['token'] ?? ''));
-    $user_key   = $user_email !== '' ? strstr($user_email, '@', true) : '';
+    $user_key   = $user_email !== '' ? wdesignkit_cloud_session_key($user_email) : '';
 
     if ($user_key !== '' && $token !== '') {
         $cloud_user_id_social = (string) ($user_data['id'] ?? $user_data['user_id'] ?? $response['user_id'] ?? $response['id'] ?? '');
@@ -520,7 +520,7 @@ function wdesignkit_mcp_signup(array $input): array {
     }
 
     $email    = strtolower(sanitize_email($raw_email));
-    $user_key = strstr($email, '@', true);
+    $user_key = wdesignkit_cloud_session_key($email);
 
     // Clear any existing session before signup
     delete_transient('wdkit_auth_' . $user_key);
@@ -648,7 +648,7 @@ function wdesignkit_mcp_logout(array $input): array {
 
     // Delete local session transient
     if ($email !== '') {
-        $user_key = strstr($email, '@', true);
+        $user_key = wdesignkit_cloud_session_key($email);
         delete_transient('wdkit_auth_' . $user_key);
     }
 

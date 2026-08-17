@@ -838,7 +838,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			/**Condtion user for user logout & expire token*/
 			if ( 'Token is Expired' === $status || 'Authorization Token not found' === $status ) {
-				delete_transient( 'wdkit_auth_' . $email );
+				delete_transient( 'wdkit_auth_' . wdesignkit_cloud_session_key( $email ) );
 				// Clear stored license data when token expires so banner shows again
 				delete_option( 'wdkit_licence_data' );
 			}
@@ -884,6 +884,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$credits         = ! empty( $response['credits']['widget_limit']['meta_value'] ) ? $response['credits']['widget_limit']['meta_value'] : 10;
 			$server_list     = ! empty( $response['widgettemplate'] ) ? $response['widgettemplate'] : array();
 			$db_builder_list = ! empty( $response['widgetbuilder'] ) ? $response['widgetbuilder'] : array();
+
+			// Whether this call actually carried the server widget list that activation state is
+			// derived from. Captured before the loops below, which unset() matched $server_list
+			// entries as they go. wdkit_meta_data() calls this method with array(), and without
+			// this flag that call rebuilt $db_widget from local widgets only — every one of which
+			// is forced 'active' further down — and then wrote the empty result over
+			// wkit_deactivate_widgets, erasing every deactivation the user had made.
+			$has_server_widgets = ! empty( $server_list );
 
 			$placeholderimg = WDKIT_URL . 'assets/images/placeholder.jpg';
 
@@ -972,11 +980,29 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			$get_db_widget = get_option( 'wkit_deactivate_widgets', array() );
-			if ( empty( $get_db_widget ) ) {
-				add_option( 'wkit_deactivate_widgets', $db_widget, '', 'yes' );
-			} else {
-				update_option( 'wkit_deactivate_widgets', $db_widget );
+			// Only persist activation state when the server list it is derived from was actually
+			// supplied. See $has_server_widgets above.
+			if ( $has_server_widgets ) {
+				// update_option() creates the row when it is missing, so it covers both cases.
+				// The previous add_option()/update_option() split was chosen on empty( $option ),
+				// but wdkit_db_widgetlist() creates this row as an empty array on every install —
+				// so the empty branch ran while the row already existed, and add_option() is a
+				// no-op for an existing option. Deactivating from the My Widgets screen was
+				// therefore silently discarded on effectively every site. Autoload stays 'yes',
+				// matching the original add_option() call and wdkit_db_widgetlist().
+				update_option( 'wkit_deactivate_widgets', $db_widget, 'yes' );
+
+				// The cached widget registry bakes in wkit_deactivate_widgets membership and is
+				// stored as a no-expiry transient, so it never self-heals. Without this the
+				// loaders kept registering a widget the user had just switched off (and kept
+				// hiding one they had switched back on) until the transient was flushed by hand.
+				// The write above is not per-builder — one save can change any builder's set, and
+				// a widget can move between builders — so clear all four.
+				if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+					foreach ( array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' ) as $builder_slug ) {
+						wdesignkit_invalidate_widget_registry( $builder_slug );
+					}
+				}
 			}
 
 			return $final;
@@ -1115,6 +1141,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = WDesignKit_Data_Query::get_data( 'save_template', $args );
 
+			/**
+			 * The cloud call can come back as a WP_Error (timeout, DNS, refused) or with an
+			 * empty / unparsable body, which json_decode()s to null. Forwarding that as-is
+			 * makes admin-ajax answer with a literal `null` that the editor then reads
+			 * `.id` off, killing the whole app. Normalise it to the failure shape used above.
+			 */
+			if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+				$response = array(
+					'id'          => 0,
+					'editpage'    => '',
+					'message'     => esc_html__( 'Template Not Saved !', 'wdesignkit' ),
+					'description' => is_wp_error( $response ) ? $response->get_error_message() : esc_html__( 'Could not reach the WDesignKit server. Please try again.', 'wdesignkit' ),
+					'success'     => false,
+				);
+			}
+
 			wp_send_json( $response );
 			wp_die();
 		}
@@ -1240,6 +1282,233 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @since 1.1.16
 		 */
+		/**
+		 * Kit settings holding The Plus Addons' own globals.
+		 *
+		 * These sit in the Elementor kit's `_elementor_page_settings` alongside Elementor's
+		 * system_colors / system_typography, but the save flow only ever collected the four
+		 * Elementor keys. Widgets reference an entry in these lists by its `_id` through a
+		 * `tp_global_preset` setting, so a template saved without them travels with the
+		 * reference but not the definition - which is why imported sections come in missing
+		 * their button styling, radii and shadows.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @return array Kit setting keys.
+		 */
+		private function wdkit_tp_global_kit_keys() {
+			return array(
+				'tp_global_button_style_list',
+				'tp_global_dimensions_list',
+				'tp_global_box_shadow_list',
+				'tp_global_gradient_list',
+				'tp_global_gsap_list',
+				'tp_global_scroll_animation_list',
+				'tp_text_global_gsap_list',
+				'tp_image_global_gsap_list',
+			);
+		}
+
+		/**
+		 * Merge incoming Plus globals into the active kit, keyed by `_id`.
+		 *
+		 * Entries are matched on their `_id`, never on position: an existing entry is always
+		 * left as it is, and only genuinely new ones are appended. That matters because
+		 * widgets - and the entries themselves, a button style points at dimension and shadow
+		 * entries - resolve by `_id`. Renumbering or overwriting would repoint references on
+		 * the destination site's own content.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @param array $incoming Lists captured with the template.
+		 * @return bool True when the kit was changed.
+		 */
+		/**
+		 * Global colour / typography ids this site already defines.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @param array $kit_meta Kit `_elementor_page_settings`.
+		 * @return array{color:array<string,bool>,typography:array<string,bool>}
+		 */
+		private function wdkit_known_global_ids( $kit_meta ) {
+			$known = array(
+				'color'      => array(),
+				'typography' => array(),
+			);
+
+			$sources = array(
+				'color'      => array( 'system_colors', 'custom_colors' ),
+				'typography' => array( 'system_typography', 'custom_typography' ),
+			);
+
+			foreach ( $sources as $kind => $keys ) {
+				foreach ( $keys as $key ) {
+					if ( empty( $kit_meta[ $key ] ) || ! is_array( $kit_meta[ $key ] ) ) {
+						continue;
+					}
+
+					foreach ( $kit_meta[ $key ] as $entry ) {
+						if ( ! empty( $entry['_id'] ) ) {
+							$known[ $kind ][ $entry['_id'] ] = true;
+						}
+					}
+				}
+			}
+
+			return $known;
+		}
+
+		/**
+		 * Make one incoming Plus global's colour / font references resolvable here.
+		 *
+		 * A Plus global can point at an Elementor global: the "Primary Button" entry holds
+		 * `__globals__: { text_color: "globals/colors?id=72e09b4", … }`, which The Plus Addons
+		 * turns into `var(--e-global-color-72e09b4)`. Elementor only emits that variable for ids
+		 * present in the kit, so on a site without `72e09b4` the button renders with no colour.
+		 *
+		 * Two cases, and the difference is deliberate:
+		 *
+		 *   - The site ALREADY defines that id — leave the reference alone. The button then picks
+		 *     up the destination's own colour, which is the point of a global. Their palette is
+		 *     never read from or written to beyond this check.
+		 *   - The site does NOT define it — write the captured value straight into the entry and
+		 *     drop the reference, so it renders as designed.
+		 *
+		 * Nothing is ever added to the user's global colours or fonts. An earlier version injected
+		 * the missing definitions into their palette, which made the reference resolve but grew
+		 * their Site Settings by every colour an imported template happened to use.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @param array $entry One repeater entry.
+		 * @param array $refs  Definitions captured with the template.
+		 * @param array $known Ids this site defines, from wdkit_known_global_ids().
+		 * @return array Entry, with unresolvable references replaced by their values.
+		 */
+		private function wdkit_resolve_entry_globals( $entry, $refs, $known ) {
+			if ( empty( $entry['__globals__'] ) || ! is_array( $entry['__globals__'] ) ) {
+				return $entry;
+			}
+
+			foreach ( $entry['__globals__'] as $control => $ref ) {
+				if ( ! is_string( $ref ) || false === strpos( $ref, 'id=' ) ) {
+					continue;
+				}
+
+				if ( false !== strpos( $ref, 'globals/colors' ) ) {
+					$kind = 'color';
+				} elseif ( false !== strpos( $ref, 'globals/typography' ) ) {
+					$kind = 'typography';
+				} else {
+					continue;
+				}
+
+				$id = substr( $ref, strpos( $ref, 'id=' ) + 3 );
+				if ( '' === $id || isset( $known[ $kind ][ $id ] ) ) {
+					// Defined here already — their value wins.
+					continue;
+				}
+
+				$definition = null;
+				foreach ( ( $refs[ $kind ] ?? array() ) as $candidate ) {
+					if ( is_array( $candidate ) && ( $candidate['_id'] ?? '' ) === $id ) {
+						$definition = $candidate;
+						break;
+					}
+				}
+
+				if ( null === $definition ) {
+					// Nothing captured for it, so leave the reference rather than blank the field.
+					continue;
+				}
+
+				if ( 'color' === $kind ) {
+					if ( empty( $definition['color'] ) ) {
+						continue;
+					}
+
+					$entry[ $control ] = $definition['color'];
+				} else {
+					// A typography global expands into its own set of controls: the reference is
+					// held under e.g. `typography_typography`, and each definition key replaces
+					// that suffix — `typography_font_family`, `typography_font_weight`, and so on.
+					foreach ( $definition as $def_key => $def_value ) {
+						if ( '_id' === $def_key || 'title' === $def_key ) {
+							continue;
+						}
+
+						$entry[ str_replace( 'typography_typography', $def_key, $control ) ] = $def_value;
+					}
+				}
+
+				unset( $entry['__globals__'][ $control ] );
+			}
+
+			return $entry;
+		}
+
+		private function wdkit_merge_tp_globals( $incoming, $refs = array() ) {
+			if ( empty( $incoming ) || ! is_array( $incoming ) ) {
+				return false;
+			}
+
+			$kit_id = get_option( 'elementor_active_kit' );
+			if ( empty( $kit_id ) ) {
+				return false;
+			}
+
+			$kit_meta = get_post_meta( $kit_id, '_elementor_page_settings', true );
+			if ( ! is_array( $kit_meta ) ) {
+				$kit_meta = array();
+			}
+
+			// Which global ids this site already defines. The Plus Addons turns a reference into
+			// var(--e-global-color-<_id>), and Elementor only emits that variable for ids in the
+			// kit — so a reference the destination does not define resolves to nothing at all.
+			$known = $this->wdkit_known_global_ids( $kit_meta );
+
+			$changed = false;
+
+			foreach ( $this->wdkit_tp_global_kit_keys() as $key ) {
+				if ( empty( $incoming[ $key ] ) || ! is_array( $incoming[ $key ] ) ) {
+					continue;
+				}
+
+				$existing = ( ! empty( $kit_meta[ $key ] ) && is_array( $kit_meta[ $key ] ) ) ? $kit_meta[ $key ] : array();
+
+				$seen = array();
+				foreach ( $existing as $entry ) {
+					if ( ! empty( $entry['_id'] ) ) {
+						$seen[ $entry['_id'] ] = true;
+					}
+				}
+
+				foreach ( $incoming[ $key ] as $entry ) {
+					if ( ! is_array( $entry ) || empty( $entry['_id'] ) || isset( $seen[ $entry['_id'] ] ) ) {
+						continue;
+					}
+
+					// Only ever rewrite the entry being added — never one already in the kit.
+					$existing[]            = $this->wdkit_resolve_entry_globals( $entry, $refs, $known );
+					$seen[ $entry['_id'] ] = true;
+					$changed               = true;
+				}
+
+				$kit_meta[ $key ] = array_values( $existing );
+			}
+
+			if ( $changed ) {
+				update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+
+				// Writing kit meta directly does not rebuild the kit stylesheet, so the
+				// merged globals would never reach the frontend.
+				$this->wdkit_regenerate_elementor_kit_css();
+			}
+
+			return $changed;
+		}
+
 		protected function wdkit_get_global_val() {
 
 			$builder = isset( $_POST['builder'] ) ? strtolower( sanitize_text_field( $_POST['builder'] ) ) : '';
@@ -2533,16 +2802,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$theme_name    = $theme_info->name;
 				$theme_zip_url = $theme_info->download_link;
 
-				global $wp_filesystem;
-				// Install the theme. SSRF guard (CWE-918): validate the resolved host before
-				// fetching the ZIP referenced by the external theme_info response. Themes can be
-				// large, so raise the response-size cap well above the wrapper's image default.
-				$theme = wdesignkit_safe_remote_get( $theme_zip_url, array( 'timeout' => 60, 'limit_response_size' => 256 * MB_IN_BYTES ) );
-
-				if ( is_wp_error( $theme ) ) {
+				// SSRF guard (CWE-918): validate the resolved host before fetching the ZIP
+				// referenced by the external theme_info response.
+				if ( ! wdesignkit_validate_external_url( $theme_zip_url ) ) {
 					return array(
 						'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
-						'description' => $theme->get_error_message(),
+						'description' => esc_html__( 'The theme package URL is not allowed.', 'wdesignkit' ),
 						'status'      => 'inactive',
 						'success'     => false,
 					);
@@ -2552,19 +2817,29 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/file.php' );
 				}
 
+				require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/class-wp-upgrader.php' );
+				require_once wp_normalize_path( ABSPATH . '/wp-admin/includes/theme.php' );
+
 				WP_Filesystem();
 
 				$active_theme = wp_get_theme();
 				$theme_name   = $active_theme->get( 'Name' );
 
-				$wp_filesystem->put_contents( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip', $theme['body'] );
-				$zip = new ZipArchive();
-				if ( $zip->open( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip' ) === true ) {
-					$zip->extractTo( WP_CONTENT_DIR . '/themes/' );
-					$zip->close();
-				}
+				// Install via WordPress core's Theme_Upgrader instead of manually fetching and
+				// ZipArchive::extractTo()'ing the remote package: core already performs the
+				// standard download -> unpack -> validate-package-structure -> move-into-place
+				// flow (including cleanup on failure) used for every trusted theme install.
+				$upgrader = new Theme_Upgrader( new Automatic_Upgrader_Skin() );
+				$install  = $upgrader->install( $theme_zip_url );
 
-				$wp_filesystem->delete( WP_CONTENT_DIR . '/themes/' . $theme_slug . '.zip' );
+				if ( is_wp_error( $install ) || ! $install ) {
+					return array(
+						'message'     => esc_html__( 'Theme Not Activated !', 'wdesignkit' ),
+						'description' => is_wp_error( $install ) ? $install->get_error_message() : esc_html__( 'Theme could not be installed.', 'wdesignkit' ),
+						'status'      => 'inactive',
+						'success'     => false,
+					);
+				}
 
 				$activate_result = switch_theme( $name );
 
@@ -2765,7 +3040,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					if ( ! empty( $meta_data ) ) {
 						foreach ( $meta_data as $meta_key => $meta_val ) {
 							if ( ! empty( $meta_val[0] ) && is_serialized( $meta_val[0] ) ) {
-								$meta_val[0] = maybe_unserialize( $meta_val[0] );
+								$meta_val[0] = unserialize( $meta_val[0], array( 'allowed_classes' => false ) );
 							}
 
 							if ( get_post_meta( get_the_ID(), $meta_key, true ) === '' ) {
@@ -2939,8 +3214,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$fixed = 0;
+			$ids   = array_unique( array_map( 'intval', $page_ids ) );
 
-			foreach ( array_unique( array_map( 'intval', $page_ids ) ) as $post_id ) {
+			// Primes the meta cache for the whole batch in one query, so the
+			// get_post_meta() call below hits the cache instead of issuing one query
+			// per imported page.
+			update_meta_cache( 'post', $ids );
+
+			foreach ( $ids as $post_id ) {
 
 				if ( ! $post_id ) {
 					continue;
@@ -3953,6 +4234,19 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! empty( $data ) && ! empty( $template_id ) && ! empty( $post_type ) && current_user_can( 'manage_options' ) ) {
 				$post_content = $data;
+				// Restore The Plus Addons' globals before the page is built, so the widgets'
+				// tp_global_preset references resolve as soon as it renders. Done here rather
+				// than in the save-template UI's confirmation dialog so that every import path
+				// - the library, the abilities, the theme builder - gets it.
+				if ( isset( $post_content->tp_globals ) && ! empty( $post_content->tp_globals ) ) {
+					$this->wdkit_merge_tp_globals(
+						json_decode( wp_json_encode( $post_content->tp_globals ), true ),
+						isset( $post_content->tp_global_refs )
+							? json_decode( wp_json_encode( $post_content->tp_global_refs ), true )
+							: array()
+					);
+				}
+
 				$post_title   = isset( $post_content->title ) ? sanitize_text_field( $post_content->title ) : '';
 				$post_slug    = isset( $post_content->slug ) ? sanitize_text_field( $post_content->slug ) : '';
 				$file_type    = isset( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
@@ -4001,7 +4295,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								wp_die();
 						}
 
-						if ( ! empty( $thumb_image ) ) {
+						if ( ! empty( $thumb_image ) && wdesignkit_validate_external_url( $thumb_image ) ) {
 							// $featured_image_url = esc_url_raw( $thumb_image );
 							$tmp = download_url( $thumb_image );
 							if ( is_wp_error( $tmp ) ) {
@@ -4039,7 +4333,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							if ( ! empty( $custom_meta ) ) {
 								foreach ( $custom_meta as $meta_key => $meta_val ) {
 									if ( isset( $meta_val[0] ) && ! empty( $meta_val[0] ) && is_serialized( $meta_val[0] ) ) {
-										$meta_val[0] = maybe_unserialize( $meta_val[0] );
+										$meta_val[0] = unserialize( $meta_val[0], array( 'allowed_classes' => false ) );
 									}
 
 									if ( '' === get_post_meta( $inserted_post, $meta_key, true ) && isset( $meta_val[0] ) ) {
@@ -4130,7 +4424,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 							$inserted_id = $new_document->get_main_id();
 
-							if ( ! empty( $thumb_image ) ) {
+							if ( ! empty( $thumb_image ) && wdesignkit_validate_external_url( $thumb_image ) ) {
 								// $featured_image_url = esc_url_raw( $thumb_image );
 								$tmp = download_url( $thumb_image );
 								if ( is_wp_error( $tmp ) ) {
@@ -4186,7 +4480,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								if ( ! empty( $custom_meta ) ) {
 									foreach ( $custom_meta as $meta_key => $meta_val ) {
 										if ( ! empty( $meta_val[0] ) && is_serialized( $meta_val[0] ) ) {
-											$meta_val[0] = maybe_unserialize( $meta_val[0] );
+											$meta_val[0] = unserialize( $meta_val[0], array( 'allowed_classes' => false ) );
 										}
 										if ( '' === get_post_meta( $inserted_id, $meta_key, true ) ) {
 											add_post_meta( $inserted_id, $meta_key, $meta_val[0] );
@@ -4349,6 +4643,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$image_url = esc_url_raw( $_POST['image_url'] );
 
+			if ( ! wdesignkit_validate_external_url( $image_url ) ) {
+				wp_send_json_error( 'Image could not be downloaded.' );
+			}
+
 			$tmp_file = download_url( $image_url );
 			if ( is_wp_error( $tmp_file ) ) {
 				wp_send_json_error( 'Image could not be downloaded.' );
@@ -4386,7 +4684,19 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$upload_dir  = wp_upload_dir();
 			$result_urls = array();
 
+			$colour_index = 0;
 			foreach ( $img_colors as $name => $rgb ) {
+				// $name is a key from the posted colours payload and went straight into the output
+				// filename, so traversal sequences in it steered imagepng() outside the upload
+				// directory (CWE-22, ClickUp 86d41ced6). sanitize_file_name() flattens it to one
+				// path segment; a key made only of dots/separators sanitizes to empty, so fall back
+				// to a positional index rather than writing to a bare "colored--<time>.png".
+				++$colour_index;
+				$safe_name = sanitize_file_name( (string) $name );
+				if ( '' === $safe_name ) {
+					$safe_name = 'colour-' . $colour_index;
+				}
+
 				$new = imagecreatetruecolor( $width, $height );
 				imagesavealpha( $new, true );
 				imagealphablending( $new, false );
@@ -4414,7 +4724,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					}
 				}
 
-				$filename = 'colored-' . $name . '-' . time() . '.png';
+				$filename = 'colored-' . $safe_name . '-' . time() . '.png';
 				$filepath = $upload_dir['path'] . '/' . $filename;
 
 				imagepng( $new, $filepath );
@@ -5069,7 +5379,32 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			$json_path = WDKIT_BUILDER_PATH . "/{$widget_type}/{$folder_name}/{$file_name}";
+			// Read-side twin of the write and delete traversals fixed in 86d41cckh / 86d41ccz2: all
+			// three segments arrive from $_POST with only wp_unslash() applied — which strips
+			// nothing path-relevant — so "../" in any of them walked out of the builder directory
+			// and this handler returned the decoded contents of any .json file the web server user
+			// could read (CWE-22, ClickUp 86d41zaun).
+			$safe_path = wdesignkit_widget_path_guard( $widget_type, $folder_name, $file_name );
+
+			if ( false === $safe_path || '' === $safe_path['folder'] || '' === $safe_path['file'] ) {
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget JSON not found', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+				);
+			}
+
+			$json_path = $safe_path['base'];
+
+			// Re-check the resolved file: the component guard above cannot see a symlink. Returns
+			// false for a path that does not exist, which is the same answer we want anyway.
+			if ( ! wdesignkit_path_inside_builder_dir( "$json_path.json" ) ) {
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget JSON not found', 'wdesignkit' ),
+					'description' => esc_html__( 'widget JSON file not found.', 'wdesignkit' ),
+				);
+			}
 
 			$json_data = wp_json_file_decode( "$json_path.json" );
 			if ( ! empty( $json_data ) ) {
@@ -5098,7 +5433,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wdkit_download_widget() {
-			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'widget_info', 'none' ) : '';
+			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_extract_post_field( $_POST, 'widget_info', 'none' ) : '';
 			$data = json_decode( stripslashes( $data ) );
 
 			$array_data = array(
@@ -5187,8 +5522,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				wp_die();
 			}
 
-			$folder_name       = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
-			$file_name         = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
+			// Canonical helpers replace spaces BEFORE sanitize_file_name(). $title above is
+			// already sanitized, which collapsed spaces to hyphens and left the underscore pass
+			// with nothing to do — a multi-word title wrote "My-Widget_id.json" next to the
+			// "My_Widget_id.php" the builder's save path writes. The loader pairs the two by
+			// swapping .php for .json, so the widget was silently dropped (ClickUp 86d41cck5).
+			$folder_name       = wdesignkit_widget_folder_name( $title, $w_uniq );
+			$file_name         = wdesignkit_widget_file_name( $title, $w_uniq );
 			$builder_type_path = WDKIT_BUILDER_PATH . "/{$builder}/";
 
 			if ( ! is_dir( $builder_type_path ) ) {
@@ -5203,11 +5543,20 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				// SSRF guard (CWE-918): validate the resolved host before fetching.
 				$img_body = wdesignkit_safe_remote_get( $img_url );
 				if ( ! is_wp_error( $img_body ) ) {
-					$img_ext = pathinfo( $img_url )['extension'];
+					// The remote extension was written verbatim here, so a cloud response naming a
+					// ".php" image put executable PHP in the builder directory (CWE-434,
+					// ClickUp 86d41cczd). An empty return means the bytes are not an image.
+					$img_ext = wdesignkit_safe_image_extension( $img_url, $img_body['body'] );
 
-					$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
-					$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					if ( '' !== $img_ext ) {
+						$wp_filesystem->put_contents( WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name.$img_ext", $img_body['body'] );
+						$json_data['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					}
 				}
+			}
+
+			if ( function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
+				wdesignkit_invalidate_widget_registry( $builder );
 			}
 
 			// Bug E fix (part 2): success was hardcoded false on the successful download path — always reported failure.
@@ -5229,7 +5578,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 */
 		protected function wdkit_add_widget() {
-			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_sanitizer_bypass( $_POST, 'widget_info', 'none' ) : '';
+			$data = ! empty( $_POST['widget_info'] ) ? $this->wdkit_extract_post_field( $_POST, 'widget_info', 'none' ) : '';
 			$data = base64_decode( $data );
 			$data = json_decode( $data );
 
@@ -5287,19 +5636,45 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				// SSRF guard (CWE-918): validate the resolved host before fetching.
 				$img_body = wdesignkit_safe_remote_get( $img_url );
 				if ( ! is_wp_error( $img_body ) ) {
-					$img_ext = pathinfo( $img_url )['extension'];
+					// Verified against the payload rather than trusted from the URL (CWE-434,
+					// ClickUp 86d41cczd); '' means the bytes are not an image we accept.
+					$img_ext = wdesignkit_safe_image_extension( $img_url, $img_body['body'] );
 					include_once ABSPATH . 'wp-admin/includes/file.php';
 					\WP_Filesystem();
 					global $wp_filesystem;
-					$folder_name = str_replace( ' ', '-', $title ) . '_' . $w_uniq;
-					$file_name   = str_replace( ' ', '_', $title ) . '_' . $w_uniq;
-					$file_path   = WDKIT_BUILDER_PATH . "/$builder/$folder_name/$file_name";
+					// Canonical helpers, so the JSON read and the image write here address the same
+					// base name every other writer uses (ClickUp 86d41cck5). They also apply
+					// sanitize_file_name(), which $title and $w_uniq had not been through.
+					$folder_name = wdesignkit_widget_folder_name( $title, $w_uniq );
+					$file_name   = wdesignkit_widget_file_name( $title, $w_uniq );
 
-					$u_r_l                                   = wp_json_file_decode( "$file_path.json" );
-					$u_r_l->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+					// $builder reaches here with only sanitize_text_field() applied and no
+					// allowlist, so it was a live traversal segment in this path (CWE-22,
+					// ClickUp 86d41cckh). Unlike the download handler earlier in this file, this
+					// one had neither the builder allowlist nor a containment check.
+					$safe_path = wdesignkit_widget_path_guard( $builder, $folder_name, $file_name );
+					if ( false === $safe_path || ! wdesignkit_path_inside_builder_dir( $safe_path['dir'] ) ) {
+						wp_send_json(
+							(object) array(
+								'success'     => false,
+								'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+								'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+							)
+						);
+						wp_die();
+					}
+
+					$builder   = $safe_path['builder'];
+					$file_path = $safe_path['base'];
+
+					$u_r_l = wp_json_file_decode( "$file_path.json" );
+
+					if ( '' !== $img_ext ) {
+						$u_r_l->widget_data->widgetdata->w_image = WDKIT_SERVER_PATH . "/$builder/$folder_name/$file_name.$img_ext";
+						$wp_filesystem->put_contents( "$file_path.$img_ext", $img_body['body'] );
+					}
 
 					$wp_filesystem->put_contents( "$file_path.json", wp_json_encode( $u_r_l ) );
-					$wp_filesystem->put_contents( "$file_path.$img_ext", $img_body['body'] );
 				}
 			}
 
@@ -5722,7 +6097,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$args  = array( 'token' => $token );
 
 				if ( 'session' !== $logout_type ) {
-					delete_transient( 'wdkit_auth_' . $email );
+					delete_transient( 'wdkit_auth_' . wdesignkit_cloud_session_key( $email ) );
 					// Clear stored license data on logout so banner shows again
 					delete_option( 'wdkit_licence_data' );
 					$response = WDesignKit_Data_Query::get_data( 'logout', $args );
@@ -5744,7 +6119,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		protected function wdkit_login_user_token( $email = '' ) {
 
 			if ( ! empty( $email ) ) {
-				$user_key  = strstr( $email, '@', true );
+				$user_key  = wdesignkit_cloud_session_key( $email );
 				$get_login = get_transient( 'wdkit_auth_' . $user_key );
 
 				if ( ! empty( $get_login ) && ! empty( $get_login['token'] ) ) {
@@ -5764,13 +6139,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param string $type store text data.
 		 * @param string $condition store text data.
 		 */
-		protected function wdkit_sanitizer_bypass( $data, $type, $condition = 'none' ) {
+		protected function wdkit_extract_post_field( $data, $type, $condition = 'none' ) {
 
 			if ( 'none' === $condition ) {
 				return $data[ $type ];
 			} elseif ( 'cr_widget' === $condition ) {
 				return $data[ $type ];
 			}
+
+			return null;
 		}
 
 

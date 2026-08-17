@@ -71,6 +71,18 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
     }
 
+    // Site-level opt-out for generated widget PHP (ClickUp 86d41zavc). This ability introduces no
+    // new code — it clones a widget already on disk and running — but it does write a new
+    // executable .php file, so a site that has turned widget PHP writes off should not get one.
+    // Refusing the whole call rather than copying everything except the .php: a widget folder with
+    // no PHP is not a working widget, so a partial duplicate would be worse than none.
+    if (function_exists('wdesignkit_widget_php_write_allowed') && !wdesignkit_widget_php_write_allowed()) {
+        return [
+            'success' => false,
+            'message' => 'Widget duplication is disabled on this site: generated widget PHP writes have been turned off via the wdesignkit_allow_widget_php_write filter. Duplicating would have to write a new .php file.',
+        ];
+    }
+
     $builder = sanitize_text_field((string) ($input['builder'] ?? ''));
     $folder  = sanitize_file_name((string) ($input['folder'] ?? ''));
 
@@ -130,16 +142,15 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
     // wp_generate_uuid4() produces a 36-char string that makes folder names excessively long.
     $new_widget_id = substr(bin2hex(random_bytes(3)), 0, 6);
 
-    // Derive the new folder / file base with the SAME normalization create-widget uses
-    // (lowercase; spaces+underscores→dash for the folder, spaces+dashes→underscore for the
-    // file base) so the Elementor loader — which instantiates
-    // 'Wdkit_' . str_replace('-','_', filename) — resolves the duplicate's class correctly.
-    $new_folder_base = sanitize_file_name(strtolower(str_replace([' ', '_'], '-', $new_name)));
-    $new_file_base_n = sanitize_file_name(strtolower(str_replace([' ', '-'], '_', $new_name)));
-    if ($new_folder_base === '') { $new_folder_base = 'widget'; }
-    if ($new_file_base_n === '') { $new_file_base_n = 'widget'; }
-    $new_folder    = $new_folder_base . '_' . $new_widget_id;
-    $new_file_base = $new_file_base_n . '_' . $new_widget_id;
+    // Derive the new folder / file base with the SAME helpers every other writer uses, so a
+    // duplicate never lands in a differently-cased twin of an existing folder (ClickUp
+    // 86d3yk4yx). The file base still uses underscores, which keeps the Elementor loader —
+    // it instantiates 'Wdkit_' . str_replace('-','_', filename) — resolving the class.
+    if (sanitize_file_name($new_name) === '') {
+        $new_name = 'Widget';
+    }
+    $new_folder    = wdesignkit_widget_folder_name($new_name, $new_widget_id);
+    $new_file_base = wdesignkit_widget_file_name($new_name, $new_widget_id);
     $dst_dir       = WDKIT_BUILDER_PATH . '/' . $builder . '/' . $new_folder;
 
     if (is_dir($dst_dir)) {
@@ -240,6 +251,10 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
         } else {
             @copy($src_file, $dst_file); // binary assets (thumbnail image, etc.)
         }
+    }
+
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
     }
 
     return [

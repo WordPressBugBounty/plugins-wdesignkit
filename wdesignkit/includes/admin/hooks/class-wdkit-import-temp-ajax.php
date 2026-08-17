@@ -728,23 +728,27 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				'post_type'      => 'any',
 				'post_status'    => 'publish',
 				'posts_per_page' => -1,
-				'fields'         => 'ids', // Only fetch IDs for performance
+				'fields'         => 'all', // Full post objects so post_content comes back in this query — avoids a get_post_field() round-trip per post.
 			];
 
 			$posts = get_posts($args);
+
+			// Primes the meta cache for every post in one query, so the get_post_meta()
+			// calls below hit the cache instead of issuing a query each — turns 1+2N
+			// queries into 2 total, regardless of site size.
+			update_meta_cache('post', wp_list_pluck($posts, 'ID'));
 
 			$elementor = 0;
 			$gutenberg = 0;
 			$classic   = 0;
 
-			foreach ($posts as $post_id) {
-				$is_elementor = get_post_meta($post_id, '_elementor_edit_mode', true);
+			foreach ($posts as $post) {
+				$is_elementor = get_post_meta($post->ID, '_elementor_edit_mode', true);
 
 				if ($is_elementor === 'builder') {
 					$elementor++;
 				} else {
-					$content = get_post_field('post_content', $post_id);
-					if (strpos($content, '<!-- wp:') !== false) {
+					if (strpos($post->post_content, '<!-- wp:') !== false) {
 						$gutenberg++;
 					} else {
 						$classic++;
@@ -789,6 +793,23 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		 * @param array $name store data.
 		 */
 		function upload_image_from_url($image_url) {
+			// SSRF guard (CWE-918, ClickUp 86d41zav4). media_sideload_image() -> download_url() ->
+			// wp_safe_remote_get() does apply core's wp_http_validate_url(), which on current WP
+			// resolves the hostname and blocks 169.254.0.0/16 among others — so this is defence in
+			// depth, not an open hole. What core does NOT cover, and this wrapper does:
+			//   - core resolves with gethostbyname(), i.e. the FIRST A record only; a host with one
+			//     public and one internal A record can pass. This wrapper uses gethostbynamel() and
+			//     rejects if ANY resolved address is private/reserved.
+			//   - core's range check is IPv4-only; this wrapper also resolves AAAA and applies the
+			//     same rules to IPv6 (::1, fc00::/7, fe80::/10).
+			//   - core skips validation entirely when the URL host matches the site's own host, and
+			//     its decision is overridable via the http_request_host_is_external filter.
+			// Fails closed: if the helper is unavailable the image is skipped rather than fetched
+			// unvalidated (it is loaded well before this hook, so that path is not expected).
+			if ( ! function_exists( 'wdesignkit_validate_external_url' ) || ! wdesignkit_validate_external_url( $image_url ) ) {
+				return false;
+			}
+
 			require_once(ABSPATH . 'wp-admin/includes/file.php');
 			require_once(ABSPATH . 'wp-admin/includes/media.php');
 			require_once(ABSPATH . 'wp-admin/includes/image.php');

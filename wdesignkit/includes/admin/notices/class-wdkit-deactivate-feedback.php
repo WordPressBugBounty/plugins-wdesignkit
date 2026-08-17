@@ -406,9 +406,8 @@ if ( ! class_exists( 'Wdkit_Deactivate_Feedback' ) ) {
 			$response = wp_remote_post(
 				$this->btn_deactivate,
 				array(
-					'timeout'   => 30,
-					'sslverify' => false,
-					'body'      => $api_params,
+					'timeout' => 30,
+					'body'    => $api_params,
 				)
 			);
 

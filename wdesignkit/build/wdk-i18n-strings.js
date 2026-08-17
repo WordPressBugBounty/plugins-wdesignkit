@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1131 strings.
+ * 1136 strings.
  */
 
 ( function () {
@@ -753,6 +753,7 @@
 	__( "Row", "wdesignkit" );
 	__( "Rows", "wdesignkit" );
 	__( "Sanitize", "wdesignkit" );
+	__( "Save & Next", "wdesignkit" );
 	__( "Save Failed", "wdesignkit" );
 	__( "Save Settings", "wdesignkit" );
 	__( "Save Snippet", "wdesignkit" );
@@ -797,6 +798,7 @@
 	__( "Selectors", "wdesignkit" );
 	__( "Separator", "wdesignkit" );
 	__( "Server Details", "wdesignkit" );
+	__( "Server did not respond properly. Please try again.", "wdesignkit" );
 	__( "Set Up Pages & Layout", "wdesignkit" );
 	__( "Set the initial version number for your plugin (e.g. 1.0.0).", "wdesignkit" );
 	__( "Set the position of the control separator. Available values are default, before and after. default will position the separator depending on the control type. before / after will position the separator before/after the control.", "wdesignkit" );
@@ -830,6 +832,7 @@
 	__( "Snippets", "wdesignkit" );
 	__( "Social Media", "wdesignkit" );
 	__( "Something went wrong while generating the plugin package.", "wdesignkit" );
+	__( "Something went wrong while saving the template.", "wdesignkit" );
 	__( "Something went wrong", "wdesignkit" );
 	__( "Something went wrong.", "wdesignkit" );
 	__( "Space Around", "wdesignkit" );
@@ -868,6 +871,7 @@
 	__( "Template Imported successfully", "wdesignkit" );
 	__( "Template Name", "wdesignkit" );
 	__( "Template Not Found", "wdesignkit" );
+	__( "Template Not Saved", "wdesignkit" );
 	__( "Template Title", "wdesignkit" );
 	__( "Template Type", "wdesignkit" );
 	__( "Template content is empty. Please try again.", "wdesignkit" );
@@ -1003,6 +1007,7 @@
 	__( "We collect :", "wdesignkit" );
 	__( "We couldn’t save your snippet. Please try again.", "wdesignkit" );
 	__( "We have downloaded your selected snippet. Now you can use it in your code snippets.", "wdesignkit" );
+	__( "We save this info so it auto-fills the next time you import a kit.", "wdesignkit" );
 	__( "We're getting everything ready. Please wait while we install the required plugins and import your template.", "wdesignkit" );
 	__( "We're getting everything ready. Please wait while we install the required plugins and import your widget.", "wdesignkit" );
 	__( "We've upgraded the widget from", "wdesignkit" );

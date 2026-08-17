@@ -249,6 +249,18 @@ function wdesignkit_mcp_update_widget(array $input): array {
     };
 
     // --- Update code files (only fields explicitly provided) ---
+    // Site-level opt-out for generated widget PHP (ClickUp 86d41zavc). Gating create-widget alone
+    // would be theatre: an operator blocked from creating a widget could simply overwrite an
+    // existing widget's PHP here instead — same capability, same sink, same result. Scoped to the
+    // php_code branch on purpose, so a locked-down site can still update css/js/json.
+    if (isset($input['php_code']) && $input['php_code'] !== ''
+        && function_exists('wdesignkit_widget_php_write_allowed') && !wdesignkit_widget_php_write_allowed()) {
+        return [
+            'success' => false,
+            'message' => 'php_code was not written: generated widget PHP writes are disabled on this site via the wdesignkit_allow_widget_php_write filter. Re-send without php_code to update css_code / js_code / metadata only.',
+        ];
+    }
+
     if (isset($input['php_code']) && $input['php_code'] !== '') {
         // Strip any namespace declaration — the widget loader instantiates the bare
         // global class name, so namespaced PHP would fatal with "Class not found".

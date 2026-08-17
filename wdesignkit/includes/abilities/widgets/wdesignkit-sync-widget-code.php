@@ -470,6 +470,17 @@ function wdesignkit_mcp_sync_widget_code(array $input): array {
             ];
         }
 
+        // Site-level opt-out for generated widget PHP (ClickUp 86d41zavc). This path regenerates
+        // register_controls() and rewrites the widget's .php, so it is a PHP write like any other
+        // and has to honour the same filter. Checked after the dry_run return above, so a preview
+        // still works on a locked-down site.
+        if (function_exists('wdesignkit_widget_php_write_allowed') && !wdesignkit_widget_php_write_allowed()) {
+            return [
+                'success' => false,
+                'message' => "PHP was not rewritten for {$builder}/{$folder}: generated widget PHP writes are disabled on this site via the wdesignkit_allow_widget_php_write filter. Use dry_run: true to preview the change.",
+            ];
+        }
+
         $written = @file_put_contents($php_path, $new_php_code);
         if ($written === false) {
             return ['success' => false, 'message' => "Failed to write updated PHP file to disk for {$builder}/{$folder}."];

@@ -268,12 +268,37 @@ function wdesignkit_mcp_download_widget(array $input): array {
         return ['success' => false, 'message' => 'Downloaded widget JSON is missing required fields (name, type, widget_id).'];
     }
 
-    $safe_title  = sanitize_file_name($title);
-    $safe_id     = sanitize_file_name($widget_id);
-    $folder_name = str_replace(' ', '-', $safe_title) . '_' . $safe_id;
-    $file_name   = str_replace(' ', '_', $safe_title) . '_' . $safe_id;
+    $folder_name = wdesignkit_widget_folder_name($title, $widget_id);
+    $file_name   = wdesignkit_widget_file_name($title, $widget_id);
     $builder_dir = WDKIT_BUILDER_PATH . '/' . $builder;
-    $widget_dir  = $builder_dir . '/' . $folder_name;
+
+    // Reuse the folder this widget already occupies instead of minting a new name for it.
+    // A redownload of a widget whose folder was written under a different convention used to
+    // create a second directory differing only by case (ClickUp 86d3yk4yx) — two folders on
+    // Linux, a silent write into the wrong one on macOS/Windows. Match on widget_id, which is
+    // the suffix of every folder name, and take the file base from the JSON already in there
+    // so the refreshed JSON replaces the existing one rather than sitting beside it.
+    $duplicate_folders = [];
+    $existing_folder   = wdesignkit_find_widget_folder($builder_dir, $widget_id, $folder_matches);
+    if ($existing_folder !== '') {
+        $folder_name = $existing_folder;
+        $file_name   = str_replace('-', '_', $existing_folder);
+
+        foreach (@scandir($builder_dir . '/' . $existing_folder) ?: [] as $ef) {
+            if (pathinfo($ef, PATHINFO_EXTENSION) === 'json') {
+                $file_name = pathinfo($ef, PATHINFO_FILENAME);
+                break;
+            }
+        }
+
+        // Surface any other folder still holding this widget_id. These are left over from
+        // before the naming was unified; they are inert (a builder loader only registers a
+        // folder containing a .php), but reporting them lets the caller clear them instead
+        // of discovering them through a widget list that shows the same widget twice.
+        $duplicate_folders = array_values(array_diff($folder_matches, [$existing_folder]));
+    }
+
+    $widget_dir = $builder_dir . '/' . $folder_name;
 
     if (!wp_mkdir_p($widget_dir)) {
         return ['success' => false, 'message' => "Could not create widget folder: {$builder}/{$folder_name}"];
@@ -291,13 +316,20 @@ function wdesignkit_mcp_download_widget(array $input): array {
         // SSRF guard (CWE-918): validate the resolved host before fetching.
         $img_resp = wdesignkit_safe_remote_get($img_url, ['timeout' => 30]);
         if (!is_wp_error($img_resp)) {
-            $img_ext = pathinfo(parse_url($img_url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION) ?: 'png';
-            $img_ext = sanitize_file_name($img_ext);
-            // Update w_image in JSON to local URL
-            if (defined('WDKIT_SERVER_PATH')) {
-                $json_raw['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/{$builder}/{$folder_name}/{$file_name}.{$img_ext}";
+            // sanitize_file_name() is not a defence for an extension — it passes "php" straight
+            // through, so a cloud response naming a ".php" thumbnail wrote executable PHP into the
+            // builder directory (CWE-434, ClickUp 86d41cczd). Verify against the payload instead;
+            // '' means the bytes are not an image we accept, so nothing is written.
+            $img_body = (string) wp_remote_retrieve_body($img_resp);
+            $img_ext  = wdesignkit_safe_image_extension($img_url, $img_body);
+
+            if ($img_ext !== '') {
+                // Update w_image in JSON to local URL
+                if (defined('WDKIT_SERVER_PATH')) {
+                    $json_raw['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/{$builder}/{$folder_name}/{$file_name}.{$img_ext}";
+                }
+                @file_put_contents($widget_dir . '/' . $file_name . '.' . $img_ext, $img_body);
             }
-            @file_put_contents($widget_dir . '/' . $file_name . '.' . $img_ext, wp_remote_retrieve_body($img_resp));
         }
     }
 
@@ -306,12 +338,24 @@ function wdesignkit_mcp_download_widget(array $input): array {
         wp_json_encode($json_raw, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     );
 
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
+    }
+
+    $message = "Widget '{$title}' downloaded and installed successfully.";
+    if (!empty($duplicate_folders)) {
+        $message .= ' Note: this widget_id also occupies ' . count($duplicate_folders)
+            . ' other folder(s) left over from an older naming convention ('
+            . implode(', ', $duplicate_folders) . '). They are not loaded and can be deleted.';
+    }
+
     return [
-        'success'     => true,
-        'message'     => "Widget '{$title}' downloaded and installed successfully.",
-        'widget_name' => $title,
-        'builder'     => $builder,
-        'folder'      => $folder_name,
-        'response'    => $data,
+        'success'           => true,
+        'message'           => $message,
+        'widget_name'       => $title,
+        'builder'           => $builder,
+        'folder'            => $folder_name,
+        'duplicate_folders' => $duplicate_folders,
+        'response'          => $data,
     ];
 }

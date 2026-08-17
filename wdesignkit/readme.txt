@@ -1,11 +1,11 @@
 === WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder ===
-Contributors: posimyththemes, devangvachheta, sagarpatel124
+Contributors: posimyththemes, pareshchavda, sagarpatel124
 Donate link: https://wdesignkit.com/
 Tags: page templates, elementor template, wordpress template, elementor widgets, gutenberg blocks
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.6.3
+Stable tag: 2.6.4
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -92,7 +92,18 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
-2.6.3 - 01 Aug 2026
+2.6.4 - 17 Aug 2026
+New: Added new Abilities to save a full template with globals, list templates, fix broken template data, and set cross-builder, demo and Figma links.
+New: Added globals import flow so button styles, radius, shadows and animations carry over on template import.
+New: Added Site Info persistence during kit import, auto-filling business details on the next kit.
+Improved: Much faster widget loading — widget registration is now cached instead of scanning the disk on every request.
+Improved: Hardened the widget builder directory, image downloads and export paths against unsafe file writes.
+Fixed: The same widget could land in two different folders when created, duplicated or re-downloaded.
+Fixed: Widget validation wrongly failed valid Bricks elements and Gutenberg blocks.
+Fixed: AI import showed incorrect credits and resumed on the wrong step when reopening a kit.
+Fixed: Minor Bug Fixes & Improvements.
+
+2.6.3 - 03 Aug 2026
 New: Added new Abilities to sync and pull widget code, set widget thumbnails, and validate widgets.
 New: Added new Abilities to import code snippets and delete a snippet everywhere it is used.
 Improved: Hardened security across widget import and preview by adding path-traversal protection and safer handling of external data.

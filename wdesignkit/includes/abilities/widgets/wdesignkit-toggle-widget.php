@@ -274,6 +274,14 @@ function wdesignkit_mcp_activate_widget(array $input): array {
 
     update_option('wkit_deactivate_widgets', array_values($deactivated), false);
 
+    // Activating removes the widget from wkit_deactivate_widgets, which the cached
+    // registry excludes by widget_id — this changes registration eligibility without
+    // touching any widget file, so the cache must be invalidated even though nothing
+    // was written to disk.
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($widget_location['builder']);
+    }
+
     return [
         'success' => true,
         'message' => "Widget '{$widget_id}' ({$widget_location['builder']}/{$widget_location['folder']}) has been activated.",
@@ -353,6 +361,12 @@ function wdesignkit_mcp_deactivate_widget(array $input): array {
     ];
 
     update_option('wkit_deactivate_widgets', $deactivated, false);
+
+    // Same reasoning as activate-widget: deactivation is a wkit_deactivate_widgets change,
+    // not a file write, but the cached registry bakes that list in — must invalidate.
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
+    }
 
     return [
         'success' => true,

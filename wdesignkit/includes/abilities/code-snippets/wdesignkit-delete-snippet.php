@@ -44,7 +44,7 @@ wp_register_ability('wdesignkit/delete-snippet', [
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
-        'mcp'          => ['public' => true],
+        'mcp'          => ['public' => false],
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Deletes a cloud snippet from the WDesignKit marketplace. Requires cloud login.',

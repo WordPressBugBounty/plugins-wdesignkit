@@ -82,7 +82,7 @@ wp_register_ability('wdesignkit/rollback', [
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
         'show_in_rest' => true,
-        'mcp'          => ['public' => true],
+        'mcp'          => ['public' => false],
         'annotations'  => [
             'instructions' => implode("\n", [
                 'Rolls back WDesignKit to a previous version. Destructive — replaces plugin files.',

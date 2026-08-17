@@ -58,6 +58,7 @@ wp_register_ability('wdesignkit/pull-widget', [
             'widget_name' => ['type' => 'string'],
             'builder'     => ['type' => 'string'],
             'folder'      => ['type' => 'string'],
+            'duplicate_folders' => ['type' => 'array'],
             'version'     => ['type' => 'string'],
             'files'       => ['type' => 'array'],
             'response'    => ['type' => 'object'],
@@ -286,10 +287,46 @@ function wdesignkit_mcp_pull_widget(array $input): array {
         return ['success' => false, 'message' => 'Downloaded widget JSON is missing required fields (name, type).'];
     }
 
-    // Stable folder and file naming
-    $folder_name = ($folder !== '') ? $folder : (str_replace(' ', '-', $cloud_title) . '_' . ($cloud_wid ?: $r_id));
-    $file_name   = str_replace(' ', '_', $cloud_title) . '_' . ($cloud_wid ?: $r_id);
-    $widget_dir  = WDKIT_BUILDER_PATH . '/' . $cloud_builder . '/' . $folder_name;
+    // Stable folder and file naming, via the canonical helpers so every writer agrees on the
+    // name — the loader pairs "<base>.php" with "<base>.json", so a writer that derives the
+    // base differently orphans the widget (ClickUp 86d41cck5). These also apply
+    // sanitize_file_name(), which the hand-rolled derivation here skipped entirely.
+    $widget_uid  = $cloud_wid ?: $r_id;
+    $folder_name = ($folder !== '') ? $folder : wdesignkit_widget_folder_name($cloud_title, $widget_uid);
+    $file_name   = wdesignkit_widget_file_name($cloud_title, $widget_uid);
+    $builder_dir = WDKIT_BUILDER_PATH . '/' . $cloud_builder;
+
+    // Reuse the folder this widget already occupies instead of minting a new name for it, the
+    // same way download-widget does. Without this, pulling a widget whose folder was written
+    // under an older convention (e.g. a pre-2.6.4 lowercase "my-widget_id") created a second
+    // directory differing only by case — two folders holding one widget on Linux, a silent
+    // write into the wrong one on macOS/Windows (ClickUp 86d41ccka). Match on the widget id,
+    // which is the suffix of every folder name. An explicit folder argument still wins: the
+    // resolver above sets it from an on-disk folder, so the caller has already chosen a target.
+    $duplicate_folders = [];
+    if ($folder === '') {
+        $existing_folder = wdesignkit_find_widget_folder($builder_dir, $widget_uid, $folder_matches);
+        if ($existing_folder !== '') {
+            $folder_name = $existing_folder;
+
+            // Surface any other folder still holding this widget id. These are inert — a
+            // builder loader only registers a folder containing a .php — but reporting them
+            // lets the caller clear them instead of finding the widget listed twice.
+            $duplicate_folders = array_values(array_diff($folder_matches, [$existing_folder]));
+        }
+    }
+
+    $widget_dir = $builder_dir . '/' . $folder_name;
+
+    // Adopt the file base name already used inside the target folder, whichever way that
+    // folder was chosen, so the refreshed files replace the existing ones rather than landing
+    // beside them under a second naming convention.
+    foreach (@scandir($widget_dir) ?: [] as $existing_file) {
+        if (pathinfo($existing_file, PATHINFO_EXTENSION) === 'json') {
+            $file_name = pathinfo($existing_file, PATHINFO_FILENAME);
+            break;
+        }
+    }
 
     $proposed_files = [
         $folder_name . '/' . $file_name . '.json',
@@ -348,12 +385,19 @@ function wdesignkit_mcp_pull_widget(array $input): array {
     if ($img_url !== '') {
         $img_resp = wdesignkit_safe_remote_get($img_url, ['timeout' => 30]);
         if (!is_wp_error($img_resp)) {
-            $img_ext = strtolower(pathinfo((string) parse_url($img_url, PHP_URL_PATH), PATHINFO_EXTENSION)) ?: 'png';
-            $img_ext = sanitize_file_name($img_ext);
-            if (defined('WDKIT_SERVER_PATH')) {
-                $json_raw['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/{$cloud_builder}/{$folder_name}/{$file_name}.{$img_ext}";
+            // sanitize_file_name() passes "php" through unchanged, so the remote extension was
+            // effectively unvalidated and a ".php" thumbnail URL wrote executable PHP into the
+            // builder directory (CWE-434, ClickUp 86d41cczd). Verify against the payload; '' means
+            // the bytes are not an image we accept, so nothing is written.
+            $img_body = (string) wp_remote_retrieve_body($img_resp);
+            $img_ext  = wdesignkit_safe_image_extension($img_url, $img_body);
+
+            if ($img_ext !== '') {
+                if (defined('WDKIT_SERVER_PATH')) {
+                    $json_raw['widget_data']['widgetdata']['w_image'] = WDKIT_SERVER_PATH . "/{$cloud_builder}/{$folder_name}/{$file_name}.{$img_ext}";
+                }
+                @file_put_contents($widget_dir . '/' . $file_name . '.' . $img_ext, $img_body);
             }
-            @file_put_contents($widget_dir . '/' . $file_name . '.' . $img_ext, (string) wp_remote_retrieve_body($img_resp));
         }
     }
 
@@ -375,17 +419,29 @@ function wdesignkit_mcp_pull_widget(array $input): array {
         @file_put_contents($widget_dir . '/' . $file_name . '.js', (string) $json_raw['Editor_data']['js']);
     }
 
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($cloud_builder);
+    }
+
+    $message = "Widget '{$cloud_title}' (r_id: {$r_id}) pulled from cloud and updated locally.";
+    if (!empty($duplicate_folders)) {
+        $message .= ' Note: this widget_id also occupies ' . count($duplicate_folders)
+            . ' other folder(s) from an earlier naming convention ('
+            . implode(', ', $duplicate_folders) . '). They are not loaded and can be deleted.';
+    }
+
     return [
-        'success'     => true,
-        'message'     => "Widget '{$cloud_title}' (r_id: {$r_id}) pulled from cloud and updated locally.",
-        'dry_run'     => false,
-        'r_id'        => $r_id,
-        'widget_id'   => $cloud_wid,
-        'widget_name' => $cloud_title,
-        'builder'     => $cloud_builder,
-        'folder'      => $folder_name,
-        'version'     => $cloud_version,
-        'files'       => $proposed_files,
-        'response'    => wdesignkit_mcp_ensure_object($data, $body),
+        'success'           => true,
+        'message'           => $message,
+        'dry_run'           => false,
+        'r_id'              => $r_id,
+        'widget_id'         => $cloud_wid,
+        'widget_name'       => $cloud_title,
+        'builder'           => $cloud_builder,
+        'folder'            => $folder_name,
+        'duplicate_folders' => $duplicate_folders,
+        'version'           => $cloud_version,
+        'files'             => $proposed_files,
+        'response'          => wdesignkit_mcp_ensure_object($data, $body),
     ];
 }

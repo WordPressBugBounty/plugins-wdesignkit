@@ -84,7 +84,19 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 * @since 1.0.0
 		 * @return void
 		 */
-		public function wdkit_enqueue_styles_library() {
+		public function wdkit_enqueue_styles_library( $hook = '' ) {
+			// Hooked on admin_enqueue_scripts with no screen check at all, so this loaded the icon
+			// font on every wp-admin screen (ClickUp 86d41cnze). admin_enqueue_scripts passes the
+			// screen hook as its first argument, so the same guard wdkit_admin_scripts() uses can
+			// apply here. Kept as a separate handle from 'wdkit-library-preview' — both point at the
+			// same stylesheet, and deduplicating the handles is a separate change.
+			$is_nexter_page        = isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_code_snippets';
+			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_builder' );
+
+			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && ! $is_nexter_page && ! $is_theme_builder_page ) {
+				return;
+			}
+
 			wp_enqueue_style( 'wdkit-library', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
 		}
 
@@ -216,7 +228,11 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 		 */
 		public function wdkit_admin_scripts( $hook ) {
 
-			wp_enqueue_style( 'wdkit-library-preview', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
+			// Deliberately BEFORE the screen guard below: this 1.4 KB stylesheet contains nothing but
+			// #adminmenu rules for the WDesignKit menu item, and the admin menu is rendered on every
+			// admin screen. Gating it to WDesignKit's own screens leaves the menu icon unstyled
+			// everywhere else — the masked-SVG ::before never applies, so the raw <img> shows through.
+			// Do not "optimise" this into the guard (ClickUp 86d41cnze).
 			wp_enqueue_style( 'wdkit-out-dashborad', WDKIT_URL . 'assets/css/dashborad/wdkit-dashborad.css', array(), WDKIT_VERSION, false );
 
 			$page  = isset( $_GET['page'] )      ? sanitize_key( wp_unslash( $_GET['page'] ) )      : '';
@@ -227,12 +243,18 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			// Check if we're on a Theme Builder page (via post_type or page parameter)
 			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_builder' );
-			
+
 			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && !$is_nexter_page && !$is_theme_builder_page ) {
 				return;
 			}
 
-			wp_enqueue_media(); 
+			// Moved BELOW the screen guard: this is the 9 KB WDesignKit icon font, used only by
+			// WDesignKit's own UI (no #adminmenu rules in it), yet it was enqueued on every wp-admin
+			// screen — dashboard, posts list, media library, plugins page (ClickUp 86d41cnze).
+			// The admin-menu stylesheet is NOT gated here; see the note at the top of this method.
+			wp_enqueue_style( 'wdkit-library-preview', WDKIT_URL . 'assets/fonts/style.css', array(), WDKIT_VERSION, false );
+
+			wp_enqueue_media();
 
 			$this->wdkit_enqueue_scripts( $hook );
 			$this->wdkit_enqueue_styles();
@@ -280,12 +302,12 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			 */
 			$script_deps = $asset['dependencies'];
 			if ( file_exists( WDKIT_PATH . 'build/wdk-i18n-strings.js' ) ) {
-				wp_enqueue_script( 'wdkit-editor-i18n', WDKIT_URL . 'build/wdk-i18n-strings.js', array( 'wp-i18n' ), $asset['version'], true );
+				wp_enqueue_script( 'wdkit-editor-i18n', WDKIT_URL . 'build/wdk-i18n-strings.js', array( 'wp-i18n' ), $asset['version'], array( 'in_footer' => true, 'strategy' => 'defer' ) );
 				wp_set_script_translations( 'wdkit-editor-i18n', 'wdesignkit' );
 				$script_deps = array_merge( $script_deps, array( 'wdkit-editor-i18n' ) );
 			}
 
-			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.min.js', $script_deps, $asset['version'], true );
+			wp_enqueue_script( 'wdkit-editor-js', WDKIT_URL . 'build/index.min.js', $script_deps, $asset['version'], array( 'in_footer' => true, 'strategy' => 'defer' ) );
 			wp_set_script_translations( 'wdkit-editor-js', 'wdesignkit' );
 
 			$onbording_end = get_option( $this->wdkit_onbording_end );
@@ -324,13 +346,13 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			/**Ace Editor files for Widget-builder */
 			if ( 'toplevel_page_wdesign-kit' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'builder', 'widget' ) ) {
-				wp_enqueue_script( 'widgetBuilder-script-editor-js', WDKIT_URL . 'assets/js/extra/ace.min.js', array( 'wp-element' ), WDKIT_VERSION, true );
-				wp_enqueue_script( 'widgetBuilder-script-editor-cobalt', WDKIT_URL . 'assets/js/extra/theme-cobalt.js', array( 'wp-element' ), WDKIT_VERSION, true );
-				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra/mode-html.js', array( 'wp-element' ), WDKIT_VERSION, true );
+				wp_enqueue_script( 'widgetBuilder-script-editor-js', WDKIT_URL . 'assets/js/extra/ace.min.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+				wp_enqueue_script( 'widgetBuilder-script-editor-cobalt', WDKIT_URL . 'assets/js/extra/theme-cobalt.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra/mode-html.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 			}
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {
-				wp_enqueue_script( 'wdkit-frontend-editor', WDKIT_ASSETS . 'js/main/elementor/elementor-editor.js', array( 'jquery', 'wp-i18n' ), WDKIT_VERSION, true );
+				wp_enqueue_script( 'wdkit-frontend-editor', WDKIT_ASSETS . 'js/main/elementor/elementor-editor.js', array( 'jquery', 'wp-i18n' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 				wp_set_script_translations( 'wdkit-frontend-editor', 'wdesignkit' );
 				$this->wdkit_cross_copy_paste_script( 'elementor' );
 			}
@@ -375,7 +397,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				$deps[] = 'wp-dom-ready';
 			}
 
-			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . 'js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, true );
+			wp_enqueue_script( 'wdkit-cross-copy-paste', WDKIT_ASSETS . 'js/main/wdkit-cross-copy-paste.js', $deps, WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 			wp_set_script_translations( 'wdkit-cross-copy-paste', 'wdesignkit' );
 			wp_localize_script(
 				'wdkit-cross-copy-paste',

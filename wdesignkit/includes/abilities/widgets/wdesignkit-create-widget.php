@@ -242,6 +242,16 @@ wp_register_ability('wdesignkit/create-widget', [
                 '- Use wdesignkit/get-widget to read back the generated files.',
                 '- Use wdesignkit/update-widget to modify code.',
                 '- Does NOT require WDesignKit cloud login.',
+                '',
+                '### ⚠ Trust boundary — this ability executes PHP',
+                'The php_code written here is saved to disk and require_once\'d by the builder',
+                'loaders on subsequent requests, so calling this ability runs arbitrary PHP as the',
+                'web server user. That is what a widget builder is, and it is gated on',
+                'manage_options — the same capability WordPress requires for the plugin editor.',
+                'It does mean this ability, create-widget and update-widget, must never be exposed',
+                'to any automation context trusted below a full site administrator. Treat php_code',
+                'from an untrusted source exactly as you would treat pasting it into wp-admin.',
+                '(ClickUp 86d41zavc)',
             ]),
             'readonly'    => false,
             'destructive' => false,
@@ -255,6 +265,18 @@ function wdesignkit_mcp_create_widget(array $input): array {
         return [
             'success' => false,
             'message' => 'WDesignKit plugin is not active.',
+        ];
+    }
+
+    // Site-level opt-out for generated widget PHP (ClickUp 86d41zavc). Defaults to allowed, so
+    // this changes nothing unless an operator explicitly filters it off:
+    //   add_filter( 'wdesignkit_allow_widget_php_write', '__return_false' );
+    // See wdesignkit_widget_php_write_allowed() for why this is a dedicated filter rather than a
+    // DISALLOW_FILE_MODS / DISALLOW_FILE_EDIT check.
+    if (function_exists('wdesignkit_widget_php_write_allowed') && !wdesignkit_widget_php_write_allowed()) {
+        return [
+            'success' => false,
+            'message' => 'Widget creation is disabled on this site: generated widget PHP writes have been turned off via the wdesignkit_allow_widget_php_write filter.',
         ];
     }
 
@@ -342,17 +364,14 @@ function wdesignkit_mcp_create_widget(array $input): array {
     }
 
     // --- Generate folder and file names matching WDesignKit convention ---
-    // folder: kebab-case  (e.g. "my-custom-card")
-    // file:   snake_case  (e.g. "my_custom_card")
-    // Normalize ALL separators: folder is pure kebab-case, file is pure snake_case.
-    // Without this, a name like "My-Custom Widget" produces "my-custom_widget" (mixed).
-    $folder_base = sanitize_file_name(strtolower(str_replace([' ', '_'], '-', $name)));
-    $file_base   = sanitize_file_name(strtolower(str_replace([' ', '-'], '_', $name)));
-
+    // folder: "My-Custom-Card_<hash>"   file: "My_Custom_Card_<hash>"
+    // Case is PRESERVED. This used to lowercase both, which put widgets created here in a
+    // different folder than the one the download/import/save paths write — the same widget
+    // ended up in two directories differing only by case (ClickUp 86d3yk4yx).
     // 8-character unique hex hash — matches the real WDesignKit widget format (e.g. "kmrd6l24")
     $widget_hash      = substr(md5(uniqid('wdkit', true)), 0, 8);
-    $folder_name_full = $folder_base . '_' . $widget_hash;
-    $file_name_full   = $file_base . '_' . $widget_hash;
+    $folder_name_full = wdesignkit_widget_folder_name($name, $widget_hash);
+    $file_name_full   = wdesignkit_widget_file_name($name, $widget_hash);
 
     // widget_id = JUST the hash (matches the real widget JSON format: "widget_id":"20hzyv26")
     $widget_id = $widget_hash;
@@ -552,6 +571,10 @@ function wdesignkit_mcp_create_widget(array $input): array {
             'success' => false,
             'message' => 'Failed to write files: ' . implode(', ', $write_errors) . '. Check directory permissions.',
         ];
+    }
+
+    if (function_exists('wdesignkit_invalidate_widget_registry')) {
+        wdesignkit_invalidate_widget_registry($builder);
     }
 
     $created_files = [
