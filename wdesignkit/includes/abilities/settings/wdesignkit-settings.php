@@ -32,6 +32,7 @@ wp_register_ability('wdesignkit/get-settings', [
     'execute_callback'    => 'wdesignkit_mcp_get_settings',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -126,6 +127,7 @@ wp_register_ability('wdesignkit/update-settings', [
     'execute_callback'    => 'wdesignkit_mcp_update_settings',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

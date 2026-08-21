@@ -318,29 +318,67 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				'wdkit-editor-js',
 				'wdkitData',
 				array(
-					'ajax_url'            => admin_url( 'admin-ajax.php' ),
-					'WDKIT_URL'           => WDKIT_URL,
-					'WDKIT_ASSETS'        => WDKIT_ASSETS,
-					'wdkit_server_url'    => WDKIT_SERVER_SITE_URL,
-					'wdkit_site_api_url'  => WDKIT_SERVER_API_URL,
-					'wdkit_wp_version'    => get_bloginfo( 'version' ),
-					'home_url'            => esc_url( home_url( '/' ) ),
-					'kit_nonce'           => wp_create_nonce( 'wdkit_nonce' ),
-					'post_id'             => get_the_ID(),
-					'post_type'           => get_post_type(),
-					'text_domain'         => WDKIT_TEXT_DOMAIN,
-					'use_editor'          => $this->wdkit_use_editor(),
-					'post_type_list'      => $this->wdkit_get_post_type_list(),
-					'WDKIT_onbording_end' => $onbording_end,
-					'wdkit_white_label'   => $white_label,
-					'WDKIT_dark_mode'     => $dark_mode,
+					'ajax_url'                      => admin_url( 'admin-ajax.php' ),
+					'WDKIT_URL'                     => WDKIT_URL,
+					'WDKIT_ASSETS'                  => WDKIT_ASSETS,
+					'wdkit_server_url'              => WDKIT_SERVER_SITE_URL,
+					'wdkit_site_api_url'            => WDKIT_SERVER_API_URL,
+					'wdkit_wp_version'              => get_bloginfo( 'version' ),
+					'home_url'                      => esc_url( home_url( '/' ) ),
+					'kit_nonce'                     => wp_create_nonce( 'wdkit_nonce' ),
+					'post_id'                       => get_the_ID(),
+					'post_type'                     => get_post_type(),
+					'text_domain'                   => WDKIT_TEXT_DOMAIN,
+					'use_editor'                    => $this->wdkit_use_editor(),
+					'post_type_list'                => $this->wdkit_get_post_type_list(),
+					'WDKIT_onbording_end'           => $onbording_end,
+					'wdkit_white_label'             => $white_label,
+					'WDKIT_dark_mode'               => $dark_mode,
 					/** Widget Builder — public URL only, no server filesystem paths */
-					'WDKIT_SITE_URL'      => WDKIT_GET_SITE_URL,
-					'WDKIT_DOC_URL'       => WDKIT_DOCUMENT,
-					'WDKIT_SERVER_PATH'   => WDKIT_SERVER_PATH,
-					'WDKIT_VERSION'       => WDKIT_VERSION,
+					'WDKIT_SITE_URL'                => WDKIT_GET_SITE_URL,
+					'WDKIT_DOC_URL'                 => WDKIT_DOCUMENT,
+					'WDKIT_SERVER_PATH'             => WDKIT_SERVER_PATH,
+					'WDKIT_VERSION'                 => WDKIT_VERSION,
 
-					'gutenberg_template'  => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' )
+					'gutenberg_template'            => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' ),
+
+					/**
+					 * Data Sharing switcher, Settings panel.
+					 *
+					 * Read as a SITE option — the consent is one answer per install, not per blog. The
+					 * class guard matches the one in wdesignkit.php: on a white-labelled install, or when
+					 * a sibling POSIMYTH plugin's SDK copy won the loader, the tracker class is never
+					 * declared and the constant reference would fatal.
+					 *
+					 * Both references are root-namespaced. This file lives in wdkit\WdKit_enqueue while
+					 * the SDK class is declared in the global namespace: a string class name is always
+					 * global so the guard passed either way, but an unprefixed `Posimyth_Tracker_WDK::`
+					 * resolves against THIS namespace and fatals on every admin page load.
+					 */
+					'wdkit_data_sharing'            => class_exists( '\Posimyth_Tracker_WDK' ) ? (bool) get_site_option( \Posimyth_Tracker_WDK::OPT_IN_OPTION, false ) : false,
+					'wdkit_consent_nonce'           => wp_create_nonce( 'posimyth_consent_wdk' ),
+
+					/**
+					 * Whether the Data Sharing card may be shown at all.
+					 *
+					 * Tracks the tracker class rather than the white-label flag: a rebranded install now
+					 * keeps the feature (see wdesignkit.php), so this is false only when the SDK genuinely
+					 * failed to load — a sibling POSIMYTH plugin winning the loader with a diverged copy.
+					 * Rendering a switch in that case would offer a save with no handler behind it.
+					 *
+					 * Separate from wdkit_data_sharing on purpose: that one is false both when sharing is
+					 * off and when the feature is absent, which cannot tell the two apart.
+					 */
+					'wdkit_data_sharing_available'  => class_exists( '\Posimyth_Tracker_WDK' ),
+
+					/**
+					 * Reseller's product name, for the Data Sharing copy that would otherwise say
+					 * "WDesignKit" on a plugin they have rebranded as their own.
+					 */
+					'wdkit_data_sharing_name'       => ! empty( $white_label['plugin_name'] ) ? $white_label['plugin_name'] : 'WDesignKit',
+
+					/** help_link is the reseller's "hide POSIMYTH documentation links" switch. */
+					'wdkit_data_sharing_docs'       => empty( $white_label['help_link'] ) ? WDKIT_DOCUMENT . 'data-sharing/' : ''
 				)
 			);
 

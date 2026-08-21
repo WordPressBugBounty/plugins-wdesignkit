@@ -69,6 +69,7 @@ wp_register_ability('wdesignkit/browse-widgets', [
     'execute_callback'    => 'wdesignkit_mcp_browse_widgets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

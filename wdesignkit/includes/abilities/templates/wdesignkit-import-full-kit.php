@@ -74,6 +74,7 @@ wp_register_ability('wdesignkit/import-full-kit', [
     'execute_callback'    => 'wdesignkit_mcp_import_full_kit',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

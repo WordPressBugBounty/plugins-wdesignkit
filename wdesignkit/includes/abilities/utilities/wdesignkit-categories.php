@@ -42,6 +42,7 @@ wp_register_ability('wdesignkit/list-categories', [
     'execute_callback'    => 'wdesignkit_mcp_list_categories',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -108,6 +109,7 @@ wp_register_ability('wdesignkit/manage-categories', [
     'execute_callback'    => 'wdesignkit_mcp_manage_categories',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

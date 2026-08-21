@@ -153,6 +153,7 @@ wp_register_ability('wdesignkit/save-template-full', [
     'execute_callback'    => 'wdesignkit_mcp_save_template_full',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

@@ -29,6 +29,7 @@ wp_register_ability('wdesignkit/get-widget-builders', [
     'execute_callback'    => 'wdesignkit_mcp_get_widget_builders',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -88,6 +89,7 @@ wp_register_ability('wdesignkit/toggle-widget-builders', [
     'execute_callback'    => 'wdesignkit_mcp_toggle_widget_builders',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

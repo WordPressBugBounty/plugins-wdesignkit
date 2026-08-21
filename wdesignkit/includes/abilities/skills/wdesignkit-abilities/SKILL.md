@@ -40,7 +40,7 @@ Applies to edits too — route even a small tweak through `add-tpgb-*`, then `ve
 
 - **`wdesignkit/categories`** (list/manage) — every widget and template save needs an existing category; `list-categories` first, `manage-categories` to add one before create-widget/save-template are called.
 - **`check-dependencies` / `install-dependency`** — gates widgets, pro presets, and pro code snippets alike. Run it before any create/import/download that targets a pro builder or pro asset, not just widgets.
-- **`wdesignkit/list-abilities`** — the live catalog; use it to resolve an unfamiliar or ambiguous ability name instead of guessing.
+- **`wdesignkit/list-abilities`** — the live catalog; use it to resolve an unfamiliar or ambiguous ability name instead of guessing. Narrow it instead of reading all 95: `namespace` filters by the part before the `/`, `only_public: true` returns just the abilities exposed to external clients, `category: ""` widens to every category, and `fields: ["name","description"]` trims each entry so a discovery call stays cheap. Entries also carry `required_capability` — an extra WordPress capability that ability needs beyond `manage_options` (`rollback` → `update_plugins`, `remove-database` → `delete_plugins`, `install-dependency` → `install_plugins`). If one of those comes back `ability_invalid_permissions`, the logged-in user lacks the capability; do not retry, report it.
 
 ## AUTH
 

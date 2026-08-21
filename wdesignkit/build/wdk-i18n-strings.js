@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1136 strings.
+ * 1140 strings.
  */
 
 ( function () {
@@ -148,6 +148,7 @@
 	__( "Choose Your Website Images", "wdesignkit" );
 	__( "Choose between Normal or RawHTML output type.", "wdesignkit" );
 	__( "Choose how you want to import content with your template.", "wdesignkit" );
+	__( "Choose what usage details you share with us.", "wdesignkit" );
 	__( "Classes", "wdesignkit" );
 	__( "Classic", "wdesignkit" );
 	__( "Clear All Filters", "wdesignkit" );
@@ -196,6 +197,7 @@
 	__( "Customize", "wdesignkit" );
 	__( "Danger", "wdesignkit" );
 	__( "Dark", "wdesignkit" );
+	__( "Data Sharing", "wdesignkit" );
 	__( "Date", "wdesignkit" );
 	__( "Datetime-Local", "wdesignkit" );
 	__( "Default Count", "wdesignkit" );
@@ -395,6 +397,8 @@
 	__( "Header and Footer section", "wdesignkit" );
 	__( "Header/Footer deferred", "wdesignkit" );
 	__( "Help Link", "wdesignkit" );
+	/* translators: %s: plugin name, rebranded on a white-labelled install. */
+	__( "Help make %s faster and more stable. Share basic setup info so we can catch conflicts and ship fixes quicker. Never sold, never shared with third parties.", "wdesignkit" );
 	__( "Helpdesk", "wdesignkit" );
 	__( "Hide Header on Scroll Down", "wdesignkit" );
 	__( "Hide Licence Key Tab?", "wdesignkit" );
@@ -806,6 +810,7 @@
 	__( "Setting Up Your Template", "wdesignkit" );
 	__( "Setting Up Your Widget", "wdesignkit" );
 	__( "Settings", "wdesignkit" );
+	__( "Share Non-Sensitive Details", "wdesignkit" );
 	__( "Share a few details so we can generate the right content for you.", "wdesignkit" );
 	__( "Share your background and what makes you unique.", "wdesignkit" );
 	__( "Shared with Me", "wdesignkit" );

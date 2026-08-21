@@ -47,6 +47,7 @@ wp_register_ability('wdesignkit/remove-template', [
     'execute_callback'    => 'wdesignkit_mcp_remove_template',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

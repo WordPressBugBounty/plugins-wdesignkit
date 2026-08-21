@@ -49,6 +49,7 @@ wp_register_ability('wdesignkit/get-snippet-filter-options', [
     'execute_callback'    => 'wdesignkit_mcp_get_snippet_filter_options',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

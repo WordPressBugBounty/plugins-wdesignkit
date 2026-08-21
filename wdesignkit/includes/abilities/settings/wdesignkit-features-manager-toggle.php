@@ -29,6 +29,7 @@ wp_register_ability('wdesignkit/get-features-manager', [
     'execute_callback'    => 'wdesignkit_mcp_get_features_manager',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -84,6 +85,7 @@ wp_register_ability('wdesignkit/toggle-features-manager', [
     'execute_callback'    => 'wdesignkit_mcp_toggle_features_manager',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

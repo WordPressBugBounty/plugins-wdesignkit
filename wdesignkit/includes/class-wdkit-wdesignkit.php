@@ -138,9 +138,51 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 				}
 			}
 
+			// Collect the registry caches belonging to OTHER versions while we are here. The line
+			// above only clears the current version's keys — by design, since those are the ones that
+			// might be stale. The old versions' keys were never deleted by anything, so each release
+			// left one permanent row per builder in wp_options (verified: twelve rows across three
+			// versions on a twice-upgraded site). Activation is the natural place for the sweep: it is
+			// the one moment the plugin knows the version may just have changed.
+			if ( function_exists( 'wdesignkit_purge_stale_widget_registries' ) ) {
+				wdesignkit_purge_stale_widget_registries();
+			}
+
 			// Scheduling belongs here rather than in the request path (ClickUp 86d41cp05).
 			if ( function_exists( 'wdesignkit_schedule_widget_trash_purge' ) ) {
 				wdesignkit_schedule_widget_trash_purge();
+			}
+
+			/*
+			 * Report this activation to the analytics hub, and stamp the install time.
+			 *
+			 * The SDK's `activated_plugin` listener cannot see a plugin's OWN activation: WordPress has
+			 * already fired `plugins_loaded` before it includes the plugin file, so the plugins_loaded
+			 * callback in wdesignkit.php never runs this request, Posimyth_Tracker_WDK::init() never
+			 * registers, and nothing is listening when `activated_plugin` fires. Deactivation worked
+			 * (the plugin IS loaded there) while activation silently reported nothing — and because
+			 * on_deactivate() clears the activate-reported flag, every deactivate/reactivate cycle lost
+			 * one activation from the hub's count for good. on_self_activate() is the SDK's documented
+			 * entry point for exactly this, and it is consent-gated like every other event.
+			 *
+			 * The subclass has to be required by hand here for the same reason: the plugins_loaded
+			 * callback that normally requires it does not run during this request. The shared base is
+			 * already loaded — posimyth_sdk_register() in wdesignkit.php loads immediately when
+			 * plugins_loaded has already fired.
+			 *
+			 * The leading backslash is required and is not decoration: this file declares
+			 * `namespace wdkit` and the SDK class is global, so without it PHP resolves the call as
+			 * `wdkit\Posimyth_Tracker_WDK` and fatals — exactly as documented in wdkit_deactivation()
+			 * below. The class_exists() guard does not protect against that, because its argument is a
+			 * string and strings are always read as fully qualified.
+			 */
+			$wdkit_tracker = WDKIT_PATH . 'includes/posimyth-sdk/class-posimyth-tracker-wdk.php';
+			if ( is_readable( $wdkit_tracker ) ) {
+				require_once $wdkit_tracker;
+			}
+
+			if ( class_exists( 'Posimyth_Tracker_WDK' ) ) {
+				\Posimyth_Tracker_WDK::on_self_activate();
 			}
 		}
 
@@ -156,6 +198,27 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 				delete_option( 'wkit_white_label' );
 			}
 
+			/*
+			 * Stop the analytics heartbeat.
+			 *
+			 * Posimyth_Tracker_WDK::init() schedules a weekly `posimyth_heartbeat_wdk` event. Without
+			 * this, deactivating the plugin leaves that event in WordPress forever — firing against a
+			 * hook with no listener and showing up in every cron listing. Deactivation only, never
+			 * uninstall: purge_state() in uninstall.php handles the stored options, and calling that
+			 * here would wipe consent every time someone toggled the plugin off.
+			 *
+			 * The leading backslash is required and is not decoration. This file declares
+			 * `namespace wdkit`, and the SDK class is global — without it PHP resolves the call as
+			 * `wdkit\Posimyth_Tracker_WDK` and fatals on deactivation. The class_exists() guard above
+			 * does NOT catch that: its argument is a string, which is always read as fully qualified,
+			 * so the guard passed and the very next line died.
+			 */
+			if ( class_exists( 'Posimyth_Tracker_WDK' ) ) {
+				\Posimyth_Tracker_WDK::unschedule();
+			}
+
+			// Widget-trash purge cron, added on release. Unrelated to the heartbeat above — both are
+			// scheduled by this plugin, so deactivation has to clear both or the survivor is orphaned.
 			$timestamp = wp_next_scheduled( 'wdesignkit_purge_widget_trash_cron' );
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'wdesignkit_purge_widget_trash_cron' );
@@ -211,6 +274,10 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			// hook), so wdesignkit_get_widget_registry() has to already be defined by the
 			// time widget-load-files.php requires and instantiates them below.
 			require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-main.php';
+
+			// WordPress 7.1 ability execution lifecycle hooks. Inert on older versions
+			// (the hook names simply do not exist), so it is loaded unconditionally.
+			require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-lifecycle.php';
 
 			require_once WDKIT_INCLUDES . 'widget-load/widget-load-files.php';
 			require_once WDKIT_INCLUDES . 'widget-load/dynamic-listing/dynamic-listing.php';

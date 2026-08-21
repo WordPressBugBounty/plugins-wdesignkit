@@ -226,6 +226,7 @@ wp_register_ability('wdesignkit/set-template-link', [
     'execute_callback'    => 'wdesignkit_mcp_set_template_link',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

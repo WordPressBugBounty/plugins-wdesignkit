@@ -59,6 +59,7 @@ wp_register_ability('wdesignkit/get-my-cloud-widgets', [
     'execute_callback'    => 'wdesignkit_mcp_get_my_cloud_widgets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

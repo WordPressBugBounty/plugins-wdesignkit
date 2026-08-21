@@ -46,6 +46,7 @@ wp_register_ability('wdesignkit/login', [
     'execute_callback'    => 'wdesignkit_mcp_login',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -91,6 +92,7 @@ wp_register_ability('wdesignkit/login-api-key', [
     'execute_callback'    => 'wdesignkit_mcp_login_api_key',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -137,6 +139,7 @@ wp_register_ability('wdesignkit/social-login', [
     'execute_callback'    => 'wdesignkit_mcp_social_login',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -191,6 +194,7 @@ wp_register_ability('wdesignkit/signup', [
     'execute_callback'    => 'wdesignkit_mcp_signup',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -234,6 +238,7 @@ wp_register_ability('wdesignkit/forgot-password', [
     'execute_callback'    => 'wdesignkit_mcp_forgot_password',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -269,6 +274,7 @@ wp_register_ability('wdesignkit/logout', [
     'execute_callback'    => 'wdesignkit_mcp_logout',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -318,6 +324,7 @@ wp_register_ability('wdesignkit/get-social-login-url', [
     'execute_callback'    => 'wdesignkit_mcp_get_social_login_url',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

@@ -70,6 +70,7 @@ wp_register_ability('wdesignkit/save-snippet', [
     'execute_callback'    => 'wdesignkit_mcp_save_snippet',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -129,6 +130,7 @@ wp_register_ability('wdesignkit/update-snippet-details', [
     'execute_callback'    => 'wdesignkit_mcp_update_snippet_details',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

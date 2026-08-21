@@ -64,6 +64,7 @@ wp_register_ability('wdesignkit/sync-widget-code', [
     'execute_callback'    => 'wdesignkit_mcp_sync_widget_code',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

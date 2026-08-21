@@ -531,6 +531,93 @@ if ( ! function_exists( 'wdesignkit_invalidate_widget_registry' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wdesignkit_widget_registry_option_prefix' ) ) {
+	/**
+	 * Shared prefix of every versioned widget-registry cache option.
+	 *
+	 * One constant-ish source of truth for the three places that need to match these rows by
+	 * pattern rather than by exact name: the orphan sweep below, and uninstall.php. Keep it in
+	 * step with wdesignkit_widget_registry_cache_key(), which builds the full name.
+	 *
+	 * @since 2.6.5
+	 *
+	 * @return string
+	 */
+	function wdesignkit_widget_registry_option_prefix() {
+		return 'wdkit_widget_registry_';
+	}
+}
+
+if ( ! function_exists( 'wdesignkit_purge_stale_widget_registries' ) ) {
+	/**
+	 * Deletes widget-registry cache options left behind by OTHER plugin versions.
+	 *
+	 * wdesignkit_widget_registry_cache_key() embeds WDKIT_VERSION in the option name, which is
+	 * deliberate — it is what makes an update or a rollback orphan the old entry so the registry
+	 * rebuilds itself instead of trusting a stale cache (ClickUp 86d41cd1z). What was missing is
+	 * the other half: nothing ever deleted the orphan. There was no cleanup path anywhere in the
+	 * codebase, so every release left one row per builder in wp_options permanently. Observed on
+	 * a site upgraded twice — twelve rows across three versions, the largest 12 KB:
+	 *
+	 *     wdkit_widget_registry_elementor_2_6_3      wdkit_widget_registry_gutenberg_2_6_3
+	 *     wdkit_widget_registry_elementor_2_6_4      wdkit_widget_registry_gutenberg_2_6_4  …
+	 *
+	 * These are written with autoload = false, so there is no per-request cost and this is
+	 * housekeeping rather than a performance fix — but it grows without bound, and a row nothing
+	 * will ever read again is exactly what an uninstall is expected to leave clean.
+	 *
+	 * Matches by prefix and keeps only the CURRENT version's keys, so it also collects rows from
+	 * a build whose version this code cannot know about (a rollback, or a downgrade). The LIKE
+	 * pattern is escaped with $wpdb->esc_like(); the option names are plugin-generated and
+	 * contain no wildcards today, but the escape is what keeps that true if the prefix changes.
+	 *
+	 * @since 2.6.5
+	 *
+	 * @return int Number of orphaned options deleted.
+	 */
+	function wdesignkit_purge_stale_widget_registries() {
+		global $wpdb;
+
+		$prefix  = wdesignkit_widget_registry_option_prefix();
+		$pattern = $wpdb->esc_like( $prefix ) . '%';
+
+		$names = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- option names are only discoverable by pattern; no caching API covers a LIKE sweep.
+			$wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern )
+		);
+
+		if ( empty( $names ) ) {
+			return 0;
+		}
+
+		// Build the set of names that are still live, rather than parsing the version out of each
+		// row: the builder slug can itself contain underscores (gutenberg_core), so splitting on
+		// '_' to find the version suffix is ambiguous. Comparing against what the current version
+		// WOULD be named has no such ambiguity.
+		$keep = array();
+		foreach ( array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' ) as $builder ) {
+			$key = wdesignkit_widget_registry_cache_key( $builder );
+			if ( '' !== $key ) {
+				$keep[ $key ] = true;
+			}
+		}
+
+		$deleted = 0;
+		foreach ( $names as $name ) {
+			if ( isset( $keep[ $name ] ) ) {
+				continue;
+			}
+
+			// delete_option() rather than a bulk DELETE: it clears the option cache and fires the
+			// documented hooks, which a raw query would silently skip.
+			if ( delete_option( $name ) ) {
+				++$deleted;
+			}
+		}
+
+		return $deleted;
+	}
+}
+
 if ( ! function_exists( 'wdesignkit_widget_folder_name' ) ) {
 	/**
 	 * Canonical widget folder name: "<Title-With-Hyphens>_<widget_id>".

@@ -42,6 +42,7 @@ wp_register_ability('wdesignkit/get-snippet-info', [
     'execute_callback'    => 'wdesignkit_mcp_get_snippet_info',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -98,6 +99,7 @@ wp_register_ability('wdesignkit/get-existing-snippet', [
     'execute_callback'    => 'wdesignkit_mcp_get_existing_snippet',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

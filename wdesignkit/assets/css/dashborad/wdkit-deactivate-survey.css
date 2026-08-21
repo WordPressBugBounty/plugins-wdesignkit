@@ -1,0 +1,165 @@
+/**
+ * WDesignKit skin for the shared deactivation survey.
+ *
+ * Design only — no behaviour, no selectors the SDK's JS binds to. The dialog markup and base rules
+ * live in includes/posimyth-sdk/class-posimyth-deactivation-survey.php, which is sync-managed and
+ * must not be edited here; that file documents `.posi-deact-p-{slug}` as the parent class a product
+ * targets from its OWN stylesheet, so every rule below hangs off `.posi-deact-p-wdesignkit`.
+ *
+ * Colours are literal hex rather than the var(--wdkit_*) tokens used elsewhere. Those custom
+ * properties are declared in build/index.css, which is only enqueued on WDesignKit's own screens —
+ * this dialog opens on wp-admin's Plugins page, where they would resolve to nothing. The values are
+ * kept in step with src/style/variable.scss by hand:
+ *
+ *   #020202  --wdkit_blk_shade       primary / accent / body text
+ *   #282828  --wdkit_blk_hover
+ *   #C22076  $Wdkit_pink_normal      link hover only
+ *   #020202  --wdkit_blk_shade       body text
+ *   #808080  --wdkit_gray_txt        muted text
+ *   #F1F1F1  --wdkit_gray_border     borders
+ *   8px      $wdkit_radius_lg
+ *
+ * The accent (top border, selected card, focus ring) comes from the `accent` config in
+ * class-wdkit-deactivate-survey.php, now --wdkit_blk_shade. What is restyled here is everything the
+ * shared sheet hard-codes: radii, borders, typography and the two footer buttons.
+ */
+
+/* Outfit is WDesignKit's UI face. It is NOT loaded on the Plugins screen, so it is named first and
+   allowed to fall through to the admin stack rather than being force-loaded for one dialog. */
+.posi-deact-p-wdesignkit .posi-deact-dialog {
+	font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: #020202;
+	border-radius: 8px;
+	padding: 28px 30px;
+	/* Anchor for the close button, which is appended to this element by the companion JS. */
+	position: relative;
+}
+
+/**
+ * Close button.
+ *
+ * Injected by wdkit-deactivate-survey.js rather than printed, because the dialog markup is
+ * sync-managed. Absolutely positioned so it sits in the corner without being part of the heading
+ * row's flex flow — the SDK's h3 is display:flex and would otherwise stretch to meet it.
+ */
+.posi-deact-p-wdesignkit .wdkit-deact-close {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	color: #808080;
+	cursor: pointer;
+	transition: 0.3s all linear;
+}
+
+.posi-deact-p-wdesignkit .wdkit-deact-close:hover,
+.posi-deact-p-wdesignkit .wdkit-deact-close:focus-visible {
+	background: #F1F1F1;
+	color: #020202;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-dialog h2,
+.posi-deact-p-wdesignkit .posi-deact-title {
+	color: #020202;
+	font-weight: 600;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-sub {
+	color: #808080;
+}
+
+/* Reason cards: WDesignKit's border colour and 8px radius in place of the shared #d9d9d9 / 5px. */
+.posi-deact-p-wdesignkit .posi-deact-cards label {
+	border: 1px solid #F1F1F1;
+	border-radius: 8px;
+	color: #020202;
+	font-size: 14px;
+	font-weight: 400;
+	transition: 0.3s all linear;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-cards label:hover {
+	border-color: #020202;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-opt {
+	border: 1px solid #F1F1F1;
+	border-radius: 8px;
+	color: #020202;
+	font-size: 14px;
+	transition: 0.3s all linear;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-opts {
+	border-top-color: #F1F1F1;
+}
+
+/* Primary button — neutral black, as the dialog has always used. */
+.posi-deact-p-wdesignkit .posi-deact-submit {
+	background: #020202;
+	border: 1px solid #020202;
+	border-radius: 6px;
+	padding: 10px 22px;
+	font-size: 14px;
+	font-weight: 500;
+	transition: 0.3s all linear;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-submit:hover:not(:disabled) {
+	background: #282828;
+	border-color: #282828;
+}
+
+/* Same hue, dimmed — not a separate grey. */
+.posi-deact-p-wdesignkit .posi-deact-submit:disabled {
+	background: #020202;
+	border-color: #020202;
+	opacity: 0.5;
+}
+
+/**
+ * Secondary action — plain text at rest that becomes an outlined button on hover.
+ *
+ * The SDK's base rule underlines this button; that is overridden to none, not merely left alone.
+ * No border at all at rest, and the box is drawn with `outline` rather than `border` on hover.
+ * Outlines are painted outside the box model, so the button neither grows nor shifts the footer
+ * when it appears — which is the only reason a transparent placeholder border would be wanted.
+ *
+ * The focus ring is given the same shape deliberately. A plain <button> here otherwise takes the
+ * browser's own ring when the dialog moves focus to it, which reads as a stray border at rest.
+ */
+.posi-deact-p-wdesignkit .posi-deact-skip {
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	padding: 10px 22px;
+	color: #020202;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-decoration: none;
+	outline: none;
+	box-shadow: none;
+	transition: 0.3s all linear;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-skip:hover,
+.posi-deact-p-wdesignkit .posi-deact-skip:focus-visible {
+	background: #ffffff;
+	color: #020202;
+	outline: 1px solid #020202;
+	outline-offset: 0;
+	text-decoration: none;
+}
+
+.posi-deact-p-wdesignkit .posi-deact-consent {
+	color: #808080;
+}

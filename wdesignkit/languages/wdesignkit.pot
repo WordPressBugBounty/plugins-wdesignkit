@@ -2,21 +2,21 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder 2.6.4\n"
+"Project-Id-Version: WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress 2.6.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-17T07:00:10+00:00\n"
+"POT-Creation-Date: 2026-08-21T06:04:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
 
 #. Plugin Name of the plugin
 #: wdesignkit.php
-msgid "WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder"
+msgid "WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -26,7 +26,7 @@ msgstr ""
 
 #. Description of the plugin
 #: wdesignkit.php
-msgid "Your All-in-One solution for effortless WordPress website creation and collaboration. With over 1,000+ Elementor and WordPress website templates, a library of 100+ pre-made widgets for Elementor, Gutenberg Blocks, and Bricks, along with a cloud workspace for collaboration and more."
+msgid "3000+ Elementor & Gutenberg Templates, AI Templates, AI Widget Builder, AI Code Snippets, MCP Workflow, Cloud Workspace & 220+ Widgets Library."
 msgstr ""
 
 #. Author of the plugin
@@ -55,65 +55,74 @@ msgstr ""
 msgid "Authenticates the user against the WDesignKit cloud using email and password, and stores the session token locally. Use remember_me: true for a 90-day session; false (default) for a 1-day session."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:66
+#: includes/abilities/auth/wdesignkit-login.php:67
 msgid "Login to WDesignKit Cloud with API Key"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:67
+#: includes/abilities/auth/wdesignkit-login.php:68
 msgid "Authenticates the user against the WDesignKit cloud using a personal API token (instead of email and password), and stores the session locally. Useful for automation and CI workflows."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:111
+#: includes/abilities/auth/wdesignkit-login.php:113
 msgid "Login / Sign Up to WDesignKit Cloud via Google or Facebook"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:112
+#: includes/abilities/auth/wdesignkit-login.php:114
 msgid "Completes a WDesignKit Google or Facebook OAuth login/signup using the state code produced after the user authorises in the OAuth browser popup. Covers Login with Google, Login with Facebook, Sign Up with Google, and Sign Up with Facebook — all share the same backend endpoint."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:158
+#: includes/abilities/auth/wdesignkit-login.php:161
 msgid "Sign Up for WDesignKit Cloud"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:159
+#: includes/abilities/auth/wdesignkit-login.php:162
 msgid "Creates a new WDesignKit cloud account with a full name, email address, and password, then stores the session token locally so cloud features are immediately available."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:210
+#: includes/abilities/auth/wdesignkit-login.php:214
 msgid "WDesignKit Cloud Forgot Password"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:211
+#: includes/abilities/auth/wdesignkit-login.php:215
 msgid "Sends a password reset email to the specified WDesignKit cloud account address. This is a read-only operation — no local session is modified."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:253
+#: includes/abilities/auth/wdesignkit-login.php:258
 msgid "Logout from WDesignKit Cloud"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:254
+#: includes/abilities/auth/wdesignkit-login.php:259
 msgid "Logs the currently authenticated user out of WDesignKit cloud. Deletes the local session transient, calls the cloud logout endpoint to invalidate the token, and clears the cached licence data."
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:289
+#: includes/abilities/auth/wdesignkit-login.php:295
 msgid "Get WDesignKit Social Login URL"
 msgstr ""
 
-#: includes/abilities/auth/wdesignkit-login.php:290
+#: includes/abilities/auth/wdesignkit-login.php:296
 msgid "Generates a Google or Facebook OAuth authorisation URL and a unique state token. Step 1 of social login: open the returned auth_url in a browser popup for the user to authorise, then pass the state to wdesignkit/social-login (Step 2) once the popup closes."
+msgstr ""
+
+#: includes/abilities/class-wdk-ability-lifecycle.php:339
+msgid "WDesignKit abilities are disabled on this site."
+msgstr ""
+
+#. translators: %s: input parameter name
+#: includes/abilities/class-wdk-ability-lifecycle.php:432
+#, php-format
+msgid "The \"%s\" parameter contains a path segment that is not allowed. Pass a plain name without directory separators or \"..\"."
 msgstr ""
 
 #: includes/abilities/class-wdk-ability-main.php:136
 msgid "The requested URL resolves to a disallowed or internal address."
 msgstr ""
 
-#: includes/abilities/class-wdk-ability-main.php:1161
-#: includes/admin/class-wdkit-enqueue.php:432
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:103
+#: includes/abilities/class-wdk-ability-main.php:1248
+#: includes/admin/class-wdkit-enqueue.php:470
 msgid "WDesignKit"
 msgstr ""
 
-#: includes/abilities/class-wdk-ability-main.php:1162
+#: includes/abilities/class-wdk-ability-main.php:1249
 msgid "Abilities for WDesignKit widget management and settings."
 msgstr ""
 
@@ -165,11 +174,11 @@ msgstr ""
 msgid "Returns the title and description of a locally stored code snippet by its WordPress post ID. Works with both post-based and file-based (Nexter Pro) snippet storage. No cloud login required."
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-get-snippet.php:63
+#: includes/abilities/code-snippets/wdesignkit-get-snippet.php:64
 msgid "Get Existing WDesignKit Cloud Snippets"
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-get-snippet.php:64
+#: includes/abilities/code-snippets/wdesignkit-get-snippet.php:65
 msgid "Fetches the current user's previously uploaded cloud snippets. Used when saving a snippet to check whether it already exists on the cloud and to obtain the cloud snippet ID for an update. Requires cloud login."
 msgstr ""
 
@@ -197,19 +206,19 @@ msgstr ""
 msgid "Lists the code snippets the current user has uploaded to the WDesignKit cloud marketplace. Supports search and pagination. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:66
+#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:67
 msgid "Get My WDesignKit Favourite Snippets"
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:67
+#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:68
 msgid "Lists the code snippets the current user has marked as favourites on the WDesignKit cloud marketplace. Supports search and pagination. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:119
+#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:121
 msgid "Favourite / Unfavourite WDesignKit Snippet"
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:120
+#: includes/abilities/code-snippets/wdesignkit-my-snippets.php:122
 msgid "Marks or unmarks a WDesignKit marketplace snippet as a favourite for the current user. Requires cloud login."
 msgstr ""
 
@@ -221,11 +230,11 @@ msgstr ""
 msgid "Reads a local nxt-code-snippet WordPress post by its post ID, packages all its meta fields, and uploads the snippet to the WDesignKit cloud marketplace. Use stype \"new\" for a first-time upload or \"existing\" with a snippet_id to update a previously uploaded snippet. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-save-snippet.php:93
+#: includes/abilities/code-snippets/wdesignkit-save-snippet.php:94
 msgid "Update WDesignKit Local Snippet Details"
 msgstr ""
 
-#: includes/abilities/code-snippets/wdesignkit-save-snippet.php:94
+#: includes/abilities/code-snippets/wdesignkit-save-snippet.php:95
 msgid "Updates the title and/or description of a local code snippet. Works with both Nexter Pro file-based storage (provide file_id) and legacy WordPress post-based storage (provide post_id). This is a local-only operation — no cloud call is made. To sync the updated details to the cloud, follow up with wdesignkit/save-snippet using stype \"existing\"."
 msgstr ""
 
@@ -245,27 +254,27 @@ msgstr ""
 msgid "Activates a licence key against the WDesignKit cloud API. On success the returned licence record is stored locally in the wdkit_licence_data option so licence-gated features are immediately available. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:76
+#: includes/abilities/licence/wdesignkit-licence.php:77
 msgid "Delete WDesignKit Licence"
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:77
+#: includes/abilities/licence/wdesignkit-licence.php:78
 msgid "Deactivates and removes a licence key from the WDesignKit cloud. For the \"wdkit\" licence, the local wdkit_licence_data option is also deleted. Requires cloud login and confirm: true."
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:135
+#: includes/abilities/licence/wdesignkit-licence.php:137
 msgid "Sync WDesignKit Licence"
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:136
+#: includes/abilities/licence/wdesignkit-licence.php:138
 msgid "Refreshes a licence record by re-fetching its current status from the WDesignKit cloud API. Useful after a plan upgrade or after renewing an expired licence. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:184
+#: includes/abilities/licence/wdesignkit-licence.php:187
 msgid "WDesignKit Licence Credit & Storage Overview"
 msgstr ""
 
-#: includes/abilities/licence/wdesignkit-licence.php:185
+#: includes/abilities/licence/wdesignkit-licence.php:188
 msgid "Returns a combined overview of the locally stored WDesignKit licence record (plan, expiry, status) plus current AI credit balance fetched from the cloud. Set refresh: true to fetch fresh credit data; omit it to use locally cached licence data only."
 msgstr ""
 
@@ -293,11 +302,11 @@ msgstr ""
 msgid "Returns the current visibility state for the WDesignKit template library and per-builder template sources: Elementor templates and Gutenberg templates."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-design-templates-toggle.php:48
+#: includes/abilities/settings/wdesignkit-design-templates-toggle.php:49
 msgid "Toggle WDesignKit Design Template Visibility"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-design-templates-toggle.php:49
+#: includes/abilities/settings/wdesignkit-design-templates-toggle.php:50
 msgid "Enables or disables the WDesignKit template library and per-builder template sources. Turning off a builder-specific toggle hides that builder's templates without disabling the builder itself. Only the keys you pass are changed."
 msgstr ""
 
@@ -309,11 +318,11 @@ msgstr ""
 msgid "Returns the current enabled/disabled state for WDesignKit plugin features: widget builder master switch, template library master switch, code-snippet module, and debug/developer mode."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-features-manager-toggle.php:48
+#: includes/abilities/settings/wdesignkit-features-manager-toggle.php:49
 msgid "Toggle WDesignKit Plugin Features"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-features-manager-toggle.php:49
+#: includes/abilities/settings/wdesignkit-features-manager-toggle.php:50
 msgid "Enables or disables individual WDesignKit plugin features: the widget builder master switch, the template library master switch, the code-snippet module, and debug/developer mode. Only the keys you pass are changed."
 msgstr ""
 
@@ -333,11 +342,11 @@ msgstr ""
 msgid "Fetches the list of stable previous WDesignKit plugin versions available for rollback from wordpress.org. Excludes beta, RC, trunk, and dev versions, and any version equal to or newer than the currently installed version."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-rollback.php:50
+#: includes/abilities/settings/wdesignkit-rollback.php:51
 msgid "Rollback WDesignKit to Previous Version"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-rollback.php:51
+#: includes/abilities/settings/wdesignkit-rollback.php:52
 msgid "Downgrades the WDesignKit plugin to a specified previous stable version using the WordPress Plugin Upgrader. The plugin is automatically re-activated after installation. This replaces the current plugin files and cannot be undone without a further rollback or update. Requires confirm: true."
 msgstr ""
 
@@ -349,11 +358,11 @@ msgstr ""
 msgid "Gets all WDesignKit plugin settings including builder toggles (Elementor, Gutenberg, Bricks), template visibility, code snippet toggle, and debug mode."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-settings.php:62
+#: includes/abilities/settings/wdesignkit-settings.php:63
 msgid "Update WDesignKit Settings"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-settings.php:63
+#: includes/abilities/settings/wdesignkit-settings.php:64
 msgid "Updates WDesignKit plugin settings. You can toggle individual features like Elementor builder, Gutenberg builder, template library, code snippets, and debug mode."
 msgstr ""
 
@@ -365,19 +374,19 @@ msgstr ""
 msgid "Returns the current WDesignKit white-label branding configuration: custom plugin name, description, developer name, website URL, logo URL, and visibility toggles for help link, news, license tab, and rollback tab."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-white-label.php:49
+#: includes/abilities/settings/wdesignkit-white-label.php:50
 msgid "Set WDesignKit White Label Settings"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-white-label.php:50
+#: includes/abilities/settings/wdesignkit-white-label.php:51
 msgid "Configures WDesignKit white-label branding. plugin_name is required. All other fields are optional; provided fields are merged with any existing white label configuration."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-white-label.php:130
+#: includes/abilities/settings/wdesignkit-white-label.php:132
 msgid "Reset WDesignKit White Label Settings"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-white-label.php:131
+#: includes/abilities/settings/wdesignkit-white-label.php:133
 msgid "Deletes the entire WDesignKit white-label configuration, restoring the default plugin branding. Requires confirm: true."
 msgstr ""
 
@@ -389,11 +398,11 @@ msgstr ""
 msgid "Returns the current enabled/disabled state for each page builder integration: Elementor, Gutenberg, Gutenberg Core (native blocks), and Bricks. Also returns the master widget builder feature toggle."
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-widget-builders-toggle.php:48
+#: includes/abilities/settings/wdesignkit-widget-builders-toggle.php:49
 msgid "Toggle WDesignKit Widget Builders"
 msgstr ""
 
-#: includes/abilities/settings/wdesignkit-widget-builders-toggle.php:49
+#: includes/abilities/settings/wdesignkit-widget-builders-toggle.php:50
 msgid "Enables or disables individual page builder integrations (Elementor, Gutenberg, Gutenberg Core, Bricks) and the master widget builder feature toggle. Only the keys you pass are changed; omitted keys retain their current values."
 msgstr ""
 
@@ -533,11 +542,11 @@ msgstr ""
 msgid "Lists all WDesignKit widget categories. Categories are used to organize widgets in the page builder panel."
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-categories.php:63
+#: includes/abilities/utilities/wdesignkit-categories.php:64
 msgid "Manage Widget Categories"
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-categories.php:64
+#: includes/abilities/utilities/wdesignkit-categories.php:65
 msgid "Add or remove widget categories in WDesignKit. Categories help organize widgets in the page builder panel."
 msgstr ""
 
@@ -549,11 +558,11 @@ msgstr ""
 msgid "Checks if required plugins and themes are installed and active for WDesignKit widgets. Verifies Elementor, The Plus Addons, Nexter, Bricks, and other dependencies."
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-dependencies.php:60
+#: includes/abilities/utilities/wdesignkit-dependencies.php:61
 msgid "Install Plugin Dependency"
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-dependencies.php:61
+#: includes/abilities/utilities/wdesignkit-dependencies.php:62
 msgid "Installs and activates a WordPress plugin from wordpress.org. Used to install required dependencies for WDesignKit widgets (e.g. Elementor, The Plus Addons)."
 msgstr ""
 
@@ -565,16 +574,16 @@ msgstr ""
 msgid "Returns the full WDesignKit Abilities Guide (Markdown) — builder mapping, the create-code-verify widget workflow, the Nexter Blocks dedicated-ability rule, and safety rules for irreversible calls (dry_run before confirm, login before cloud, read before write). Call this BEFORE the first wdesignkit/* or nexter-blocks/* call in a session so subsequent calls follow the documented contracts."
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-get-abilities-guide.php:66
+#: includes/abilities/utilities/wdesignkit-get-abilities-guide.php:67
 msgid "WDesignKit abilities guide is missing or unreadable."
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-list-abilities.php:13
+#: includes/abilities/utilities/wdesignkit-list-abilities.php:27
 msgid "List WDesignKit Abilities"
 msgstr ""
 
-#: includes/abilities/utilities/wdesignkit-list-abilities.php:14
-msgid "Returns all registered WDesignKit abilities with their slugs, labels, descriptions, and input parameter summaries. Useful for discovering what operations are available."
+#: includes/abilities/utilities/wdesignkit-list-abilities.php:28
+msgid "Returns all registered WDesignKit abilities with their slugs, labels, descriptions, and input parameter summaries. Filterable by category, namespace and public-exposure flag. Useful for discovering what operations are available."
 msgstr ""
 
 #: includes/abilities/widgets/wdesignkit-browse-widgets.php:15
@@ -721,11 +730,11 @@ msgstr ""
 msgid "Activates a deactivated widget so it gets loaded by the page builder. The widget files remain unchanged; this only updates the activation status."
 msgstr ""
 
-#: includes/abilities/widgets/wdesignkit-toggle-widget.php:60
+#: includes/abilities/widgets/wdesignkit-toggle-widget.php:61
 msgid "Deactivate WDesignKit Widget"
 msgstr ""
 
-#: includes/abilities/widgets/wdesignkit-toggle-widget.php:61
+#: includes/abilities/widgets/wdesignkit-toggle-widget.php:62
 msgid "Deactivates a widget so it stops loading on the frontend. The widget files are preserved; this only updates the activation status. Useful for temporarily disabling a widget without deleting it."
 msgstr ""
 
@@ -761,19 +770,19 @@ msgstr ""
 msgid "Adds, removes, copies, or moves a cloud template within WDesignKit workspaces. Covers \"Add Template to Workspace\", \"Remove Template from Workspace\", \"Copy / Move Template in Workspace\", and \"Delete Template from Workspace\". Requires cloud login."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace-items.php:73
+#: includes/abilities/workspace/wdesignkit-workspace-items.php:74
 msgid "Manage Widget in WDesignKit Workspace"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace-items.php:74
+#: includes/abilities/workspace/wdesignkit-workspace-items.php:75
 msgid "Adds, removes, copies, or moves a cloud widget within WDesignKit workspaces. Covers \"Copy / Move Widget in Workspace\" and \"Delete Widget from Workspace\". Requires cloud login."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace-items.php:133
+#: includes/abilities/workspace/wdesignkit-workspace-items.php:135
 msgid "Manage Code Snippet in WDesignKit Workspace"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace-items.php:134
+#: includes/abilities/workspace/wdesignkit-workspace-items.php:136
 msgid "Adds, removes, copies, or moves a cloud code snippet within WDesignKit workspaces. Covers \"Copy / Move Code Snippet in Workspace\". Requires cloud login."
 msgstr ""
 
@@ -785,35 +794,35 @@ msgstr ""
 msgid "Creates a new cloud workspace in WDesignKit. A workspace is a shared environment for organising templates, widgets, and code snippets for team collaboration. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:63
+#: includes/abilities/workspace/wdesignkit-workspace.php:64
 msgid "Delete WDesignKit Workspace"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:64
+#: includes/abilities/workspace/wdesignkit-workspace.php:65
 msgid "Permanently deletes a WDesignKit cloud workspace by its workspace ID. Only the workspace container is removed — cloud templates, widgets, and snippets inside it are not deleted. Requires cloud login and confirm: true."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:112
+#: includes/abilities/workspace/wdesignkit-workspace.php:114
 msgid "Update WDesignKit Workspace"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:113
+#: includes/abilities/workspace/wdesignkit-workspace.php:115
 msgid "Updates the title and/or primary builder of an existing WDesignKit cloud workspace. Covers both \"Rename Workspace\" and \"Update Workspace Details\". Requires cloud login."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:164
+#: includes/abilities/workspace/wdesignkit-workspace.php:167
 msgid "Get WDesignKit Workspace Data"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:165
+#: includes/abilities/workspace/wdesignkit-workspace.php:168
 msgid "Retrieves full data for a specific WDesignKit cloud workspace including its templates, widgets, code snippets, member list, roles, and totals. Uses the v2 API. Requires cloud login."
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:209
+#: includes/abilities/workspace/wdesignkit-workspace.php:213
 msgid "Get WDesignKit Shared With Me"
 msgstr ""
 
-#: includes/abilities/workspace/wdesignkit-workspace.php:210
+#: includes/abilities/workspace/wdesignkit-workspace.php:214
 msgid "Lists templates and/or widgets that have been shared with the current user through WDesignKit cloud workspace collaboration. Supports type and builder filtering with pagination. Requires cloud login."
 msgstr ""
 
@@ -835,7 +844,7 @@ msgstr ""
 #: includes/admin/api/class-wdkit-theme-builder.php:75
 #: includes/admin/class-api.php:227
 #: includes/admin/hooks/class-wdkit-login-ajax.php:74
-#: build/wdk-i18n-strings.js:837
+#: build/wdk-i18n-strings.js:842
 msgid "Something went wrong."
 msgstr ""
 
@@ -869,8 +878,8 @@ msgid "Failed to delete snippet."
 msgstr ""
 
 #: includes/admin/api/class-wdkit-code-snippet.php:392
-#: includes/admin/class-api.php:5034
-#: includes/admin/class-api.php:5817
+#: includes/admin/class-api.php:5091
+#: includes/admin/class-api.php:5935
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:152
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:185
 #: includes/admin/hooks/class-wdkit-import-temp-ajax.php:553
@@ -993,7 +1002,7 @@ msgstr ""
 #: includes/admin/hooks/class-wdkit-login-ajax.php:401
 #: includes/admin/hooks/class-wdkit-preset-ajax.php:303
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:1377
-#: build/wdk-i18n-strings.js:856
+#: build/wdk-i18n-strings.js:861
 msgid "Success"
 msgstr ""
 
@@ -1015,7 +1024,7 @@ msgstr ""
 
 #: includes/admin/class-api.php:1179
 #: includes/admin/class-api.php:1180
-#: includes/admin/class-api.php:5035
+#: includes/admin/class-api.php:5092
 msgid "Data not found"
 msgstr ""
 
@@ -1172,133 +1181,133 @@ msgid "Elementor Container Activated Successfully."
 msgstr ""
 
 #: includes/admin/class-api.php:3008
-#: includes/admin/class-api.php:3831
-#: includes/admin/class-api.php:3955
+#: includes/admin/class-api.php:3857
+#: includes/admin/class-api.php:4001
 msgid "Invalid import"
 msgstr ""
 
 #: includes/admin/class-api.php:3009
-#: includes/admin/class-api.php:3832
-#: includes/admin/class-api.php:3956
+#: includes/admin/class-api.php:3858
+#: includes/admin/class-api.php:4002
 msgid "Invalid import: Check your details and try again."
 msgstr ""
 
-#: includes/admin/class-api.php:3894
-#: includes/admin/class-api.php:3895
+#: includes/admin/class-api.php:3940
+#: includes/admin/class-api.php:3941
 msgid "Widget array not found"
 msgstr ""
 
-#: includes/admin/class-api.php:3904
+#: includes/admin/class-api.php:3950
 msgid "Relevant Plugin not Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:3905
+#: includes/admin/class-api.php:3951
 msgid "Relevant Plugin not Installed / Activated"
 msgstr ""
 
-#: includes/admin/class-api.php:3921
+#: includes/admin/class-api.php:3967
 msgid "Enabled widgets successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:3922
+#: includes/admin/class-api.php:3968
 msgid "Used widgets have been enabled successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:3927
-#: includes/admin/class-api.php:3928
+#: includes/admin/class-api.php:3973
+#: includes/admin/class-api.php:3974
 msgid "Failed to enable widgets"
 msgstr ""
 
-#: includes/admin/class-api.php:4098
+#: includes/admin/class-api.php:4144
 msgid "Invalid page or insufficient permission"
 msgstr ""
 
-#: includes/admin/class-api.php:4141
+#: includes/admin/class-api.php:4187
 msgid "Elementor not available"
 msgstr ""
 
-#: includes/admin/class-api.php:4149
+#: includes/admin/class-api.php:4195
 msgid "Elementor document not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4163
+#: includes/admin/class-api.php:4209
 msgid "Page content updated"
 msgstr ""
 
-#: includes/admin/class-api.php:4261
-#: includes/admin/class-api.php:4387
+#: includes/admin/class-api.php:4307
+#: includes/admin/class-api.php:4440
 msgid "Content is Empty."
 msgstr ""
 
-#: includes/admin/class-api.php:4374
-#: includes/admin/class-api.php:4514
+#: includes/admin/class-api.php:4427
+#: includes/admin/class-api.php:4571
 msgid "Successfully Imported."
 msgstr ""
 
-#: includes/admin/class-api.php:4525
+#: includes/admin/class-api.php:4582
 msgid "Relevant Page Builder not installed or activated"
 msgstr ""
 
-#: includes/admin/class-api.php:4536
-#: build/wdk-i18n-strings.js:836
+#: includes/admin/class-api.php:4593
+#: build/wdk-i18n-strings.js:841
 msgid "Something went wrong"
 msgstr ""
 
-#: includes/admin/class-api.php:4609
-#: includes/admin/class-api.php:4610
+#: includes/admin/class-api.php:4666
+#: includes/admin/class-api.php:4667
 msgid "Plugin Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:4615
-#: includes/admin/class-api.php:4616
+#: includes/admin/class-api.php:4672
+#: includes/admin/class-api.php:4673
 msgid "Plugin not found"
 msgstr ""
 
-#: includes/admin/class-api.php:4877
-#: includes/admin/class-api.php:4878
+#: includes/admin/class-api.php:4934
+#: includes/admin/class-api.php:4935
 msgid "Theme Setting updated"
 msgstr ""
 
-#: includes/admin/class-api.php:4917
-#: includes/admin/class-api.php:4918
+#: includes/admin/class-api.php:4974
+#: includes/admin/class-api.php:4975
 msgid "Site link updated"
 msgstr ""
 
-#: includes/admin/class-api.php:4924
-#: includes/admin/class-api.php:4925
+#: includes/admin/class-api.php:4981
+#: includes/admin/class-api.php:4982
 msgid "Site not found"
 msgstr ""
 
-#: includes/admin/class-api.php:5314
+#: includes/admin/class-api.php:5432
 msgid "Workspace ID Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:5315
+#: includes/admin/class-api.php:5433
 msgid "Workspace ID is required"
 msgstr ""
 
-#: includes/admin/class-api.php:5322
+#: includes/admin/class-api.php:5440
 msgid "Token Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:5323
+#: includes/admin/class-api.php:5441
 msgid "Token is required"
 msgstr ""
 
-#: includes/admin/class-api.php:5377
-#: includes/admin/class-api.php:5392
-#: includes/admin/class-api.php:5404
+#: includes/admin/class-api.php:5495
+#: includes/admin/class-api.php:5510
+#: includes/admin/class-api.php:5522
 msgid "Widget JSON not found"
 msgstr ""
 
-#: includes/admin/class-api.php:5378
-#: includes/admin/class-api.php:5405
+#: includes/admin/class-api.php:5496
+#: includes/admin/class-api.php:5523
 msgid "widget JSON file not found."
 msgstr ""
 
-#: includes/admin/class-api.php:5393
-#: includes/admin/class-api.php:5518
-#: includes/admin/class-api.php:5661
+#: includes/admin/class-api.php:5511
+#: includes/admin/class-api.php:5636
+#: includes/admin/class-api.php:5779
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:225
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:252
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:494
@@ -1310,25 +1319,25 @@ msgstr ""
 msgid "Invalid widget path."
 msgstr ""
 
-#: includes/admin/class-api.php:5414
+#: includes/admin/class-api.php:5532
 msgid "Widget get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:5415
+#: includes/admin/class-api.php:5533
 msgid "Widget JSON get Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:5420
+#: includes/admin/class-api.php:5538
 msgid "Widget not get"
 msgstr ""
 
-#: includes/admin/class-api.php:5421
+#: includes/admin/class-api.php:5539
 msgid "Widget JSON not get"
 msgstr ""
 
-#: includes/admin/class-api.php:5451
-#: includes/admin/class-api.php:5617
-#: includes/admin/class-api.php:5703
+#: includes/admin/class-api.php:5569
+#: includes/admin/class-api.php:5735
+#: includes/admin/class-api.php:5821
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:189
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:312
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:375
@@ -1336,21 +1345,21 @@ msgstr ""
 msgid "server error"
 msgstr ""
 
-#: includes/admin/class-api.php:5455
+#: includes/admin/class-api.php:5573
 msgid " Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:5490
+#: includes/admin/class-api.php:5608
 msgid "No Response Found"
 msgstr ""
 
-#: includes/admin/class-api.php:5491
+#: includes/admin/class-api.php:5609
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:194
 msgid "Widget not Downloaded"
 msgstr ""
 
-#: includes/admin/class-api.php:5517
-#: includes/admin/class-api.php:5660
+#: includes/admin/class-api.php:5635
+#: includes/admin/class-api.php:5778
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:493
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:515
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:809
@@ -1360,39 +1369,39 @@ msgstr ""
 msgid "Operation Failed!"
 msgstr ""
 
-#: includes/admin/class-api.php:5565
+#: includes/admin/class-api.php:5683
 msgid "no message"
 msgstr ""
 
-#: includes/admin/class-api.php:5622
+#: includes/admin/class-api.php:5740
 msgid "Widget Not Added"
 msgstr ""
 
-#: includes/admin/class-api.php:5834
+#: includes/admin/class-api.php:5952
 msgid "Plugin Name Not Found"
 msgstr ""
 
-#: includes/admin/class-api.php:5843
+#: includes/admin/class-api.php:5961
 msgid "Data Added successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:5864
+#: includes/admin/class-api.php:5982
 msgid "Reset White Label Successfully"
 msgstr ""
 
-#: includes/admin/class-api.php:6032
+#: includes/admin/class-api.php:6150
 msgid "Invalid Nonce or version not found"
 msgstr ""
 
-#: includes/admin/class-api.php:6068
+#: includes/admin/class-api.php:6186
 msgid "Rollback to Previous Version"
 msgstr ""
 
-#: includes/admin/class-api.php:6077
+#: includes/admin/class-api.php:6195
 msgid "Rollback Successful, Plugin Re-activated"
 msgstr ""
 
-#: includes/admin/class-api.php:6299
+#: includes/admin/class-api.php:6417
 msgid "Dark Mode Updated"
 msgstr ""
 
@@ -1637,12 +1646,12 @@ msgid "Builder Type not found"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:728
-#: build/wdk-i18n-strings.js:966
+#: build/wdk-i18n-strings.js:971
 msgid "Updates Saved!"
 msgstr ""
 
 #: includes/admin/hooks/class-wdkit-widget-ajax.php:729
-#: build/wdk-i18n-strings.js:1099
+#: build/wdk-i18n-strings.js:1104
 msgid "Your changes have been saved successfully."
 msgstr ""
 
@@ -1745,129 +1754,41 @@ msgstr ""
 msgid "Widget versions retrieved successfully"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:112
-msgid "Quick Feedback Before You Go"
-msgstr ""
-
-#. translators: %s: plugin name
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:117
-#, php-format
-msgid "Help us improve %s, let us know why you're leaving."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:121
-#: assets/js/main/wdkit-cross-copy-paste.js:1070
-#: build/wdk-i18n-strings.js:157
-msgid "Close"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:136
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:133
 msgid "Import Issues"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:137
-msgid "Problems while importing templates, widgets, or snippets"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:140
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:137
 msgid "Temporary Deactivation"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:141
-msgid "Not using it right now, but may come back later"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:144
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:141
 msgid "Collaboration Issues"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:145
-msgid "Issues with team access, sharing, or workspace management"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:148
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:145
 msgid "Setup & Requirements Issues"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:149
-msgid "Compatibility or setup-related problems"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:152
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:149
 msgid "License & Activation Issues"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:153
-msgid "Trouble with license activation or access"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:156
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:153
 msgid "Something Not Working"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:157
-msgid "Features not working as expected"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:160
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:157
 msgid "Missing Features"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:161
-msgid "Couldn't find features you were looking for"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:164
+#: includes/admin/notices/class-wdkit-deactivate-survey.php:161
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:189
 msgid "Other"
 msgstr ""
 
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:165
-msgid "Something else you'd like to share"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:186
-msgid "Want to share more details?"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:188
-msgid "Share what didn't work or how we can improve..."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:200
-msgid "I agree to be contacted via email for support regarding this issue."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:209
-msgid "Need help with anything else? Raise a"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:211
-msgid "support ticket"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:212
-msgid ", we usually reply within 24 working hours. Looking for quick answers? Check our"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:214
-msgid "documentation"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:215
-msgid "."
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:224
-msgid "Skip & Deactivate"
-msgstr ""
-
-#: includes/admin/notices/class-wdkit-deactivate-feedback.php:227
-#: assets/js/main/review-form/review-plugin-form.js:12
-msgid "Submit"
-msgstr ""
-
 #: includes/admin/notices/class-wdkit-plugin-page.php:95
-#: build/wdk-i18n-strings.js:808
+#: build/wdk-i18n-strings.js:812
 msgid "Settings"
 msgstr ""
 
@@ -1877,7 +1798,7 @@ msgstr ""
 
 #: includes/admin/notices/class-wdkit-plugin-page.php:97
 #: includes/admin/notices/class-wdkit-rating.php:288
-#: build/wdk-i18n-strings.js:560
+#: build/wdk-i18n-strings.js:564
 msgid "Need Help?"
 msgstr ""
 
@@ -1949,12 +1870,114 @@ msgstr ""
 msgid "API returned error"
 msgstr ""
 
+#. translators: %s: product name
+#: includes/posimyth-sdk/class-posimyth-consent-notice.php:247
+#, php-format
+msgid "Help make %s faster and more stable. Share basic, non-sensitive info so we can catch conflicts and ship fixes quicker. No personal data, ever."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-consent-notice.php:251
+msgid "See what's shared"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-consent-notice.php:254
+msgid "Allow"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-consent-notice.php:255
+msgid "Dismiss"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:183
+msgid "I no longer need the plugin"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:184
+msgid "I found a better plugin"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:185
+msgid "It's not working"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:186
+msgid "It's a temporary deactivation"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:187
+msgid "Plugin conflict"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:188
+msgid "It slowed down my site"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:370
+msgid "Quick Feedback"
+msgstr ""
+
+#. translators: %s: product name
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:375
+#, php-format
+msgid "Help us improve %s. Why are you deactivating?"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:409
+msgid "Please share more details…"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:439
+msgid "I agree to be contacted via email for support with this plugin."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:445
+msgid "Skip & Deactivate"
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:446
+msgid "Submit & Deactivate"
+msgstr ""
+
+#. translators: %s: product name
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:451
+#, php-format
+msgid "Submitting shares non-sensitive info so we can improve %s. No personal data."
+msgstr ""
+
+#. translators: %s: product name
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:453
+#, php-format
+msgid "Submitting shares non-sensitive info so we can improve %s, plus your admin email so we can reply."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-deactivation-survey.php:602
+msgid "Submitting…"
+msgstr ""
+
+#. translators: %s: product name
+#: includes/posimyth-sdk/class-posimyth-tracker-base.php:189
+#, php-format
+msgid "%s can send non-sensitive information about this website to POSIMYTH Innovation (api.posimyth.com) to help diagnose conflicts and prioritise fixes. This is off by default, and while it is off nothing is collected or sent automatically."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-tracker-base.php:193
+msgid "When enabled, the information sent is: the site URL, the plugin version, PHP / MySQL / WordPress versions, server software, timezone, locale, memory limit, maximum upload size, permalink structure, whether HTTPS / multisite / debug mode are on, the environment type, the number of registered users, the active theme and its version, the detected page builder, the list of active plugin folders and their count, which of the plugin's features are enabled and how often they are used, Pro/Free and licence status, and the install date. It is sent when the plugin is activated, when it is deactivated, and once a week in the background."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-tracker-base.php:195
+msgid "There is one case where information is sent even while the setting is off: the feedback form shown when the plugin is deactivated. If an administrator fills it in and presses Submit, that submission is sent - the reason chosen, any comment typed, and the same non-sensitive setup information listed above - because pressing Submit is the consent for it. Choosing Skip, pressing Esc or clicking outside the form sends nothing at all."
+msgstr ""
+
+#: includes/posimyth-sdk/class-posimyth-tracker-base.php:197
+msgid "No post or page content, visitor data, user names or email addresses are included. The one exception is that same feedback form: if an administrator ticks \"I agree to be contacted via email\" there, the site administration email address is sent with the feedback so POSIMYTH can reply. That box is off by default."
+msgstr ""
+
 #: includes/widget-load/elementor/wb-controller.php:88
 msgid "You Haven't Saved Templates Yet."
 msgstr ""
 
 #: includes/widget-load/elementor/wb-controller.php:92
-#: build/wdk-i18n-strings.js:785
+#: build/wdk-i18n-strings.js:789
 msgid "Select Template"
 msgstr ""
 
@@ -1964,12 +1987,26 @@ msgstr ""
 msgid "WDesignKit requires PHP %s or higher. Please update PHP to use this plugin."
 msgstr ""
 
+#: wdesignkit.php:292
+#: assets/js/main/wdkit-cross-copy-paste.js:1070
+#: build/wdk-i18n-strings.js:158
+msgid "Close"
+msgstr ""
+
+#: wdesignkit.php:347
+msgid "Reset Data Sharing Notice"
+msgstr ""
+
+#: wdesignkit.php:393
+msgid "Data-sharing consent reset. The notice should appear below."
+msgstr ""
+
 #: assets/js/main/elementor/elementor-editor.js:42
 msgid "Save Page in WDesignKit"
 msgstr ""
 
 #: assets/js/main/elementor/elementor-editor.js:70
-#: build/wdk-i18n-strings.js:761
+#: build/wdk-i18n-strings.js:765
 msgid "Save in WDesignKit"
 msgstr ""
 
@@ -1997,14 +2034,18 @@ msgstr ""
 msgid "Include your email with your review"
 msgstr ""
 
+#: assets/js/main/review-form/review-plugin-form.js:12
+msgid "Submit"
+msgstr ""
+
 #: assets/js/main/wdkit-cross-copy-paste.js:416
 #: assets/js/main/wdkit-cross-copy-paste.js:520
-#: build/wdk-i18n-strings.js:233
+#: build/wdk-i18n-strings.js:235
 msgid "Downloading Widget"
 msgstr ""
 
 #: assets/js/main/wdkit-cross-copy-paste.js:428
-#: build/wdk-i18n-strings.js:660
+#: build/wdk-i18n-strings.js:664
 msgid "Please log in to WDesignKit to download this widget."
 msgstr ""
 
@@ -2690,3961 +2731,3979 @@ msgid "Choose how you want to import content with your template."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:151
-msgid "Classes"
+msgid "Choose what usage details you share with us."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:152
-msgid "Classic"
+msgid "Classes"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:153
-msgid "Clear All Filters"
+msgid "Classic"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:154
-msgid "Click the heart icon on any snippet to add it to your favorites."
+msgid "Clear All Filters"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:155
-msgid "Click to know more"
+msgid "Click the heart icon on any snippet to add it to your favorites."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:156
+msgid "Click to know more"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:157
 msgid "Click to refresh and check your login status."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:158
+#: build/wdk-i18n-strings.js:159
 msgid "Cloud Workspace"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:159
+#: build/wdk-i18n-strings.js:160
 msgid "Code Snippet"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:160
+#: build/wdk-i18n-strings.js:161
 msgid "Code"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:161
+#: build/wdk-i18n-strings.js:162
 msgid "Color & Image"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:162
+#: build/wdk-i18n-strings.js:163
 msgid "Color"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:163
+#: build/wdk-i18n-strings.js:164
 msgid "Coming Soon"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:164
+#: build/wdk-i18n-strings.js:165
 msgid "Complete login in the new tab first, refresh will enable automatically."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:165
+#: build/wdk-i18n-strings.js:166
 msgid "Conditions"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:166
+#: build/wdk-i18n-strings.js:167
 msgid "Content & Media Setup"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:167
+#: build/wdk-i18n-strings.js:168
 msgid "Continue via Login Key"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:168
+#: build/wdk-i18n-strings.js:169
 msgid "Continue with"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:169
+#: build/wdk-i18n-strings.js:170
 msgid "Contributors"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:170
+#: build/wdk-i18n-strings.js:171
 msgid "Controls"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:171
+#: build/wdk-i18n-strings.js:172
 msgid "Convert to"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:172
+#: build/wdk-i18n-strings.js:173
 msgid "Convert"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:173
+#: build/wdk-i18n-strings.js:174
 msgid "Converting your widget"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:174
+#: build/wdk-i18n-strings.js:175
 msgid "Converting"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:175
+#: build/wdk-i18n-strings.js:176
 msgid "Copy to Workspace"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:176
+#: build/wdk-i18n-strings.js:177
 msgid "Copy to workspace"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:177
+#: build/wdk-i18n-strings.js:178
 msgid "Core Gutenberg"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:178
+#: build/wdk-i18n-strings.js:179
 msgid "Create "
 msgstr ""
 
-#: build/wdk-i18n-strings.js:179
+#: build/wdk-i18n-strings.js:180
 msgid "Create Account"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:180
+#: build/wdk-i18n-strings.js:181
 msgid "Create New Category"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:181
+#: build/wdk-i18n-strings.js:182
 msgid "Create Widget"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:182
+#: build/wdk-i18n-strings.js:183
 msgid "Create Workspace"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:183
+#: build/wdk-i18n-strings.js:184
 msgid "Create an account"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:184
+#: build/wdk-i18n-strings.js:185
 msgid "Create and customize your own widgets."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:185
+#: build/wdk-i18n-strings.js:186
 msgid "Create your account to get started."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:186
+#: build/wdk-i18n-strings.js:187
 msgid "Credit Limit Reached!"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:187
+#: build/wdk-i18n-strings.js:188
 msgid "Credits used for AI content and image generation during the import process. On average, one page consumes ~20 credits, though usage may vary by template."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:188
+#: build/wdk-i18n-strings.js:189
 msgid "Cross Domain Copy/Paste"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:189
+#: build/wdk-i18n-strings.js:190
 msgid "Current Version"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:190
+#: build/wdk-i18n-strings.js:191
 msgid "Current Widget"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:191
+#: build/wdk-i18n-strings.js:192
 msgid "Custom Icon"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:192
+#: build/wdk-i18n-strings.js:193
 msgid "Custom Svg"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:193
+#: build/wdk-i18n-strings.js:194
 msgid "Custom Title"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:194
+#: build/wdk-i18n-strings.js:195
 msgid "Custom attributes string that come as a string of comma-delimited key|value pairs."
 msgstr ""
 
-#: build/wdk-i18n-strings.js:195
+#: build/wdk-i18n-strings.js:196
 msgid "Customize branding with your own identity.   "
 msgstr ""
 
-#: build/wdk-i18n-strings.js:196
+#: build/wdk-i18n-strings.js:197
 msgid "Customize"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:197
+#: build/wdk-i18n-strings.js:198
 msgid "Danger"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:198
+#: build/wdk-i18n-strings.js:199
 msgid "Dark"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:199
-msgid "Date"
-msgstr ""
-
 #: build/wdk-i18n-strings.js:200
-msgid "Datetime-Local"
+msgid "Data Sharing"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:201
-msgid "Default Count"
+msgid "Date"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:202
-msgid "Default Value"
+msgid "Datetime-Local"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:203
-msgid "Default color in RGB, RGBA, or HEX format."
+msgid "Default Count"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:204
-msgid "Default"
+msgid "Default Value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:205
-msgid "Define Your Brand"
+msgid "Default color in RGB, RGBA, or HEX format."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:206
-msgid "Delete Snippet"
+msgid "Default"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:207
-msgid "Delete all WDesignKit plugin data (templates/widgets)"
+msgid "Define Your Brand"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:208
-msgid "Delete all the WDesignKit promotion related data."
+msgid "Delete Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:209
-msgid "Delete all the Widget Builder widget data."
+msgid "Delete all WDesignKit plugin data (templates/widgets)"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:210
-msgid "Delete the selected database permanently."
+msgid "Delete all the WDesignKit promotion related data."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:211
-msgid "Delete"
+msgid "Delete all the Widget Builder widget data."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:212
-msgid "Description"
+msgid "Delete the selected database permanently."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:213
-msgid "Design Template"
+msgid "Delete"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:214
-msgid "Design Templates"
+msgid "Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:215
-msgid "Details are not valid"
+msgid "Design Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:216
-msgid "Developer/Agency"
+msgid "Design Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:217
-msgid "Dismissible"
+msgid "Details are not valid"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:218
-msgid "Do you want to load jQuery ?"
+msgid "Developer/Agency"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:219
-msgid "Do you want to replace this?"
+msgid "Dismissible"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:220
-msgid "Don't have an account?"
+msgid "Do you want to load jQuery ?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:221
-msgid "Down-Arrow"
+msgid "Do you want to replace this?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:222
-msgid "Download Complete"
+msgid "Don't have an account?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:223
-msgid "Download Completed"
+msgid "Down-Arrow"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:224
-msgid "Download Failed"
+msgid "Download Complete"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:225
-msgid "Download Plugin"
+msgid "Download Completed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:226
-msgid "Download Snippet"
+msgid "Download Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:227
-msgid "Download Snippets"
+msgid "Download Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:228
-msgid "Download WP Plugin"
+msgid "Download Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:229
-msgid "Download Widget as Plugin"
+msgid "Download Snippets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:230
-msgid "Download ZIP"
+msgid "Download WP Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:231
-msgid "Download failed. Please try again."
+msgid "Download Widget as Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:232
-msgid "Download"
+msgid "Download ZIP"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:233
+msgid "Download failed. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:234
-msgid "Draft"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:235
-msgid "Drag & Drop or Upload Widget ZIP File Here"
+msgid "Download"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:236
-msgid "Drag & drop or upload an image file here"
+msgid "Draft"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:237
-msgid "Drop Down Value"
+msgid "Drag & Drop or Upload Widget ZIP File Here"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:238
-msgid "Duplicate"
+msgid "Drag & drop or upload an image file here"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:239
-msgid "Dynamic"
+msgid "Drop Down Value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:240
-msgid "E-icons"
+msgid "Duplicate"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:241
-msgid "E.g. +1 (213) 449-4470"
+msgid "Dynamic"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:242
-msgid "E.g. 123 Street...."
+msgid "E-icons"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:243
-msgid "E.g. Agency Website, NGO ..."
+msgid "E.g. +1 (213) 449-4470"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:244
-msgid "E.g. Apple Inc."
+msgid "E.g. 123 Street...."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:245
-msgid "E.g. Think Different"
+msgid "E.g. Agency Website, NGO ..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:246
-msgid "E.g. admin@gmail.com"
+msgid "E.g. Apple Inc."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:247
-msgid "Edit Widget Information"
+msgid "E.g. Think Different"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:248
-msgid "Edit in New Tab"
+msgid "E.g. admin@gmail.com"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:249
-msgid "Edit"
+msgid "Edit Widget Information"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:250
-msgid "Elementor Page Builder"
+msgid "Edit in New Tab"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:251
-msgid "Elementor Plugin"
+msgid "Edit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:252
-msgid "Elementor Pro"
+msgid "Elementor Page Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:253
-msgid "Elementor Widget Builder"
+msgid "Elementor Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:254
-msgid "Elementor Widgets"
+msgid "Elementor Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:255
-msgid "Elementor"
+msgid "Elementor Widget Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:256
-msgid "Email is not valid"
+msgid "Elementor Widgets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:257
-msgid "Email is not valid."
+msgid "Elementor"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:258
-msgid "Email"
+msgid "Email is not valid"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:259
-msgid "Email:"
+msgid "Email is not valid."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:260
-msgid "Enable any one feature to continue!"
+msgid "Email"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:261
-msgid "Enable copy and paste between different domains."
+msgid "Email:"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:262
-msgid "Enable or disable the Code Snippet feature. Disabling it will also turn off Browse Snippets, My Snippets, and workspace snippet options."
+msgid "Enable any one feature to continue!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:263
-msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
+msgid "Enable copy and paste between different domains."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:264
-msgid "Enable/Disable Bricks Widget builder and all Bricks Widgets."
+msgid "Enable or disable the Code Snippet feature. Disabling it will also turn off Browse Snippets, My Snippets, and workspace snippet options."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:265
-msgid "Enable/Disable Core Gutenberg Widget Builder and all Core Gutenberg Widgets."
+msgid "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:266
-msgid "Enable/Disable Elementor Builder Control the Elementor page builder. Only enabled templates will remain active."
+msgid "Enable/Disable Bricks Widget builder and all Bricks Widgets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:267
-msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
+msgid "Enable/Disable Core Gutenberg Widget Builder and all Core Gutenberg Widgets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:268
-msgid "Enable/Disable Gutenberg Builder Control the Gutenberg page builder. Only enabled templates will remain active."
+msgid "Enable/Disable Elementor Builder Control the Elementor page builder. Only enabled templates will remain active."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:269
-msgid "Enable/Disable Nexter Gutenberg Widget builder and all Nexter Gutenberg Widgets."
+msgid "Enable/Disable Elementor widget builder and all Elementor widgets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:270
-msgid "Enable/Disable Templates Feature Manage all template-related options, including downloading, uploading, and workspace functionalities."
+msgid "Enable/Disable Gutenberg Builder Control the Gutenberg page builder. Only enabled templates will remain active."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:271
-msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Elementor editor."
+msgid "Enable/Disable Nexter Gutenberg Widget builder and all Nexter Gutenberg Widgets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:272
-msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Gutenberg editor."
+msgid "Enable/Disable Templates Feature Manage all template-related options, including downloading, uploading, and workspace functionalities."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:273
-msgid "Enable/Disable Widget Builder Control access to the No-Code Widget Builder, including widget creation, and upload/download options for Elementor, Gutenberg and Bricks."
+msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Elementor editor."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:274
-msgid "End"
+msgid "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Gutenberg editor."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:275
-msgid "Enter Author Name"
+msgid "Enable/Disable Widget Builder Control access to the No-Code Widget Builder, including widget creation, and upload/download options for Elementor, Gutenberg and Bricks."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:276
-msgid "Enter Author URL"
+msgid "End"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:277
-msgid "Enter CSS properties (e.g., color, font-size, background-color) to apply to the selected class or ID."
+msgid "Enter Author Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:278
-msgid "Enter Change Log"
+msgid "Enter Author URL"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:279
-msgid "Enter Contributors"
+msgid "Enter CSS properties (e.g., color, font-size, background-color) to apply to the selected class or ID."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:280
-msgid "Enter Developer Name"
+msgid "Enter Change Log"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:281
-msgid "Enter FAQ"
+msgid "Enter Contributors"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:282
-msgid "Enter Licence URL"
+msgid "Enter Developer Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:283
-msgid "Enter New Widget Name"
+msgid "Enter FAQ"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:284
-msgid "Enter PHP Version"
+msgid "Enter Licence URL"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:285
-msgid "Enter Plugin Description"
+msgid "Enter New Widget Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:286
-msgid "Enter Plugin Name"
+msgid "Enter PHP Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:287
-msgid "Enter Plugin Prefix"
+msgid "Enter Plugin Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:288
-msgid "Enter Plugin Slug"
+msgid "Enter Plugin Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:289
-msgid "Enter Short Description"
+msgid "Enter Plugin Prefix"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:290
-msgid "Enter Snippet Description"
+msgid "Enter Plugin Slug"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:291
-msgid "Enter Snippet Name"
+msgid "Enter Short Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:292
-msgid "Enter Tags"
+msgid "Enter Snippet Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:293
-msgid "Enter Template Name"
+msgid "Enter Snippet Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:294
-msgid "Enter Text Domain"
+msgid "Enter Tags"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:295
-msgid "Enter URL for users to get more information about this widget."
+msgid "Enter Template Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:296
-msgid "Enter Version"
+msgid "Enter Text Domain"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:297
-msgid "Enter Web URL"
+msgid "Enter URL for users to get more information about this widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:298
-msgid "Enter Widget Name"
+msgid "Enter Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:299
-msgid "Enter WordPress Version"
+msgid "Enter Web URL"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:300
-msgid "Enter a unique identifier used for the plugin folder and references."
+msgid "Enter Widget Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:301
-msgid "Enter a unique text domain used for translations and localization."
+msgid "Enter WordPress Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:302
-msgid "Enter keywords to allow searching in elementor editor."
+msgid "Enter a unique identifier used for the plugin folder and references."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:303
-msgid "Enter the URL of an external CSS library (CDN). You can search for a CSS CDN online or paste the link directly here."
+msgid "Enter a unique text domain used for translations and localization."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:304
-msgid "Enter the URL of an external JS library (CDN). You can search for a JS CDN online or paste the link directly here."
+msgid "Enter keywords to allow searching in elementor editor."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:305
-msgid "Enter the name of the plugin author or organization."
+msgid "Enter the URL of an external CSS library (CDN). You can search for a CSS CDN online or paste the link directly here."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:306
-msgid "Enter the name users will see for your plugin."
+msgid "Enter the URL of an external JS library (CDN). You can search for a JS CDN online or paste the link directly here."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:307
-msgid "Enter workspace name"
+msgid "Enter the name of the plugin author or organization."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:308
-msgid "Enter your Widget Name"
+msgid "Enter the name users will see for your plugin."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:309
-msgid "Enter your credentials to access your account."
+msgid "Enter workspace name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:310
-msgid "Enter your email to receive a password reset link."
+msgid "Enter your Widget Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:311
-msgid "Enter your email"
+msgid "Enter your credentials to access your account."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:312
-msgid "Enter your login key to access your account."
+msgid "Enter your email to receive a password reset link."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:313
-msgid "Error Handling"
+msgid "Enter your email"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:314
-msgid "Error"
+msgid "Enter your login key to access your account."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:315
-msgid "Everything’s set up. You can start customizing or explore your new site right away."
+msgid "Error Handling"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:316
-msgid "Exclude Inline Options"
+msgid "Error"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:317
-msgid "Existing Licence Keys"
+msgid "Everything’s set up. You can start customizing or explore your new site right away."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:318
-msgid "Existing Snippet"
+msgid "Exclude Inline Options"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:319
-msgid "Existing Template"
+msgid "Existing Licence Keys"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:320
-msgid "Explore 500+ Newly Added Template Kits, Pages & Sections"
+msgid "Existing Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:321
-msgid "Explore the differences between Nexter Blocks and WDesignKit to see what's included in each!"
+msgid "Existing Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:322
-msgid "Explore the differences between The Plus Addons and WDesignKit to see what's included in each!"
+msgid "Explore 500+ Newly Added Template Kits, Pages & Sections"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:323
-msgid "FAQ"
+msgid "Explore the differences between Nexter Blocks and WDesignKit to see what's included in each!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:324
-msgid "Facebook"
+msgid "Explore the differences between The Plus Addons and WDesignKit to see what's included in each!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:325
-msgid "Fail to Generate AI content"
+msgid "FAQ"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:326
-msgid "Fail to Import Template"
+msgid "Facebook"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:327
-msgid "Fail to Save"
+msgid "Fail to Generate AI content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:328
-msgid "Fail to get Template JSON"
+msgid "Fail to Import Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:329
-msgid "Fail to get import Template"
+msgid "Fail to Save"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:330
-msgid "Fail to import Template JSON"
+msgid "Fail to get Template JSON"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:331
-msgid "Fail to import Template"
+msgid "Fail to get import Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:332
-msgid "Fail! Can not Saved"
+msgid "Fail to import Template JSON"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:333
-msgid "Failed to fetch kit snippets"
+msgid "Fail to import Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:334
-msgid "Failed to fetch template data. Please try again."
+msgid "Fail! Can not Saved"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:335
-msgid "Failed to load kit data. Please check your connection and try again."
+msgid "Failed to fetch kit snippets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:336
-msgid "Failed to load kit snippets. Please try again."
+msgid "Failed to fetch template data. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:337
-msgid "Failed to update favorite status. Please try again."
+msgid "Failed to load kit data. Please check your connection and try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:338
-msgid "Failed to update widget files."
+msgid "Failed to load kit snippets. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:339
-msgid "Favorite"
+msgid "Failed to update favorite status. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:340
-msgid "Feature Disabled. Enable from Settings Panel."
+msgid "Failed to update widget files."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:341
-msgid "Featured Image"
+msgid "Favorite"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:342
-msgid "Features Manager"
+msgid "Feature Disabled. Enable from Settings Panel."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:343
-msgid "Features for storing the workspace in cloud for smooth collaboration"
+msgid "Featured Image"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:344
-msgid "Field that will be used as the repeater title in the fields list when the item is minimized."
+msgid "Features Manager"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:345
-msgid "Figma Design Templates"
+msgid "Features for storing the workspace in cloud for smooth collaboration"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:346
-msgid "Filters"
+msgid "Field that will be used as the repeater title in the fields list when the item is minimized."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:347
-msgid "Finalized Settings"
+msgid "Figma Design Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:348
-msgid "Finalizing Settings"
+msgid "Filters"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:349
-msgid "Finish"
+msgid "Finalized Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:350
-msgid "Font Style"
+msgid "Finalizing Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:351
-msgid "Font-Awesome"
+msgid "Finish"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:352
-msgid "For security reasons, only administrator users can download snippets."
+msgid "Font Style"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:353
-msgid "Forgot Password"
+msgid "Font-Awesome"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:354
-msgid "Forgot Password?"
+msgid "For security reasons, only administrator users can download snippets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:355
-msgid "Free / Pro"
+msgid "Forgot Password"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:356
-msgid "Free"
+msgid "Forgot Password?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:357
-msgid "Free/Pro"
+msgid "Free / Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:358
-msgid "Full Pages"
+msgid "Free"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:359
-msgid "General Settings"
+msgid "Free/Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:360
-msgid "Generate AI Blog Posts"
+msgid "Full Pages"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:361
-msgid "Generate Blog Posts"
+msgid "General Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:362
-msgid "Get 6 blog posts related to your business information created by AI."
+msgid "Generate AI Blog Posts"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:363
-msgid "Get 6 blog posts related to your business information."
+msgid "Generate Blog Posts"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:364
-msgid "Get Elementor Pro"
+msgid "Get 6 blog posts related to your business information created by AI."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:365
-msgid "Get Free Support"
+msgid "Get 6 blog posts related to your business information."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:366
-msgid "Get Premium Support"
+msgid "Get Elementor Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:367
-msgid "Get Pro Version to Download"
+msgid "Get Free Support"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:368
-msgid "Get Pro"
+msgid "Get Premium Support"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:369
-msgid "Get Started"
+msgid "Get Pro Version to Download"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:370
-msgid "Get WDesignKit Pro"
+msgid "Get Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:371
-msgid "Get a Free Elementor Navigation Menu Widget with The Plus Addons for Elementor"
+msgid "Get Started"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:372
-msgid "Global Color"
+msgid "Get WDesignKit Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:373
-msgid "Global Settings"
+msgid "Get a Free Elementor Navigation Menu Widget with The Plus Addons for Elementor"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:374
-msgid "Global Style"
+msgid "Global Color"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:375
-msgid "Global"
+msgid "Global Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:376
-msgid "Go Back"
+msgid "Global Style"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:377
-msgid "Go to Settings"
+msgid "Global"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:378
-msgid "Google"
+msgid "Go Back"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:379
-msgid "Gradient"
+msgid "Go to Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:380
-msgid "Gutenberg Blocks Builder"
+msgid "Google"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:381
-msgid "Gutenberg Blocks"
+msgid "Gradient"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:382
-msgid "Gutenberg Page Builder"
+msgid "Gutenberg Blocks Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:383
-msgid "Gutenberg"
+msgid "Gutenberg Blocks"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:384
-msgid "H1"
+msgid "Gutenberg Page Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:385
-msgid "H2"
+msgid "Gutenberg"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:386
-msgid "H3"
+msgid "H1"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:387
-msgid "H4"
+msgid "H2"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:388
-msgid "H5"
+msgid "H3"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:389
-msgid "H6"
+msgid "H4"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:390
-msgid "HTML tags are not allowed."
+msgid "H5"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:391
-msgid "HTML"
+msgid "H6"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:392
-msgid "Header Effects"
+msgid "HTML tags are not allowed."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:393
-msgid "Header Scroll Distance"
+msgid "HTML"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:394
-msgid "Header Shrinking"
+msgid "Header Effects"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:395
-msgid "Header and Footer section"
+msgid "Header Scroll Distance"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:396
-msgid "Header/Footer deferred"
+msgid "Header Shrinking"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:397
-msgid "Help Link"
+msgid "Header and Footer section"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:398
-msgid "Helpdesk"
+msgid "Header/Footer deferred"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:399
-msgid "Hide Header on Scroll Down"
+msgid "Help Link"
 msgstr ""
 
-#: build/wdk-i18n-strings.js:400
-msgid "Hide Licence Key Tab?"
-msgstr ""
-
+#. translators: %s: plugin name, rebranded on a white-labelled install.
 #: build/wdk-i18n-strings.js:401
-msgid "Hide Plugin RollBack Tab?"
+#, js-format
+msgid "Help make %s faster and more stable. Share basic setup info so we can catch conflicts and ship fixes quicker. Never sold, never shared with third parties."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:402
-msgid "Hide all Help Links?"
+msgid "Helpdesk"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:403
-msgid "Hide all Plugin Updates related News?"
+msgid "Hide Header on Scroll Down"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:404
-msgid "Highlight your strengths and what sets you apart."
+msgid "Hide Licence Key Tab?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:405
-msgid "Horizontal"
+msgid "Hide Plugin RollBack Tab?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:406
-msgid "How to Install ?"
+msgid "Hide all Help Links?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:407
-msgid "How to get Login Key?"
+msgid "Hide all Plugin Updates related News?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:408
-msgid "How to get a key?"
+msgid "Highlight your strengths and what sets you apart."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:409
-msgid "How to get key?"
+msgid "Horizontal"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:410
-msgid "I know Purchase key and Login Key is different."
+msgid "How to Install ?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:411
-msgid "I need to recheck Login Key"
+msgid "How to get Login Key?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:412
-msgid "Icon"
+msgid "How to get a key?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:413
-msgid "If enabled, it won’t load original images and will use placeholder images instead, which you can replace later."
+msgid "How to get key?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:414
-msgid "Image & Svg"
+msgid "I know Purchase key and Login Key is different."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:415
-msgid "Image limit exceeded"
+msgid "I need to recheck Login Key"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:416
-msgid "Image size must be less than 2 mb."
+msgid "Icon"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:417
-msgid "Image"
+msgid "If enabled, it won’t load original images and will use placeholder images instead, which you can replace later."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:418
-msgid "Import Dummy Content"
+msgid "Image & Svg"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:419
-msgid "Import Failed"
+msgid "Image limit exceeded"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:420
-msgid "Import Template"
+msgid "Image size must be less than 2 mb."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:421
-msgid "Import Templates"
+msgid "Image"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:422
-msgid "Import Widget"
+msgid "Import Dummy Content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:423
-msgid "Import as Wireframe"
+msgid "Import Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:424
-msgid "Import with Global Color"
+msgid "Import Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:425
-msgid "Import"
+msgid "Import Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:426
-msgid "Imported Blog Posts"
+msgid "Import Widget"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:427
-msgid "Imported Products"
+msgid "Import as Wireframe"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:428
-msgid "Imported Site Content"
+msgid "Import with Global Color"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:429
-msgid "Importing Blog Posts"
+msgid "Import"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:430
-msgid "Importing JSON Template"
+msgid "Imported Blog Posts"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:431
-msgid "Importing Products"
+msgid "Imported Products"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:432
-msgid "Importing Site Content"
+msgid "Imported Site Content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:433
-msgid "In Progress"
+msgid "Importing Blog Posts"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:434
-msgid "Industry Type"
+msgid "Importing JSON Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:435
-msgid "Inline"
+msgid "Importing Products"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:436
-msgid "Input Type"
+msgid "Importing Site Content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:437
-msgid "Insert CSS Library"
+msgid "In Progress"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:438
-msgid "Insert JS Library"
+msgid "Industry Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:439
-msgid "Insert valid Image"
+msgid "Inline"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:440
-msgid "Instagram"
+msgid "Input Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:441
-msgid "Install & Activate"
+msgid "Insert CSS Library"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:442
-msgid "Install Now"
+msgid "Insert JS Library"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:443
-msgid "Install Plus Addons for Elementor Plugin for Free Navigation Menu"
+msgid "Insert valid Image"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:444
-msgid "Install Required Plugin"
+msgid "Instagram"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:445
-msgid "Installation Failed!"
+msgid "Install & Activate"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:446
-msgid "Installation Failed"
+msgid "Install Now"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:447
-msgid "Installation Successful!"
+msgid "Install Plus Addons for Elementor Plugin for Free Navigation Menu"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:448
-msgid "Installation failed for Bricks Theme"
+msgid "Install Required Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:449
-msgid "Installation failed for Elementor Plugin"
+msgid "Installation Failed!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:450
-msgid "Installation failed for Nexter Blocks Plugin"
+msgid "Installation Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:451
-msgid "Installed "
+msgid "Installation Successful!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:452
-msgid "Installed Bricks Theme"
+msgid "Installation failed for Bricks Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:453
-msgid "Installed Elementor Plugin"
+msgid "Installation failed for Elementor Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:454
-msgid "Installed Nexter Blocks Plugin"
+msgid "Installation failed for Nexter Blocks Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:455
-msgid "Installed Plugins & Theme"
+msgid "Installed "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:456
-msgid "Installed Required Plugin"
+msgid "Installed Bricks Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:457
-msgid "Installing "
+msgid "Installed Elementor Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:458
-msgid "Installing Bricks Theme"
+msgid "Installed Nexter Blocks Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:459
-msgid "Installing Elementor Plugin"
+msgid "Installed Plugins & Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:460
-msgid "Installing Nexter Blocks Plugin"
+msgid "Installed Required Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:461
-msgid "Installing Plugins & Theme"
+msgid "Installing "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:462
-msgid "Installing Plugins and Theme"
+msgid "Installing Bricks Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:463
-msgid "Installing Required Plugin"
+msgid "Installing Elementor Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:464
-msgid "Invalid Email Format"
+msgid "Installing Nexter Blocks Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:465
-msgid "Invalid Login Details"
+msgid "Installing Plugins & Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:466
-msgid "Invalid Login Key"
+msgid "Installing Plugins and Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:467
-msgid "Invalid Plugin Name"
+msgid "Installing Required Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:468
-msgid "Invalid Plugin Slug"
+msgid "Invalid Email Format"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:469
-msgid "Invalid URL Format"
+msgid "Invalid Login Details"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:470
-msgid "Invalid characters detected"
+msgid "Invalid Login Key"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:471
-msgid "Invalid characters in Plugin Name"
+msgid "Invalid Plugin Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:472
-msgid "Invalid key entered"
+msgid "Invalid Plugin Slug"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:473
-msgid "Invalid request parameters. Please check your filters."
+msgid "Invalid URL Format"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:474
-msgid "Is External"
+msgid "Invalid characters detected"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:475
-msgid "It seems to be empty!"
+msgid "Invalid characters in Plugin Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:476
-msgid "It seems you haven’t selected any image yet !"
+msgid "Invalid key entered"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:477
-msgid "I’ve read this and want to continue."
+msgid "Invalid request parameters. Please check your filters."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:478
-msgid "JAVASCRIPT"
+msgid "Is External"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:479
-msgid "JS"
+msgid "It seems to be empty!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:480
-msgid "Join Facebook Community"
+msgid "It seems you haven’t selected any image yet !"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:481
-msgid "Justify"
+msgid "I’ve read this and want to continue."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:482
-msgid "Key error, check and fix"
+msgid "JAVASCRIPT"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:483
-msgid "Key:"
+msgid "JS"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:484
-msgid "Keywords"
+msgid "Join Facebook Community"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:485
-msgid "Kits"
+msgid "Justify"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:486
-msgid "LEFT"
+msgid "Key error, check and fix"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:487
-msgid "Label Block"
+msgid "Key:"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:488
-msgid "Label"
+msgid "Keywords"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:489
-msgid "Landscape"
+msgid "Kits"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:490
-msgid "Language"
+msgid "LEFT"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:491
-msgid "Latest Version : "
+msgid "Label Block"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:492
-msgid "Latest Version"
+msgid "Label"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:493
-msgid "Layout"
+msgid "Landscape"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:494
-msgid "Left"
+msgid "Language"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:495
-msgid "Left-Arrow"
+msgid "Latest Version : "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:496
-msgid "Let me Try again"
+msgid "Latest Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:497
-msgid "Licence Key"
+msgid "Layout"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:498
-msgid "Licence URL"
+msgid "Left"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:499
-msgid "Light"
+msgid "Left-Arrow"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:500
-msgid "Limit Reached"
+msgid "Let me Try again"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:501
-msgid "Limit reached of active sites. Deactivate one or upgrade your plan to unlock access."
+msgid "Licence Key"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:502
-msgid "Line"
+msgid "Licence URL"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:503
-msgid "Linear"
+msgid "Light"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:504
-msgid "LinkedIn"
+msgid "Limit Reached"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:505
-msgid "List plugin updates, improvements, and bug fixes for each version."
+msgid "Limit reached of active sites. Deactivate one or upgrade your plan to unlock access."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:506
-msgid "Live Demo"
+msgid "Line"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:507
-msgid "Live preview is unavailable for draft widgets. Publish the widget to enable live preview."
+msgid "Linear"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:508
-msgid "Live preview requires the relevant plugin. Please install it first."
+msgid "LinkedIn"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:509
-msgid "Load More"
+msgid "List plugin updates, improvements, and bug fixes for each version."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:510
-msgid "Loading..."
+msgid "Live Demo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:511
-msgid "Local + Remote"
+msgid "Live preview is unavailable for draft widgets. Publish the widget to enable live preview."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:512
-msgid "Local Delete"
+msgid "Live preview requires the relevant plugin. Please install it first."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:513
-msgid "Local"
+msgid "Load More"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:514
-msgid "Log in"
+msgid "Loading..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:515
-msgid "Logged In"
+msgid "Local + Remote"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:516
-msgid "Logged in"
+msgid "Local Delete"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:517
-msgid "Login Error: Check your details and try again."
+msgid "Local"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:518
-msgid "Login Failed"
+msgid "Log in"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:519
-msgid "Login With Key"
+msgid "Logged In"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:520
-msgid "Login required to access this feature."
+msgid "Logged in"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:521
-msgid "Login to use WDesignKit Widgets"
+msgid "Login Error: Check your details and try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:522
-msgid "Login to use this option."
+msgid "Login Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:523
-msgid "Login with"
+msgid "Login With Key"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:524
-msgid "Login"
+msgid "Login required to access this feature."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:525
-msgid "Logo Color Change"
+msgid "Login to use WDesignKit Widgets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:526
-msgid "Logo Shrinking"
+msgid "Login to use this option."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:527
-msgid "Logo"
+msgid "Login with"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:528
-msgid "Logout Complete!"
+msgid "Login"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:529
-msgid "Logout"
+msgid "Logo Color Change"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:530
-msgid "Looks like there are no images matching your search.You can try a different keyword or upload your own images."
+msgid "Logo Shrinking"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:531
-msgid "Lummi Images"
+msgid "Logo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:532
-msgid "Make changes to your profile here. Click save when you're done."
+msgid "Logout Complete!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:533
-msgid "Manage Licence"
+msgid "Logout"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:534
-msgid "Manage Members"
+msgid "Looks like there are no images matching your search.You can try a different keyword or upload your own images."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:535
-msgid "Manage Profile"
+msgid "Lummi Images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:536
-msgid "Manage Workspace"
+msgid "Make changes to your profile here. Click save when you're done."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:537
-msgid "Manage and collaborate with ease."
+msgid "Manage Licence"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:538
-msgid "Manage and control all features."
+msgid "Manage Members"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:539
-msgid "Max"
+msgid "Manage Profile"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:540
-msgid "Media Types"
+msgid "Manage Workspace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:541
-msgid "Media"
+msgid "Manage and collaborate with ease."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:542
-msgid "Mention awards, media features, or success stories."
+msgid "Manage and control all features."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:543
-msgid "Min"
+msgid "Max"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:544
-msgid "Minimum 30 credits required to import the full AI kit."
+msgid "Media Types"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:545
-msgid "Missing information! Complete all fields."
+msgid "Media"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:546
-msgid "Modern Hover Post"
+msgid "Mention awards, media features, or success stories."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:547
-msgid "Month"
+msgid "Min"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:548
-msgid "Move to Workspace"
+msgid "Minimum 30 credits required to import the full AI kit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:549
-msgid "Move to workspace"
+msgid "Missing information! Complete all fields."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:550
-msgid "Multiple"
+msgid "Modern Hover Post"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:551
-msgid "My Snippet"
+msgid "Month"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:552
-msgid "My Templates"
+msgid "Move to Workspace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:553
-msgid "My Upload"
+msgid "Move to workspace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:554
-msgid "My Widgets"
+msgid "Multiple"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:555
-msgid "My Workspace"
+msgid "My Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:556
-msgid "Name cannot be empty"
+msgid "My Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:557
-msgid "Name must be less than 50 characters"
+msgid "My Upload"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:558
-msgid "Name must start with a letter"
+msgid "My Widgets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:559
-msgid "Name"
+msgid "My Workspace"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:560
+msgid "Name cannot be empty"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:561
-msgid "New Snippet"
+msgid "Name must be less than 50 characters"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:562
-msgid "New Template"
+msgid "Name must start with a letter"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:563
-msgid "New Workspace ?"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:564
-msgid "New"
+msgid "Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:565
-msgid "Newly added Widget Builder Design with revamp version"
+msgid "New Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:566
-msgid "Next"
+msgid "New Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:567
-msgid "Nexter Blocks Plugin"
+msgid "New Workspace ?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:568
-msgid "Nexter Blocks Pro Plugin Required"
+msgid "New"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:569
-msgid "Nexter Blocks offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
+msgid "Newly added Widget Builder Design with revamp version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:570
-msgid "Nexter Gutenberg"
+msgid "Next"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:571
-msgid "Nexter Theme"
+msgid "Nexter Blocks Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:572
-msgid "Nexter"
+msgid "Nexter Blocks Pro Plugin Required"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:573
-msgid "No Favorites Yet"
+msgid "Nexter Blocks offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:574
-msgid "No Follow"
+msgid "Nexter Gutenberg"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:575
-msgid "No Images Selected"
+msgid "Nexter Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:576
-msgid "No Key Entered"
+msgid "Nexter"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:577
-msgid "No Plugin List"
+msgid "No Favorites Yet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:578
-msgid "No Result Found"
+msgid "No Follow"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:579
-msgid "No Result Found."
+msgid "No Images Selected"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:580
-msgid "No Search Found"
+msgid "No Key Entered"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:581
-msgid "No licence keys found"
+msgid "No Plugin List"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:582
-msgid "No related tags found."
+msgid "No Result Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:583
-msgid "No templates were found in this kit for the current builder."
+msgid "No Result Found."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:584
-msgid "No update information available."
+msgid "No Search Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:585
-msgid "No"
+msgid "No licence keys found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:586
-msgid "No, I forgot my password"
+msgid "No related tags found."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:587
-msgid "None"
+msgid "No templates were found in this kit for the current builder."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:588
-msgid "Normal"
+msgid "No update information available."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:589
-msgid "Not Result Found"
+msgid "No"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:590
-msgid "Not Valid"
+msgid "No, I forgot my password"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:591
-msgid "Note : Replacing the snippet will erase the current design. This action cannot be undone, and the old design will be permanently lost."
+msgid "None"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:592
-msgid "Note : This new widget will have unique class, So It will work independently from previous widget."
+msgid "Normal"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:593
-msgid "Note :"
+msgid "Not Result Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:594
-msgid "Note :- If you're looking for a Free option, simply select the Filter Free option in Template. You can still import templates made using the Free Navigation Menu Widget from The Plus Addons for Elementor."
+msgid "Not Valid"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:595
-msgid "Note"
+msgid "Note : Replacing the snippet will erase the current design. This action cannot be undone, and the old design will be permanently lost."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:596
-msgid "Note: Replacing this template will erase your current design. This action is irreversible, and the old design will be permanently lost."
+msgid "Note : This new widget will have unique class, So It will work independently from previous widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:597
-msgid "Note: This button will delete all of WDesignKit's settings from Database. You will then need to enter all your settings again. You can also do this before deactivating/deinstalling WDesignKit if you wish."
+msgid "Note :"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:598
-msgid "Note: This new widget will have unique class, So It will work independently from previous widget."
+msgid "Note :- If you're looking for a Free option, simply select the Filter Free option in Template. You can still import templates made using the Free Navigation Menu Widget from The Plus Addons for Elementor."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:599
-msgid "Note: This setup installs the required plugins and theme. It may replace your current settings, so we recommend "
+msgid "Note"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:600
-msgid "Note: This will apply universal design elements, including typography, colors, spacing, and component styling, across all projects. Ensure compatibility with existing styles to maintain design consistency."
+msgid "Note: Replacing this template will erase your current design. This action is irreversible, and the old design will be permanently lost."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:601
-msgid "Notice Type"
+msgid "Note: This button will delete all of WDesignKit's settings from Database. You will then need to enter all your settings again. You can also do this before deactivating/deinstalling WDesignKit if you wish."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:602
-msgid "Number of rows."
+msgid "Note: This new widget will have unique class, So It will work independently from previous widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:603
-msgid "Number"
+msgid "Note: This setup installs the required plugins and theme. It may replace your current settings, so we recommend "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:604
-msgid "OR CONTINUE WITH"
+msgid "Note: This will apply universal design elements, including typography, colors, spacing, and component styling, across all projects. Ensure compatibility with existing styles to maintain design consistency."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:605
-msgid "OR"
+msgid "Notice Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:606
-msgid "Old"
+msgid "Number of rows."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:607
-msgid "Only .jpg and .png are allowed"
+msgid "Number"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:608
-msgid "Only Studio and Agency Bundle users can access this feature."
+msgid "OR CONTINUE WITH"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:609
-msgid "Only letters, numbers, and spaces are allowed"
+msgid "OR"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:610
-msgid "Only lowercase letters, numbers, and hyphens are allowed, and it must start with a letter."
+msgid "Old"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:611
-msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller than 50 characters and first letter can't be digit."
+msgid "Only .jpg and .png are allowed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:612
-msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller then 50 charaters and first letter can't be digit."
+msgid "Only Studio and Agency Bundle users can access this feature."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:613
-msgid "Only numbers and alphabet are allowed for this field,Widget name must be smaller then 50 charaters and first letter can't be digit."
+msgid "Only letters, numbers, and spaces are allowed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:614
-msgid "Oops! Bricks Theme is not activated. Please install it now to unlock full functionality."
+msgid "Only lowercase letters, numbers, and hyphens are allowed, and it must start with a letter."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:615
-msgid "Oops! Elementor Page Builder is not activated. Please install it now to unlock full functionality."
+msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller than 50 characters and first letter can't be digit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:616
-msgid "Oops! Nexter Gutenberg blocks is not activated. Please install it now to unlock full functionality."
+msgid "Only numbers and alphabet are allowed for this field, Widget name must be smaller then 50 charaters and first letter can't be digit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:617
-msgid "Oops! No Images Selected"
+msgid "Only numbers and alphabet are allowed for this field,Widget name must be smaller then 50 charaters and first letter can't be digit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:618
-msgid "Open in new window"
+msgid "Oops! Bricks Theme is not activated. Please install it now to unlock full functionality."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:619
-msgid "Operation fail"
+msgid "Oops! Elementor Page Builder is not activated. Please install it now to unlock full functionality."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:620
-msgid "Operation failed"
+msgid "Oops! Nexter Gutenberg blocks is not activated. Please install it now to unlock full functionality."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:621
-msgid "Operator"
+msgid "Oops! No Images Selected"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:622
-msgid "Options"
+msgid "Open in new window"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:623
-msgid "Our  website is undergoing a transformation to serve you better."
+msgid "Operation fail"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:624
-msgid "Our Pagekits can only be imported from the plugin dashboard,"
+msgid "Operation failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:625
-msgid "Our system will import your selected templates images soon."
+msgid "Operator"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:626
-msgid "PHP Version"
+msgid "Options"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:627
-msgid "PNG, JPEG, WebP, AVIF"
+msgid "Our  website is undergoing a transformation to serve you better."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:628
-msgid "PRO"
+msgid "Our Pagekits can only be imported from the plugin dashboard,"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:629
-msgid "Packed with Everything You Need for Exceptional Websites"
+msgid "Our system will import your selected templates images soon."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:630
-msgid "Page Builder"
+msgid "PHP Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:631
-msgid "Page Builders"
+msgid "PNG, JPEG, WebP, AVIF"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:632
-msgid "Page Content is empty"
+msgid "PRO"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:633
-msgid "Page Kits"
+msgid "Packed with Everything You Need for Exceptional Websites"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:634
-msgid "Page Template"
+msgid "Page Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:635
-msgid "Page Templates"
+msgid "Page Builders"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:636
-msgid "Page should have some content"
+msgid "Page Content is empty"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:637
-msgid "Pages"
+msgid "Page Kits"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:638
-msgid "Parent Class"
+msgid "Page Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:639
-msgid "Password"
+msgid "Page Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:640
-msgid "Perform activity inside the loop"
+msgid "Page should have some content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:641
-msgid "Performance Optimized"
+msgid "Pages"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:642
-msgid "Performance"
+msgid "Parent Class"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:643
-msgid "Permanently Delete"
+msgid "Password"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:644
-msgid "Pexels Images"
+msgid "Perform activity inside the loop"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:645
-msgid "Phone Number"
+msgid "Performance Optimized"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:646
-msgid "Placeholder"
+msgid "Performance"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:647
-msgid "Please activate your WDesignKit Pro license to start using advanced Pro widgets."
+msgid "Permanently Delete"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:648
-msgid "Please active WDesignKit PRO license to use this widget."
+msgid "Pexels Images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:649
-msgid "Please confirm you’ve read the Terms and Conditions by checking the box to continue"
+msgid "Phone Number"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:650
-msgid "Please enter a brief description of your website to continue"
+msgid "Placeholder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:651
-msgid "Please enter a full URL (e.g., https://www.instagram.com/posimyth, https://x.com/posimyth, https://www.facebook.com/posimyth)"
+msgid "Please activate your WDesignKit Pro license to start using advanced Pro widgets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:652
-msgid "Please enter a snippet name"
+msgid "Please active WDesignKit PRO license to use this widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:653
-msgid "Please enter a valid author URL."
+msgid "Please confirm you’ve read the Terms and Conditions by checking the box to continue"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:654
-msgid "Please enter a valid email address to continue"
+msgid "Please enter a brief description of your website to continue"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:655
-msgid "Please enter a valid key to continue."
+msgid "Please enter a full URL (e.g., https://www.instagram.com/posimyth, https://x.com/posimyth, https://www.facebook.com/posimyth)"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:656
-msgid "Please enter description"
+msgid "Please enter a snippet name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:657
-msgid "Please enter your Business name to continue."
+msgid "Please enter a valid author URL."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:658
-msgid "Please fill all fields"
+msgid "Please enter a valid email address to continue"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:659
-msgid "Please fill this field"
+msgid "Please enter a valid key to continue."
+msgstr ""
+
+#: build/wdk-i18n-strings.js:660
+msgid "Please enter description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:661
-msgid "Please select the snippet you want to replace"
+msgid "Please enter your Business name to continue."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:662
-msgid "Please select the template you want to replace"
+msgid "Please fill all fields"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:663
-msgid "Plugin Description"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:664
-msgid "Plugin Downloaded Successfully"
+msgid "Please fill this field"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:665
-msgid "Plugin Export Failed"
+msgid "Please select the snippet you want to replace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:666
-msgid "Plugin Name is required"
+msgid "Please select the template you want to replace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:667
-msgid "Plugin Name is too long"
+msgid "Plugin Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:668
-msgid "Plugin Name"
+msgid "Plugin Downloaded Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:669
-msgid "Plugin Prefix"
+msgid "Plugin Export Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:670
-msgid "Plugin Required"
+msgid "Plugin Name is required"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:671
-msgid "Plugin Setting"
+msgid "Plugin Name is too long"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:672
-msgid "Plugin Settings"
+msgid "Plugin Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:673
-msgid "Plugin Slug is too long"
+msgid "Plugin Prefix"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:674
-msgid "Plugin Slug"
+msgid "Plugin Required"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:675
-msgid "Plugin Version: "
+msgid "Plugin Setting"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:676
-msgid "Plugin is installed"
+msgid "Plugin Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:677
-msgid "Plugin is not installed"
+msgid "Plugin Slug is too long"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:678
-msgid "Plugin name can not be empty"
+msgid "Plugin Slug"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:679
-msgid "Plugin"
+msgid "Plugin Version: "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:680
-msgid "Plugins & Theme Used"
+msgid "Plugin is installed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:681
-msgid "Plugins Needed for This Template"
+msgid "Plugin is not installed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:682
-msgid "Plugins"
+msgid "Plugin name can not be empty"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:683
-msgid "Plus Icon/Logo"
+msgid "Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:684
-msgid "Portrait"
+msgid "Plugins & Theme Used"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:685
-msgid "Powered by POSIMYTH Innovations"
+msgid "Plugins Needed for This Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:686
-msgid "Pre-Designed Widget Styled"
+msgid "Plugins"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:687
-msgid "Presets"
+msgid "Plus Icon/Logo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:688
-msgid "Prevent Empty"
+msgid "Portrait"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:689
-msgid "Preview Site"
+msgid "Powered by POSIMYTH Innovations"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:690
-msgid "Preview isn’t available for this website-kit."
+msgid "Pre-Designed Widget Styled"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:691
-msgid "Preview"
+msgid "Presets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:692
-msgid "Primary Color"
+msgid "Prevent Empty"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:693
-msgid "Primary Font"
+msgid "Preview Site"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:694
-msgid "Privacy Policy."
+msgid "Preview isn’t available for this website-kit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:695
-msgid "Private"
+msgid "Preview"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:696
-msgid "Pro Access Needed"
+msgid "Primary Color"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:697
-msgid "Pro"
+msgid "Primary Font"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:698
-msgid "Profile Picture"
+msgid "Privacy Policy."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:699
-msgid "Provide a workspace name to get started."
+msgid "Private"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:700
-msgid "Provide the URL to your plugin's license information."
+msgid "Pro Access Needed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:701
-msgid "Provide the website URL of the plugin author or organization."
+msgid "Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:702
-msgid "Public"
+msgid "Profile Picture"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:703
-msgid "Publish"
+msgid "Provide a workspace name to get started."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:704
-msgid "Push Widget"
+msgid "Provide the URL to your plugin's license information."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:705
-msgid "Push widget on Cloud and Sync it"
+msgid "Provide the website URL of the plugin author or organization."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:706
-msgid "Push"
+msgid "Public"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:707
-msgid "Quick Support"
+msgid "Publish"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:708
-msgid "RIGHT"
+msgid "Push Widget"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:709
-msgid "RawHTML"
+msgid "Push widget on Cloud and Sync it"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:710
-msgid "Read Document"
+msgid "Push"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:711
-msgid "Read Documentation"
+msgid "Quick Support"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:712
-msgid "Read More"
+msgid "RIGHT"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:713
-msgid "Recently Added"
+msgid "RawHTML"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:714
-msgid "Recently added"
+msgid "Read Document"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:715
-msgid "Recommended"
+msgid "Read Documentation"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:716
-msgid "Referral Code"
+msgid "Read More"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:717
-msgid "Related Tags"
+msgid "Recently Added"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:718
-msgid "Relation of Condition"
+msgid "Recently added"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:719
-msgid "Relax while we prepare everything you need - plugins, theme, and content. This might take few minutes."
+msgid "Recommended"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:720
-msgid "Relevant Plugin/Theme is not Activated"
+msgid "Referral Code"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:721
-msgid "Relevant Plugin/Theme is not Activated."
+msgid "Related Tags"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:722
-msgid "Remember Me"
+msgid "Relation of Condition"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:723
-msgid "Remote"
+msgid "Relax while we prepare everything you need - plugins, theme, and content. This might take few minutes."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:724
-msgid "Remove Database"
+msgid "Relevant Plugin/Theme is not Activated"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:725
-msgid "Remove"
+msgid "Relevant Plugin/Theme is not Activated."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:726
-msgid "Repeater type"
+msgid "Remember Me"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:727
-msgid "Repeater"
+msgid "Remote"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:728
-msgid "Replace Snippet"
+msgid "Remove Database"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:729
-msgid "Replace Template"
+msgid "Remove"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:730
-msgid "Replace with"
+msgid "Repeater type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:731
-msgid "Replace"
+msgid "Repeater"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:732
-msgid "Require"
+msgid "Replace Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:733
-msgid "Required PHP Version"
+msgid "Replace Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:734
-msgid "Required Plugin"
+msgid "Replace with"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:735
-msgid "Required Plugins"
+msgid "Replace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:736
-msgid "Required WordPress Version"
+msgid "Require"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:737
-msgid "Reset Color"
+msgid "Required PHP Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:738
-msgid "Reset Font"
+msgid "Required Plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:739
-msgid "Reset Now"
+msgid "Required Plugins"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:740
-msgid "Reset Password"
+msgid "Required WordPress Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:741
-msgid "Reset"
+msgid "Reset Color"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:742
-msgid "Responsive"
+msgid "Reset Font"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:743
-msgid "Restore a previous version easily."
+msgid "Reset Now"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:744
-msgid "Retry !"
+msgid "Reset Password"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:745
-msgid "Retry Missing Option"
+msgid "Reset"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:746
-msgid "Retry Missing Options"
+msgid "Responsive"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:747
-msgid "Retry"
+msgid "Restore a previous version easily."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:748
-msgid "Return Value"
+msgid "Retry !"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:749
-msgid "Right"
+msgid "Retry Missing Option"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:750
-msgid "Right-Arrow"
+msgid "Retry Missing Options"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:751
-msgid "Role Manager"
+msgid "Retry"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:752
-msgid "Roll Back"
+msgid "Return Value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:753
-msgid "Row"
+msgid "Right"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:754
-msgid "Rows"
+msgid "Right-Arrow"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:755
-msgid "Sanitize"
+msgid "Role Manager"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:756
-msgid "Save & Next"
+msgid "Roll Back"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:757
-msgid "Save Failed"
+msgid "Row"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:758
-msgid "Save Settings"
+msgid "Rows"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:759
-msgid "Save Snippet"
+msgid "Sanitize"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:760
-msgid "Save Template"
+msgid "Save & Next"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:761
+msgid "Save Failed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:762
-msgid "Save"
+msgid "Save Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:763
-msgid "Saved"
+msgid "Save Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:764
-msgid "Search "
-msgstr ""
-
-#: build/wdk-i18n-strings.js:765
-msgid "Search CDNs..."
+msgid "Save Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:766
-msgid "Search Presets"
+msgid "Save"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:767
-msgid "Search Templates"
+msgid "Saved"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:768
-msgid "Search icons"
+msgid "Search "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:769
-msgid "Search"
+msgid "Search CDNs..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:770
-msgid "Search..."
+msgid "Search Presets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:771
-msgid "Secondary Color"
+msgid "Search Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:772
-msgid "Secondary Font"
+msgid "Search icons"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:773
-msgid "Section"
+msgid "Search"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:774
-msgid "Sections"
+msgid "Search..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:775
-msgid "See what details are shared"
+msgid "Secondary Color"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:776
-msgid "Select All"
+msgid "Secondary Font"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:777
-msgid "Select Builder"
+msgid "Section"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:778
-msgid "Select Category"
+msgid "Sections"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:779
-msgid "Select Colors Palette"
+msgid "See what details are shared"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:780
-msgid "Select Default Unit"
+msgid "Select All"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:781
-msgid "Select Font Pair: "
+msgid "Select Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:782
-msgid "Select Global Fonts & Colours"
+msgid "Select Category"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:783
-msgid "Select Images"
+msgid "Select Colors Palette"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:784
-msgid "Select Industry type"
+msgid "Select Default Unit"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:785
+msgid "Select Font Pair: "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:786
-msgid "Select Version"
+msgid "Select Global Fonts & Colours"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:787
-msgid "Select Workspace"
+msgid "Select Images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:788
-msgid "Select images to use in your website design. You can pick from our library or upload your own."
-msgstr ""
-
-#: build/wdk-i18n-strings.js:789
-msgid "Select key name"
+msgid "Select Industry type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:790
-msgid "Select or Upload Media"
+msgid "Select Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:791
-msgid "Select the Align CSS property you want to use."
+msgid "Select Workspace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:792
-msgid "Select the features you want, and we’ll set them up for you automatically."
+msgid "Select images to use in your website design. You can pick from our library or upload your own."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:793
-msgid "Select the type of Alert message."
+msgid "Select key name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:794
-msgid "Select the type of Noitce message."
+msgid "Select or Upload Media"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:795
-msgid "Selected Images "
+msgid "Select the Align CSS property you want to use."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:796
-msgid "Selected"
+msgid "Select the features you want, and we’ll set them up for you automatically."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:797
-msgid "Selectors Value"
+msgid "Select the type of Alert message."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:798
-msgid "Selectors"
+msgid "Select the type of Noitce message."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:799
-msgid "Separator"
+msgid "Selected Images "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:800
-msgid "Server Details"
+msgid "Selected"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:801
-msgid "Server did not respond properly. Please try again."
+msgid "Selectors Value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:802
-msgid "Set Up Pages & Layout"
+msgid "Selectors"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:803
-msgid "Set the initial version number for your plugin (e.g. 1.0.0)."
+msgid "Separator"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:804
-msgid "Set the position of the control separator. Available values are default, before and after. default will position the separator depending on the control type. before / after will position the separator before/after the control."
+msgid "Server Details"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:805
-msgid "Setting Up Pages & Layout"
+msgid "Server did not respond properly. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:806
-msgid "Setting Up Your Template"
+msgid "Set Up Pages & Layout"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:807
-msgid "Setting Up Your Widget"
+msgid "Set the initial version number for your plugin (e.g. 1.0.0)."
+msgstr ""
+
+#: build/wdk-i18n-strings.js:808
+msgid "Set the position of the control separator. Available values are default, before and after. default will position the separator depending on the control type. before / after will position the separator before/after the control."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:809
-msgid "Share a few details so we can generate the right content for you."
+msgid "Setting Up Pages & Layout"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:810
-msgid "Share your background and what makes you unique."
+msgid "Setting Up Your Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:811
-msgid "Shared with Me"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:812
-msgid "Short Description"
+msgid "Setting Up Your Widget"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:813
-msgid "Show Label"
+msgid "Share Non-Sensitive Details"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:814
-msgid "Show Unit"
+msgid "Share a few details so we can generate the right content for you."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:815
-msgid "Showing"
+msgid "Share your background and what makes you unique."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:816
-msgid "Sign Up!"
+msgid "Shared with Me"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:817
-msgid "Sign Up"
+msgid "Short Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:818
-msgid "Site Info"
+msgid "Show Label"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:819
-msgid "Site Language"
+msgid "Show Unit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:820
-msgid "Size Unit & Range"
+msgid "Showing"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:821
-msgid "Size Unit"
+msgid "Sign Up!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:822
-msgid "Skip"
+msgid "Sign Up"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:823
-msgid "Slug must be 100 characters or fewer"
+msgid "Site Info"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:824
-msgid "Smart AI Content"
+msgid "Site Language"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:825
-msgid "Snippet Bundle"
+msgid "Size Unit & Range"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:826
-msgid "Snippet Description"
+msgid "Size Unit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:827
-msgid "Snippet Name"
+msgid "Skip"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:828
-msgid "Snippet Type"
+msgid "Slug must be 100 characters or fewer"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:829
-msgid "Snippet saved successfully to cloud!"
+msgid "Smart AI Content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:830
-msgid "Snippet"
+msgid "Snippet Bundle"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:831
-msgid "Snippets couldn’t be downloaded. Try again."
+msgid "Snippet Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:832
-msgid "Snippets"
+msgid "Snippet Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:833
-msgid "Social Media"
+msgid "Snippet Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:834
-msgid "Something went wrong while generating the plugin package."
+msgid "Snippet saved successfully to cloud!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:835
-msgid "Something went wrong while saving the template."
+msgid "Snippet"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:836
+msgid "Snippets couldn’t be downloaded. Try again."
+msgstr ""
+
+#: build/wdk-i18n-strings.js:837
+msgid "Snippets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:838
-msgid "Space Around"
+msgid "Social Media"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:839
-msgid "Space Between"
+msgid "Something went wrong while generating the plugin package."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:840
-msgid "Space Evenly"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:841
-msgid "Specify the minimum PHP version required for this plugin."
-msgstr ""
-
-#: build/wdk-i18n-strings.js:842
-msgid "Specify the minimum WordPress version supported by this plugin."
+msgid "Something went wrong while saving the template."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:843
-msgid "Spread"
+msgid "Space Around"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:844
-msgid "Standard Import"
+msgid "Space Between"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:845
-msgid "Standard Style"
+msgid "Space Evenly"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:846
-msgid "Start"
+msgid "Specify the minimum PHP version required for this plugin."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:847
-msgid "Status"
+msgid "Specify the minimum WordPress version supported by this plugin."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:848
-msgid "Step"
+msgid "Spread"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:849
-msgid "Sticky Header Effects for Elementor"
+msgid "Standard Import"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:850
-msgid "Still in Doubt?"
+msgid "Standard Style"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:851
-msgid "Stock Images"
+msgid "Start"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:852
-msgid "Storage Credits"
+msgid "Status"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:853
-msgid "Stretch"
+msgid "Step"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:854
-msgid "Style"
+msgid "Sticky Header Effects for Elementor"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:855
-msgid "Sub Builders"
+msgid "Still in Doubt?"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:856
+msgid "Stock Images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:857
-msgid "Successfully Uploaded"
+msgid "Storage Credits"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:858
-msgid "Suggest New Features"
+msgid "Stretch"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:859
-msgid "Suggested Keywords"
+msgid "Style"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:860
-msgid "Supported media types. Available values are image, video, and svg."
-msgstr ""
-
-#: build/wdk-i18n-strings.js:861
-msgid "Svg"
+msgid "Sub Builders"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:862
-msgid "Switch is off"
+msgid "Successfully Uploaded"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:863
-msgid "Switch is on"
+msgid "Suggest New Features"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:864
-msgid "Switch to Mobile, Laptop, Tablet mode"
+msgid "Suggested Keywords"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:865
-msgid "Switcher Label"
+msgid "Supported media types. Available values are image, video, and svg."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:866
-msgid "Sync Widget"
+msgid "Svg"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:867
-msgid "TOP"
+msgid "Switch is off"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:868
-msgid "Tags"
+msgid "Switch is on"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:869
-msgid "Tell Us About Your Website"
+msgid "Switch to Mobile, Laptop, Tablet mode"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:870
-msgid "Template Imported Successfully"
+msgid "Switcher Label"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:871
-msgid "Template Imported successfully"
+msgid "Sync Widget"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:872
-msgid "Template Name"
+msgid "TOP"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:873
-msgid "Template Not Found"
+msgid "Tags"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:874
-msgid "Template Not Saved"
+msgid "Tell Us About Your Website"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:875
-msgid "Template Title"
+msgid "Template Imported Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:876
-msgid "Template Type"
+msgid "Template Imported successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:877
-msgid "Template content is empty. Please try again."
+msgid "Template Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:878
-msgid "Template import failed. Please try again."
+msgid "Template Not Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:879
-msgid "Template was not created. Please try again."
+msgid "Template Not Saved"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:880
-msgid "Template"
+msgid "Template Title"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:881
-msgid "Templates Images Uploading"
+msgid "Template Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:882
-msgid "Templates"
+msgid "Template content is empty. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:883
-msgid "Terms & Conditions"
+msgid "Template import failed. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:884
-msgid "Terms of Service"
+msgid "Template was not created. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:885
-msgid "Text Domain"
+msgid "Template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:886
-msgid "Text"
+msgid "Templates Images Uploading"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:887
-msgid "The Elementor Free version does not come with a free Navigation Menu widget. Therefore, by installing The Plus Addons, you can create your Header Menu easily."
+msgid "Templates"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:888
-msgid "The Plus Addons for Elementor Pro Plugin Required"
+msgid "Terms & Conditions"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:889
-msgid "The Plus Addons for Elementor Pro"
+msgid "Terms of Service"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:890
-msgid "The Plus Addons for Elementor offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
+msgid "Text Domain"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:891
-msgid "The Plus Addons for Elementor"
+msgid "Text"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:892
-msgid "The ZIP file is ready and has been successfully downloaded. It is now available for use."
+msgid "The Elementor Free version does not come with a free Navigation Menu widget. Therefore, by installing The Plus Addons, you can create your Header Menu easily."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:893
-msgid "The description that appears below the field."
+msgid "The Plus Addons for Elementor Pro Plugin Required"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:894
-msgid "The field default value."
+msgid "The Plus Addons for Elementor Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:895
-msgid "The field for adding Custom Sanitizer."
+msgid "The Plus Addons for Elementor offers both Free and Pro plans. To ensure quality design and better results, our premium plan provides full access to advanced features that make your web design process easier. We promise it's worth it! For any questions, connect with us via our website live chat—we'll get back to you soon."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:896
-msgid "The field placeholder that appears when the field has no values."
+msgid "The Plus Addons for Elementor"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:897
-msgid "The following details will help us serve you better, and will not be shared with any third-party or used to spam you in anyway."
+msgid "The ZIP file is ready and has been successfully downloaded. It is now available for use."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:898
-msgid "The global color and typography you haven't selected will be added as new in your site. Do you want to proceed ?"
+msgid "The description that appears below the field."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:899
-msgid "The input field type. Available values are all HTML5 supported types."
+msgid "The field default value."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:900
-msgid "The intervals value that will be incremented or decremented when using the controls' spinners. Default is empty, the value will be incremented by 1."
+msgid "The field for adding Custom Sanitizer."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:901
-msgid "The label for the “unchecked” state and “checked” state."
+msgid "The field placeholder that appears when the field has no values."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:902
-msgid "The label that appears above of the field."
+msgid "The following details will help us serve you better, and will not be shared with any third-party or used to spam you in anyway."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:903
-msgid "The login Details you entered is not correct. Please verify and try again"
+msgid "The global color and typography you haven't selected will be added as new in your site. Do you want to proceed ?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:904
-msgid "The login key you entered is not valid. Please verify and try again"
+msgid "The input field type. Available values are all HTML5 supported types."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:905
-msgid "The minimum and maximum number (only affects the spinners, the user can still type a lower value)."
+msgid "The intervals value that will be incremented or decremented when using the controls' spinners. Default is empty, the value will be incremented by 1."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:906
-msgid "The minimum number ( only affects the spinners, the user can still type a lower value )."
+msgid "The label for the “unchecked” state and “checked” state."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:907
-msgid "The name must be unique and should only contain letters, numbers and underscore (_)."
+msgid "The label that appears above of the field."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:908
-msgid "The page you're looking for doesn't exist or has been moved from here."
+msgid "The login Details you entered is not correct. Please verify and try again"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:909
-msgid "The page you're looking for doesn't exist or has been moved."
+msgid "The login key you entered is not valid. Please verify and try again"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:910
-msgid "The request was blocked or failed. If you use a security or firewall plugin, please allowlist admin-ajax.php and reload the page."
+msgid "The minimum and maximum number (only affects the spinners, the user can still type a lower value)."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:911
-msgid "The selected workspace has been removed permanently."
+msgid "The minimum number ( only affects the spinners, the user can still type a lower value )."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:912
-msgid "The specific background types to use. Available types are classic, gradient and video. Default is an empty array, including all the types."
+msgid "The name must be unique and should only contain letters, numbers and underscore (_)."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:913
-msgid "The value returned when checked."
+msgid "The page you're looking for doesn't exist or has been moved from here."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:914
-msgid "The widget has been pushed and is available for use."
+msgid "The page you're looking for doesn't exist or has been moved."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:915
-msgid "The widget is now available in your list."
+msgid "The request was blocked or failed. If you use a security or firewall plugin, please allowlist admin-ajax.php and reload the page."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:916
-msgid "Theme Setting"
+msgid "The selected workspace has been removed permanently."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:917
-msgid "Theme Settings"
+msgid "The specific background types to use. Available types are classic, gradient and video. Default is an empty array, including all the types."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:918
-msgid "Theme"
+msgid "The value returned when checked."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:919
-msgid "Themify"
+msgid "The widget has been pushed and is available for use."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:920
-msgid "This Snippet got disabled until you have more credits to make it active."
+msgid "The widget is now available in your list."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:921
-msgid "This Template got disabled until you have more credits to make it active."
+msgid "Theme Setting"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:922
-msgid "This Widget got disabled until you have more credits to make it active."
+msgid "Theme Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:923
-msgid "This Widget is Deactivated "
+msgid "Theme"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:924
-msgid "This Workspace is Deactivated"
+msgid "Themify"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:925
-msgid "This feature is available for Starter, Professional, Studio, and Agency Bundle in Yearly & Lifetime plans."
+msgid "This Snippet got disabled until you have more credits to make it active."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:926
-msgid "This is only a visual preview. The real website will be created with your details in the next step."
+msgid "This Template got disabled until you have more credits to make it active."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:927
-msgid "This sticky header template is built using Elementor Pro's Navigation Menu widget, which is only available with the Pro version. To use this template and unlock its full potential, you'll need to have Elementor Pro installed and activated."
+msgid "This Widget got disabled until you have more credits to make it active."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:928
-msgid "This template is deactivated or unavailable and could not be imported."
+msgid "This Widget is Deactivated "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:929
-msgid "This template works best with the following plugins. Please install them to continue."
+msgid "This Workspace is Deactivated"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:930
-msgid "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server."
+msgid "This feature is available for Starter, Professional, Studio, and Agency Bundle in Yearly & Lifetime plans."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:931
-msgid "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it."
+msgid "This is only a visual preview. The real website will be created with your details in the next step."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:932
-msgid "Time"
+msgid "This sticky header template is built using Elementor Pro's Navigation Menu widget, which is only available with the Pro version. To use this template and unlock its full potential, you'll need to have Elementor Pro installed and activated."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:933
-msgid "Tip"
+msgid "This template is deactivated or unavailable and could not be imported."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:934
-msgid "Title can not be empty!"
+msgid "This template works best with the following plugins. Please install them to continue."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:935
-msgid "Title field"
+msgid "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:936
-msgid "To Edit fully visit WdesignKit admin and make it live."
+msgid "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:937
-msgid "To download this snippet bundle, you will need to install below listed plugin"
+msgid "Time"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:938
-msgid "To download this snippet, you will need to install below listed plugin"
+msgid "Tip"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:939
-msgid "To download this widget, you will need to install below listed requirements."
+msgid "Title can not be empty!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:940
-msgid "To use live preview, install the required plugin and publish the widget."
+msgid "Title field"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:941
-msgid "Transferring all your HTML,CSS and JS to New one"
+msgid "To Edit fully visit WdesignKit admin and make it live."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:942
-msgid "Transparent Header Background"
+msgid "To download this snippet bundle, you will need to install below listed plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:943
-msgid "Trusted by 150K+ Users"
+msgid "To download this snippet, you will need to install below listed plugin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:944
-msgid "Turn on for dynamic value"
+msgid "To download this widget, you will need to install below listed requirements."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:945
-msgid "Turn on for url_options value."
+msgid "To use live preview, install the required plugin and publish the widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:946
-msgid "Turn your widget into a ready-to-use WordPress plugin in just a few clicks."
+msgid "Transferring all your HTML,CSS and JS to New one"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:947
-msgid "Twitter"
+msgid "Transparent Header Background"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:948
-msgid "Type"
+msgid "Trusted by 150K+ Users"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:949
-msgid "Types"
+msgid "Turn on for dynamic value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:950
-msgid "Unable to connect to the Internet !"
+msgid "Turn on for url_options value."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:951
-msgid "Unable to load WDesignKit"
+msgid "Turn your widget into a ready-to-use WordPress plugin in just a few clicks."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:952
-msgid "Unfavorite"
+msgid "Twitter"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:953
-msgid "Unlock This Sticky Header Template with Elementor Pro!"
+msgid "Type"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:954
-msgid "Unlock all Premium Block Designs with Nexter Blocks Pro"
+msgid "Types"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:955
-msgid "Unlock all Premium Widget Designs with The Plus Addons for Elementor Pro"
+msgid "Unable to connect to the Internet !"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:956
-msgid "Unsupported widget builder."
+msgid "Unable to load WDesignKit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:957
-msgid "Untitled Snippet"
+msgid "Unfavorite"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:958
-msgid "Up-Arrow"
+msgid "Unlock This Sticky Header Template with Elementor Pro!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:959
-msgid "Update Available"
+msgid "Unlock all Premium Block Designs with Nexter Blocks Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:960
-msgid "Update Failed"
+msgid "Unlock all Premium Widget Designs with The Plus Addons for Elementor Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:961
-msgid "Update Settings"
+msgid "Unsupported widget builder."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:962
-msgid "Update changes to page"
+msgid "Untitled Snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:963
-msgid "Update to"
+msgid "Up-Arrow"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:964
-msgid "Update your widget details and click Save when done."
+msgid "Update Available"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:965
-msgid "Update"
+msgid "Update Failed"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:966
+msgid "Update Settings"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:967
-msgid "Updating..."
+msgid "Update changes to page"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:968
-msgid "Upgrade Pro"
+msgid "Update to"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:969
-msgid "Upgrade to WDesignKit Pro for Premium Blocks Access"
+msgid "Update your widget details and click Save when done."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:970
-msgid "Upgrade to WDesignKit Pro for Premium Widgets Access"
-msgstr ""
-
-#: build/wdk-i18n-strings.js:971
-msgid "Upload Icon File (Only .PNG, .JPG, and .SVG are supported)"
+msgid "Update"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:972
-msgid "Upload Image on Server"
+msgid "Updating..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:973
-msgid "Upload Logo (Recommended size: 512 × 512 px, PNG with transparent background for best results in WordPress)"
+msgid "Upgrade Pro"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:974
-msgid "Upload Widget's featured image to show in widget listing. Only .jpg and .png images allowed."
+msgid "Upgrade to WDesignKit Pro for Premium Blocks Access"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:975
-msgid "Upload Your Images"
+msgid "Upgrade to WDesignKit Pro for Premium Widgets Access"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:976
-msgid "Upload Your images"
+msgid "Upload Icon File (Only .PNG, .JPG, and .SVG are supported)"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:977
-msgid "Uploading Processing..."
+msgid "Upload Image on Server"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:978
-msgid "Use a unique prefix to avoid conflicts with other plugins."
+msgid "Upload Logo (Recommended size: 512 × 512 px, PNG with transparent background for best results in WordPress)"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:979
-msgid "Use client inputs to draft on‑brand website copy and sections using AI."
+msgid "Upload Widget's featured image to show in widget listing. Only .jpg and .png images allowed."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:980
-msgid "Use only letters & numbers. Max 50 characters First letter can't be a digit."
+msgid "Upload Your Images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:981
-msgid "Use these images"
+msgid "Upload Your images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:982
-msgid "Use this media"
+msgid "Uploading Processing..."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:983
-msgid "Used to change the appearance of the control. There are two options: media or inline. The inline skin's design is based on the Choose Control."
+msgid "Use a unique prefix to avoid conflicts with other plugins."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:984
-msgid "Used with the inline skin only, to hide an option (Icon Library/SVG) from the inline icon control's buttons."
+msgid "Use client inputs to draft on‑brand website copy and sections using AI."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:985
-msgid "User"
+msgid "Use only letters & numbers. Max 50 characters First letter can't be a digit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:986
-msgid "Users"
+msgid "Use these images"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:987
-msgid "Value"
+msgid "Use this media"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:988
-msgid "Variable"
+msgid "Used to change the appearance of the control. There are two options: media or inline. The inline skin's design is based on the Choose Control."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:989
-msgid "Variables"
+msgid "Used with the inline skin only, to hide an option (Icon Library/SVG) from the inline icon control's buttons."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:990
-msgid "Version"
+msgid "User"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:991
-msgid "Vertical"
+msgid "Users"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:992
-msgid "Video"
+msgid "Value"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:993
-msgid "View Change Log"
+msgid "Variable"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:994
-msgid "View Demo"
+msgid "Variables"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:995
-msgid "View"
+msgid "Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:996
-msgid "WDK Sanitize"
+msgid "Vertical"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:997
-msgid "WDesignKit Logo"
+msgid "Video"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:998
-msgid "WDesignKit and Nexter Blocks are two distinct products. nexter Blocks is entirely focused on Gutenberg, offering essential and advanced blocks specifically designed for gutenberg users. WDesignKit, on the other hand, focuses on unique custom blocks created with its easy-to-use Drag and Drop block Builder, Cloud Workspace, and many other added benefits."
+msgid "View Change Log"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:999
-msgid "WDesignKit and The Plus Addons for Elementor are two distinct products. The Plus Addons is entirely focused on Elementor, offering essential and advanced widgets specifically designed for Elementor users."
+msgid "View Demo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1000
-msgid "WDesignKit is Ready to Power your WordPress Website"
+msgid "View"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1001
-msgid "WDesignKit, on the other hand, focuses on unique custom widgets created with its easy-to-use Drag and Drop Widget Builder, Cloud Workspace, and many other added benefits."
+msgid "WDK Sanitize"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1002
-msgid "Want AI Support or not."
+msgid "WDesignKit Logo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1003
-msgid "Want to know more?"
+msgid "WDesignKit and Nexter Blocks are two distinct products. nexter Blocks is entirely focused on Gutenberg, offering essential and advanced blocks specifically designed for gutenberg users. WDesignKit, on the other hand, focuses on unique custom blocks created with its easy-to-use Drag and Drop block Builder, Cloud Workspace, and many other added benefits."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1004
-msgid "Warning"
+msgid "WDesignKit and The Plus Addons for Elementor are two distinct products. The Plus Addons is entirely focused on Elementor, offering essential and advanced widgets specifically designed for Elementor users."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1005
-msgid "Watch Video Tutorials"
+msgid "WDesignKit is Ready to Power your WordPress Website"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1006
-msgid "Watch Video"
+msgid "WDesignKit, on the other hand, focuses on unique custom widgets created with its easy-to-use Drag and Drop Widget Builder, Cloud Workspace, and many other added benefits."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1007
-msgid "We collect :"
+msgid "Want AI Support or not."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1008
-msgid "We couldn’t save your snippet. Please try again."
+msgid "Want to know more?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1009
-msgid "We have downloaded your selected snippet. Now you can use it in your code snippets."
+msgid "Warning"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1010
-msgid "We save this info so it auto-fills the next time you import a kit."
+msgid "Watch Video Tutorials"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1011
-msgid "We're getting everything ready. Please wait while we install the required plugins and import your template."
+msgid "Watch Video"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1012
-msgid "We're getting everything ready. Please wait while we install the required plugins and import your widget."
+msgid "We collect :"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1013
-msgid "We've upgraded the widget from"
+msgid "We couldn’t save your snippet. Please try again."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1014
-msgid "Website Description"
+msgid "We have downloaded your selected snippet. Now you can use it in your code snippets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1015
-msgid "Website URL"
+msgid "We save this info so it auto-fills the next time you import a kit."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1016
-msgid "Website Upgrade in Progress."
+msgid "We're getting everything ready. Please wait while we install the required plugins and import your template."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1017
-msgid "Week"
+msgid "We're getting everything ready. Please wait while we install the required plugins and import your widget."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1018
-msgid "Welcome Back! Log in to continue"
+msgid "We've upgraded the widget from"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1019
-msgid "Welcome to WDesignKit"
+msgid "Website Description"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1020
-msgid "We’re Setting Up Your Website"
+msgid "Website URL"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1021
-msgid "We’re getting everything ready. Please wait while we install the required plugins and import your template."
+msgid "Website Upgrade in Progress."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1022
-msgid "What do you want visitors to do after reading?"
+msgid "Week"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1023
-msgid "What’s New?"
+msgid "Welcome Back! Log in to continue"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1024
-msgid "What’s the main skill or service you provide?"
+msgid "Welcome to WDesignKit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1025
-msgid "Whether to add nofollow attribute."
+msgid "We’re Setting Up Your Website"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1026
-msgid "Whether to allow alpha channel."
+msgid "We’re getting everything ready. Please wait while we install the required plugins and import your template."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1027
-msgid "Whether to allow multiple value selection."
+msgid "What do you want visitors to do after reading?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1028
-msgid "Whether to apply the Sanitization."
+msgid "What’s New?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1029
-msgid "Whether to apply the conditions."
+msgid "What’s the main skill or service you provide?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1030
-msgid "Whether to display the NHA type."
+msgid "Whether to add nofollow attribute."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1031
-msgid "Whether to display the label in a separate line."
+msgid "Whether to allow alpha channel."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1032
-msgid "Whether to display the label."
+msgid "Whether to allow multiple value selection."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1033
-msgid "Whether to enable the 12 Hours Time."
+msgid "Whether to apply the Sanitization."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1034
-msgid "Whether to open the url in the same tab or in a new one."
+msgid "Whether to apply the conditions."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1035
-msgid "Whether to prevent deleting the first notice."
+msgid "Whether to display the NHA type."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1036
-msgid "Whether to prevent deleting the first repeater field. To keep at least one repeater field."
+msgid "Whether to display the label in a separate line."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1037
-msgid "Whether to select the parent class."
+msgid "Whether to display the label."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1038
-msgid "White Label"
+msgid "Whether to enable the 12 Hours Time."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1039
-msgid "Why Do I Need The Plus Addons for Elementor?"
+msgid "Whether to open the url in the same tab or in a new one."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1040
-msgid "Why Do I Need WDesignKit Pro if I Have Nexter Blocks Pro?"
+msgid "Whether to prevent deleting the first notice."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1041
-msgid "Why Do I Need WDesignKit Pro if I Have The Plus Addons for Elementor Pro?"
+msgid "Whether to prevent deleting the first repeater field. To keep at least one repeater field."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1042
-msgid "Why Do I Need to Upgrade to Nexter Blocks Pro?"
+msgid "Whether to select the parent class."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1043
-msgid "Why Do I Need to Upgrade to The Plus Addons for Elementor Pro?"
+msgid "White Label"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1044
-msgid "Why do I need Elementor Pro for this Template?"
+msgid "Why Do I Need The Plus Addons for Elementor?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1045
-msgid "Widget Builder"
+msgid "Why Do I Need WDesignKit Pro if I Have Nexter Blocks Pro?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1046
-msgid "Widget Builders"
+msgid "Why Do I Need WDesignKit Pro if I Have The Plus Addons for Elementor Pro?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1047
-msgid "Widget Conversion Failed!"
+msgid "Why Do I Need to Upgrade to Nexter Blocks Pro?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1048
-msgid "Widget Created Successfully"
+msgid "Why Do I Need to Upgrade to The Plus Addons for Elementor Pro?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1049
-msgid "Widget Creation Fail !"
+msgid "Why do I need Elementor Pro for this Template?"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1050
-msgid "Widget Deactivated"
+msgid "Widget Builder"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1051
-msgid "Widget Downloaded Successfully"
+msgid "Widget Builders"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1052
-msgid "Widget Downloading"
+msgid "Widget Conversion Failed!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1053
-msgid "Widget Icon"
+msgid "Widget Created Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1054
-msgid "Widget Imported"
+msgid "Widget Creation Fail !"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1055
-msgid "Widget Library"
+msgid "Widget Deactivated"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1056
-msgid "Widget Name"
+msgid "Widget Downloaded Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1057
-msgid "Widget Not Found"
+msgid "Widget Downloading"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1058
-msgid "Widget Pushed"
+msgid "Widget Icon"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1059
-msgid "Widget Successfully Retrieved."
+msgid "Widget Imported"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1060
-msgid "Widget controllers remain unchanged after scanning"
+msgid "Widget Library"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1061
-msgid "Widget files could not be created."
+msgid "Widget Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1062
-msgid "Widget import fail! data not get "
+msgid "Widget Not Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1063
-msgid "Widget import fail"
+msgid "Widget Pushed"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1064
-msgid "Widget is not created."
+msgid "Widget Successfully Retrieved."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1065
-msgid "Widget not converted successfully."
+msgid "Widget controllers remain unchanged after scanning"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1066
-msgid "Widget not found try again later"
+msgid "Widget files could not be created."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1067
-msgid "Widget"
+msgid "Widget import fail! data not get "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1068
-msgid "Widgets"
+msgid "Widget import fail"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1069
-msgid "Wipe Settings before Uninstall"
+msgid "Widget is not created."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1070
-msgid "WordPress Version"
+msgid "Widget not converted successfully."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1071
-msgid "WordPress Version: "
+msgid "Widget not found try again later"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1072
-msgid "Workspace Deactivated"
+msgid "Widget"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1073
-msgid "Workspace Deleted"
+msgid "Widgets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1074
-msgid "Workspace Name Required"
+msgid "Wipe Settings before Uninstall"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1075
-msgid "Workspace Name"
+msgid "WordPress Version"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1076
-msgid "Workspace"
+msgid "WordPress Version: "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1077
-msgid "Write Using AI"
+msgid "Workspace Deactivated"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1078
-msgid "Write Your Note here...."
+msgid "Workspace Deleted"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1079
-msgid "Write a brief summary describing the plugin's functionality."
+msgid "Workspace Name Required"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1080
-msgid "Wrong or Expired Login Key"
+msgid "Workspace Name"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1081
-msgid "X"
+msgid "Workspace"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1082
-msgid "Y"
+msgid "Write Using AI"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1083
-msgid "Yay! Snippet Successfully Downloaded"
+msgid "Write Your Note here...."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1084
-msgid "Yay! Snippets Downloaded Successfully"
+msgid "Write a brief summary describing the plugin's functionality."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1085
-msgid "Yay! Widget is Successfully Converted"
+msgid "Wrong or Expired Login Key"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1086
-msgid "Yay! Widget is Successfully Updated"
+msgid "X"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1087
-msgid "Yes"
+msgid "Y"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1088
-msgid "Yes, Delete it"
+msgid "Yay! Snippet Successfully Downloaded"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1089
-msgid "Yes, I’m new"
+msgid "Yay! Snippets Downloaded Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1090
-msgid "Yes, Update It"
+msgid "Yay! Widget is Successfully Converted"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1091
-msgid "You Can Not put this controller here"
+msgid "Yay! Widget is Successfully Updated"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1092
-msgid "You have Used Free Credit"
+msgid "Yes"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1093
-msgid "You need to purchase now to add more workspace"
+msgid "Yes, Delete it"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1094
-msgid "You need to signup for "
+msgid "Yes, I’m new"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1095
-msgid "You need to write or perform any of your activity inside the loop"
+msgid "Yes, Update It"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1096
-msgid "YouTube"
+msgid "You Can Not put this controller here"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1097
-msgid "Your AI smart content import quota. Limits reset daily based on your plan. Check the pricing page for details."
+msgid "You have Used Free Credit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1098
-msgid "Your AI smart content import quota. Limits reset monthly based on your plan. Check the pricing page for details."
+msgid "You need to purchase now to add more workspace"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1099
+msgid "You need to signup for "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1100
-msgid "Your downloaded snippets are now ready to use in your code snippets."
+msgid "You need to write or perform any of your activity inside the loop"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1101
-msgid "Your selected template is ready. Start customizing and building your page right away."
+msgid "YouTube"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1102
-msgid "Your selected widget is ready. Start customizing and building your page right away."
+msgid "Your AI smart content import quota. Limits reset daily based on your plan. Check the pricing page for details."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1103
-msgid "Your site limit for this month has been reached."
-msgstr ""
-
-#: build/wdk-i18n-strings.js:1104
-msgid "Your site limit for today has been reached."
+msgid "Your AI smart content import quota. Limits reset monthly based on your plan. Check the pricing page for details."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1105
-msgid "Your widget Downloaded Successfully"
+msgid "Your downloaded snippets are now ready to use in your code snippets."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1106
-msgid "Your widget has been imported successfully."
+msgid "Your selected template is ready. Start customizing and building your page right away."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1107
-msgid "Your"
+msgid "Your selected widget is ready. Start customizing and building your page right away."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1108
-msgid "You’ve been signed out. Remember your credentials for your next login."
+msgid "Your site limit for this month has been reached."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1109
-msgid "Zip file invalid or Missing. Upload Again!"
+msgid "Your site limit for today has been reached."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1110
-msgid "align-items"
+msgid "Your widget Downloaded Successfully"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1111
-msgid "and"
+msgid "Your widget has been imported successfully."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1112
-msgid "by "
+msgid "Your"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1113
-msgid "by WDesignKit"
+msgid "You’ve been signed out. Remember your credentials for your next login."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1114
-msgid "carousel_img"
+msgid "Zip file invalid or Missing. Upload Again!"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1115
-msgid "click here"
+msgid "align-items"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1116
-msgid "conic"
+msgid "and"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1117
-msgid "default Count of Repeater item."
+msgid "by "
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1118
-msgid "facebook"
+msgid "by WDesignKit"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1119
-msgid "facebook-logo"
+msgid "carousel_img"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1120
-msgid "flex-direction"
+msgid "click here"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1121
-msgid "font-1"
+msgid "conic"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1122
-msgid "font-2"
+msgid "default Count of Repeater item."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1123
-msgid "font-3"
+msgid "facebook"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1124
-msgid "g"
+msgid "facebook-logo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1125
-msgid "google-logo"
+msgid "flex-direction"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1126
-msgid "grediant"
+msgid "font-1"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1127
-msgid "info"
+msgid "font-2"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1128
-msgid "instagram"
+msgid "font-3"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1129
-msgid "justify-content"
+msgid "g"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1130
-msgid "linkedin"
+msgid "google-logo"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1131
-msgid "making a backup first."
+msgid "grediant"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1132
-msgid "of"
+msgid "info"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1133
-msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
+msgid "instagram"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1134
-msgid "pro snippets require pro plugin:"
+msgid "justify-content"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1135
-msgid "radial"
+msgid "linkedin"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1136
-msgid "selected Template is Not Found"
+msgid "making a backup first."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1137
-msgid "snippets downloaded successfully."
+msgid "of"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1138
-msgid "snippets failed to download:"
+msgid "only \".png\", \".jpg\", \".jpeg\" images are allowed."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1139
-msgid "text-align"
+msgid "pro snippets require pro plugin:"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1140
-msgid "to enhance performance and improve your experience."
+msgid "radial"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1141
-msgid "to open the dashboard."
+msgid "selected Template is Not Found"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1142
-msgid "to"
+msgid "snippets downloaded successfully."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1143
-msgid "twitter"
+msgid "snippets failed to download:"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1144
-msgid "view snippet"
+msgid "text-align"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1145
-msgid "view snippets"
+msgid "to enhance performance and improve your experience."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1146
-msgid "view template"
+msgid "to open the dashboard."
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1147
-msgid "view widget"
+msgid "to"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1148
-msgid "widget has been successfully converted to"
+msgid "twitter"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1149
-msgid "widget has been updated. You can now customise the new version as you like!"
+msgid "view snippet"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1150
-msgid "youtube"
+msgid "view snippets"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1151
-msgid "•"
+msgid "view template"
 msgstr ""
 
 #: build/wdk-i18n-strings.js:1152
+msgid "view widget"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1153
+msgid "widget has been successfully converted to"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1154
+msgid "widget has been updated. You can now customise the new version as you like!"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1155
+msgid "youtube"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1156
+msgid "•"
+msgstr ""
+
+#: build/wdk-i18n-strings.js:1157
 msgid "🎉 Success! Your Website is Ready"
 msgstr ""

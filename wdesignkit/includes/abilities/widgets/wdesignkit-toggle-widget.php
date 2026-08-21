@@ -39,6 +39,7 @@ wp_register_ability('wdesignkit/activate-widget', [
     'execute_callback'    => 'wdesignkit_mcp_activate_widget',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -95,6 +96,7 @@ wp_register_ability('wdesignkit/deactivate-widget', [
     'execute_callback'    => 'wdesignkit_mcp_deactivate_widget',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

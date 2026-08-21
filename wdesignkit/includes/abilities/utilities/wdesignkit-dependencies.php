@@ -37,6 +37,7 @@ wp_register_ability('wdesignkit/check-dependencies', [
     'execute_callback'    => 'wdesignkit_mcp_check_dependencies',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -89,6 +90,11 @@ wp_register_ability('wdesignkit/install-dependency', [
     'execute_callback'    => 'wdesignkit_mcp_install_dependency',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        // Installs plugin code from wordpress.org. The execute callback also checks this cap
+        // directly, which is what enforces it on WordPress < 7.1; declaring it here makes the
+        // requirement introspectable and enforces it before the callback runs on 7.1+.
+        'required_capability' => 'install_plugins',
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

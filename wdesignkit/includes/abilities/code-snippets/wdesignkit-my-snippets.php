@@ -48,6 +48,7 @@ wp_register_ability('wdesignkit/get-my-snippets', [
     'execute_callback'    => 'wdesignkit_mcp_get_my_snippets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -101,6 +102,7 @@ wp_register_ability('wdesignkit/get-my-favourite-snippets', [
     'execute_callback'    => 'wdesignkit_mcp_get_my_favourite_snippets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -149,6 +151,7 @@ wp_register_ability('wdesignkit/favourite-snippet', [
     'execute_callback'    => 'wdesignkit_mcp_favourite_snippet',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

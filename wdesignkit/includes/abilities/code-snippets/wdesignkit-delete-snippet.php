@@ -43,6 +43,7 @@ wp_register_ability('wdesignkit/delete-snippet', [
     'execute_callback'    => 'wdesignkit_mcp_delete_snippet',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => false,
         'show_in_rest' => true,
         'mcp'          => ['public' => false],
         'annotations'  => [

@@ -35,6 +35,7 @@ wp_register_ability('wdesignkit/get-login-status', [
     'execute_callback'    => 'wdesignkit_mcp_get_login_status',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

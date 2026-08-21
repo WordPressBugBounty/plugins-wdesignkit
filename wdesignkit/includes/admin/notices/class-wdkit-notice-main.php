@@ -69,9 +69,15 @@ if ( ! class_exists( 'Wdkit_Notice_Main' ) ) {
 				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
 			}
 
-			if ( is_admin() ) {
-				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-deactivate-feedback.php';
-			}
+			/*
+			 * The deactivation dialog is no longer loaded here. It is the shared SDK's
+			 * Posimyth_Deactivation_Survey now, booted from wdesignkit.php with the config in
+			 * includes/admin/notices/class-wdkit-deactivate-survey.php.
+			 *
+			 * Do not reintroduce a second handler on the Deactivate link — two of them stack two
+			 * dialogs, which is the bug the sibling products shipped until their legacy popups were
+			 * deleted.
+			 */
 
 			// if ( current_user_can( 'manage_options' ) ) {
 			// 	if ( is_user_logged_in() ) {

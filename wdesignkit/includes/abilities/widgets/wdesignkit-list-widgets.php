@@ -53,6 +53,7 @@ wp_register_ability('wdesignkit/list-widgets', [
     'execute_callback'    => 'wdesignkit_mcp_list_widgets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

@@ -30,6 +30,7 @@ wp_register_ability('wdesignkit/get-white-label', [
     'execute_callback'    => 'wdesignkit_mcp_get_white_label',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -110,6 +111,7 @@ wp_register_ability('wdesignkit/set-white-label', [
     'execute_callback'    => 'wdesignkit_mcp_set_white_label',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -153,6 +155,7 @@ wp_register_ability('wdesignkit/reset-white-label', [
     'execute_callback'    => 'wdesignkit_mcp_reset_white_label',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

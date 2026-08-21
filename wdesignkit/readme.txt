@@ -1,63 +1,71 @@
-=== WDesignKit - Elementor & Gutenberg Starter Templates, Patterns, Cloud Workspace & Widget Builder ===
+=== WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress ===
 Contributors: posimyththemes, pareshchavda, sagarpatel124
 Donate link: https://wdesignkit.com/
-Tags: page templates, elementor template, wordpress template, elementor widgets, gutenberg blocks
+Tags: page templates, elementor widgets, gutenberg blocks, ai widget builder, ai templates
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.0.2
 Requires PHP: 7.4
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
-3000+ Elementor Templates, Gutenberg Templates, Widgets Builder for Elementor, Gutenberg & Bricks, Cloud Workspace & Figma Files, 160+ Widgets Library
+3000+ Elementor & Gutenberg Templates, AI Widget Builder, AI Code Snippets, MCP Workflow, Cloud Workspace & Figma Files, 220+ Widgets Library
 
 == Description ==
 
-[WDesignKit](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) is the ultimate designer tool for WordPress, empowering designers to create stunning websites in minutes. It's the fastest way to build a WordPress website, making it a must-have tool for every WordPress designer or agency owner.
+[WDesignKit](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) is the ultimate designer tool for WordPress, empowering designers to create stunning websites in minutes. It's the fastest way to build a WordPress website, making it a must-have tool for every WordPress designer or agency owner. Build faster with AI Templates, build widgets and code snippets with your favorite AI tool via MCP, and connect WDesignKit to compatible AI assistants through the Model Context Protocol (MCP) to streamline your WordPress workflow.
 
-<strong> [ VISIT WDESIGNKIT WEBSITE](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> 
-### <strong> Quick Navigation Links</strong>
+<strong>[VISIT WDESIGNKIT WEBSITE](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
 
-[ Visit Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials]( https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1)| [Documentations](https://learn.wdesignkit.com/docs/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Roadmap](https://roadmap.wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Join Facebook Community](https://www.facebook.com/groups/884892449594153) | [Free Support](https://wordpress.org/support/plugin/wdesignkit) | [Premium Support](https://store.posimyth.com/helpdesk/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [AI Chat (Instant Answers)](https://wdesignkit.com/chat/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)
+### <strong>Quick Navigation Links</strong>
 
-### Complete WDesignKit Features Explained Under 4 Mins <a href="https://www.youtube.com/watch?v=Bw5IHPxr0Nc"> Watch Now</a>
+[Visit Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials](https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1) | [Documentations](https://learn.wdesignkit.com/docs/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Roadmap](https://roadmap.wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Join Facebook Community](https://www.facebook.com/groups/884892449594153) | [Free Support](https://wordpress.org/support/plugin/wdesignkit/) | [Premium Support](https://store.posimyth.com/helpdesk/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [AI Chat (Instant Answers)](https://wdesignkit.com/chat/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)
+
+### Complete WDesignKit Features Explained Under 4 Mins <a href="https://www.youtube.com/watch?v=Bw5IHPxr0Nc">Watch Now</a>
 
 https://www.youtube.com/watch?v=Bw5IHPxr0Nc
 
 https://www.youtube.com/watch?v=4RhZwuyFd8k&t=101s
 
 ## What is WDesignKit ?
-* <strong>[1600+ Elementor Page Templates, Kit & Sections](https://wdesignkit.com/templates?builder_req=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-* <strong>[1500+ Gutenberg Templates & Patterns](https://wdesignkit.com/templates?builder_req=1002&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-* <strong>[80+ Elementor Widgets Library](https://wdesignkit.com/widgets?builder=1&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-* <strong>[30+ Gutenberg Blocks Library](https://wdesignkit.com/widgets?builder=2&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-* <strong>[30+ Bricks Elements Libary](https://wdesignkit.com/widgets?builder=3&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
-* <strong>[Elementor Widget Builder](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> (Custom Code to Elementor Widget)
-* <strong>[Gutenberg Blocks Builder](https://wdesignkit.com/widget-builder/gutenberg-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>(Custom Code to Gutenberg Blocks)
-* <strong>[Bricks Elements Builder](https://wdesignkit.com/widget-builder/bricks-elements-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>  (Custom Code to Bricks Elements)
-* <strong>[1- Click Widget Convertor](https://wdesignkit.com/widgets/page-builder-widgets-converter?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks#wkit-one-click-convert)</strong> — Easily Convert Elementor Widgets to Gutenberg Blocks or Bricks Elements & Vice Versa 
-* <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> — Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud 
-* <strong>[60+ Figma Designed Websites](https://wdesignkit.com/figma-kits?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
+
+* <strong>[AI Templates](https://wdesignkit.com/ai-template?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Import Elementor & Gutenberg Templates Pre-Populated with AI-Generated Content, No More Replacing Placeholder Text Line by Line
+* <strong>[AI Widget Builder](https://wdesignkit.com/ai-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Describe the widget you need in plain language, and your favorite AI tool, connected via MCP, builds a production-ready Elementor, Gutenberg, or Bricks widget.
+* <strong>[AI Code Snippets](https://wdesignkit.com/ai-code-snippet?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Generate custom WordPress code snippets through a conversation with your favorite AI tool, connected via MCP, no manual coding or copy-pasting required.
+* <strong>[MCP Workflow](https://wdesignkit.com/mcp-workflows?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Connect WDesignKit to AI Assistants via Model Context Protocol (MCP) so You Can Design, Build, and Manage WordPress Sites Through a Chat Workflow
+* <strong>[1600+ Elementor Page Templates, Kit & Sections](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Ready-Made, Professionally Designed Pages, Kits & Sections You Can Import into Elementor in One Click
+* <strong>[1500+ Gutenberg Templates & Patterns](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1002&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Full Page Layouts & Reusable Patterns Built for the Native WordPress Block Editor
+* <strong>[110+ Elementor Widgets Library](https://wdesignkit.com/widgets?builder=1&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Ready-to-Use Elementor Widgets Covering Sliders, Forms, Galleries, Content Blocks & More
+* <strong>[30+ Gutenberg Blocks Library](https://wdesignkit.com/widgets?builder=2&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Pre-Built Gutenberg Blocks to Extend the Native Block Editor Without Extra Plugins
+* <strong>[80+ Bricks Elements Library](https://wdesignkit.com/widgets?builder=3&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Pre-Built Elements Ready to Drop into Any Bricks Builder Layout
+* <strong>[Elementor Widget Builder](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom HTML, CSS & JS Code into a Fully Working Elementor Widget, No Elementor Widget Development Experience Needed
+* <strong>[Gutenberg Blocks Builder](https://wdesignkit.com/widget-builder/gutenberg-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Native Gutenberg Block Ready to Use in the Block Editor
+* <strong>[Nexter Blocks Builder](https://wdesignkit.com/widget-builder/nexter-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Reusable Nexter Block
+* <strong>[Bricks Elements Builder](https://wdesignkit.com/widget-builder/bricks-elements-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Reusable Bricks Element
+* <strong>[1-Click Widget Converter](https://wdesignkit.com/widgets/page-builder-widgets-converter?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Easily Convert Elementor Widgets to Gutenberg Blocks or Bricks Elements & Vice Versa, No Rebuilding from Scratch When You Switch Builders
+* <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud
+* <strong>[60+ Figma Designed Websites](https://wdesignkit.com/figma-kits?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Editable Figma Website Kits with Auto Layout, Ready to Hand Off to Design Directly into a Live Build
 
 ###🔍 OUR PRODUCTS
 
-<strong>[🥇 The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> -  120+ Elementor Widgets to create Elementor Widgets Easily. 
+💰 <strong>[The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - 120+ Elementor Widgets to create Elementor Widgets Easily.
 
-<strong>[🥇 NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks. 
+💰 <strong>[NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks.
 
-<strong>[🥇 UiChemy - Figma to Elementor & Bricks Convertor](https://uichemy.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Convert your Figma Templates In Live Elementor Website using our [FREE Figma Plugin.](https://www.figma.com/community/plugin/1265873702834050352/)
-
+💰 <strong>[UiChemy - Figma to Elementor & Bricks Convertor](https://uichemy.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Convert your Figma Templates In Live Elementor Website using our [FREE Figma Plugin](https://www.figma.com/community/plugin/1265873702834050352/).
 
 == Installation ==
 
 == Screenshots ==
-1. 3000+ Website Templates & Sections
-2. 160+ Pre-Designed Widgets
-3. Widget Builder Convert Code to Widget
-4. Store Templates, Widgets & Figma Files in Cloud
-5. Cloud Workplace for Team Collaboration
-6. Page Builder Widget Converter
-7. 60+ Pre-Designed Figma Design Files
+
+1. AI Powered WordPress Templates
+2. Elementor & Gutenberg Templates Library
+3. AI Widget Builder
+4. Ready Made Widget Library
+5. WordPress Workflow with AI
+6. AI Code Snippets
+7. Cloud Workspace
+8. One Click Widget Converter
 
 == Frequently Asked Questions ==
 
@@ -67,40 +75,65 @@ Yes this works with all the Themes, but it works best in sync with our Nexter Wo
 
 = Is Widget Builder free to use? =
 
-Yes. Our Elementor Widget Builder, & Bricks Elements Builder & Upcoming Gutenberg Blocks builder and future Builders will be 100% free to use. There are some limitations on the number of widgets you can create in the free plan.
+Yes. Our Elementor Widget Builder, Gutenberg Blocks Builder & Bricks Elements Builder are 100% free to use. There are some limitations on the number of widgets you can create in the free plan. Building widgets or code snippets with AI requires a connected AI tool via MCP; it is not available as a standalone feature inside the plugin.
 
-= Can I save templates from both Elementor Free and Pro using WDesignKit? 
+= Can I save templates from both Elementor Free and Pro using WDesignKit? =
 
 Yes, You can save and use Elementor Free and Pro both templates.
 
-= What page builders are currently supported with WDesignKit?=
-Currently, for Templates, We are having support for Elementor and Gutenberg. In Widget builder & Ready made widgets, We are supporting Elementor. Gutenberg, Bricks, and more are coming very soon.
+= What page builders are currently supported with WDesignKit? =
 
-= Do i Need any Elementor Addon to use the Plugin?=
+Currently, for Templates, we have support for Elementor and Gutenberg only. For Widget Builder & ready-made widgets, we support Elementor, Gutenberg, and Bricks. Templates for Bricks are not available yet.
+
+= Do i Need any Elementor Addon to use the Plugin? =
 
 WDesignKit does not have any direct dependency on any Elementor Addon, but some Elementor Templates & Gutenberg Blocks require The Plus Addons for Elementor or Nexter Blocks for full import of website.
 
-= How can I report security bugs?
+= Does WDesignKit share any data about my site? =
 
-You can report security bugs through the Patchstack Vulnerability Disclosure Program.The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/wdesignkit)
+Only if you turn it on. Usage analytics are off by default; a few days after installing, WDesignKit asks once whether you want to share non-sensitive usage details, and nothing is sent unless you opt in. You can turn it on or off any time from WDesignKit > Settings. No personal data, no license key and no page content is ever sent. See [How Does Data Sharing Work in WDesignKit?](https://learn.wdesignkit.com/docs/data-sharing/) for the exact list of what is shared.
+
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability](https://patchstack.com/database/vdp/wdesignkit).
 
 == External services ==
 
 1. wdesignkit.com API : This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 2. api.wordpress.org : This API retrieves plugin metadata and compatibility information from WordPress.org. It sends the plugin identifier during updates or when checking compatibility. More information can be found in the [Privacy Policy](https://wordpress.org/about/privacy/) and [Terms of Service](https://wordpress.org/tos/).
-3. api.posimyth.com : The plugin connects to this API for two purposes: collecting optional feedback during deactivation and storing anonymized data during onboarding. For deactivation feedback, anonymized data is sent voluntarily by users, while onboarding interactions transmit minimal anonymized statistics. These APIs are only accessed during feedback submission or onboarding. You can find more details in the [Privacy Policy](https://api.posimyth.com/privacy-policy/) and [Terms of Service](https://api.posimyth.com/terms-and-conditions/).
+3. api.posimyth.com : Usage analytics. Off by default; submitting the deactivation feedback form also sends it, plus your admin email if you tick the contact box. [Terms](https://store.posimyth.com/terms-conditions/) · [Privacy](https://store.posimyth.com/privacy-policy/) · [what's shared](https://learn.wdesignkit.com/docs/data-sharing/)
+4. AI Templates : This feature sends your prompt to WDesignKit's AI service to generate ready-to-use template content. No content is sent unless you actively use this feature. For more details, review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
+5. Model Context Protocol (MCP) : The AI Widget Builder, AI Code Snippets, and MCP Workflow features connect WDesignKit to a third-party AI tool of your choice (such as Claude) over the Model Context Protocol. Your prompts, and where applicable your existing widget/template code, are sent to that AI tool to generate the result. This only happens when you actively connect and use an AI tool via MCP; review the privacy policy and terms of the AI tool you connect, in addition to WDesignKit's [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 
 == Changelog ==
+
+2.6.5 - 21 Aug 2026
+New: Added WordPress 7.1 Abilities API support.
+Improved: Ability discovery can now be filtered by namespace, public exposure and fields.
+Improved: Hardened ability inputs and tightened permissions for rollback, data removal and dependency install.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.6.4 - 17 Aug 2026
 New: Added new Abilities to save a full template with globals, list templates, fix broken template data, and set cross-builder, demo and Figma links.
 New: Added globals import flow so button styles, radius, shadows and animations carry over on template import.
 New: Added Site Info persistence during kit import, auto-filling business details on the next kit.
+New: Optional data sharing — help improve WDesignKit by sharing non-sensitive information about how the plugin is used. It is off by default, you are asked once a couple of days after install, and nothing is sent until you turn it on.
+New: When data sharing is on, the shared information includes how many widgets you have built for each builder and which of them are actually placed on your pages (Elementor, Gutenberg, Gutenberg core and Bricks), which library widgets are installed, how many templates you have imported split by page kits and single templates, and your cloud storage and AI credit figures. No personal data, no licence key, no page content.
 Improved: Much faster widget loading — widget registration is now cached instead of scanning the disk on every request.
 Improved: Hardened the widget builder directory, image downloads and export paths against unsafe file writes.
+Improved: Deactivation feedback now uses the shared POSIMYTH dialog — the same form as our other plugins, carrying WDesignKit's own accent colour and logo.
+Improved: The Plugins screen no longer loads an external Google Fonts stylesheet, and the retired feedback endpoints have been removed.
+Improved: White-labelled installs no longer show the feedback form.
 Fixed: The same widget could land in two different folders when created, duplicated or re-downloaded.
 Fixed: Widget validation wrongly failed valid Bricks elements and Gutenberg blocks.
 Fixed: AI import showed incorrect credits and resumed on the wrong step when reopening a kit.
+Fixed: The data-sharing and deactivation dialogs now use WDesignKit's own brand colour; they were showing an unrelated accent.
+Fixed: A data-sharing request the server refuses is now recorded in the debug log instead of failing silently.
+Fixed: Deactivating the plugin now removes its background weekly task instead of leaving it scheduled in WordPress.
+Fixed: Uninstalling now clears your data-sharing choice, so reinstalling asks again instead of quietly resuming.
+Fixed: The deactivation form now opens on translated sites. It was tied to an element id WordPress builds from the translated plugin name, so on non-English locales it never appeared at all.
+Fixed: Choosing "Skip & Deactivate" no longer contacts our servers. It previously sent a request even though no feedback was being given.
+Fixed: Feedback is now sent over a verified SSL connection — the old request skipped certificate verification.
 Fixed: Minor Bug Fixes & Improvements.
 
 2.6.3 - 03 Aug 2026

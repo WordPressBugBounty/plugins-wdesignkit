@@ -64,6 +64,12 @@ wp_register_ability('wdesignkit/remove-database', [
     'execute_callback'    => 'wdesignkit_mcp_remove_database',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        // action "execute" irreversibly deletes the plugin's stored data, which is the data half
+        // of deleting the plugin — gated on delete_plugins so a multisite site admin (who has
+        // manage_options but not delete_plugins) cannot wipe it. Enforced via
+        // wp_ability_permission_result (WP 7.1+); see class-wdk-ability-lifecycle.php.
+        'required_capability' => 'delete_plugins',
+        'public'       => false,
         'show_in_rest' => true,
         'mcp'          => ['public' => false],
         'annotations'  => [

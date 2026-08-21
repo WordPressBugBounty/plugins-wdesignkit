@@ -52,6 +52,7 @@ wp_register_ability('wdesignkit/activate-licence', [
     'execute_callback'    => 'wdesignkit_mcp_activate_licence',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -112,6 +113,7 @@ wp_register_ability('wdesignkit/delete-licence', [
     'execute_callback'    => 'wdesignkit_mcp_delete_licence',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -161,6 +163,7 @@ wp_register_ability('wdesignkit/sync-licence', [
     'execute_callback'    => 'wdesignkit_mcp_sync_licence',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -210,6 +213,7 @@ wp_register_ability('wdesignkit/licence-overview', [
     'execute_callback'    => 'wdesignkit_mcp_licence_overview',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

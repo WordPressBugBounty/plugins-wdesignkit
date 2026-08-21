@@ -123,6 +123,7 @@ wp_register_ability('wdesignkit/download-plugin', [
     'execute_callback'    => 'wdesignkit_mcp_download_plugin',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

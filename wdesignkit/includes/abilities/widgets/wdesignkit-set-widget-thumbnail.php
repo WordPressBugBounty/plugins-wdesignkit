@@ -68,6 +68,7 @@ wp_register_ability('wdesignkit/set-widget-thumbnail', [
     'execute_callback'    => 'wdesignkit_mcp_set_widget_thumbnail',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

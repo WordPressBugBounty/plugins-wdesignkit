@@ -43,6 +43,7 @@ wp_register_ability('wdesignkit/create-workspace', [
     'execute_callback'    => 'wdesignkit_mcp_create_workspace',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -93,6 +94,7 @@ wp_register_ability('wdesignkit/delete-workspace', [
     'execute_callback'    => 'wdesignkit_mcp_delete_workspace',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -145,6 +147,7 @@ wp_register_ability('wdesignkit/update-workspace', [
     'execute_callback'    => 'wdesignkit_mcp_update_workspace',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -189,6 +192,7 @@ wp_register_ability('wdesignkit/get-workspace-data', [
     'execute_callback'    => 'wdesignkit_mcp_get_workspace_data',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -248,6 +252,7 @@ wp_register_ability('wdesignkit/get-shared-with-me', [
     'execute_callback'    => 'wdesignkit_mcp_get_shared_with_me',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

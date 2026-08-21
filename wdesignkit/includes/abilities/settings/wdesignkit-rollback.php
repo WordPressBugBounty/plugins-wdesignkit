@@ -31,6 +31,7 @@ wp_register_ability('wdesignkit/list-rollback-versions', [
     'execute_callback'    => 'wdesignkit_mcp_list_rollback_versions',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -81,6 +82,11 @@ wp_register_ability('wdesignkit/rollback', [
     'execute_callback'    => 'wdesignkit_mcp_rollback',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        // Replaces the plugin's files on disk — the same operation as a plugin update, so it
+        // requires update_plugins on top of the shared manage_options gate. Enforced via
+        // wp_ability_permission_result (WP 7.1+); see class-wdk-ability-lifecycle.php.
+        'required_capability' => 'update_plugins',
+        'public'       => false,
         'show_in_rest' => true,
         'mcp'          => ['public' => false],
         'annotations'  => [

@@ -29,6 +29,7 @@ wp_register_ability('wdesignkit/get-design-templates-toggle', [
     'execute_callback'    => 'wdesignkit_mcp_get_design_templates_toggle',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
@@ -80,6 +81,7 @@ wp_register_ability('wdesignkit/toggle-design-templates', [
     'execute_callback'    => 'wdesignkit_mcp_toggle_design_templates',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

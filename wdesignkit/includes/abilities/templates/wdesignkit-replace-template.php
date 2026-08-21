@@ -59,6 +59,7 @@ wp_register_ability('wdesignkit/replace-template', [
     'execute_callback'    => 'wdesignkit_mcp_replace_template',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [

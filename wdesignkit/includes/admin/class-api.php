@@ -3053,6 +3053,32 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
+			/**
+			 * Fires after a template has been imported from the cloud.
+			 *
+			 * WDesignKit's templates live in the cloud, so nothing local records that an import
+			 * happened — there is no post type, no option, nothing to count after the fact. This is the
+			 * only moment the information exists.
+			 *
+			 * @since 2.6.4
+			 *
+			 * @param string $kind    'single' or 'kit'.
+			 * @param string $builder Builder the template was imported for, e.g. 'elementor'.
+			 * @param int    $count   How many templates this import brought in.
+			 */
+			// Only a completed import counts. The cloud's failure shape for this endpoint family sets
+			// content => 'error' (see the sibling check in wdkit_import_kit_template() above) — that is
+			// non-empty, so the previous `||` fired the counter on failed imports too. Require success
+			// AND an absent/non-'error' content instead.
+			if ( ! empty( $response['success'] ) && ( ! isset( $response['content'] ) || 'error' !== $response['content'] ) ) {
+				do_action(
+					'wdkit_template_imported',
+					'import_kit_template' === $api_type ? 'kit' : 'single',
+					isset( $_POST['builder'] ) ? sanitize_key( wp_unslash( $_POST['builder'] ) ) : '',
+					1
+				);
+			}
+
 			wp_send_json( $response );
 			wp_die();
 		}
@@ -3881,6 +3907,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$output['data']        = $result;
 			$output['success']     = $response['success'];
 
+			// Counts the IMPORT ACTION, not what it brought in. A kit import always counts as 1 kit,
+			// no matter how many blocks/pages that kit contains — confirmed live: a single gutenberg
+			// kit import recorded total=680, kinds.kit=680, because $template_ids for that call was a
+			// 680-element array of the kit's own blocks and count( $template_ids ) counted every one of
+			// them. A page-kit's *size* is not tracking's concern; "was a kit imported" is.
+			//
+			// The 'single' branch keeps a defensive fallback for the one shape this endpoint's own
+			// $template_ids reliably takes when it is not a kit — a single {id, name, slug, thumb...}
+			// object — where count() would likewise count JSON keys instead of "1 template imported".
+			if ( ! empty( $output['success'] ) ) {
+				$is_kit       = ( '' !== $website_kit );
+				$import_count = $is_kit ? 1 : ( isset( $template_ids['id'] ) ? 1 : ( is_array( $template_ids ) ? count( $template_ids ) : 1 ) );
+				do_action(
+					'wdkit_template_imported',
+					$is_kit ? 'kit' : 'single',
+					sanitize_key( $builder ),
+					$import_count
+				);
+			}
+
 			wp_send_json( $output );
 			wp_die();
 		}
@@ -4367,6 +4413,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						}
 
 						clean_post_cache( $inserted_post );
+
+						// This whole method imports exactly one section per call — unlike
+						// wdkit_import_template()/wdkit_import_kit_template(), it never fired this hook
+						// at all, so single-section imports (Header/Footer/CTA/etc., a primary import
+						// path per the Template Type sidebar) were invisible to tracking entirely.
+						do_action( 'wdkit_template_imported', 'single', sanitize_key( $editor ), 1 );
+
 						wp_send_json(
 							array(
 								$temp_id      => $temp_detail,
@@ -4505,6 +4558,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							}
 
 							\Elementor\Plugin::$instance->files_manager->clear_cache();
+
+							// See the matching note in the Gutenberg branch above — this method never
+							// fired the tracking hook for either editor.
+							do_action( 'wdkit_template_imported', 'single', 'elementor', 1 );
 
 							wp_send_json(
 								array(
@@ -5041,8 +5098,69 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = json_decode( wp_json_encode( $response['data'] ), true );
 
+			$this->wdkit_cache_cloud_usage( $response );
+
 			wp_send_json( $response );
 			wp_die();
+		}
+
+		/**
+		 * Caches the storage / credit figures this response carried.
+		 *
+		 * This handler is the ONLY place those numbers ever exist on the site: the cloud endpoint
+		 * authenticates with a user token that only a logged-in dashboard request carries, so the
+		 * analytics heartbeat — which runs on cron with no user at all — can never fetch them itself.
+		 * Caching them here is what lets Posimyth_Tracker_WDK report them, and it reports the cache's
+		 * age alongside so a stale reading is recognisable as one.
+		 *
+		 * Field names are probed rather than assumed: the cloud has renamed these before, and the
+		 * licence ability already carries six spellings of its own key field for the same reason. An
+		 * unrecognised shape simply caches nothing rather than storing a wrong number.
+		 *
+		 * Only the figures are kept. No token, no account id, no email — the analytics consent copy
+		 * promises non-sensitive data only, and this is read by the payload builder.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @param mixed $data Decoded `data` object from the credits endpoint.
+		 * @return void
+		 */
+		private function wdkit_cache_cloud_usage( $data ) {
+			if ( ! is_array( $data ) ) {
+				return;
+			}
+
+			$pick = static function ( $source, array $fields ) {
+				foreach ( $fields as $field ) {
+					if ( isset( $source[ $field ] ) && is_numeric( $source[ $field ] ) ) {
+						return (float) $source[ $field ];
+					}
+				}
+				return null;
+			};
+
+			$usage = array(
+				'storage_used'  => $pick( $data, array( 'used_storage', 'storage_used', 'used_space' ) ),
+				'storage_total' => $pick( $data, array( 'total_storage', 'storage_total', 'storage', 'total_space' ) ),
+				'credit_used'   => $pick( $data, array( 'used_credit', 'credit_used', 'used_credits' ) ),
+				'credit_total'  => $pick( $data, array( 'total_credit', 'credit_total', 'credits', 'real_credit' ) ),
+			);
+
+			$usage = array_filter(
+				$usage,
+				static function ( $value ) {
+					return null !== $value;
+				}
+			);
+
+			if ( empty( $usage ) ) {
+				return;
+			}
+
+			$usage['cached_at'] = gmdate( 'Y-m-d H:i:s' );
+
+			// Not autoloaded: read once a week by the heartbeat, never on a front-end request.
+			update_option( 'wdkit_cloud_usage', $usage, false );
 		}
 
 		public function wdkit_nxt_thembuilder_reset() {

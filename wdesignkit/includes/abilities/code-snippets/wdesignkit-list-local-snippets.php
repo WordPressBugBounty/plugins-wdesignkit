@@ -44,6 +44,7 @@ wp_register_ability('wdesignkit/list-local-snippets', [
     'execute_callback'    => 'wdesignkit_mcp_list_local_snippets',
     'permission_callback' => 'wdesignkit_mcp_permission_callback',
     'meta' => [
+        'public'       => true,
         'show_in_rest' => true,
         'mcp'          => ['public' => true],
         'annotations'  => [
