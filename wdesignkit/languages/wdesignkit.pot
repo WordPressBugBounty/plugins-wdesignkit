@@ -2,21 +2,21 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress 2.6.5\n"
+"Project-Id-Version: WDesignKit - AI Templates, Widget Builder & MCP Workflow 2.6.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wdesignkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-21T06:04:22+00:00\n"
+"POT-Creation-Date: 2026-09-14T05:50:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wdesignkit\n"
 
 #. Plugin Name of the plugin
 #: wdesignkit.php
-msgid "WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress"
+msgid "WDesignKit - AI Templates, Widget Builder & MCP Workflow"
 msgstr ""
 
 #. Plugin URI of the plugin

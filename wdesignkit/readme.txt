@@ -1,11 +1,11 @@
-=== WDesignKit - AI Templates, Widget Builder & MCP Workflow for WordPress ===
+=== WDesignKit - AI Templates, Widget Builder & MCP Workflow ===
 Contributors: posimyththemes, pareshchavda, sagarpatel124
 Donate link: https://wdesignkit.com/
-Tags: page templates, elementor widgets, gutenberg blocks, ai widget builder, ai templates
+Tags: ai website builder, website templates, gutenberg blocks, bricks builder, elementor widgets
 Requires at least: 6.0
-Tested up to: 7.0.2
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.6.5
+Stable tag: 2.6.6
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -106,6 +106,11 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 5. Model Context Protocol (MCP) : The AI Widget Builder, AI Code Snippets, and MCP Workflow features connect WDesignKit to a third-party AI tool of your choice (such as Claude) over the Model Context Protocol. Your prompts, and where applicable your existing widget/template code, are sent to that AI tool to generate the result. This only happens when you actively connect and use an AI tool via MCP; review the privacy policy and terms of the AI tool you connect, in addition to WDesignKit's [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 
 == Changelog ==
+
+2.6.6 - 14 Sep 2026
+Improved: Bricks widgets now register out of the box, like Elementor and Gutenberg.
+Fixed: Bricks Builder showed as off in the MCP settings ability even when it was on.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.6.5 - 21 Aug 2026
 New: Added WordPress 7.1 Abilities API support.

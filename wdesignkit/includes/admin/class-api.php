@@ -5895,7 +5895,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'gutenberg_builder'          => isset( $get_setting['gutenberg_builder'] ) ? $get_setting['gutenberg_builder'] : true,
 				'gutenberg_core_builder'     => isset( $get_setting['gutenberg_core_builder'] ) ? $get_setting['gutenberg_core_builder'] : false,
 				'elementor_builder'          => isset( $get_setting['elementor_builder'] ) ? $get_setting['elementor_builder'] : true,
-				'bricks_builder'             => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : false,
+				'bricks_builder'             => isset( $get_setting['bricks_builder'] ) ? $get_setting['bricks_builder'] : true,
 				'gutenberg_template'         => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
 				'elementor_template'         => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
 				'code_snippet'               => isset( $get_setting['code_snippet'] ) ? $get_setting['code_snippet'] : true,
