@@ -3,7 +3,7 @@
  * Plugin Name: WDesignKit - AI Templates, Widget Builder & MCP Workflow
  * Plugin URI: https://wdesignkit.com/
  * Description: 3000+ Elementor & Gutenberg Templates, AI Templates, AI Widget Builder, AI Code Snippets, MCP Workflow, Cloud Workspace & 220+ Widgets Library.
- * Version: 2.6.6
+ * Version: 2.7.0
  * Author: POSIMYTH
  * Author URI: https://posimyth.com/
  * Text Domain: wdesignkit
@@ -36,7 +36,7 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	return;
 }
 
-define( 'WDKIT_VERSION', '2.6.6' );
+define( 'WDKIT_VERSION', '2.7.0' );
 define( 'WDKIT_FILE', __FILE__ );
 define( 'WDKIT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WDKIT_PBNAME', plugin_basename( __FILE__ ) );

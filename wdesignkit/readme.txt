@@ -5,7 +5,7 @@ Tags: ai website builder, website templates, gutenberg blocks, bricks builder, e
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.6.6
+Stable tag: 2.7.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -106,6 +106,16 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 5. Model Context Protocol (MCP) : The AI Widget Builder, AI Code Snippets, and MCP Workflow features connect WDesignKit to a third-party AI tool of your choice (such as Claude) over the Model Context Protocol. Your prompts, and where applicable your existing widget/template code, are sent to that AI tool to generate the result. This only happens when you actively connect and use an AI tool via MCP; review the privacy policy and terms of the AI tool you connect, in addition to WDesignKit's [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 
 == Changelog ==
+
+2.7.0 - 05 Oct 2026
+New: Smart AI Content import wizard - a chat-style flow that writes the kit's page copy, blog posts and WooCommerce products for your business, with colour, font and image pickers built in.
+New: Import kits from wdesignkit.com straight to a connected site or a temporary sandbox site, with live progress.
+New: Server-side import engine - kits import in resumable steps, so a slow host or a closed tab no longer leaves a half-built site.
+Improved: Much faster kit and template imports - copy is generated in one AI request and images load in the background.
+Improved: Importing a template inside the Elementor editor now adds it in one step with a single Undo.
+Fixed: Pages could be imported twice during a kit import.
+Fixed: The import could stop after installing plugins.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.6.6 - 14 Sep 2026
 Improved: Bricks widgets now register out of the box, like Elementor and Gutenberg.

@@ -111,8 +111,10 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			$user_key = wdesignkit_cloud_session_key( $user_email );
 			$response = '';
 
-			delete_transient( 'wdkit_auth_' . $user_key );
-
+			/* get_transient() already returns false once this expires, so there is nothing to
+			 * clear beforehand - deleting it here unconditionally, before ever reading it, made
+			 * the elseif below unreachable and turned every login into a fresh remote call. See
+			 * ClickUp 14ynqxywnaf. */
 			$get_login = get_transient( 'wdkit_auth_' . $user_key );
 
 			if ( ! empty( $user_email ) && ! empty( $user_password ) && false === $get_login ) {
@@ -124,6 +126,11 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 						'site_url'   => $site_url,
 					)
 				);
+
+				/* Normalised before any subscript: a failed request returns WP_Error, and in
+				 * PHP 8 even empty() on it is a fatal "Cannot use object of type WP_Error as
+				 * array". */
+				$response = is_array( $response ) ? $response : array();
 
 				if ( ! empty( $response ) && ! empty( $response['success'] ) ) {
 					if ( ! empty( $response['message'] ) && ! empty( $response['token'] ) ) {
@@ -315,8 +322,9 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 			$user_key = wdesignkit_cloud_session_key( $user_email );
 			$response = '';
 
-			delete_transient( 'wdkit_auth_' . $user_key );
-
+			/* Same reasoning as wdkit_login(): get_transient() already returns false once this
+			 * expires, so an unconditional delete before ever reading it just made the elseif
+			 * below unreachable. See ClickUp 14ynqxywnaf. */
 			$get_login = get_transient( 'wdkit_auth_' . $user_key );
 
 			if ( ! empty( $user_email ) && ! empty( $user_password ) && false === $get_login ) {
@@ -330,6 +338,11 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 					'signup',
 					$signup_array
 				);
+
+				/* Normalised before any subscript: a failed request returns WP_Error, and in
+				 * PHP 8 even empty() on it is a fatal "Cannot use object of type WP_Error as
+				 * array". */
+				$response = is_array( $response ) ? $response : array();
 
 				if ( ! empty( $response ) && ! empty( $response['success'] ) ) {
 					if ( ! empty( $response['message'] ) && ! empty( $response['token'] ) ) {
@@ -446,6 +459,27 @@ if ( ! class_exists( 'Wdkit_Login_Ajax' ) ) {
 					),
 					86400
 				);
+			}
+
+			/* Points THIS WP user at the session just stored, so
+			 * wdesignkit_mcp_find_auth_session()'s first (authoritative) lookup finds it
+			 * directly instead of falling back to an email-match or a full-table "newest
+			 * wins" scan - the fallback that a site with more than one cloud login stored
+			 * (e.g. an old session from a previous account) can resolve to the wrong one,
+			 * or fail outright once the winning transient's own token is stale. Without
+			 * this pointer, every admin_init registration attempt after login reads no
+			 * session at all and Wdkit_Import_Remote::register() reports "Not signed in."
+			 * despite a valid transient sitting right there. The MCP ability login
+			 * (wdesignkit_mcp_login()) already does this; this is the same plugin's
+			 * older, still-active email/password/API-key/social login path, which never
+			 * did. */
+			if ( function_exists( 'wdesignkit_mcp_remember_session' ) ) {
+				wdesignkit_mcp_remember_session( $user_key );
+			}
+
+			/* Register this site for website-queued imports with the session just stored. */
+			if ( class_exists( 'Wdkit_Import_Remote' ) ) {
+				Wdkit_Import_Remote::register_after_login();
 			}
 		}
 		

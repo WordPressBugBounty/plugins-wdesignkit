@@ -108,6 +108,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		public function __construct() {
 			add_action( 'wp_ajax_get_wdesignkit', array( $this, 'wdkit_api_call' ) );
+
+			// Background half of the deferred-media-sideload flow (see
+			// wkit_schedule_deferred_media_sync()/import_page_section_content()): each kit page
+			// is created instantly with its source CDN image URLs still in place, and this cron
+			// event does the slow media_sideload_image() work afterwards, off the import request.
+			add_action( 'wdkit_async_sideload_page_images', array( $this, 'wdkit_async_sideload_page_images' ), 10, 3 );
 		}
 
 		/**
@@ -276,6 +282,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'save_wp_images':
 					$data = $this->wdkit_save_wp_images();
 					break;
+				case 'wkit_schedule_deferred_media_sync':
+					$data = $this->wkit_schedule_deferred_media_sync();
+					break;
+				case 'wkit_run_deferred_media_now':
+					$data = $this->wkit_run_deferred_media_now();
+					break;
 				case 'get_global_val':
 					$data = $this->wdkit_get_global_val();
 					break;
@@ -305,6 +317,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'install_plugins_depends':
 					$data = $this->wdkit_install_plugins_depends();
+					break;
+				case 'install_plugins_depends_batch':
+					$data = $this->wdkit_install_plugins_depends_batch();
 					break;
 				case 'generate_site_logo':
 					$data = $this->wkit_generate_site_logo();
@@ -372,6 +387,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'import_page_section':
 					$data = $this->import_page_section_content();
 					break;
+				case 'wdkit_import_stage':
+					$data = $this->wdkit_import_stage();
+					break;
 				case 'wkit_update_elementor_template':
 					$data = $this->wkit_update_elementor_template();
 					break;
@@ -389,6 +407,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'import_kit_template':
 					$data = $this->wdkit_import_kit_template();
+					break;
+				case 'wkit_import_kit_bundle':
+					$data = $this->wkit_import_kit_bundle();
+					break;
+				case 'wkit_fetch_site_bundle':
+					$data = $this->wkit_fetch_site_bundle();
+					break;
+				case 'wkit_import_site_bundle':
+					$data = $this->wkit_import_site_bundle();
 					break;
 				case 'enable_template_widgets':
 					$data = $this->wdkit_enable_template_widgets();
@@ -1225,12 +1252,51 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_save_wp_images() {
 
+			$image_url = isset( $_POST['image'] ) ? sanitize_text_field( $_POST['image'] ) : '';
+
+			$response = self::wdkit_sideload_image_data( $image_url );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Sideload one image into the media library and describe the outcome.
+		 *
+		 * Extracted verbatim from wdkit_save_wp_images() so the same code can be reached
+		 * without `$_POST` — Wdkit_Import_Media::sideload() calls this, which is why the PHP
+		 * runner does not need its own copy of the guard or the importer hash stamps.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is byte-for-byte
+		 * what it was before.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param string $image_url External image URL.
+		 * @return array{message:string,description:string,success:bool,url?:string}
+		 */
+		public static function wdkit_sideload_image_data( $image_url ) {
+
 			// media_sideload_image() generates every registered thumbnail size, which decodes
 			// the full source bitmap. Same guard as the page import.
-			$this->wdkit_guard_oversized_images();
+			self::wdkit_guard_oversized_images();
 
-			$image_url = isset( $_POST['image'] ) ? sanitize_text_field( $_POST['image'] ) : '';
-		
+			$image_url = is_string( $image_url ) ? $image_url : '';
+
+			// And the same time-limit headroom the import requests take. A full-resolution stock
+			// original can spend more than PHP's default 30s inside Imagick generating subsizes
+			// on its own, and this endpoint is called once per picked image - so without this a
+			// single large pick fatals the request and the image is silently never copied.
+			// Harmless no-op where set_time_limit() is disabled.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 300 );
+			}
+
+			// The URL arrives as the argument, never from $_POST. wdkit_save_wp_images() is the
+			// only caller that has a request to read, and it passes what it read; re-reading it
+			// here blanked the URL for every other caller - Wdkit_Import_Media::sideload() runs
+			// on cron, where there is no $_POST at all, so every blog-post featured image was
+			// silently skipped.
 			if ( empty( $image_url ) ) {
 				$response = array(
 					'message'     => __( 'No Image Provided', 'wdesignkit' ),
@@ -1239,8 +1305,41 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			} else {
 
+				// Cap first, then validate, then fetch - so the exact string handed to the
+				// fetcher is the string that was checked. Validating before cap_pexels_source()
+				// rewrites the URL would leave a gap the moment the rewriter changes.
+				$image_url = Wdkit_Image_Guard::cap_pexels_source( $image_url );
+
+				// The URL is client-controlled and goes straight to an outbound fetch that
+				// writes into uploads, so it needs the same DNS + reserved-range check as
+				// every other fetch in the plugin. sanitize_text_field() on the caller's side
+				// is a formatting function and permits http://127.0.0.1/, http://[::1]/ and
+				// internal hostnames.
+				//
+				// Returns rather than wp_send_json(): this is now a shared helper whose
+				// contract is "describe the outcome", and half its callers are not serving a
+				// request. Dying here would have taken down the cron worker mid-import.
+				if ( ! function_exists( 'wdesignkit_validate_external_url' ) || ! wdesignkit_validate_external_url( $image_url ) ) {
+					return array(
+						'message'     => __( 'Upload Failed', 'wdesignkit' ),
+						'description' => __( 'That image URL was rejected.', 'wdesignkit' ),
+						'success'     => false,
+					);
+				}
+
+				/* media_sideload_image() lives in wp-admin/includes/media.php and reaches
+				 * download_url() in wp-admin/includes/file.php. An admin-ajax request already has
+				 * both, which is why the browser importer never needed this — but a cron request
+				 * has neither, so every image this touched died with "Call to undefined function
+				 * download_url()". On a remote import that meant all six blog posts failed while
+				 * the run still reported success. The sibling call site in
+				 * class-wdkit-import-temp-ajax.php has always loaded these three. */
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+				require_once ABSPATH . 'wp-admin/includes/image.php';
+
 				$attachment_id = media_sideload_image( $image_url, 0, null, 'id' );
-			
+
 				if ( is_wp_error( $attachment_id ) ) {
 					$response = array(
 						'message'     => __( 'Upload Failed', 'wdesignkit' ),
@@ -1267,13 +1366,1316 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'description' => __( 'Image successfully saved to Media Library.', 'wdesignkit' ),
 						'success'     => true,
 						'url'         => $saved_url,
+						'id'          => $attachment_id,
 					);
 				}
 
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
+		}
+
+		/**
+		 * The two bundle/media primitives the PHP import runner needs, reachable without a
+		 * request.
+		 *
+		 * Both of these are the optimisations that made the browser import fast, and both were
+		 * private to the AJAX actions that introduced them - so the runner could not use them
+		 * and grew its own slower equivalents instead: one cloud round trip per template rather
+		 * than one for the whole kit, and every image downloaded inside the import request
+		 * rather than swept up afterwards. These wrappers are the whole of what it took to
+		 * share them; the implementations are untouched and the AJAX actions still call them
+		 * exactly as before.
+		 *
+		 * @since 2.7.2
+		 *
+		 * @param array $request Same fields the `wkit_fetch_site_bundle` action reads, except
+		 *                       `template_ids` may be an array. Pass `widgets_only` to have the
+		 *                       assembled bundle parked in the transient for later stages.
+		 * @param string $token  Cloud token the caller already resolved.
+		 * @return array|WP_Error Decoded bundle.
+		 */
+		public function wdkit_site_bundle_for( $request, $token = '' ) {
+			return $this->wdkit_fetch_site_bundle( is_array( $request ) ? $request : array(), $token );
+		}
+
+		/**
+		 * Queue the background media sweep for pages the runner just created.
+		 *
+		 * @since 2.7.2
+		 *
+		 * @param array $pages List of {post_id, builder, image_urls}.
+		 * @return array Same result the AJAX action returns.
+		 */
+		public function wdkit_schedule_media_sync_for( $pages ) {
+			return $this->wkit_schedule_deferred_media_sync( is_array( $pages ) ? $pages : array() );
+		}
+
+		/**
+		 * Run one stage of the PHP import runner for the Kit Import wizard.
+		 *
+		 * The wizard's replacement for its ~25-call orchestration: four calls, one per stage,
+		 * on this same action with the same nonce and the same `manage_options` check enforced
+		 * by the router above. Nothing about authentication changes, and no endpoint is added —
+		 * this is one more `case` on a router that already had 86.
+		 *
+		 * The response is shaped by Wdkit_Import_Wizard so the existing progress UI can consume
+		 * it without new widgets. See that class for the field-by-field mapping.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @return array
+		 */
+		protected function wdkit_import_stage() {
+			if ( ! class_exists( 'Wdkit_Import_Wizard' ) ) {
+				return array(
+					'success' => false,
+					'engine'  => 'unavailable',
+					'message' => esc_html__( 'Import engine is not available.', 'wdesignkit' ),
+				);
+			}
+
+			$site_obj = isset( $_POST['site_obj'] ) ? json_decode( wp_unslash( $_POST['site_obj'] ), true ) : array();
+			$templates = isset( $_POST['templates'] ) ? json_decode( wp_unslash( $_POST['templates'] ), true ) : array();
+			$catalogue = isset( $_POST['plugin_catalogue'] ) ? json_decode( wp_unslash( $_POST['plugin_catalogue'] ), true ) : array();
+			$document  = isset( $_POST['ai_document'] ) ? json_decode( wp_unslash( $_POST['ai_document'] ), true ) : null;
+
+			return Wdkit_Import_Wizard::run_stage(
+				array(
+					'stage'            => isset( $_POST['stage'] ) ? sanitize_text_field( wp_unslash( $_POST['stage'] ) ) : '',
+					'session_id'       => isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '',
+					'retry'            => ! empty( $_POST['retry'] ) && 'yes' === sanitize_text_field( wp_unslash( $_POST['retry'] ) ),
+					'kit_id'           => isset( $_POST['kit_id'] ) ? sanitize_text_field( wp_unslash( $_POST['kit_id'] ) ) : '',
+					'builder'          => isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : 'elementor',
+					'site_obj'         => is_array( $site_obj ) ? $site_obj : array(),
+					'templates'        => is_array( $templates ) ? $templates : array(),
+					'plugin_catalogue' => is_array( $catalogue ) ? $catalogue : array(),
+					'ai_document'      => $document,
+				)
+			);
+		}
+
+		/**
+		 * Register the pages a kit import just created for background media sideloading.
+		 *
+		 * Called once, after every page in the kit has been inserted with its content still
+		 * pointing at the source CDN's image URLs (see the `defer_media` branch of
+		 * import_page_section_content()/wdkit_media_import()). Nothing here downloads anything -
+		 * it only schedules one wp-cron event per page, so the import request itself returns
+		 * immediately and the user sees "Site Ready" without waiting on image processing.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @return array Response payload.
+		 */
+		protected function wkit_schedule_deferred_media_sync( $pages = null ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the AJAX router verified the nonce; the runner passes its own array and has no request to verify.
+			if ( ! is_array( $pages ) ) {
+				$pages = isset( $_POST['pages'] ) ? json_decode( wp_unslash( $_POST['pages'] ), true ) : array();
+			}
+
+			if ( ! is_array( $pages ) || empty( $pages ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'No pages to sync.', 'wdesignkit' ),
+				);
+			}
+
+			$scheduled = 0;
+			$stagger   = 0;
+			$order     = array();
+
+			// The home page goes first, with no delay.
+			//
+			// Every page used to be staggered two seconds apart, so on a nine-page kit the last
+			// event was not even due until ~18s after the import finished - and nothing spawns
+			// cron, so the queue sat until the next request arrived. That next request is the
+			// user clicking "Preview Site", which is why the first look showed media that had
+			// not been fetched yet and a refresh appeared to fix it. The home page is the one
+			// they land on, so it is fetched first and immediately; the rest keep the stagger so
+			// they do not all pile into one cron tick.
+			// page_on_front is usually still unset here: this runs before the finalize request
+			// that assigns it. So fall back to the same title rule the importer itself uses to
+			// choose the front page (see "Front page and shop page" in wkit_import_site_bundle).
+			$front_id = (int) get_option( 'page_on_front' );
+
+			if ( ! $front_id ) {
+				foreach ( $pages as $page ) {
+					$candidate = isset( $page['post_id'] ) ? (int) $page['post_id'] : 0;
+
+					if ( ! $candidate ) {
+						continue;
+					}
+
+					$title_lower = strtolower( (string) get_the_title( $candidate ) );
+
+					if ( false !== strpos( $title_lower, 'home' ) || false !== strpos( $title_lower, 'landing' ) ) {
+						$front_id = $candidate;
+						break;
+					}
+				}
+			}
+
+			usort(
+				$pages,
+				function ( $a, $b ) use ( $front_id ) {
+					$a_id = isset( $a['post_id'] ) ? (int) $a['post_id'] : 0;
+					$b_id = isset( $b['post_id'] ) ? (int) $b['post_id'] : 0;
+
+					if ( $front_id && $a_id === $front_id ) {
+						return -1;
+					}
+
+					if ( $front_id && $b_id === $front_id ) {
+						return 1;
+					}
+
+					return 0;
+				}
+			);
+
+			foreach ( $pages as $page ) {
+				$post_id = isset( $page['post_id'] ) ? (int) $page['post_id'] : 0;
+				$builder = isset( $page['builder'] ) ? sanitize_key( $page['builder'] ) : '';
+
+				$image_urls = ( isset( $page['image_urls'] ) && is_array( $page['image_urls'] ) )
+					? array_values( array_filter( array_map( 'esc_url_raw', $page['image_urls'] ) ) )
+					: array();
+
+				// esc_url_raw() formats, it does not authorise. This list came from the browser.
+				$image_urls = self::wdkit_filter_fetchable_urls( $image_urls );
+
+				if ( ! $post_id || empty( $image_urls ) || ! get_post( $post_id ) ) {
+					continue;
+				}
+
+				// Stagger each page's event a couple of seconds apart instead of firing every
+				// page's sideload loop in the very same wp-cron tick - except the home page,
+				// which is due right away because it is what the user previews.
+				$is_front = ( $front_id && $post_id === $front_id );
+
+				wp_schedule_single_event(
+					$is_front ? time() : ( time() + 2 + $stagger ),
+					'wdkit_async_sideload_page_images',
+					array( $post_id, $builder, $image_urls )
+				);
+
+				if ( ! $is_front ) {
+					$stagger += 2;
+				}
+
+				$order[] = $post_id;
+				++$scheduled;
+			}
+
+			return array(
+				'success'   => true,
+				'message'   => __( 'Media sync scheduled.', 'wdesignkit' ),
+				'scheduled' => $scheduled,
+				// The order they were queued in, home page first. Returned so the success
+				// screen's own drain uses the same priority instead of deciding again.
+				'order'     => $order,
+			);
+		}
+
+		/**
+		 * Sideload one deferred page's media now, instead of waiting for wp-cron.
+		 *
+		 * The import deliberately leaves media to a background pass so the kit imports fast, and
+		 * that is worth keeping. What it cost was the first preview: nothing spawns cron, so the
+		 * queue waited for the next request - the user's own "Preview Site" click - and the page
+		 * they landed on still pointed at the source CDN with some references not written yet.
+		 * Refreshing appeared to fix it because that first view was what started the queue.
+		 *
+		 * So the success screen drives the queue itself over this endpoint once the import is
+		 * already reported done. It adds nothing to the import: by then the UI says complete and
+		 * the user is reading it. The scheduled cron events stay as the fallback for anyone who
+		 * navigates away, and each is cleared as its page is handled here so the work is not done
+		 * twice. It also covers hosts where a loopback cron spawn would never fire at all -
+		 * DISABLE_WP_CRON, or a system cron that only runs every few minutes.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return array
+		 */
+		protected function wkit_run_deferred_media_now() {
+
+			$post_id = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
+			$builder = isset( $_POST['builder'] ) ? sanitize_key( wp_unslash( $_POST['builder'] ) ) : '';
+
+			$image_urls = isset( $_POST['image_urls'] ) ? json_decode( wp_unslash( $_POST['image_urls'] ), true ) : array();
+			$image_urls = is_array( $image_urls )
+				? array_values( array_filter( array_map( 'esc_url_raw', $image_urls ) ) )
+				: array();
+
+			// esc_url_raw() formats, it does not authorise - same gate the scheduler applies,
+			// because this list comes from the browser just the same.
+			$image_urls = self::wdkit_filter_fetchable_urls( $image_urls );
+
+			if ( ! $post_id || ! get_post( $post_id ) || empty( $image_urls ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Nothing to sync for this page.', 'wdesignkit' ),
+				);
+			}
+
+			// Drop the queued event first, so a cron tick landing mid-run cannot repeat it.
+			wp_clear_scheduled_hook( 'wdkit_async_sideload_page_images', array( $post_id, $builder, $image_urls ) );
+
+			$this->wdkit_async_sideload_page_images( $post_id, $builder, $image_urls );
+
+			return array(
+				'success' => true,
+				'message' => __( 'Media synced.', 'wdesignkit' ),
+				'post_id' => $post_id,
+			);
+		}
+
+		/**
+		 * Walk Elementor `elements` data replacing every deferred CDN media reference with the
+		 * local attachment sideloaded for it.
+		 *
+		 * Handles two shapes: a media control (`{ id, url }` siblings, e.g. an image control or a
+		 * has_sizes background-image control) gets both keys corrected, matching what
+		 * wdkit_repair_attachment_ids() does for the synchronous path. Any other string simply
+		 * gets the source URL substring swapped, which catches URLs embedded in HTML/text
+		 * controls that never had an `id` sibling to begin with.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param mixed $node    Elementor data, walked recursively.
+		 * @param array $url_map Source URL => array( 'id' => local attachment ID, 'url' => local URL ).
+		 * @return mixed Data with local media references.
+		 */
+		/**
+		 * Every spelling of one URL that can appear in stored content.
+		 *
+		 * A URL with a query string does not survive the round trip through the browser and
+		 * WordPress's own escaping as the raw string this code holds. `&` comes back HTML-entity
+		 * encoded as `&#038;`, sometimes `&amp;`, and - where a value is escaped twice on the way
+		 * into post content - as `&amp;#038;`. So the picked stock images were downloaded and
+		 * stored correctly while the page kept the remote reference: the rewriters matched the
+		 * raw key, the content held an encoded one, and the substring test never fired. Measured:
+		 * 3 attachments created, 12 remote references still served on the landing page.
+		 *
+		 * Longest first, so a replacement pass cannot rewrite the `&amp;` inside `&amp;#038;`
+		 * and strand the remainder.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $url Canonical URL as this code holds it.
+		 * @return array<string> Distinct variants to search for, longest first.
+		 */
+		private static function wdkit_url_encoding_variants( $url ) {
+
+			if ( ! is_string( $url ) || '' === $url || false === strpos( $url, '&' ) ) {
+				return array( (string) $url );
+			}
+
+			$variants = array(
+				str_replace( '&', '&amp;#038;', $url ),
+				str_replace( '&', '&#038;', $url ),
+				str_replace( '&', '&amp;amp;', $url ),
+				str_replace( '&', '&amp;', $url ),
+				$url,
+			);
+
+			$variants = array_values( array_unique( $variants ) );
+
+			usort(
+				$variants,
+				static function ( $a, $b ) {
+					return strlen( $b ) - strlen( $a );
+				}
+			);
+
+			return $variants;
+		}
+
+		/**
+		 * Replace every encoding of $source_url in $subject with $replacement.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $subject     Content to rewrite.
+		 * @param string $source_url  URL to look for, in any encoding.
+		 * @param string $replacement Local URL to write in its place.
+		 * @return string
+		 */
+		private static function wdkit_replace_url_all_encodings( $subject, $source_url, $replacement ) {
+
+			foreach ( self::wdkit_url_encoding_variants( $source_url ) as $variant ) {
+				if ( false !== strpos( $subject, $variant ) ) {
+					$subject = str_replace( $variant, $replacement, $subject );
+				}
+			}
+
+			return $subject;
+		}
+
+		/**
+		 * Re-point any media control still holding a foreign URL at the local file, when one
+		 * already exists.
+		 *
+		 * Downloads nothing. It only asks "has this exact source URL already been sideloaded?"
+		 * via the same _wdkit_deferred_source_url lookup the cron uses for de-duplication, and
+		 * rewrites url + id when the answer is yes.
+		 *
+		 * Why this is needed as a separate pass: the finalize sweep deliberately skips any page
+		 * with media still queued (see wdkit_sweep_attachment_ids() - sweeping there would turn
+		 * the import request into the media importer), and nothing re-sweeps once the queue
+		 * drains. wdkit_repair_attachment_ids() cannot cover it either - it is restricted to
+		 * local URLs by design. So a control whose rewrite was missed had nothing left to fix it.
+		 *
+		 * Observed on a Taj Bakery import: a tp-video-player kept
+		 * etemplates.wdesignkit.com/...mp4 in mp4_link.url with its id blanked, while the file
+		 * sat in the library as attachment 173 with a byte-identical _wdkit_deferred_source_url.
+		 * Every image on the same page had been rewritten; only that control was left behind.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $node  Elementor data, walked recursively.
+		 * @param int   $fixed Running count of controls repaired, by reference.
+		 * @return mixed The data with any resolvable foreign reference pointed local.
+		 */
+		/**
+		 * Apply a url_map to every OTHER post that still references one of its source URLs.
+		 *
+		 * A deferred URL is scheduled per page, but the same file is often referenced by several
+		 * pages, and the de-duplication in this callback means only the first event actually
+		 * downloads it. Every event rewrites its own $post_id and nothing else - so a sibling
+		 * page whose own event did not carry that URL (a scheduling gap, or a page whose list was
+		 * assembled before the reference existed) keeps the remote URL with no later pass to fix
+		 * it: the finalize sweep skips queued pages by design, and wdkit_repair_attachment_ids()
+		 * only looks at local URLs.
+		 *
+		 * Measured on a Taj Bakery import: the About Us page kept
+		 * etemplates.wdesignkit.com/...mp4 in a tp-video-player while the file sat in the library
+		 * as a video/mp4 attachment. Handing that page's own callback the URL rewrote it
+		 * correctly, which is what showed the pipeline was sound and the routing was not.
+		 *
+		 * Bounded and cheap: one LIKE query per distinct source URL in this event's map, and only
+		 * posts that actually contain the string are touched. Downloads nothing.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param array $url_map Source URL => array( id, url ), as built by this callback.
+		 * @param int   $skip_id The post this callback already rewrote.
+		 * @return int Number of sibling posts rewritten.
+		 */
+		private function wdkit_apply_url_map_to_siblings( array $url_map, $skip_id ) {
+
+			global $wpdb;
+
+			if ( empty( $url_map ) ) {
+				return 0;
+			}
+
+			$candidates = array();
+
+			foreach ( array_keys( $url_map ) as $source_url ) {
+				// Both spellings: raw in post_content, slash-escaped inside _elementor_data JSON.
+				foreach ( array( $source_url, str_replace( '/', '\/', $source_url ) ) as $needle ) {
+					$ids = $wpdb->get_col(
+						$wpdb->prepare(
+							"SELECT DISTINCT p.ID FROM {$wpdb->posts} p
+							 LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_elementor_data'
+							 WHERE p.post_status = 'publish'
+							   AND p.post_type IN ( 'page', 'post', 'nxt_builder', 'elementor_library' )
+							   AND p.ID <> %d
+							   AND ( p.post_content LIKE %s OR m.meta_value LIKE %s )
+							 LIMIT 50",
+							(int) $skip_id,
+							'%' . $wpdb->esc_like( $needle ) . '%',
+							'%' . $wpdb->esc_like( $needle ) . '%'
+						)
+					);
+
+					foreach ( (array) $ids as $id ) {
+						$candidates[ (int) $id ] = true;
+					}
+				}
+			}
+
+			if ( empty( $candidates ) ) {
+				return 0;
+			}
+
+			$rewritten = 0;
+
+			foreach ( array_keys( $candidates ) as $sibling_id ) {
+				$changed = false;
+				$raw     = get_post_meta( $sibling_id, '_elementor_data', true );
+				$data    = is_array( $raw ) ? $raw : json_decode( (string) $raw, true );
+
+				if ( is_array( $data ) ) {
+					$data = $this->wdkit_replace_deferred_media( $data, $url_map );
+
+					$relinked = 0;
+					$data     = self::wdkit_relink_known_foreign_media( $data, $relinked );
+
+					// wp_slash() for the same reason as the primary write above.
+					update_post_meta( $sibling_id, '_elementor_data', wp_slash( wp_json_encode( $data ) ) );
+					$changed = true;
+				}
+
+				$post = get_post( $sibling_id );
+
+				if ( $post && ! empty( $post->post_content ) ) {
+					$content = $post->post_content;
+
+					foreach ( $url_map as $source_url => $local ) {
+						$content = self::wdkit_replace_url_all_encodings( $content, $source_url, $local['url'] );
+					}
+
+					if ( $content !== $post->post_content ) {
+						self::wdkit_write_post_content( $sibling_id, $content );
+						$changed = true;
+					}
+				}
+
+				if ( $changed ) {
+					self::wdkit_invalidate_elementor_page_cache( $sibling_id );
+					++$rewritten;
+				}
+			}
+
+			return $rewritten;
+		}
+
+		private static function wdkit_relink_known_foreign_media( $node, &$fixed = 0 ) {
+
+			if ( ! is_array( $node ) ) {
+				return $node;
+			}
+
+			if ( isset( $node['url'] ) && is_string( $node['url'] ) && '' !== $node['url']
+				&& array_key_exists( 'id', $node ) && self::wdkit_is_foreign_media_url( $node['url'] )
+			) {
+				$existing = self::wdkit_deferred_attachment_for_url( $node['url'] );
+
+				if ( $existing && self::wdkit_is_usable_attachment( $existing ) ) {
+					$local = wp_get_attachment_url( $existing );
+
+					if ( $local ) {
+						$node['url'] = $local;
+						$node['id']  = (int) $existing;
+						++$fixed;
+					}
+				}
+			}
+
+			foreach ( $node as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$node[ $key ] = self::wdkit_relink_known_foreign_media( $value, $fixed );
+				}
+			}
+
+			return $node;
+		}
+
+		private function wdkit_replace_deferred_media( $node, array $url_map ) {
+
+			if ( is_array( $node ) ) {
+
+				if ( isset( $node['url'] ) && is_string( $node['url'] ) && array_key_exists( 'id', $node ) ) {
+
+					$hit = isset( $url_map[ $node['url'] ] ) ? $node['url'] : null;
+
+					// The node's own url can be entity-encoded too, so an exact-key lookup alone
+					// misses it - and this is the branch that repairs the `id`, without which the
+					// widget resolves nothing even once the url is right.
+					if ( null === $hit ) {
+						$decoded = html_entity_decode( $node['url'], ENT_QUOTES, 'UTF-8' );
+						$decoded = html_entity_decode( $decoded, ENT_QUOTES, 'UTF-8' );
+
+						if ( isset( $url_map[ $decoded ] ) ) {
+							$hit = $decoded;
+						}
+					}
+
+					if ( null !== $hit ) {
+						$node['id']  = $url_map[ $hit ]['id'];
+						$node['url'] = $url_map[ $hit ]['url'];
+					}
+				}
+
+				foreach ( $node as $key => $value ) {
+					$node[ $key ] = $this->wdkit_replace_deferred_media( $value, $url_map );
+				}
+
+				return $node;
+			}
+
+			if ( is_string( $node ) && '' !== $node ) {
+				foreach ( $url_map as $source_url => $local ) {
+					$node = self::wdkit_replace_url_all_encodings( $node, $source_url, $local['url'] );
+				}
+			}
+
+			return $node;
+		}
+
+		/**
+		 * Find the attachment a previous wdkit_async_sideload_page_images() run already made
+		 * for this exact source URL.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param string $source_url Source CDN/stock-provider URL.
+		 * @return int Attachment ID, or 0 when none exists yet.
+		 */
+		private static function wdkit_deferred_attachment_for_url( $source_url ) {
+			$existing = get_posts(
+				array(
+					'post_type'      => 'attachment',
+					'post_status'    => 'inherit',
+					'posts_per_page' => 5,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_key'       => '_wdkit_deferred_source_url',
+					'meta_value'     => $source_url,
+				)
+			);
+
+			// The row is not the answer - the file is.
+			//
+			// This used to return (int) $existing[0] straight out of the query, and every caller
+			// then tested wp_get_attachment_url(), which is truthy for a record with nothing
+			// behind it: with no _wp_attached_file it falls back to the guid, and wp_insert_post()
+			// defaults an attachment's guid to its attachment-page permalink. So a dead record
+			// answered the lookup with http://site/hand25-png/, the reuse branch took it as a hit
+			// and skipped the download, and the page shipped an <img src> pointing at an HTML
+			// page. Measured on all three shapes such a record comes in - no file with metadata,
+			// no file without metadata, no _wp_attached_file at all - wp_get_attachment_url()
+			// returned a truthy url for every one.
+			//
+			// A site that imported a kit on a build before Wdkit_Import_Images::import() started
+			// refusing unknown file types is full of these, which is why the fixed build still
+			// rendered broken images: the import adopted the old rows instead of downloading
+			// again, and re-importing reused them just the same. Rejecting them here is what makes
+			// a re-import repair the page - the caller falls through to its normal download and
+			// then rewrites url + id from the attachment it actually created.
+			//
+			// Validated in the lookup rather than at each call site because there are three, they
+			// were not all guarded, and a fourth would not be either.
+			foreach ( (array) $existing as $candidate ) {
+				if ( self::wdkit_is_usable_attachment( $candidate ) ) {
+					return (int) $candidate;
+				}
+
+				self::wdkit_forget_reuse_keys( $candidate );
+			}
+
+			return 0;
+		}
+
+		/**
+		 * Take a broken attachment out of every reuse index this pipeline consults.
+		 *
+		 * Gating the lookup stops this plugin adopting a dead record, but the record keeps
+		 * answering the other two indexes - `_elementor_source_image_hash`, which Elementor's own
+		 * Import_Images::import() resolves before it downloads anything, and
+		 * `tpgb_source_image_key`, which the block importer uses the same way. Left in place it
+		 * would still be handed back through them.
+		 *
+		 * Deletes the meta, never the attachment. A row with no file is worthless to this
+		 * importer, but it is not this importer's to remove: a media-offload plugin legitimately
+		 * has no local file, and a customer's library is not something an import routine should be
+		 * deleting from. Dropping it out of the indexes is enough to make the next import fetch a
+		 * fresh copy.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param int $id Attachment that failed wdkit_is_usable_attachment().
+		 * @return void
+		 */
+		private static function wdkit_forget_reuse_keys( $id ) {
+
+			$id = (int) $id;
+
+			if ( ! $id ) {
+				return;
+			}
+
+			foreach ( array( '_wdkit_deferred_source_url', '_elementor_source_image_hash', 'tpgb_source_image_key' ) as $key ) {
+				delete_post_meta( $id, $key );
+			}
+		}
+
+		/**
+		 * Largest media file the background pass will pull down, in bytes.
+		 *
+		 * Video is the only thing a kit references that can plausibly run to hundreds of megabytes.
+		 * Nothing decodes it - download_url() streams to a temp file - so this is not about memory;
+		 * it is about one oversized file monopolising a cron event's time limit and disk while
+		 * every URL queued behind it goes unprocessed.
+		 *
+		 * @since 2.7.1
+		 */
+		const WDKIT_DEFERRED_MEDIA_MAX_BYTES = 52428800; // 50 MB.
+
+		/**
+		 * Sideload one deferred media URL, choosing the right primitive for what it is.
+		 *
+		 * media_sideload_image() hard-rejects any extension outside jpg|jpeg|jpe|png|gif|webp
+		 * ("Invalid image URL") before it downloads anything, so it can never localise a video -
+		 * nor, as it happens, an .avif, which this importer has been collecting for the background
+		 * pass all along and which was therefore being dropped just as silently.
+		 *
+		 * Images keep going through media_sideload_image() exactly as before: it is the path that
+		 * has been exercised on every import, and nothing here is worth changing about it. Anything
+		 * else goes through download_url() + media_handle_sideload(), which is generic, validates
+		 * the real type with wp_check_filetype_and_ext(), and is already what this file uses for
+		 * featured images.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $source_url Remote URL.
+		 * @return int|WP_Error Attachment ID, or the error that stopped it.
+		 */
+		/**
+		 * Keep only the URLs this site is willing to fetch.
+		 *
+		 * Applied where a client-supplied `image_urls` list is accepted, so a URL that points at
+		 * an internal address is never written into the cron table in the first place. The cron
+		 * callback validates again before fetching - that is the authoritative gate, since a cron
+		 * arg can outlive the request that created it.
+		 *
+		 * Drops only what is *provably* unsafe, which is deliberately narrower than the sink.
+		 * wdesignkit_validate_external_url() fails closed on a host it cannot resolve ("an
+		 * unresolvable host cannot be proven public"), and that is the right answer immediately
+		 * before a fetch - but the wrong one here. An import resolves dozens of hosts at once, so
+		 * a transient DNS failure during that burst is ordinary; refusing on it would drop the URL
+		 * before it was ever scheduled, and nothing would retry it - the image would stay remote
+		 * permanently. Deferring that case to the cron costs nothing: the sink re-checks and fails
+		 * closed there, by which time DNS has usually recovered.
+		 *
+		 * The threat this closes is an internal URL being persisted into a cron argument, and such
+		 * a URL resolves by definition - to a private or reserved address - so it is caught here.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param array $urls Candidate URLs, already esc_url_raw()'d.
+		 * @return array<string> The subset that is not provably unsafe.
+		 */
+		private static function wdkit_filter_fetchable_urls( $urls ) {
+
+			if ( ! is_array( $urls ) || empty( $urls ) ) {
+				return array();
+			}
+
+			// One verdict per host, not per URL. A kit page carries well over a hundred media
+			// URLs across a handful of hosts, and both the validator and the resolve check below
+			// hit DNS - so without this, a page's worth of images costs a hundred-plus lookups
+			// inside the import request, and on a host with slow resolution that is time the user
+			// spends watching a progress bar. The decision is a property of the host, so caching
+			// it changes nothing about the outcome. Request-scoped: a static here lives exactly
+			// as long as the import request that built it.
+			static $verdict = array();
+
+			$allowed = array();
+
+			foreach ( $urls as $url ) {
+				if ( ! is_string( $url ) || '' === $url ) {
+					continue;
+				}
+
+				$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+				$host   = (string) wp_parse_url( $url, PHP_URL_HOST );
+
+				// Nothing downstream can make sense of these, whatever DNS says.
+				if ( ! in_array( $scheme, array( 'http', 'https' ), true ) || '' === $host ) {
+					continue;
+				}
+
+				if ( ! function_exists( 'wdesignkit_validate_external_url' ) ) {
+					// No validator loaded: keep the URL and let the sink - which requires the
+					// validator and refuses without it - make the call. Dropping everything here
+					// would silently disable deferred media rather than secure it.
+					$allowed[] = $url;
+					continue;
+				}
+
+				$key = strtolower( $host );
+
+				if ( ! isset( $verdict[ $key ] ) ) {
+					// The validator takes a URL, but everything it decides on - resolution and
+					// address range - depends only on the host, so a bare origin is a faithful
+					// probe for the whole host and the answer applies to every URL on it.
+					$probe = $scheme . '://' . $host . '/';
+
+					// Keep it unless it is provably unsafe: rejected AND resolvable, which
+					// together mean it resolved to an address we refuse to reach. A rejection
+					// with no resolution is DNS being briefly unavailable - the sink re-checks
+					// and fails closed there, so deferring that call loses nothing.
+					$verdict[ $key ] = wdesignkit_validate_external_url( $probe )
+						|| ! self::wdkit_host_resolves( $host );
+				}
+
+				if ( $verdict[ $key ] ) {
+					$allowed[] = $url;
+				}
+			}
+
+			return $allowed;
+		}
+
+		/**
+		 * Does this host resolve to anything right now?
+		 *
+		 * Used only to tell a validation failure caused by a private address apart from one
+		 * caused by DNS being briefly unavailable. A literal IP always counts as resolved.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $host Hostname from the URL.
+		 * @return bool True when at least one address came back.
+		 */
+		private static function wdkit_host_resolves( $host ) {
+
+			// wp_parse_url() returns an IPv6 literal still wrapped in its URL brackets
+			// (`[::1]`), which is not valid IP syntax - so without this the address fails the
+			// test below, resolves to nothing, and is misread as "DNS is down" rather than
+			// "this is loopback".
+			$host = trim( $host, '[]' );
+
+			if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+				return true;
+			}
+
+			if ( function_exists( 'gethostbynamel' ) ) {
+				$v4 = gethostbynamel( $host );
+
+				if ( is_array( $v4 ) && ! empty( $v4 ) ) {
+					return true;
+				}
+			}
+
+			if ( function_exists( 'dns_get_record' ) ) {
+				$v6 = @dns_get_record( $host, DNS_AAAA ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a lookup failure is the answer, not an error.
+
+				if ( is_array( $v6 ) && ! empty( $v6 ) ) {
+					return true;
+				}
+			}
+
+			$resolved = gethostbyname( $host ); // Returns the host unchanged on failure.
+
+			return ( $resolved && $resolved !== $host && (bool) filter_var( $resolved, FILTER_VALIDATE_IP ) );
+		}
+
+		private static function wdkit_sideload_deferred_media( $source_url ) {
+
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			/**
+			 * Largest deferred media file to download, in bytes.
+			 *
+			 * Filterable because the right ceiling is a property of the host, not of the kit:
+			 * shared hosting with a 30s cap and a slow link needs a lower one than a VPS.
+			 *
+			 * @since 2.7.1
+			 *
+			 * @param int    $max_bytes  Default limit.
+			 * @param string $source_url URL being considered.
+			 */
+			$max_bytes = (int) apply_filters( 'wdkit_deferred_media_max_bytes', self::WDKIT_DEFERRED_MEDIA_MAX_BYTES, $source_url );
+
+			// Same SSRF check every other outbound fetch in this plugin goes through - DNS
+			// resolution plus a reserved-range test, so private, loopback and link-local
+			// addresses are rejected. It gates BOTH branches below, and has to: this URL list
+			// arrives from the browser in $_POST (see the `image_urls` contract on the bundle and
+			// pages routes), so it is client-controlled, and esc_url_raw() is a formatting
+			// function, not an access-control one. Running in a cron event does not make the
+			// origin of the URL any more trustworthy - it removes the last chance to ask.
+			// Nonce + manage_options do not close this: they establish who is asking, not where
+			// the server may be pointed, and neither stops a CSRF-assisted request. download_url()
+			// blocks only the plain 169.254.169.254 metadata case, leaving multi-A-record hosts,
+			// internal IPv6 and same-host URLs reachable.
+			if ( ! function_exists( 'wdesignkit_validate_external_url' ) || ! wdesignkit_validate_external_url( $source_url ) ) {
+				return new WP_Error( 'wdkit_media_url_rejected', 'Refusing to fetch a URL that failed validation.' );
+			}
+
+			$ext = strtolower( (string) pathinfo( (string) wp_parse_url( $source_url, PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+
+			// The set WordPress's own image sideloader accepts. Everything it accepts, it keeps.
+			if ( in_array( $ext, array( 'jpg', 'jpeg', 'jpe', 'png', 'gif', 'webp' ), true ) ) {
+				return media_sideload_image( $source_url, 0, null, 'id' );
+			}
+
+			// Ask before fetching. A HEAD that answers with a size lets an oversized file be skipped
+			// for the cost of one request; a host that does not answer with one is not a reason to
+			// refuse, so the download proceeds and the on-disk size below is the real backstop.
+			$head = wp_remote_head( $source_url, array( 'timeout' => 15, 'redirection' => 3 ) );
+
+			if ( ! is_wp_error( $head ) ) {
+				$length = (int) wp_remote_retrieve_header( $head, 'content-length' );
+
+				if ( $length > $max_bytes ) {
+					return new WP_Error(
+						'wdkit_media_too_large',
+						sprintf( 'Skipped %s: %d bytes exceeds the %d byte limit.', $source_url, $length, $max_bytes )
+					);
+				}
+			}
+
+			$tmp = download_url( $source_url, 300 );
+
+			if ( is_wp_error( $tmp ) ) {
+				return $tmp;
+			}
+
+			// The backstop for a host that sent no Content-Length, or lied about it.
+			$size = (int) @filesize( $tmp );
+
+			if ( $size > $max_bytes ) {
+				@unlink( $tmp );
+
+				return new WP_Error(
+					'wdkit_media_too_large',
+					sprintf( 'Skipped %s: %d bytes on disk exceeds the %d byte limit.', $source_url, $size, $max_bytes )
+				);
+			}
+
+			// From the URL *path*, so a query string never ends up in the filename - the same reason
+			// Wdkit_Import_Images does this rather than basename() the whole URL.
+			$file_name = Wdkit_Image_Guard::filename_from_url( $source_url );
+
+			// filename_from_url() only matches a path that already names a known media type, so
+			// it returns '' for the extensionless CDN URLs this branch exists to handle. Fall back
+			// to the last path segment and let the sniffing below name the type.
+			if ( '' === $file_name ) {
+				$path      = (string) wp_parse_url( $source_url, PHP_URL_PATH );
+				$file_name = sanitize_file_name( (string) wp_basename( rtrim( $path, '/' ) ) );
+			}
+
+			if ( '' === $file_name ) {
+				@unlink( $tmp );
+
+				return new WP_Error( 'wdkit_media_no_filename', 'Could not derive a filename from the URL.' );
+			}
+
+			// The template CDN serves media from extensionless URLs and declares the type in the
+			// response, so there is nothing in the path to name the file after. Left as-is,
+			// wp_check_filetype_and_ext() below has no extension to check and refuses the upload -
+			// which is why extensionless media was never localised even once it was collected.
+			// The type is read from the bytes on disk, not from the URL or a response header, so a
+			// mislabelled file still cannot smuggle in an extension it does not match.
+			if ( '' === (string) pathinfo( $file_name, PATHINFO_EXTENSION ) ) {
+				$sniffed = wp_check_filetype_and_ext( $tmp, $file_name . '.jpg' );
+				$type    = ! empty( $sniffed['type'] ) ? $sniffed['type'] : '';
+
+				if ( '' === $type && function_exists( 'getimagesize' ) ) {
+					$info = @getimagesize( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- malformed input is the case being detected.
+					$type = ( is_array( $info ) && ! empty( $info['mime'] ) ) ? $info['mime'] : '';
+				}
+
+				$ext = '';
+
+				foreach ( wp_get_mime_types() as $exts => $mime ) {
+					if ( $mime === $type ) {
+						$ext = strtok( $exts, '|' );
+						break;
+					}
+				}
+
+				if ( '' === $ext ) {
+					@unlink( $tmp );
+
+					return new WP_Error(
+						'wdkit_media_unknown_type',
+						sprintf( 'Skipped %s: no extension in the URL and the downloaded file is not a recognised media type.', $source_url )
+					);
+				}
+
+				$file_name .= '.' . $ext;
+			}
+
+			// media_handle_sideload() runs the upload through wp_check_filetype_and_ext(), so a file
+			// whose contents do not match its extension is refused here rather than stored.
+			$attachment_id = media_handle_sideload(
+				array(
+					'name'     => $file_name,
+					'tmp_name' => $tmp,
+				),
+				0
+			);
+
+			// On failure media_handle_sideload() has already removed the temp file; on success it
+			// moved it. This only catches the path where it returned early without doing either.
+			if ( is_wp_error( $attachment_id ) && file_exists( $tmp ) ) {
+				@unlink( $tmp );
+			}
+
+			return $attachment_id;
+		}
+
+		/**
+		 * The original-image URL behind a WordPress size variant, or '' when it is not one.
+		 *
+		 * `photo-300x298.png` -> `photo.png`. Only the trailing -WIDTHxHEIGHT before the extension
+		 * is removed; query strings are kept.
+		 *
+		 * @param string $url Image URL.
+		 * @return string
+		 */
+		private static function wdkit_size_variant_of( $url ) {
+			$original = preg_replace( '/-\d+x\d+(\.(?:jpe?g|png|gif|webp|avif))(?=$|\?)/i', '$1', (string) $url, 1 );
+
+			return ( is_string( $original ) && $original !== $url ) ? $original : '';
+		}
+
+		/**
+		 * Background half of the deferred media sideload: download every image a kit page's
+		 * content deferred at create time and repoint the saved page content at the local copies.
+		 *
+		 * Runs off a `wp_schedule_single_event()` (registered in the constructor), well after the
+		 * import request that created the page has already returned. Updates post meta / the
+		 * post row directly rather than going through Elementor's/the block importer's normal
+		 * save path, so this never re-runs widget ID generation or reflows the layout.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param int    $post_id    Page created with source CDN URLs still in its content.
+		 * @param string $builder    'elementor' or anything else (treated as Gutenberg/HTML content).
+		 * @param array  $image_urls Source CDN image URLs referenced by that page.
+		 */
+		public function wdkit_async_sideload_page_images( $post_id, $builder, $image_urls ) {
+
+			$post_id    = (int) $post_id;
+			$image_urls = is_array( $image_urls ) ? $image_urls : array();
+
+			if ( ! $post_id || empty( $image_urls ) || ! get_post( $post_id ) ) {
+				return;
+			}
+
+			if ( ! function_exists( 'media_sideload_image' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/media.php';
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				require_once ABSPATH . 'wp-admin/includes/image.php';
+			}
+
+			// The synchronous import paths all extend this (see import_page_section_content(),
+			// wkit_import_site_bundle()) for the same reason: Imagick thumbnail generation on an
+			// oversized source image can outrun PHP's default 30s limit on its own, before this
+			// loop even gets to a second URL. Unlike those requests, nothing is waiting on this
+			// one - it is a wp-cron callback - so there is no reason not to give it the same
+			// headroom; without it, a fatal here kills the whole event mid-loop (no unschedule,
+			// no url_map, no content rewrite) and every image after the slow one in $image_urls
+			// is left pointing at the source CDN with nothing left to ever retry it.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 300 );
+			}
+
+			// Same guard the synchronous path uses - a background run is no less able to blow
+			// through the memory limit on an oversized source image.
+			self::wdkit_guard_oversized_images();
+
+			$url_map = array();
+
+			/* Attachment ids sideloaded or found in this run, keyed by fetch URL, so an image the
+			 * kit references in several sizes is fetched once. */
+			$attached = array();
+
+			/* Sideload one URL (or reuse an earlier copy), returning its attachment id or 0. */
+			$attach = function ( $fetch_url ) use ( &$attached ) {
+				if ( isset( $attached[ $fetch_url ] ) ) {
+					return $attached[ $fetch_url ];
+				}
+
+				$attachment_id = self::wdkit_deferred_attachment_for_url( $fetch_url );
+
+				if ( ! $attachment_id ) {
+					$attachment_id = self::wdkit_sideload_deferred_media( $fetch_url );
+
+					if ( is_wp_error( $attachment_id ) ) {
+						if ( 'wdkit_media_too_large' === $attachment_id->get_error_code() ) {
+							error_log( 'WDKIT deferred media: ' . $attachment_id->get_error_message() );
+							$attached[ $fetch_url ] = 0;
+							return 0;
+						}
+
+						usleep( 300000 );
+						$attachment_id = self::wdkit_sideload_deferred_media( $fetch_url );
+					}
+
+					if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
+						$attached[ $fetch_url ] = 0;
+						return 0;
+					}
+
+					$local_url = wp_get_attachment_url( $attachment_id );
+
+					if ( $local_url ) {
+						update_post_meta( $attachment_id, '_elementor_source_image_hash', sha1( $local_url ) );
+						update_post_meta( $attachment_id, 'tpgb_source_image_key', sha1( $local_url ) );
+					}
+
+					update_post_meta( $attachment_id, '_wdkit_deferred_source_url', $fetch_url );
+				}
+
+				$attached[ $fetch_url ] = (int) $attachment_id;
+
+				return (int) $attachment_id;
+			};
+
+			$urls = array_values( array_unique( array_filter( array_map( 'esc_url_raw', $image_urls ) ) ) );
+
+			/* Full-size images first, so a size variant further down the list finds its original
+			 * already in the library instead of starting another download. */
+			usort(
+				$urls,
+				function ( $a, $b ) {
+					return (int) ( '' !== self::wdkit_size_variant_of( $a ) ) - (int) ( '' !== self::wdkit_size_variant_of( $b ) );
+				}
+			);
+
+			foreach ( $urls as $source_url ) {
+				$fetch_url = Wdkit_Image_Guard::cap_pexels_source( $source_url );
+				$map_keys  = ( $fetch_url !== $source_url ) ? array( $source_url, $fetch_url ) : array( $source_url );
+
+				/* A WordPress size variant (photo-300x298.png) of an image whose original
+				 * (photo.png) can be fetched: import the original once and point this reference at
+				 * the closest size WordPress generates for it. A kit page carried 31 such variants
+				 * among 50 images, each downloaded and resized on its own (ClickUp single-template
+				 * speed-up). Falls back to the variant itself when the original is unavailable. */
+				$original = self::wdkit_size_variant_of( $fetch_url );
+
+				if ( '' !== $original ) {
+					$original_id = $attach( $original );
+
+					if ( $original_id ) {
+						preg_match( '/-(\d+)x(\d+)\.[a-z0-9]+(?:$|\?)/i', $fetch_url, $dims );
+
+						$sized_url = ! empty( $dims )
+							? wp_get_attachment_image_url( $original_id, array( (int) $dims[1], (int) $dims[2] ) )
+							: '';
+						$sized_url = $sized_url ? $sized_url : wp_get_attachment_url( $original_id );
+
+						if ( $sized_url ) {
+							foreach ( $map_keys as $map_key ) {
+								$url_map[ $map_key ] = array(
+									'id'  => $original_id,
+									'url' => $sized_url,
+								);
+							}
+
+							continue;
+						}
+					}
+				}
+
+				$attachment_id = $attach( $fetch_url );
+				$local_url     = $attachment_id ? wp_get_attachment_url( $attachment_id ) : '';
+
+				if ( ! $local_url ) {
+					continue;
+				}
+
+				foreach ( $map_keys as $map_key ) {
+					$url_map[ $map_key ] = array(
+						'id'  => $attachment_id,
+						'url' => $local_url,
+					);
+				}
+			}
+
+			if ( empty( $url_map ) ) {
+				return;
+			}
+
+			if ( 'elementor' === $builder && did_action( 'elementor/loaded' ) ) {
+				$raw  = get_post_meta( $post_id, '_elementor_data', true );
+				$data = is_array( $raw ) ? $raw : json_decode( $raw, true );
+
+				if ( is_array( $data ) ) {
+					$data = $this->wdkit_replace_deferred_media( $data, $url_map );
+
+					// The finalize sweep deliberately skips a page while its media is queued here
+					// (see wdkit_sweep_attachment_ids()), and the remap above only touches the URLs
+					// this event was handed. Anything else on the page that already had a local URL
+					// beside a stale id - the picked stock images the AI path substitutes by URL
+					// alone, for instance - would otherwise never get its id corrected by anyone:
+					// the sweep passed the page over, and this callback never looked. Same walk the
+					// sweep would have done, restricted to local URLs so nothing downloads from here.
+					$data = self::wdkit_repair_attachment_ids( $data, true );
+
+					// Last resort for anything the rewrite above missed: point it at a file that
+					// already exists locally. Costs one indexed meta lookup per foreign control
+					// and never downloads, so it is safe to run on every event.
+					$relinked = 0;
+					$data     = self::wdkit_relink_known_foreign_media( $data, $relinked );
+
+					if ( $relinked && defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+						error_log( sprintf( '[WDKIT] relinked %d already-local media reference(s) on post %d', $relinked, $post_id ) );
+					}
+
+					// wp_slash() is not optional here. update_post_meta() runs wp_unslash() on
+					// the value, so handing it raw JSON strips every backslash the encoder put
+					// in - `\/`, `\"`, `\uXXXX` - and what lands in the row is no longer
+					// parseable. Elementor then reads zero elements off the page: it regenerates
+					// post-N.css as empty, enqueues nothing, and the theme falls back to the
+					// post_content mirror, so the page renders its text completely unstyled.
+					// Elementor's own writer does the same thing for the same reason - see the
+					// wp_slash() in Document::save_elements().
+					update_post_meta( $post_id, '_elementor_data', wp_slash( wp_json_encode( $data ) ) );
+
+					// Elementor mirrors the rendered output into post_content as well, and that
+					// copy is what themes and search read. Rewriting only _elementor_data leaves
+					// it pointing at the template's own site - invisible in the editor, but the
+					// front end still requests those images from the source CDN. Same substring
+					// swap the non-Elementor branch below performs, and through the same writer,
+					// so the markup is not put through kses in this userless context.
+					$post = get_post( $post_id );
+
+					if ( $post && ! empty( $post->post_content ) ) {
+						$content = $post->post_content;
+
+						foreach ( $url_map as $source_url => $local ) {
+							$content = self::wdkit_replace_url_all_encodings( $content, $source_url, $local['url'] );
+						}
+
+						// Same last-resort relink as the builder data above. post_content is the
+						// copy the theme actually renders, so a reference left here is visible
+						// even when _elementor_data is correct.
+						foreach ( self::wdkit_collect_foreign_media_urls( $content ) as $stray ) {
+							$existing = self::wdkit_deferred_attachment_for_url( $stray );
+
+							if ( $existing && self::wdkit_is_usable_attachment( $existing ) ) {
+								$local_stray = wp_get_attachment_url( $existing );
+
+								if ( $local_stray ) {
+									$content = self::wdkit_replace_url_all_encodings( $content, $stray, $local_stray );
+								}
+							}
+						}
+
+						if ( $content !== $post->post_content ) {
+							self::wdkit_write_post_content( $post_id, $content );
+						}
+					}
+
+					// Invalidate last, and only for this page. Last, because a render that
+					// starts between the two writes above would otherwise regenerate its CSS
+					// and element cache from half-rewritten data and then cache that. Only this
+					// page, because the alternative is a site-wide flush - see
+					// wdkit_invalidate_elementor_page_cache().
+					self::wdkit_invalidate_elementor_page_cache( $post_id );
+
+					// Then fix any OTHER page referencing the same files. Only the first event to
+					// see a URL downloads it; without this, a sibling that references the same
+					// file but whose own event never carried that URL keeps the remote reference
+					// permanently. See wdkit_apply_url_map_to_siblings().
+					$siblings = $this->wdkit_apply_url_map_to_siblings( $url_map, $post_id );
+
+					if ( $siblings && defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+						error_log( sprintf( '[WDKIT] repaired %d sibling page(s) sharing media with post %d', $siblings, $post_id ) );
+					}
+				}
+			} else {
+				$post = get_post( $post_id );
+
+				if ( $post ) {
+					$content = $post->post_content;
+
+					foreach ( $url_map as $source_url => $local ) {
+						$content = self::wdkit_replace_url_all_encodings( $content, $source_url, $local['url'] );
+					}
+
+					if ( $content !== $post->post_content ) {
+						// The replace above fixes every `url` but leaves the `id` sitting beside it
+						// still pointing at the source site's attachment. Blocks that render from
+						// the url look correct either way; the ones that render through the
+						// attachment id (tp-team-listing, tp-testimonials, tp-image, and
+						// tp-container backgrounds) resolve nothing and render empty. Declining
+						// returns null, in which case the url-only content above is kept exactly
+						// as it is today.
+						$remapped = $this->wdkit_remap_attachment_ids( $content, $url_map );
+
+						if ( null !== $remapped ) {
+							$content = $remapped;
+						}
+
+						// Separate concern, separate pass: the id remap above fixes the block
+						// attribute, but process_image() also stamped the id into the rendered
+						// <img> tag's class at import time, when the image was still remote.
+						// Declining leaves the content exactly as the step above produced it.
+						$classes_fixed = $this->wdkit_remap_wp_image_classes( $content, $url_map );
+
+						if ( null !== $classes_fixed ) {
+							$content = $classes_fixed;
+						}
+
+						self::wdkit_write_post_content( $post_id, $content );
+
+						// The page's per-post CSS file (backgrounds, and anything else the block
+						// CSS generator resolves through an attachment id) was built synchronously
+						// at import time, before this deferred pass ever ran - so it still reads
+						// whatever the deferred images' source urls/ids were back then. Rebuild it
+						// now that post_content points at the local copies, the same way the
+						// synchronous create path already does right after wp_insert_post().
+						self::wdkit_rebuild_block_css( $post_id );
+					}
+				}
+			}
+
+			clean_post_cache( $post_id );
+		}
+
+		/**
+		 * Throw away Elementor's cached render of one page, and only that page.
+		 *
+		 * The deferred pass rewrites `_elementor_data` behind Elementor's back, so three
+		 * per-post caches are left describing the version that still pointed at the source
+		 * CDN: the generated CSS file (background-image rules resolve through the attachment
+		 * id), `_elementor_element_cache` (the rendered element markup) and
+		 * `_elementor_page_assets`. All three have to go for the next render to be correct.
+		 *
+		 * This used to be `files_manager->clear_cache()`, which is not a per-page call at all:
+		 * it globs and unlinks *every* file in uploads/elementor/css, then runs
+		 * delete_post_meta_by_key() for all three keys across *every* post, and drops the
+		 * global CSS option. One call measured here destroyed 16 CSS files and 15 meta rows.
+		 *
+		 * That is actively harmful in this context, because one of these events is scheduled
+		 * per imported page - eleven of them, two seconds apart, on a kit this size. A visitor
+		 * who loads any page during that window gets HTML whose `<link>` points at
+		 * post-N.css, and the file is deleted out from under the browser before it is fetched:
+		 * the page renders completely unstyled. It self-heals on a later render, which is
+		 * exactly why it reads as "the layout breaks when I refresh".
+		 *
+		 * Scoping it also means pages the deferred pass never touched keep their CSS instead
+		 * of being made to regenerate for nothing.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param int $post_id Page whose cached render is now stale.
+		 * @return void
+		 */
+		public static function wdkit_invalidate_elementor_page_cache( $post_id ) {
+
+			$post_id = (int) $post_id;
+
+			if ( ! $post_id ) {
+				return;
+			}
+
+			// Same call Elementor's own Document::save() makes - deletes the css file and the
+			// _elementor_css meta for this one post.
+			if ( class_exists( '\\Elementor\\Core\\Files\\CSS\\Post' ) ) {
+				\Elementor\Core\Files\CSS\Post::create( $post_id )->delete();
+			} else {
+				// Older Elementor without the CSS file classes: the meta alone still forces a
+				// regeneration, which is what actually matters here.
+				delete_post_meta( $post_id, '_elementor_css' );
+			}
+
+			// Document::save() pairs the css delete with delete_cache(); that method is
+			// protected, and these are the keys it clears.
+			delete_post_meta( $post_id, '_elementor_element_cache' );
+			delete_post_meta( $post_id, '_elementor_page_assets' );
 		}
 
 		/**
@@ -1513,8 +2915,25 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$builder = isset( $_POST['builder'] ) ? strtolower( sanitize_text_field( $_POST['builder'] ) ) : '';
 
+			/* Answered as-is for a builder that is neither of the two below - previously
+			 * `$response` was never set on that path and wp_send_json() read an undefined
+			 * variable (PHP warning, ClickUp 14ynqxz2tru). */
+			$response = array(
+				'message'     => __( 'Unknown builder', 'wdesignkit' ),
+				'description' => __( 'The builder must be elementor or gutenberg.', 'wdesignkit' ),
+				'success'     => false,
+			);
+
 			if ( 'elementor' === $builder ) {
 				$kit_id = get_option( 'elementor_active_kit' );
+				if ( ! $kit_id && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Core\Kits\Manager' ) ) {
+					/* Elementor was installed moments ago in this import, and its kit is only
+					 * created by its own activation hook - which may not have run in a request
+					 * that loaded it (ClickUp 14ynqxz2tru). Same fallback as
+					 * wdkit_apply_site_globals_data(). */
+					\Elementor\Core\Kits\Manager::create_default_kit();
+					$kit_id = get_option( 'elementor_active_kit' );
+				}
 				if ( empty( $kit_id ) ) {
 						$response = array(
 							'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
@@ -1591,8 +3010,38 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'viewport_lg'           => 1025,
 					);
 
-					$kit_meta = $static_meta;
-					update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+					/* Fill in what is MISSING. Do not replace the kit.
+					 *
+					 * The test above is about ONE key — `system_colors`, absent on a kit Elementor
+					 * has not finished setting up — but this used to answer it with
+					 * `$kit_meta = $static_meta`, throwing away every other key the kit had.
+					 * `custom_colors` and `custom_typography` are in that set and are exactly
+					 * where a site's own global palette lives, so any site with custom Elementor
+					 * globals but no system colours lost all of them the moment this read endpoint
+					 * ran. A *read* endpoint. It is reached from the import wizard and from the
+					 * globals screen, so the loss looked like it came from importing.
+					 *
+					 * A key is filled when it is absent, or present but empty while the default
+					 * has something to offer — so a kit that already has custom colours keeps
+					 * them, a customised `page_title_selector` is not reset, and a genuinely bare
+					 * kit still comes out of here with the stock palette the UI needs to render.
+					 */
+					$kit_meta = is_array( $kit_meta ) ? $kit_meta : array();
+					$filled   = false;
+
+					foreach ( $static_meta as $meta_key => $meta_value ) {
+						$missing = ! isset( $kit_meta[ $meta_key ] )
+							|| ( empty( $kit_meta[ $meta_key ] ) && ! empty( $meta_value ) );
+
+						if ( $missing ) {
+							$kit_meta[ $meta_key ] = $meta_value;
+							$filled                = true;
+						}
+					}
+
+					if ( $filled ) {
+						update_post_meta( $kit_id, '_elementor_page_settings', $kit_meta );
+					}
 				}
 
 				$system_colors     = ! empty( $kit_meta['system_colors'] ) ? $kit_meta['system_colors'] : array();
@@ -1622,546 +3071,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				if ( empty( $plus_settings ) ) {
 
-					$static_meta = array(
-						'active'          => 'preset1',
-						'darkMode'        => 'none',
-						'presets'         => array(
-							'preset1' => array(
-								'name'       => 'Preset 1',
-								'key'        => 'preset1',
-								'colors'     => array(
-									array(
-										'label' => 'Primary',
-										'value' => '#8072FC',
-									),
-									array(
-										'label' => 'Secondary',
-										'value' => '#6FC784',
-									),
-									array(
-										'label' => 'Tertiary',
-										'value' => '#FF5A6E',
-									),
-									array(
-										'label' => 'Accent',
-										'value' => '#F3F3F3',
-									),
-									array(
-										'label' => 'Background',
-										'value' => '#888888',
-									),
-								),
-								'gradient'   => array(
-									array(
-										'label' => 'Primary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Secondary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Tertiary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Accent',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Background',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-								),
-								'spacing'    => array(
-									array(
-										'label' => 'Large',
-										'value' => array(
-											'md'   => 70,
-											'unit' => 'px',
-										),
-									),
-									array(
-										'label' => 'Medium',
-										'value' => array(
-											'md'   => 40,
-											'unit' => 'px',
-										),
-									),
-									array(
-										'label' => 'Small',
-										'value' => array(
-											'md'   => 20,
-											'unit' => 'px',
-										),
-
-									),
-								),
-								'typography' => array(
-									array(
-										'label' => 'Display Text',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 65,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 75,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 700,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Headline',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 45,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 60,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 700,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Sub Headline',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 38,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 45,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Title 1',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 30,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 40,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Title 2',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 25,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 30,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Body',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 17,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 22,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Captions',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 13,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 16,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-								),
-								'boxshadow'  => array(
-									array(
-										'label' => 'Normal Shadow',
-										'value' => array(
-											'openShadow' => 1,
-											'inset'      => 0,
-											'horizontal' => 2,
-											'vertical'   => 6,
-											'blur'       => 10,
-											'spread'     => 0,
-											'color'      => 'rgba(0,0,0,0.15)',
-										),
-									),
-									array(
-										'label' => 'Hover Shadow',
-										'value' => array(
-											'openShadow' => 1,
-											'inset'      => 0,
-											'horizontal' => 2,
-											'vertical'   => 5,
-											'blur'       => 14,
-											'spread'     => 3,
-											'color'      => 'rgba(0,0,0,0.2)',
-										),
-									),
-								),
-							),
-							'preset2' => array(
-								'name'       => 'Preset 2',
-								'key'        => 'preset2',
-								'colors'     => array(
-									array(
-										'label' => 'Primary',
-										'value' => '#8072FC',
-									),
-									array(
-										'label' => 'Secondary',
-										'value' => '#6FC784',
-									),
-									array(
-										'label' => 'Tertiary',
-										'value' => '#FF5A6E',
-									),
-									array(
-										'label' => 'Accent',
-										'value' => '#F3F3F3',
-									),
-									array(
-										'label' => 'Background',
-										'value' => '#888888',
-									),
-								),
-								'gradient'   => array(
-									array(
-										'label' => 'Primary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Secondary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Tertiary',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Accent',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-
-									array(
-										'label' => 'Background',
-										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
-									),
-								),
-								'spacing'    => array(
-									array(
-										'label' => 'Large',
-										'value' => array(
-											'md'   => 70,
-											'unit' => 'px',
-										),
-									),
-									array(
-										'label' => 'Medium',
-										'value' => array(
-											'md'   => 40,
-											'unit' => 'px',
-										),
-									),
-									array(
-										'label' => 'Small',
-										'value' => array(
-											'md'   => 20,
-											'unit' => 'px',
-										),
-
-									),
-								),
-								'typography' => array(
-									array(
-										'label' => 'Display Text',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 65,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 75,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 700,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Headline',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 45,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 60,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 700,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Sub Headline',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 38,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 45,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Title 1',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 30,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 40,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 500,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Title 2',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 25,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 30,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Body',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 17,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 22,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-									array(
-										'label' => 'Captions',
-										'value' => array(
-											'openTypography' => 1,
-											'size'       => array(
-												'md'   => 13,
-												'unit' => 'px',
-											),
-											'height'     => array(
-												'md'   => 16,
-												'unit' => 'px',
-											),
-											'fontFamily' => array(
-												'family' => 'Roboto',
-												'type'   => 'sans-serif',
-												'fontWeight' => 400,
-											),
-											'spacing'    => array(
-												'md'   => 0,
-												'unit' => 'px',
-											),
-										),
-									),
-								),
-								'boxshadow'  => array(
-									array(
-										'label' => 'Normal Shadow',
-										'value' => array(
-											'openShadow' => 1,
-											'inset'      => 0,
-											'horizontal' => 2,
-											'vertical'   => 6,
-											'blur'       => 10,
-											'spread'     => 0,
-											'color'      => 'rgba(0,0,0,0.15)',
-										),
-									),
-									array(
-										'label' => 'Hover Shadow',
-										'value' => array(
-											'openShadow' => 1,
-											'inset'      => 0,
-											'horizontal' => 2,
-											'vertical'   => 5,
-											'blur'       => 14,
-											'spread'     => 3,
-											'color'      => 'rgba(0,0,0,0.2)',
-										),
-									),
-								),
-							),
-						),
-						'globalContainer' => array(
-							'md'   => '',
-							'unit' => 'px',
-						),
-					);
+					$static_meta = self::wdkit_default_gutenberg_globals();
 
 					update_option( 'tpgb_global_options', json_encode( $static_meta ) );
 					$plus_settings = $static_meta;
@@ -2205,6 +3115,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		protected function wdkit_get_site_setting() {
 
 			$kit_id = get_option( 'elementor_active_kit' );
+			if ( ! $kit_id && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Core\Kits\Manager' ) ) {
+				/* Same fallback as wdkit_get_global_val() (ClickUp 14ynqxz2tru). */
+				\Elementor\Core\Kits\Manager::create_default_kit();
+				$kit_id = get_option( 'elementor_active_kit' );
+			}
+
 			if ( empty( $kit_id ) ) {
 					$response = array(
 						'message'     => __( 'Elementor kit not found', 'wdesignkit' ),
@@ -2250,6 +3166,31 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$builder   = ! empty( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
 			$site_data = ! empty( $_POST['site_data'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['site_data'] ) ), true ) : array();
 
+			$response = $this->wdkit_apply_site_globals_data( $builder, $site_data );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Apply a kit's site-level globals: container width, body background, `__globals__`.
+		 *
+		 * Extracted from wdkit_update_site_setting() so the PHP import runner can reach it
+		 * without `$_POST`. Direct assignment rather than a merge, so running it twice leaves
+		 * the same result — the browser behaves identically here.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param string $builder   'elementor'|'gutenberg'.
+		 * @param array  $site_data Global values collected from the kit's templates.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_apply_site_globals_data( $builder, $site_data ) {
+			$builder   = is_string( $builder ) ? $builder : '';
+			$site_data = is_array( $site_data ) ? $site_data : array();
+
 			if ( 'elementor' == $builder ) {
 				$kit_id = get_option( 'elementor_active_kit' );
 				if ( ! $kit_id && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Core\Kits\Manager' ) ) {
@@ -2264,8 +3205,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'success'     => false,
 					);
 
-					wp_send_json( $response );
-					wp_die();
+					return $response;
 				}
 
 				// A freshly created kit has no `_elementor_page_settings` meta yet,
@@ -2314,8 +3254,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
 		}
 
 		/**
@@ -2328,10 +3267,44 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$builder = ! empty( $_POST['builder'] ) ? sanitize_text_field( $_POST['builder'] ) : '';
 
+			$g_color    = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
+			$g_typo     = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+			$new_preset = ! empty( $_POST['new_preset'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['new_preset'] ) ), true ) : array();
+
+			$response = $this->wdkit_apply_global_values_data( $builder, $g_color, $g_typo, $new_preset );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Apply a kit's global colours and typography.
+		 *
+		 * Extracted from wdkit_update_global_val() so the PHP import runner can reach it
+		 * without `$_POST`.
+		 *
+		 * BEHAVIOUR NOTE — the Elementor branch merges with `array_merge( $new, $existing )` on
+		 * numeric-keyed lists, which appends rather than replaces. Running it twice therefore
+		 * accumulates duplicate entries. That is preserved here exactly, because it is the
+		 * shipped browser behaviour and this method backs the AJAX action. Callers that need an
+		 * idempotent apply should use Wdkit_Import_Globals::apply(), which de-duplicates by
+		 * `_id` before calling in.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param string $builder    'elementor'|'gutenberg'.
+		 * @param array  $g_color    Global colour entries.
+		 * @param array  $g_typo     Global typography entries.
+		 * @param array  $new_preset Gutenberg preset {key, ...}.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_apply_global_values_data( $builder, $g_color = array(), $g_typo = array(), $new_preset = array() ) {
+			$builder = is_string( $builder ) ? $builder : '';
+
 			if ( 'elementor' == $builder ) {
 
-				$g_color = ! empty( $_POST['g_color'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_color'] ) ), true ) : array();
-				$g_typo  = ! empty( $_POST['g_typography'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['g_typography'] ) ), true ) : array();
+				$g_color = is_array( $g_color ) ? $g_color : array();
+				$g_typo  = is_array( $g_typo ) ? $g_typo : array();
 
 				// Get colors from Elementor Site Kit
 				$kit_id = get_option( 'elementor_active_kit' );
@@ -2350,8 +3323,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'success'     => false,
 					);
 
-					wp_send_json( $response );
-					wp_die();
+					return $response;
 				}
 
 				// A freshly created kit has no `_elementor_page_settings` meta yet,
@@ -2378,7 +3350,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 
 			} elseif ( 'gutenberg' == $builder ) {
-				$new_preset    = ! empty( $_POST['new_preset'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['new_preset'] ) ), true ) : array();
+				$new_preset    = is_array( $new_preset ) ? $new_preset : array();
 				$new_preset_id = ! empty( $new_preset['key'] ) ? $new_preset['key'] : '';
 				$plus_settings = get_option( 'tpgb_global_options' );
 				$site_preset   = json_decode( $plus_settings, true );
@@ -2402,8 +3374,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
 		}
 
 		/**
@@ -2683,6 +3654,30 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function wdkit_install_plugins_depends() {
 			$plugins = isset( $_POST['plugins'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['plugins'] ) ), true ) : array();
+
+			$responce = $this->wdkit_install_dependency_data( $plugins );
+
+			wp_send_json( $responce );
+			wp_die();
+		}
+
+		/**
+		 * Install or activate one kit dependency and describe the outcome.
+		 *
+		 * Extracted from wdkit_install_plugins_depends() so the PHP import runner can install
+		 * dependencies without `$_POST`. The plugin branch delegates to Wdkit_Depends_Installer
+		 * and the theme branch keeps its own activation path — themes are NOT installed through
+		 * the plugin installer, and routing one there would try to install a theme as a plugin.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $plugins Dependency record: {type, p_id, original_slug, plugin_slug, ...}.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_install_dependency_data( $plugins ) {
+			$plugins = is_array( $plugins ) ? $plugins : array();
 			$type    = ! empty( $plugins['type'] ) ? $plugins['type'] : 'plugin';
 			$p_id    = ! empty( $plugins['p_id'] ) ? $plugins['p_id'] : 'plugin';
 
@@ -2742,8 +3737,156 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			wp_send_json( $responce );
+			return $responce;
+		}
+
+		/**
+		 * Install/activate every plugin and theme dependency in one request.
+		 *
+		 * wdkit_install_plugins_depends() above installs exactly one item per admin-ajax call,
+		 * which is what the browser used to drive in a sequential chain (install one, wait,
+		 * install the next) - one WP bootstrap + nonce check + network round trip per dependency
+		 * on top of the install itself. This reuses the identical per-item logic - the same
+		 * Wdkit_Depends_Installer::wdkit_install_plugin() for plugins and the same
+		 * switch_theme()/wdkit_install_theme_depends() branch for themes - just looped inside a
+		 * single PHP execution instead of one call per item.
+		 *
+		 * @since 2.7.0
+		 */
+		protected function wdkit_install_plugins_depends_batch() {
+			$items = isset( $_POST['plugins'] ) ? json_decode( wp_unslash( $_POST['plugins'] ), true ) : array();
+
+			if ( empty( $items ) || ! is_array( $items ) ) {
+				wp_send_json(
+					array(
+						'success' => false,
+						'message' => esc_html__( 'No plugins supplied', 'wdesignkit' ),
+					)
+				);
+				wp_die();
+			}
+
+			// Several downloads + unzips + activations in one request; harmless no-op where
+			// set_time_limit() is disabled.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 300 );
+			}
+
+			$t_start = microtime( true );
+			$results = array();
+
+			foreach ( $items as $item ) {
+				$item = (array) $item;
+				$type = ! empty( $item['type'] ) ? $item['type'] : 'plugin';
+				$p_id = ! empty( $item['p_id'] ) ? $item['p_id'] : '';
+
+				if ( 'theme' === $type ) {
+					$theme_name = ! empty( $item['original_slug'] ) ? $item['original_slug'] : '';
+
+					if ( empty( $theme_name ) ) {
+						$results[] = array(
+							'p_id'    => $p_id,
+							'success' => false,
+							'status'  => 'inactive',
+							'message' => esc_html__( 'Theme name not found', 'wdesignkit' ),
+						);
+						continue;
+					}
+
+					$theme_array = array_keys( wp_get_themes() );
+
+					if ( in_array( $theme_name, $theme_array, true ) ) {
+						$activate_result = switch_theme( $theme_name );
+
+						$results[] = is_wp_error( $activate_result )
+							? array(
+								'p_id'    => $p_id,
+								'success' => false,
+								'status'  => 'inactive',
+								'message' => $activate_result->get_error_message(),
+							)
+							: array(
+								'p_id'    => $p_id,
+								'success' => true,
+								'status'  => 'active',
+								'message' => esc_html__( 'Theme activated successfully', 'wdesignkit' ),
+							);
+					} else {
+						$result    = $this->wdkit_install_theme_depends( $theme_name );
+						$results[] = array(
+							'p_id'    => $p_id,
+							'success' => ! empty( $result['success'] ) ? $result['success'] : false,
+							'status'  => ! empty( $result['status'] ) ? $result['status'] : 'inactive',
+							'message' => ! empty( $result['message'] ) ? $result['message'] : esc_html__( 'Something went wrong', 'wdesignkit' ),
+						);
+					}
+
+					continue;
+				}
+
+				$results[] = Wdkit_Depends_Installer::get_instance()->wdkit_install_plugin( $item );
+			}
+
+			self::wdkit_clear_activation_redirects();
+
+			$timing_ms = (int) round( ( microtime( true ) - $t_start ) * 1000 );
+
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WDKIT dependency batch timing: ' . $timing_ms . 'ms for ' . count( $results ) . ' item(s)' );
+			}
+
+			wp_send_json(
+				array(
+					'success'   => true,
+					'results'   => $results,
+					'timing_ms' => $timing_ms,
+				)
+			);
 			wp_die();
+		}
+
+		/**
+		 * Disarm the "welcome screen" redirects the plugins we just activated leave armed.
+		 *
+		 * Several plugins set a short-lived transient on activation and, on the next `admin_init`,
+		 * redirect to their own setup wizard. Rank Math's guard is the clearest example - it checks
+		 * the transient, the current page and the capability, but never wp_doing_ajax():
+		 *
+		 *     set_transient( '_rank_math_activation_redirect', 1, 30 );   // class-installer.php
+		 *     $this->action( 'admin_init', 'redirect_to_welcome' );       // class-registration.php
+		 *
+		 * `admin_init` fires on admin-ajax.php too, so a wizard request landing in that window is
+		 * answered with an HTML admin page instead of its JSON, and the step that made the call
+		 * fails with nothing the user can act on.
+		 *
+		 * NOTE: this is a hardening measure, not a proven fix for any specific report. The
+		 * Global-Settings failure in QA 14ynqxyugbu still reproduces with this in place, and no
+		 * wp_redirect() is fired during it - so whatever hijacks that request does not go through
+		 * the transients below (a raw header() call would not). Clearing these remains correct on
+		 * its own terms; it is not the answer to that ticket.
+		 *
+		 * Deleting these is what an importer that activates plugins on the user's behalf has to do:
+		 * nobody asked for a setup wizard, and the user is mid-import. Each is a one-shot flag the
+		 * owning plugin deletes itself on first read, so removing it takes nothing else with it.
+		 *
+		 * The list is every such transient set by the plugins this importer installs - grep the
+		 * dependency set for `set_transient` before adding to it, rather than guessing at names.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return void
+		 */
+		public static function wdkit_clear_activation_redirects() {
+
+			$transients = array(
+				'_rank_math_activation_redirect',
+				'_wc_activation_redirect',
+				'elementor_activation_redirect',
+			);
+
+			foreach ( $transients as $transient ) {
+				delete_transient( $transient );
+			}
 		}
 
 		protected function wdkit_install_theme_depends( $name = 'nexter' ) {
@@ -2922,6 +4065,35 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$category = isset( $_POST['category'] ) ? json_decode( wp_unslash( $_POST['category'] ) ) : array();
 			$tags     = isset( $_POST['tags'] ) ? json_decode( wp_unslash( $_POST['tags'] ) ) : array();
 
+			$response = $this->wdkit_import_taxonomy_data( $category, $tags );
+
+			/* Emitted here so this action's output stays byte-for-byte what it was at
+			 * HEAD, where wp_send_json()/wp_die() sat at the end of this same method. */
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Create the categories and tags a kit's posts need, returning their term ids.
+		 *
+		 * Extracted from wdkit_import_taxonomy() so the PHP import runner can reach it without
+		 * `$_POST`. Already idempotent before this change and still is: every term is looked up
+		 * with term_exists() before an insert is attempted, so running it twice returns the
+		 * same ids rather than creating duplicates.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its return value — which
+		 * the router passes to wdkit_success_msg() — is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $category Category names.
+		 * @param array $tags     Tag names.
+		 * @return array {success, categories:[{name,term_id|error}], tags:[...]}
+		 */
+		public function wdkit_import_taxonomy_data( $category = array(), $tags = array() ) {
+			$category = is_array( $category ) ? $category : array();
+			$tags     = is_array( $tags ) ? $tags : array();
+
 			$response = array(
 				'success'    => false,
 				'categories' => array(),
@@ -2988,8 +4160,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				$response['success'] = true;
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			/* Returns. It must NOT emit: the PHP runner calls this directly, and a
+			 * wp_send_json() here would print JSON and wp_die() in the middle of an
+			 * import. Found by running the runner against real WordPress -- see the
+			 * Phase 5 report. The AJAX response is unaffected, because
+			 * wdkit_import_taxonomy() emits this same array at the same point. */
+			return $response;
 		}
 
 		/**
@@ -3018,6 +4194,15 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			unset( $args['email'] );
 			$args['unique_id'] = get_option( 'wdkit_unique_id' ) ?? '';
+
+			/* Importing one template from the library, rather than a whole kit. A sandbox has no
+			 * login for wdkit_login_user_token() to find, so without this the token is empty and
+			 * the cloud refuses - the same gap the kit paths already close. Merged last, so the
+			 * site's own identity wins over anything the request tried to supply. */
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$args = wdkit_kit_import_with_site_identity( $args );
+			}
+
 			$response    = WDesignKit_Data_Query::get_data( $api_type, $args );
 
 			if ( is_wp_error( $response ) ) {
@@ -3144,7 +4329,382 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param string $url URL from a media control.
 		 * @return bool True when the URL points at another site's uploads.
 		 */
-		private static function wdkit_is_foreign_media_url( $url ) {
+		/**
+		 * Localise every foreign SVG media control in a set of Elementor elements, in-request.
+		 *
+		 * The deferred path cannot carry SVGs (see wdkit_collect_foreign_media_urls()), so they
+		 * take the same route they always did: wdkit_localise_media_url(), which resolves through
+		 * Elementor's own importer and its `_elementor_source_image_hash` cache, so an SVG a
+		 * sibling page already imported costs a database lookup rather than a download.
+		 *
+		 * Only the `{ url, id }` media-control shape is handled here, matching
+		 * wdkit_repair_attachment_ids(). An SVG inlined into an HTML/text control has no `id` to
+		 * correct, and the finalize sweep still covers those - which is why the sweep refuses to
+		 * skip any page that still holds a foreign SVG reference.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $node Elementor data, walked recursively.
+		 * @return mixed The data with local SVG references.
+		 */
+		private static function wdkit_localise_foreign_svgs( $node ) {
+
+			if ( ! is_array( $node ) ) {
+				return $node;
+			}
+
+			if ( isset( $node['url'] ) && is_string( $node['url'] ) && array_key_exists( 'id', $node )
+				&& self::wdkit_is_foreign_media_url( $node['url'] )
+				&& preg_match( '/\.svg$/i', (string) wp_parse_url( $node['url'], PHP_URL_PATH ) )
+			) {
+				$local = self::wdkit_localise_media_url( $node['url'], isset( $node['id'] ) ? (int) $node['id'] : 0 );
+
+				if ( ! empty( $local['id'] ) && ! empty( $local['url'] ) ) {
+					$node['id']  = $local['id'];
+					$node['url'] = $local['url'];
+				}
+			}
+
+			foreach ( $node as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$node[ $key ] = self::wdkit_localise_foreign_svgs( $value );
+				}
+			}
+
+			return $node;
+		}
+
+		/**
+		 * Empty the attachment ID on every media control whose image is being deferred.
+		 *
+		 * The IDs that arrive in a template's data belong to the site the kit was authored on.
+		 * Until the background pass replaces them (see wdkit_replace_deferred_media()), each one
+		 * lands in one of two states on this site, and neither is what Elementor expects:
+		 *
+		 * - It matches nothing locally. Elementor's `<img>` path copes - it checks
+		 *   wp_attachment_is_image() and falls back to the url - but the CSS path does not.
+		 *   Control_Media::get_style_value() only takes the url branch when the ID is *empty*;
+		 *   given a non-empty one it returns wp_get_attachment_image_url( $id ), which is false
+		 *   for a dangling ID, so the declaration is dropped and a container background renders
+		 *   as nothing at all. Measured on a Taj Bakery import: 9 of 9 background_image controls
+		 *   produced 0 background-image rules for the whole deferred window.
+		 * - It happens to match an unrelated local attachment. Then wp_attachment_is_image()
+		 *   passes and Elementor renders that other image - the wrong picture, silently. Whether
+		 *   this bites is pure luck: it needs the template's ID range to overlap the IDs a fresh
+		 *   import creates, which is why Zion hit it and Taj Bakery did not.
+		 *
+		 * An empty ID is the one state every affected renderer is written to handle, so this
+		 * turns both failures into "shows the source image until the local copy lands":
+		 *
+		 * - Control_Media::get_style_value()      empty ID -> parent -> the raw url.
+		 * - Group_Control_Image_Size::get_attachment_image_html()  empty ID -> url fallback.
+		 * - image-carousel                        `if ( ! $image_url && isset( $attachment['url'] ) )`.
+		 * - image-gallery                         `$image['url'] ?? ''`.
+		 *
+		 * So this is deliberately not a blanket "clear every ID": it keys off the exact URL list
+		 * that was just handed to the background pass. Anything already local keeps its ID, and
+		 * so do SVGs, which wdkit_localise_foreign_svgs() has already imported for real.
+		 *
+		 * One renderer is not helped by this: The Plus Addons' tp_get_image() returns '' when
+		 * wp_get_attachment_image_src() fails and has no url fallback, so its widgets show
+		 * nothing during the window either way. That is a limitation of that helper rather than
+		 * something this pass can fix, and the background pass repairs it on completion.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param mixed $node     Elementor data, walked recursively.
+		 * @param array $deferred Source URLs handed to the background pass.
+		 * @return mixed Data with the deferred controls' IDs emptied.
+		 */
+		private static function wdkit_blank_deferred_media_ids( $node, array $deferred ) {
+
+			if ( ! is_array( $node ) || empty( $deferred ) ) {
+				return $node;
+			}
+
+			$lookup = array_flip( $deferred );
+
+			$walk = function ( $item ) use ( &$walk, $lookup ) {
+
+				if ( ! is_array( $item ) ) {
+					return $item;
+				}
+
+				// A media control: `url` and `id` as siblings. Empty the ID only when this
+				// exact URL is one the background pass is going to replace.
+				if ( isset( $item['url'] ) && is_string( $item['url'] )
+					&& array_key_exists( 'id', $item )
+					&& isset( $lookup[ $item['url'] ] )
+				) {
+					// '' rather than 0: this is the value Elementor itself writes when it
+					// rejects an ID (see get_attachment_image_html()), and what its
+					// empty()-based checks are written against.
+					$item['id'] = '';
+				}
+
+				foreach ( $item as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$item[ $key ] = $walk( $value );
+					}
+				}
+
+				return $item;
+			};
+
+			return $walk( $node );
+		}
+
+		/**
+		 * Build the demo-URL -> real-permalink substitution table for a finished kit import.
+		 *
+		 * The kit's templates link to each other by the *authoring* site's URLs, so every
+		 * internal link has to be rewritten once each page exists and its real permalink is
+		 * known. Two representations of the same URL have to be covered, because the two places
+		 * these links live store them differently:
+		 *
+		 * - `post_content` holds them raw, inside an attribute: `href="https://demo/about/"`.
+		 * - `_elementor_data` holds them JSON-encoded, so every slash is escaped:
+		 *   `"url":"https:\/\/demo\/about\/"`. This is the one the widgets actually render from.
+		 *
+		 * Each key is anchored on the surrounding quote so `/about` cannot match inside
+		 * `/about-us`, and both the bare and trailing-slash forms are mapped because templates
+		 * are inconsistent about it. The trailing slash has to be escaped in the escaped
+		 * variants (`...\/about\/"`, not `...\/about/"`) - getting that wrong is invisible in
+		 * post_content and leaves the whole navigation pointing at the demo site.
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param array $imported Inserted templates: each entry needs `post_url` (the demo URL)
+		 *                        and `id` (the local post it became).
+		 * @return array strtr() substitution table.
+		 */
+		private static function wdkit_build_nav_url_map( $imported ) {
+
+			$url_map = array();
+
+			foreach ( (array) $imported as $entry ) {
+
+				$entry = (array) $entry;
+
+				if ( empty( $entry['post_url'] ) || empty( $entry['id'] ) ) {
+					continue;
+				}
+
+				$permalink = get_permalink( (int) $entry['id'] );
+
+				if ( ! $permalink ) {
+					continue;
+				}
+
+				$demo   = rtrim( (string) $entry['post_url'], '/' );
+				$target = rtrim( (string) $permalink, '/' );
+
+				if ( '' === $demo || $demo === $target ) {
+					continue;
+				}
+
+				// On a site left on plain permalinks the target is a query string, not a path:
+				// `http://site/?page_id=54`. Re-adding the trailing slash the demo URL carried
+				// yields `?page_id=54/`, and joining a query string onto it with `?` yields a
+				// second `?` - both malformed. This stayed invisible on a pretty-permalink site
+				// because there the target really is a path and appending is correct.
+				$has_query = ( false !== strpos( $target, '?' ) );
+
+				// The "…and a trailing slash" form of the target, which for a query-string
+				// permalink is simply the permalink - there is nothing to put a slash after.
+				$target_slash = $has_query ? $target : $target . '/';
+
+				// What a query string has to be joined on, given what the target already carries.
+				$query_join = $has_query ? '&' : '?';
+
+				// Raw form, as it appears in post_content.
+				foreach ( array( '"', '\\"' ) as $q ) {
+					$url_map[ $q . $demo . $q ]       = $q . $target . $q;
+					$url_map[ $q . $demo . '/' . $q ] = $q . $target_slash . $q;
+				}
+
+				// JSON-escaped form, as it appears in _elementor_data - trailing slash escaped too.
+				$demo_esc         = str_replace( '/', '\\/', $demo );
+				$target_esc       = str_replace( '/', '\\/', $target );
+				$target_slash_esc = $has_query ? $target_esc : $target_esc . '\\/';
+				$target_slash_raw = $has_query ? $target_esc : $target_esc . '/';
+
+				foreach ( array( '"', '\\"' ) as $q ) {
+					$url_map[ $q . $demo_esc . $q ]         = $q . $target_esc . $q;
+					$url_map[ $q . $demo_esc . '\\/' . $q ] = $q . $target_slash_esc . $q;
+					// Kept for templates that stored the slash unescaped next to escaped ones.
+					$url_map[ $q . $demo_esc . '/' . $q ]   = $q . $target_slash_raw . $q;
+				}
+
+				// An in-page link (`/taj/#menu-list`) or one carrying a query string never has the
+				// quote straight after the path, so none of the anchored keys above can reach it and
+				// the link keeps pointing at the demo site. `#` and `?` cannot occur inside a path
+				// segment, so they anchor the match just as safely as the closing quote does.
+				foreach ( array( '#', '?' ) as $sep ) {
+					$join = ( '?' === $sep ) ? $query_join : $sep;
+
+					$url_map[ $demo . $sep ]                = $target . $join;
+					$url_map[ $demo . '/' . $sep ]          = $target_slash . $join;
+					$url_map[ $demo_esc . $sep ]            = $target_esc . $join;
+					$url_map[ $demo_esc . '\\/' . $sep ]     = $target_slash_esc . $join;
+				}
+			}
+
+			return $url_map;
+		}
+
+		/**
+		 * Every source-site media URL inside a set of Elementor elements.
+		 *
+		 * Scans the serialised tree rather than walking control-by-control, for the same reason
+		 * the Gutenberg SVG prefetch does: a URL can sit in a media control's `url`, in a
+		 * responsive variant beneath it, or inline in an HTML/text control that never had an
+		 * `id` sibling - and wdkit_replace_deferred_media() rewrites all three shapes, the last
+		 * by plain substring swap. Matching the serialised form keeps this collector and that
+		 * rewriter looking at the same set. Over-collecting is harmless: the cron skips a URL it
+		 * cannot resolve, and an already-local one is filtered out below.
+		 *
+		 * SVGs are excluded by default, and deliberately: the background pass runs with no user,
+		 * where `svg` is not in get_allowed_mime_types() because the filter granting it is
+		 * capability-gated - so a deferred SVG sideload fails silently and the reference stays
+		 * remote forever. The Gutenberg walk carves SVGs out of deferral for the same reason
+		 * (see the `/\.svg$/i` test in Wdkit_Import_Images::wdkit_Import_media()); they are
+		 * localised inline instead, by wdkit_localise_foreign_svgs() below.
+		 *
+		 * Video IS included, and does not share that problem: mp4/m4v, webm and mov/qt are all in
+		 * get_allowed_mime_types() with no user, so a deferred video sideload succeeds where an
+		 * SVG one cannot. Deferral is also where video belongs - the files are the largest thing
+		 * a kit references, and nothing is waiting on the cron event. Until this listed them, a
+		 * template's video kept the authoring site's URL and attachment id forever, because the
+		 * deferred path has no other media discovery (see wdkit_media_import()'s elementor
+		 * branch) - which is why a video widget rendered as an empty frame.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $elements Elementor `elements` data.
+		 * @param string|null $extensions Regex alternation of extensions; defaults to the shared list.
+		 * @return array<string> Distinct foreign media URLs.
+		 */
+		private static function wdkit_collect_foreign_media_urls( $elements, $extensions = null ) {
+
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			// One list for defer / blank-id / remap - see Wdkit_Image_Guard::DEFERRABLE_EXTENSIONS.
+			$extensions = ( null === $extensions ) ? Wdkit_Image_Guard::DEFERRABLE_EXTENSIONS : $extensions;
+
+			$json = wp_json_encode( $elements, JSON_UNESCAPED_SLASHES );
+
+			if ( ! is_string( $json ) || '' === $json ) {
+				return array();
+			}
+
+			// The trailing query group is required, not cosmetic. Without it the engine matches
+			// greedily and then backtracks to the extension, so
+			// `…/photo.jpeg?auto=compress&w=1260` was collected as `…/photo.jpeg` - a URL that
+			// appears nowhere in the content. wdkit_blank_deferred_media_ids() compares the node's
+			// url exactly and missed, leaving the dangling foreign id it exists to clear (the
+			// measured symptom: 9 of 9 background_image controls produced no background-image
+			// rule), and the cron's str_replace then produced `…/local.jpg?auto=compress&w=1260`.
+			$candidates = array();
+
+			if ( preg_match_all( '#https?://[^"\'\s<>()]+\.(?:' . $extensions . ')(?:\?[^"\'\s<>()]*)?#i', $json, $matches ) ) {
+				$candidates = $matches[0];
+			}
+
+			// The regex above can only find a URL that spells its type. A media control whose url
+			// has no extension at all - which the template CDN serves, resolving the type by
+			// Content-Type - matched nothing, so it was never deferred, never recorded and never
+			// localised: the reference stayed remote permanently, with no error anywhere.
+			//
+			// Walking the tree settles it without a single HTTP request: a node shaped
+			// `{ url, id }` IS a media control, whatever the url looks like. This is the same
+			// shape wdkit_blank_deferred_media_ids() and wdkit_replace_deferred_media() key on,
+			// so what gets collected here is exactly what those two can act on. The regex pass
+			// stays for URLs embedded in HTML and inline-CSS strings, which have no node shape.
+			$structural = self::wdkit_collect_media_control_urls( $elements );
+
+			$found = array();
+
+			foreach ( array_unique( $candidates ) as $url ) {
+				if ( self::wdkit_is_foreign_media_url( $url ) ) {
+					$found[] = $url;
+				}
+			}
+
+			// No extension requirement for these - the node shape is the proof.
+			foreach ( array_unique( $structural ) as $url ) {
+				if ( self::wdkit_is_foreign_media_url( $url, false ) ) {
+					$found[] = $url;
+				}
+			}
+
+			return array_values( array_unique( $found ) );
+		}
+
+		/**
+		 * Collect the url of every `{ url, id }` media control in an element tree.
+		 *
+		 * Structural, not textual: no extension is required, so an extensionless CDN URL is
+		 * found here even though wdkit_collect_foreign_media_urls()'s regex cannot see it.
+		 *
+		 * SVG is still excluded, for the reason given on that method: the background pass runs
+		 * with no user, `svg` is therefore absent from get_allowed_mime_types(), and a deferred
+		 * SVG sideload fails silently. Those are localised in-request instead.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $node Elementor data, walked recursively.
+		 * @return array<string> Media-control URLs, in tree order.
+		 */
+		private static function wdkit_collect_media_control_urls( $node ) {
+
+			if ( ! is_array( $node ) ) {
+				return array();
+			}
+
+			$found = array();
+
+			// `url` + `id` as siblings is Elementor's media-control shape. A link control carries
+			// is_external/nofollow instead and never an id, so excluding those keys keeps a
+			// button's href out of the media queue even if a theme adds an id to it.
+			$is_media_control = isset( $node['url'] ) && is_string( $node['url'] )
+				&& array_key_exists( 'id', $node )
+				&& ! array_key_exists( 'is_external', $node )
+				&& ! array_key_exists( 'nofollow', $node );
+
+			if ( $is_media_control ) {
+				$url  = $node['url'];
+				$path = (string) wp_parse_url( $url, PHP_URL_PATH );
+
+				if ( 0 === strpos( $url, 'http' ) && ! preg_match( '/\.svg$/i', $path ) ) {
+					$found[] = $url;
+				}
+			}
+
+			foreach ( $node as $value ) {
+				if ( is_array( $value ) ) {
+					$found = array_merge( $found, self::wdkit_collect_media_control_urls( $value ) );
+				}
+			}
+
+			return $found;
+		}
+
+		/**
+		 * Whether a media URL points at something this site does not already host.
+		 *
+		 * Anything under the uploads baseurl is ours; everything else - the template CDN, the
+		 * authoring site, a stock provider - is foreign and has to be localised. Data URIs and
+		 * relative paths are not foreign either, and are refused here rather than downstream.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $url Absolute media URL.
+		 * @return bool True when the URL needs localising.
+		 */
+		private static function wdkit_is_foreign_media_url( $url, $require_extension = true ) {
 
 			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
 				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
@@ -3152,7 +4712,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$uploads = wp_get_upload_dir();
 
-			return Wdkit_Image_Guard::is_foreign_media( $url, isset( $uploads['baseurl'] ) ? $uploads['baseurl'] : '' );
+			return Wdkit_Image_Guard::is_foreign_media( $url, isset( $uploads['baseurl'] ) ? $uploads['baseurl'] : '', $require_extension );
 		}
 
 		/**
@@ -3180,6 +4740,35 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				return $cache[ $url ];
 			}
 
+			// SVGs: use the prefetch-aware sideloader. It consults the concurrent
+			// warm-up cache (see the prefetch_remote_files() call in the Elementor
+			// $defer_media branch of wdkit_media_import()); Elementor's own importer
+			// below always makes its own blocking round trip and never looks at it.
+			// Fall through on any miss/failure so behaviour is unchanged when the
+			// warm-up did not run or the file could not be fetched.
+			if ( preg_match( '/\.svg$/i', (string) wp_parse_url( $url, PHP_URL_PATH ) ) ) {
+				self::wdkit_require_import_images();
+
+				$warm = Wdkit_Import_Images::wdkit_Import_media(
+					array(
+						'id'  => (int) $source_id,
+						'url' => $url,
+					)
+				);
+
+				if ( is_array( $warm ) && ! empty( $warm['id'] ) && ! empty( $warm['url'] )
+					&& ! self::wdkit_is_foreign_media_url( $warm['url'] )
+					&& self::wdkit_is_usable_attachment( (int) $warm['id'] )
+				) {
+					$cache[ $url ] = array(
+						'id'  => (int) $warm['id'],
+						'url' => $warm['url'],
+					);
+
+					return $cache[ $url ];
+				}
+			}
+
 			if ( ! did_action( 'elementor/loaded' ) || ! class_exists( '\\Elementor\\Plugin' ) ) {
 				return array();
 			}
@@ -3193,20 +4782,52 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			// A download may happen, so keep the oversized-image guard in force.
 			self::wdkit_guard_oversized_images();
 
+			// Elementor only consults its hash table when an id is present - but it also
+			// memoises the result per source id in Import_Images::$_replace_image_ids, and that
+			// memo is checked BEFORE the url is looked at. So a shared placeholder is not a
+			// harmless "any non-zero value": the first url imported under it wins, and every
+			// later url handed the same placeholder is silently answered with that first
+			// attachment. Measured on a Zion import: one image served 10 of the page's media
+			// controls and all 3 of its background rules, while the correct files sat in the
+			// library unreferenced.
+			//
+			// A stable, url-derived stand-in keeps the hash-table path enabled while giving each
+			// distinct url its own memo slot. crc32 is used for a compact positive integer, not
+			// for collision resistance - a clash would only cost a redundant lookup, and the
+			// per-url cache above already prevents repeats within a request.
+			$probe_id = $source_id ? (int) $source_id : ( crc32( $url ) & 0x7FFFFFFF );
+
+			self::wdkit_watch_elementor_attachments();
+
 			$imported = $images->import(
 				array(
-					// Elementor only checks its hash table when an id is present.
-					'id'  => $source_id ? $source_id : 1,
+					'id'  => $probe_id,
 					'url' => $url,
 				)
 			);
 
-			$local = ( ! empty( $imported['id'] ) && ! empty( $imported['url'] ) )
-				? array(
-					'id'  => (int) $imported['id'],
-					'url' => $imported['url'],
-				)
-				: array();
+			// Elementor answers this from its own `_elementor_source_image_hash` index before it
+			// downloads anything, so it hands back whatever attachment claimed that hash - a
+			// record with no file included. Same reason the deferred lookup is gated: writing
+			// that id into the page is what leaves a control resolving to nothing. The stale
+			// hash is dropped on the way out so the next attempt is a miss and downloads.
+			$local = array();
+
+			if ( ! empty( $imported['id'] ) && ! empty( $imported['url'] ) ) {
+				if ( self::wdkit_is_usable_attachment( $imported['id'] ) ) {
+					$local = array(
+						'id'  => (int) $imported['id'],
+						'url' => $imported['url'],
+					);
+				} else {
+					self::wdkit_forget_reuse_keys( $imported['id'] );
+				}
+			}
+
+			// Drained inline as well as on shutdown: Elementor has finished writing this row's
+			// metadata by the time import() returns, so it is safe to remove now, and removing it
+			// now keeps a stub from being visible to the rest of the import.
+			self::wdkit_sweep_stub_attachments();
 
 			// Remember hits only: a sibling request importing concurrently may simply not have
 			// finished yet, and caching that miss would strand every later control on this page.
@@ -3215,6 +4836,67 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			return $local;
+		}
+
+		/**
+		 * Whether a page still references an SVG on the template's own site.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param int $post_id Page to inspect.
+		 * @return bool True when a foreign SVG reference remains.
+		 */
+		private static function wdkit_page_has_foreign_svg( $post_id ) {
+
+			$raw = get_post_meta( (int) $post_id, '_elementor_data', true );
+
+			if ( empty( $raw ) ) {
+				return false;
+			}
+
+			$data = is_array( $raw ) ? $raw : json_decode( $raw, true );
+
+			if ( ! is_array( $data ) ) {
+				return false;
+			}
+
+			return ! empty( self::wdkit_collect_foreign_media_urls( $data, 'svg' ) );
+		}
+
+		/**
+		 * Post IDs that still have a deferred-media event waiting in wp-cron.
+		 *
+		 * Read off the cron array rather than tracked separately, so it cannot drift from what
+		 * wkit_schedule_deferred_media_sync() actually queued.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return array<int> Post IDs with a pending sideload event.
+		 */
+		private static function wdkit_pages_awaiting_deferred_media() {
+
+			$crons = _get_cron_array();
+
+			if ( ! is_array( $crons ) ) {
+				return array();
+			}
+
+			$pending = array();
+
+			foreach ( $crons as $events ) {
+				if ( empty( $events['wdkit_async_sideload_page_images'] ) || ! is_array( $events['wdkit_async_sideload_page_images'] ) ) {
+					continue;
+				}
+
+				foreach ( $events['wdkit_async_sideload_page_images'] as $event ) {
+					// args[0] is the post id - see wkit_schedule_deferred_media_sync().
+					if ( isset( $event['args'][0] ) ) {
+						$pending[] = (int) $event['args'][0];
+					}
+				}
+			}
+
+			return array_unique( $pending );
 		}
 
 		/**
@@ -3230,10 +4912,21 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @since 2.6.2
 		 *
-		 * @param array $page_ids Imported post IDs.
+		 * @param array $page_ids   Imported post IDs.
+		 * @param bool  $local_only Skip the download-triggering branch of
+		 *                          wdkit_repair_attachment_ids() and only fix dangling ids on
+		 *                          already-local media. The PHP runner passes true here — its
+		 *                          site_settings step (stage_setup) runs before
+		 *                          schedule_media_sweep() (stage_finalize) ever queues anything,
+		 *                          so wdkit_pages_awaiting_deferred_media() below is always empty
+		 *                          for it and every still-remote image used to be downloaded
+		 *                          synchronously right here instead of by the deferred pass - see
+		 *                          ClickUp 14ynqxywncc. The browser's own AJAX call already waits
+		 *                          for scheduling first, so it is unaffected by this defaulting to
+		 *                          false.
 		 * @return int Number of pages actually rewritten.
 		 */
-		private function wdkit_sweep_attachment_ids( $page_ids ) {
+		private function wdkit_sweep_attachment_ids( $page_ids, $local_only = false ) {
 
 			if ( empty( $page_ids ) || ! did_action( 'elementor/loaded' ) ) {
 				return 0;
@@ -3242,10 +4935,39 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			$fixed = 0;
 			$ids   = array_unique( array_map( 'intval', $page_ids ) );
 
-			// Primes the meta cache for the whole batch in one query, so the
-			// get_post_meta() call below hits the cache instead of issuing one query
-			// per imported page.
-			update_meta_cache( 'post', $ids );
+			// Leave alone any page whose media is already queued for the background pass.
+			//
+			// The repair walk itself is trivial - 15ms across 18 pages. The cost is that
+			// wdkit_repair_attachment_ids() resolves foreign URLs through
+			// wdkit_localise_media_url(), which downloads anything not already local. For an
+			// Elementor kit that quietly made this sweep the media importer, inside the import
+			// request, at 156s-225s. wdkit_async_sideload_page_images() does the same work per
+			// page - rewriting _elementor_data (url and id), clearing _elementor_css, flushing
+			// the files manager - but off the request, and only once that page's images exist.
+			//
+			// Safe only because the queue is genuinely populated for both builders now: the
+			// Elementor branch of wdkit_media_import() reports what it deferred (see
+			// wdkit_collect_foreign_media_urls()), and the client awaits the scheduling call
+			// before this runs. Pages with nothing queued still sweep exactly as before.
+			$queued = self::wdkit_pages_awaiting_deferred_media();
+
+			if ( ! empty( $queued ) ) {
+				foreach ( $queued as $queued_id ) {
+					// A queued page is only safe to skip once nothing on it still needs
+					// in-request work. The deferred list is raster-only, and an SVG inlined into
+					// an HTML control has no `id` for wdkit_localise_foreign_svgs() to correct -
+					// so if any foreign SVG reference survives, this page still needs the sweep.
+					if ( self::wdkit_page_has_foreign_svg( $queued_id ) ) {
+						continue;
+					}
+
+					$ids = array_values( array_diff( $ids, array( $queued_id ) ) );
+				}
+
+				if ( empty( $ids ) ) {
+					return 0;
+				}
+			}
 
 			foreach ( $ids as $post_id ) {
 
@@ -3265,7 +4987,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					continue;
 				}
 
-				$repaired = self::wdkit_repair_attachment_ids( $data );
+				$repaired = self::wdkit_repair_attachment_ids( $data, $local_only );
 
 				if ( wp_json_encode( $repaired ) === wp_json_encode( $data ) ) {
 					continue;
@@ -3283,9 +5005,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 			}
 
-			if ( $fixed ) {
-				\Elementor\Plugin::$instance->files_manager->clear_cache();
-			}
+			// No cache flush here on purpose. Document::save() above already deletes the css
+			// file, _elementor_css, and the element cache for each page it saved - see
+			// wdkit_invalidate_elementor_page_cache() for why the site-wide
+			// files_manager->clear_cache() that used to follow this loop is the wrong tool.
 
 			return $fixed;
 		}
@@ -3308,7 +5031,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param mixed $node Elementor data, walked recursively.
 		 * @return mixed Data with resolvable attachment IDs.
 		 */
-		private static function wdkit_repair_attachment_ids( $node ) {
+		/**
+		 * Is this URL a video the background pass owns?
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $url Media URL.
+		 * @return bool
+		 */
+		private static function wdkit_is_video_url( $url ) {
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			return (bool) preg_match(
+				'/\.(?:' . Wdkit_Image_Guard::VIDEO_EXTENSIONS . ')$/i',
+				(string) wp_parse_url( (string) $url, PHP_URL_PATH )
+			);
+		}
+
+		private static function wdkit_repair_attachment_ids( $node, $local_only = false ) {
 
 			if ( ! is_array( $node ) ) {
 				return $node;
@@ -3318,22 +5060,58 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			if ( isset( $node['url'] ) && is_string( $node['url'] ) && array_key_exists( 'id', $node ) ) {
 
 				$current = (int) $node['id'];
-				$is_live = $current && 'attachment' === get_post_type( $current );
 
 				if ( self::wdkit_is_foreign_media_url( $node['url'] ) ) {
 					// Still pointing at the source site. Ask Elementor for the local copy: its
 					// _elementor_source_image_hash lookup returns the attachment the create-time
 					// import already made, so this normally costs a single query and no download.
-					$local = self::wdkit_localise_media_url( $node['url'], $current );
+					//
+					// Skipped entirely in $local_only mode: that caller is the deferred pass,
+					// which owns the decision about what gets downloaded and when, and must not
+					// have a repair walk start fetching things behind it.
+					//
+					// Video is skipped for the same reason in every mode. It is localised only by
+					// the background pass, so a still-foreign video URL here is not a fault to
+					// repair - it is work that has not run yet. Worse, sending one through
+					// wdkit_localise_media_url() actively corrupts it: that helper hands
+					// Elementor `id => 1` whenever the control's id is empty, and Elementor
+					// caches its import results *by that source id*, so every blanked-id control
+					// collides on key 1 and gets handed back whichever attachment claimed it
+					// first. A video, whose id the deferred pass deliberately blanks and whose
+					// URL stays foreign until the cron runs, is the one control that meets both
+					// conditions - and it came back pointing at an unrelated PNG.
+					if ( ! $local_only && ! self::wdkit_is_video_url( $node['url'] ) ) {
+						$local = self::wdkit_localise_media_url( $node['url'], $current );
 
-					if ( ! empty( $local['id'] ) && ! empty( $local['url'] ) ) {
-						$node['id']  = $local['id'];
-						$node['url'] = $local['url'];
+						if ( ! empty( $local['id'] ) && ! empty( $local['url'] ) ) {
+							$node['id']  = $local['id'];
+							$node['url'] = $local['url'];
+						}
 					}
-				} elseif ( ! $is_live && false !== strpos( $node['url'], '/wp-content/uploads/' ) ) {
+				} elseif ( false !== strpos( $node['url'], '/wp-content/uploads/' ) ) {
+					// The URL is already local, so the attachment it names is the truth and the
+					// id beside it may not be. Two ways it goes wrong, and both look the same
+					// from here: the id is the authoring site's and matches nothing locally, or
+					// it happens to match some unrelated attachment. Either way the URL wins.
+					//
+					// This matters most for a container background: Control_Media::get_style_value()
+					// only falls back to the url when the id is *empty*, so a non-empty id that
+					// resolves to nothing makes wp_get_attachment_image_url() return false and the
+					// whole background-image declaration is dropped - the image simply vanishes.
+					// An image widget survives it (get_attachment_image_html() clears an id that
+					// fails wp_attachment_is_image() and renders from the url), which is why this
+					// showed up as "some backgrounds missing" rather than as broken images.
+					//
+					// Only a real change is written: when the URL resolves to the id that is
+					// already there, the node is left exactly as it was.
 					$resolved = self::wdkit_attachment_id_from_url( $node['url'] );
 
-					if ( $resolved ) {
+					// Held to the same bar as every other id this class writes. A local upload url
+					// can still name a record with nothing behind it - that is the whole subject
+					// of this repair - and writing its id back would reintroduce exactly the
+					// dangling-id symptom this branch exists to remove. On a reject the node keeps
+					// the id it arrived with, which is no worse than before.
+					if ( $resolved && $resolved !== $current && self::wdkit_is_usable_attachment( $resolved ) ) {
 						$node['id'] = $resolved;
 					}
 				}
@@ -3341,14 +5119,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			foreach ( $node as $key => $value ) {
 				if ( is_array( $value ) ) {
-					$node[ $key ] = self::wdkit_repair_attachment_ids( $value );
+					$node[ $key ] = self::wdkit_repair_attachment_ids( $value, $local_only );
 				}
 			}
 
 			return $node;
 		}
 
-		public function wdkit_media_import( $content = array(), $editor = '' ) {
+		public function wdkit_media_import( $content = array(), $editor = '', $defer_media = false ) {
 
 			if ( empty( $content ) && empty( $editor ) ) {
 				$args    = $this->wdkit_parse_args( $_POST );
@@ -3371,12 +5149,153 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 
 			if ( ! empty( $args['editor'] ) && 'gutenberg' === $args['editor'] && ! empty( $content ) ) {
+
+				// parse_blocks() leaves a filler entry (blockName null/empty) for every stretch of
+				// whitespace between real blocks. blocks_import_media_copy_content() below always
+				// dropped these before recursing - but WDKIT_Nexter_Block_Processor::run() (which
+				// runs unconditionally right after this, in import_page_section_content()) keys
+				// each block's generated CSS/id off its position in this array, so leaving them in
+				// shifts every block after the first and the page renders unstyled/mismatched.
+				// This is a plain array filter, no network/media work, so it must run regardless
+				// of $defer_media - only the actual per-block media copy below is skippable.
+				if ( is_array( $content ) ) {
+					foreach ( $content as $key => $val ) {
+						if ( is_array( $val ) && array_key_exists( 'blockName', $val )
+							&& ( empty( $val['blockName'] ) || null === $val['blockName'] || ' ' === $val['blockName'] )
+						) {
+							unset( $content[ $key ] );
+						}
+					}
+				}
+
+				// Same contract as the Elementor branch below: the caller already collected this
+				// content's image_urls from the template response and will hand them to
+				// wkit_schedule_deferred_media_sync() once the page exists, so raster images can
+				// stay pointed at the source CDN and be localised later, off this request, via
+				// wdkit_async_sideload_page_images(). SVGs are excluded from that deferral (see
+				// Wdkit_Import_Images::wdkit_Import_media()) and still import synchronously here -
+				// the walk itself is cheap, so passing $defer_media through and letting the leaf
+				// function decide per-image costs nothing extra when not deferring.
+				// Warm every SVG this walk is about to import, concurrently, before the walk
+				// starts. The walk itself is strictly one node at a time, so without this each
+				// SVG pays its own blocking round trip to the template CDN - measured at ~44s
+				// for the 65 SVGs in a 13-template kit, virtually all of it connection setup
+				// and latency rather than work. SVGs specifically because they are the only
+				// media still imported synchronously once $defer_media is on (see the carve-out
+				// in Wdkit_Import_Images::wdkit_Import_media()), and because they are small
+				// enough to hold in memory safely.
+				//
+				// Scanning the serialized content rather than pre-walking the tree keeps this
+				// from having to duplicate - and drift from - the walk's own URL detection.
+				// Over-collecting is harmless (an unused warm entry is just dropped) and
+				// under-collecting only costs the original sequential fetch.
+				$svg_scan = wp_json_encode( $content, JSON_UNESCAPED_SLASHES );
+
+				if ( is_string( $svg_scan ) && preg_match_all( '#https?://[^"\'\s<>()\\\\]+\.svg(?:\?[^"\'\s<>()\\\\]*)?#i', $svg_scan, $svg_matches ) ) {
+					Wdkit_Import_Images::prefetch_remote_files( array_unique( $svg_matches[0] ) );
+				}
+
+				// Snapshot before the walk so the ids cleared below are this content's alone.
+				// peek_deferred_urls() returns the whole request-wide static list, so on a route
+				// that imports more than one item, an earlier item's URLs were still in it - and
+				// any of them that happened to appear on this page had its id zeroed here with
+				// no event of its own coming to put the id back.
+				self::wdkit_require_import_images();
+				$deferred_before = Wdkit_Import_Images::peek_deferred_urls();
+
 				$media_import = array( $content );
-				$media_import = self::blocks_import_media_copy_content( $media_import );
+				$media_import = self::blocks_import_media_copy_content( $media_import, $defer_media );
 				$content      = $media_import[0];
+
+				// Blocks that rebuild their image from attributes on every render read the
+				// attachment id ahead of the url, so the foreign id the template shipped hides
+				// the still-remote url that would have rendered perfectly well. Zero those ids
+				// for exactly the images the walk above chose to defer, so the page renders from
+				// the source CDN until wdkit_async_sideload_page_images() localises it and
+				// wdkit_remap_attachment_ids() writes the real id back.
+				$deferred_here = array_values( array_diff( Wdkit_Import_Images::peek_deferred_urls(), $deferred_before ) );
+
+				$content = self::wdkit_clear_deferred_attachment_ids( $content, $deferred_here );
+
+				// The walk above only visits block ATTRIBUTES. A block that ships rendered markup
+				// - tpgb/tp-testimonials is one - carries its images as `<img src>` inside its own
+				// innerHTML, which no attribute walk can reach, so those URLs were never recorded
+				// and the background pass never learned to rewrite them. Measured on a Gutenberg
+				// AI import: 8 template-CDN PNGs left hotlinked across two pages, every one of
+				// them inside block markup rather than an attribute.
+				//
+				// A regex sweep of the serialised content closes that gap, and is additive by
+				// construction: it only ever adds URLs to the deferred list, and the cron's
+				// str_replace over post_content is what localises them. A URL the cron cannot
+				// resolve is skipped exactly as before.
+				if ( $defer_media ) {
+					// Hand the collector the content as-is. Pre-encoding it here was wrong twice
+					// over: wp_json_encode() without JSON_UNESCAPED_SLASHES turns every `https://`
+					// into `https:\/\/`, which the collector's regex cannot match, and the
+					// collector encodes what it is given anyway - so a string argument was being
+					// escaped a second time. Passing the parsed block array straight through lets
+					// it encode once, with the right flags, and innerHTML is inside that encoding.
+					$markup_urls = self::wdkit_collect_foreign_media_urls( $content );
+
+					if ( ! empty( $markup_urls ) ) {
+						$missed = array_values( array_diff( $markup_urls, $deferred_here ) );
+
+						if ( ! empty( $missed ) ) {
+							Wdkit_Import_Images::record_deferred_urls( $missed );
+						}
+					}
+				}
+
+				// The warmed bodies have served their purpose for this template; do not carry
+				// them across the rest of the request.
+				Wdkit_Import_Images::clear_prefetched();
 			} elseif ( ! empty( $args['editor'] ) && 'elementor' === $args['editor'] && ! empty( $content ) ) {
 				$media_import = array( $content );
+				// Element IDs must stay unique regardless of the media path, so this always runs.
 				$media_import = self::widgets_elements_id_change( $media_import );
+
+				if ( $defer_media ) {
+					// Skipping the walk above means Elementor never sees this page's media, so
+					// nothing else in the request would notice what was left remote. Split it the
+					// same way the Gutenberg walk does, per image:
+					//
+					// - SVGs are localised now. The background pass runs with no user and cannot
+					//   upload them (see wdkit_collect_foreign_media_urls()), so deferring one
+					//   loses it silently. These are cheap - small files, and usually already
+					//   imported by a sibling page.
+					// - Everything else is recorded for the background pass, which is where the
+					//   expensive raster downloads and subsize generation belong.
+					//
+					// Warm every SVG this branch is about to import, concurrently, before the
+					// one-node-at-a-time walk starts - the exact same fix the Gutenberg branch
+					// above already carries. Without it each SVG paid its own blocking round
+					// trip to the template CDN: measured at ~42s of sum_media_import for a
+					// 15-template Elementor kit (matching that branch's own 65-SVG / ~44s
+					// finding), virtually all of it connection setup and latency.
+					// wdkit_localise_media_url() consults this cache for .svg URLs.
+					$svg_scan = wp_json_encode( $media_import[0], JSON_UNESCAPED_SLASHES );
+
+					if ( is_string( $svg_scan ) && preg_match_all( '#https?://[^"\'\s<>()\\\\]+\.svg(?:\?[^"\'\s<>()\\\\]*)?#i', $svg_scan, $svg_matches ) ) {
+						self::wdkit_require_import_images();
+						Wdkit_Import_Images::prefetch_remote_files( array_unique( $svg_matches[0] ) );
+					}
+
+					$media_import[0] = self::wdkit_localise_foreign_svgs( $media_import[0] );
+
+					Wdkit_Import_Images::clear_prefetched();
+
+					$deferred = self::wdkit_collect_foreign_media_urls( $media_import[0] );
+
+					Wdkit_Import_Images::record_deferred_urls( $deferred );
+
+					// Leave the attachment IDs of those deferred controls empty rather than
+					// carrying the template site's IDs through the window - see
+					// wdkit_blank_deferred_media_ids().
+					$media_import[0] = self::wdkit_blank_deferred_media_ids( $media_import[0], $deferred );
+
+					return $media_import[0];
+				}
+
 				$media_import = self::widgets_import_media_copy_content( $media_import );
 				$content      = $media_import[0];
 
@@ -3476,7 +5395,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @param string $data_import gutenber data import.
 		 */
-		public static function blocks_import_media_copy_content( $data_import ) {
+		public static function blocks_import_media_copy_content( $data_import, $defer_media = false ) {
 			if ( ! empty( $data_import ) ) {
 				foreach ( $data_import[0] as $key => $val ) {
 					if ( array_key_exists( 'blockName', $val ) && ( empty( $val['blockName'] ) || null === $val['blockName'] || empty( $val['blockName'] ) || ' ' === $val['blockName'] ) ) {
@@ -3487,10 +5406,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			return self::blocks_array_recursively_data(
 				$data_import,
-				function ( $block_data ) {
-					$elements = self::blocks_data_instance( $block_data );
+				function ( $block_data, $args ) {
+					$elements = self::blocks_data_instance( $block_data, $args );
 					return $elements;
-				}
+				},
+				array( 'defer_media' => $defer_media )
 			);
 		}
 
@@ -3537,7 +5457,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ( isset( $block_data['name'] ) && isset( $block_data['clientId'] ) && isset( $block_data['attributes'] ) ) || ( isset( $block_data['blockName'] ) && isset( $block_data['attrs'] ) && ! empty( $block_data['attrs'] ) ) ) {
 				$blocks_attr = isset( $block_data['attributes'] ) ? $block_data['attributes'] : ( isset( $block_data['attrs'] ) ? $block_data['attrs'] : array() );
-				$blocks_attr = self::wdkit_import_block_media( $blocks_attr );
+				$blocks_attr = self::wdkit_import_block_media( $blocks_attr, ! empty( $args['defer_media'] ) );
 				if ( isset( $block_data['attributes'] ) ) {
 					$block_data['attributes'] = $blocks_attr;
 				} elseif ( isset( $block_data['attrs'] ) ) {
@@ -3601,6 +5521,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$serialised = serialize_blocks( $blocks );
 
+			// serialize_blocks() re-escapes any literal "--" left in attributes (WP core's own
+			// protection against breaking the HTML comment delimiters), the same way Path A/B's
+			// wdkit_bundle_insert_item()/import_page_section_content() do - so it needs the same
+			// decode step afterward, or those - escapes are left in the saved content.
+			$serialised = $this->replace_unicode_glitch( $serialised );
+
 			// Last line of defence. This function exists to repoint media, so a result carrying
 			// fewer block attributes than it started with is a broken round trip, not a rewrite.
 			// Leaving the media wrong is recoverable; saving gutted content is not.
@@ -3614,6 +5540,804 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			// Never hand back nothing: an empty result would blank the page.
 			return ! empty( $serialised ) ? $serialised : $content;
+		}
+
+		/**
+		 * Attachment rows Elementor's importer created during this request.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @var array<int>
+		 */
+		private static $elementor_new_attachments = array();
+
+		/**
+		 * Watch Elementor's importer so a row it leaves behind can be rolled back.
+		 *
+		 * Elementor inserts the attachment row before it knows whether the upload worked.
+		 * class-import-images.php gates the mime type on `if ( $info )`, where `$info` is
+		 * wp_check_filetype()'s return - always an array, so always true - and it never looks at
+		 * wp_upload_bits()'s own error. So when the upload fails, which on a real site means an
+		 * unwritable or full uploads directory, `$upload['file']` is simply absent: Elementor
+		 * warns "Undefined array key file", inserts a row with post_mime_type '' and no
+		 * _wp_attached_file, and carries on. Reproduced here by pointing upload_dir at a path
+		 * that cannot be created.
+		 *
+		 * Nothing renders from such a row - wdkit_localise_media_url() refuses the id - but it
+		 * stays in the customer's media library, and it is exactly the record the reuse lookup
+		 * used to adopt on a re-import.
+		 *
+		 * Registered lazily and only from the import paths, so an ordinary page load never
+		 * carries either hook. The capture is Elementor's own new_attachment filter rather than
+		 * an id diff, so only a row Elementor itself just created is ever a candidate.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return void
+		 */
+		private static function wdkit_watch_elementor_attachments() {
+
+			static $watching = false;
+
+			if ( $watching ) {
+				return;
+			}
+
+			$watching = true;
+
+			add_filter(
+				'elementor/template_library/import_images/new_attachment',
+				static function ( $id ) {
+					self::$elementor_new_attachments[] = (int) $id;
+
+					return $id;
+				}
+			);
+
+			// Elementor writes the attachment metadata AFTER the filter above fires, so nothing
+			// may be deleted from inside it: update_post_meta() on a removed post would leave an
+			// orphan meta row, which is worse than the orphan post. The sweep therefore runs once
+			// the request is over, and wdkit_localise_media_url() drains it inline as well so a
+			// bad id is gone before anything downstream can read it.
+			add_action( 'shutdown', array( __CLASS__, 'wdkit_sweep_stub_attachments' ) );
+		}
+
+		/**
+		 * Delete the attachment rows Elementor's importer created without a file behind them.
+		 *
+		 * Both markers are required, not either: an empty post_mime_type AND no attached file.
+		 * A media-offload plugin legitimately has no local file but keeps both of those, and an
+		 * SVG keeps both too - so neither can be reached by this. A row that has a mime type but
+		 * whose file has since gone missing is deliberately left alone for the same reason: from
+		 * here it is indistinguishable from offloaded media, and deleting it would take a working
+		 * image out of a customer's library.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return int Rows removed.
+		 */
+		public static function wdkit_sweep_stub_attachments() {
+
+			$removed = 0;
+
+			foreach ( array_unique( self::$elementor_new_attachments ) as $id ) {
+				$id = (int) $id;
+
+				if ( ! $id || 'attachment' !== get_post_type( $id ) ) {
+					continue;
+				}
+
+				$file = get_attached_file( $id );
+
+				if ( '' !== (string) get_post_mime_type( $id ) || ! empty( $file ) ) {
+					continue;
+				}
+
+				if ( self::wdkit_is_usable_attachment( $id ) ) {
+					continue;
+				}
+
+				wp_delete_attachment( $id, true );
+				++$removed;
+			}
+
+			self::$elementor_new_attachments = array();
+
+			return $removed;
+		}
+
+		/**
+		 * Is this id a usable image attachment on THIS site?
+		 *
+		 * get_post() is not the question. A template authored elsewhere carries that site's
+		 * attachment ids, and on the destination those integers frequently already belong to
+		 * something else entirely - a page, a nav menu item, a revision. Zion is a live example:
+		 * its team images arrive as ids 93-96, which here are two pages, an nxt_builder template
+		 * and a nav_menu_item. get_post() happily returns those, so a "does a post exist" test
+		 * concludes the id is fine and leaves it in place, and every consumer that resolves media
+		 * through the id gets nothing back.
+		 *
+		 * The collision is generic, not specific to those four numbers: any id range that overlaps
+		 * existing local content behaves the same way. So the test is what the id has to satisfy to
+		 * actually work - it must be an attachment, and it must have something to serve.
+		 *
+		 * SVGs are accepted on the strength of a real file rather than image dimensions: they are
+		 * imported synchronously and legitimately carry no width/height/sizes metadata.
+		 *
+		 * An empty post_mime_type is disqualifying on its own, whatever else the record has.
+		 * wp_attachment_is_image() is false without one, so wp_get_attachment_image_src() returns
+		 * false and Elementor's Control_Media::get_style_value() emits no background-image rule at
+		 * all - the section renders empty even though the id resolves and the url looks right.
+		 * Every path in this plugin that creates an attachment sets a real mime type (see
+		 * Wdkit_Import_Images::import(), which deletes the upload rather than insert an unknown
+		 * type), so a blank one only ever comes from a record an earlier build left behind.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $id Candidate attachment id.
+		 * @return bool True when the id resolves to an attachment that can actually be rendered.
+		 */
+		private static function wdkit_is_usable_attachment( $id ) {
+
+			$id = (int) $id;
+
+			if ( ! $id || 'attachment' !== get_post_type( $id ) ) {
+				return false;
+			}
+
+			if ( '' === (string) get_post_mime_type( $id ) ) {
+				return false;
+			}
+
+			$meta = wp_get_attachment_metadata( $id );
+
+			if ( is_array( $meta ) && ( ! empty( $meta['file'] ) || ! empty( $meta['sizes'] ) ) ) {
+				return true;
+			}
+
+			// No image metadata is normal for an SVG - fall back to the file itself.
+			$file = get_attached_file( $id );
+
+			return ! empty( $file ) && file_exists( $file );
+		}
+
+		/**
+		 * The attachment a url on this site already refers to, or 0.
+		 *
+		 * Exists for the featured-image path: a picked stock image is copied into the media
+		 * library before the blog posts are created (see localised_images()), so the thumb_image
+		 * the client sends is normally a url on this very site by then. Handing that to
+		 * download_url() cannot work - wdesignkit_validate_external_url() rejects loopback and
+		 * reserved addresses by design - so the file has to be recognised as already-imported
+		 * instead of fetched again.
+		 *
+		 * Host-matched first so nothing offsite can reach attachment_url_to_postid(), then held
+		 * to the same wdkit_is_usable_attachment() bar as every other id this class writes: an
+		 * id that resolves to no usable attachment returns 0 and the caller falls through to its
+		 * normal external handling.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $url Candidate url.
+		 * @return int Usable local attachment id, or 0.
+		 */
+		/**
+		 * Store post_content that this import already produced, without kses rewriting it.
+		 *
+		 * wp_update_post() runs post_content through kses whenever the current user cannot
+		 * `unfiltered_html`. WP-Cron has no user at all, so the deferred media pass always hits
+		 * that branch - and kses is not a no-op on block markup. It deletes <input>, <iframe>,
+		 * <form>, <select> and inline <svg> outright, and strips every attribute off <object>.
+		 *
+		 * The visible casualty is the pricing switcher: its markup carries
+		 * `<input class="switch-toggle" type="checkbox">`, and every rule that paints the control
+		 * is an adjacent-sibling selector on it - `.switch-toggle + .switch-slider` for the track,
+		 * `.switch-toggle:checked + .switch-slider` for the on state. Delete the input and the
+		 * track has no background at all and the Monthly/Yearly panels can never switch, which is
+		 * why the page had to be opened and saved by hand to come back: an administrator does hold
+		 * `unfiltered_html`, so the editor's own save writes the markup back intact.
+		 *
+		 * Suspending the filters around the write is what core's own importer does, for this exact
+		 * reason. Nothing user-supplied passes through here - this only rewrites image urls inside
+		 * content an authenticated administrator imported moments earlier - and the filters are
+		 * restored immediately, so nothing else in the request loses its sanitising.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param int    $post_id Post to write.
+		 * @param string $content Block markup to store.
+		 * @return int|WP_Error Whatever wp_update_post() returned.
+		 */
+		private static function wdkit_write_post_content( $post_id, $content ) {
+
+			$had_kses = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
+
+			if ( $had_kses ) {
+				kses_remove_filters();
+			}
+
+			// Nexter Blocks' save_post handler treats a save of anything that is not a page,
+			// post or product - a header/footer template, say - as a site-wide change and bumps
+			// the stamp every page's block bundle is validated against, sending every page back
+			// to its unbundled first-view render (block CSS arriving late, from the footer). Every
+			// caller here only rewrites URLs; the blocks, and so the bundles, are unchanged, and
+			// the page's own stylesheet is rebuilt with a fresh version by
+			// wdkit_rebuild_block_css(). So that one handler sits this write out. Measured: one
+			// unchanged re-save of the Taj Bakery header took 10 of 10 built pages to 0.
+			$detached = self::wdkit_detach_block_bundle_invalidation();
+
+			// wp_update_post() unslashes what it is given, exactly like update_post_meta(),
+			// so the content has to arrive slashed or every backslash in the markup is eaten.
+			// The synchronous import paths already do this (see the wp_slash() calls around
+			// wdkit_insert_post_content()); this writer was the one that did not.
+			$result = wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => wp_slash( $content ),
+				)
+			);
+
+			// Restore exactly what was there, so the rest of the request sanitises as it did.
+			if ( $had_kses ) {
+				kses_init_filters();
+			}
+
+			foreach ( $detached as $hooked ) {
+				add_action( 'save_post', $hooked['callback'], $hooked['priority'], $hooked['args'] );
+			}
+
+			return $result;
+		}
+
+		/**
+		 * Take Nexter Blocks' save_post bundle invalidation off the hook, returning what was removed.
+		 *
+		 * Found by method name rather than class, the same way the CSS generator is located, so a
+		 * renamed class does not silently turn this into a no-op - and a site without Nexter
+		 * Blocks simply gets an empty list back.
+		 *
+		 * @since 2.7.2
+		 *
+		 * @return array[] Each { callback, priority, args }, for add_action() to put back.
+		 */
+		private static function wdkit_detach_block_bundle_invalidation() {
+			global $wp_filter;
+
+			$removed = array();
+
+			if ( empty( $wp_filter['save_post'] ) || ! is_object( $wp_filter['save_post'] ) || empty( $wp_filter['save_post']->callbacks ) ) {
+				return $removed;
+			}
+
+			foreach ( $wp_filter['save_post']->callbacks as $priority => $callbacks ) {
+				foreach ( $callbacks as $hooked ) {
+					$callback = isset( $hooked['function'] ) ? $hooked['function'] : null;
+
+					if ( is_array( $callback ) && isset( $callback[1] ) && 'plus_post_save_transient' === $callback[1] ) {
+						$removed[] = array(
+							'callback' => $callback,
+							'priority' => (int) $priority,
+							'args'     => isset( $hooked['accepted_args'] ) ? (int) $hooked['accepted_args'] : 1,
+						);
+					}
+				}
+			}
+
+			foreach ( $removed as $hooked ) {
+				remove_action( 'save_post', $hooked['callback'], $hooked['priority'] );
+			}
+
+			return $removed;
+		}
+
+		private static function wdkit_local_attachment_from_url( $url ) {
+
+			if ( ! is_string( $url ) || '' === $url ) {
+				return 0;
+			}
+
+			$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+
+			if ( '' === $host ) {
+				return 0;
+			}
+
+			// Both, because a site can be served on a different host than it stores.
+			$local_hosts = array_filter(
+				array_unique(
+					array(
+						strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ),
+						strtolower( (string) wp_parse_url( site_url(), PHP_URL_HOST ) ),
+					)
+				)
+			);
+
+			if ( ! in_array( $host, $local_hosts, true ) ) {
+				return 0;
+			}
+
+			$id = (int) attachment_url_to_postid( $url );
+
+			// A sized rendition (…-300x122.png) is not itself an attachment; the full size is.
+			if ( ! $id ) {
+				$full = preg_replace( '/-\d+x\d+(?=\.[A-Za-z0-9]+$)/', '', $url );
+
+				if ( is_string( $full ) && $full !== $url ) {
+					$id = (int) attachment_url_to_postid( $full );
+				}
+			}
+
+			return self::wdkit_is_usable_attachment( $id ) ? $id : 0;
+		}
+
+		/**
+		 * Block attributes whose image is rebuilt from the attributes on every render, keyed by
+		 * block name and listing the attribute key the image object sits under.
+		 *
+		 * Only these can be helped by wdkit_clear_deferred_attachment_ids(): their renderer does
+		 *
+		 *     if ( ! empty( $img['id'] ) )  -> wp_get_attachment_image( $img['id'], ... )
+		 *     elseif ( ! empty( $img['url'] ) ) -> <img src="{$img['url']}">
+		 *
+		 * so an id that resolves to nothing wins over a url that works, and nothing is emitted at
+		 * all. Zeroing the id lets the url branch run until the deferred cron supplies the real id.
+		 *
+		 * Deliberately an allow-list rather than a sweep, because none of the cheap ways to tell
+		 * "the renderer rebuilds this from attributes" actually hold here:
+		 *
+		 * - WP_Block_Type_Registry::is_dynamic() reports every TPGB block dynamic (they all get a
+		 *   render_callback for css injection), tpgb/tp-image included - and tp-image is served
+		 *   from its stored innerHTML, whose save() derives wp-image-{id} from this very
+		 *   attribute. Zeroing it there would make the block fail editor validation.
+		 * - "the url also appears in innerHTML" does not mean innerHTML is what gets served:
+		 *   tp-team-listing and tp-testimonials both carry the source site's last-saved markup
+		 *   even though their php renderer ignores it.
+		 *
+		 * A block missing from this list simply keeps today's behaviour, so an omission costs a
+		 * fix, never a regression.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return array block name => list of attribute keys holding an image object.
+		 */
+		private static function wdkit_deferred_image_attrs() {
+
+			return array(
+				'tpgb/tp-team-listing'       => array( 'TImage' ),
+				'tpgb/tp-testimonials'       => array( 'avatar' ),
+				'tpgb/tp-infobox'            => array( 'imageName' ),
+				'tpgb/tp-heading-title'      => array( 'imgName' ),
+				'tpgb/tp-button'             => array( 'imageName' ),
+				'tpgb/tp-navigation-builder' => array( 'openImg', 'closeImg', 'menuImg' ),
+				'tpgb/tp-pricing-list'       => array( 'imageField' ),
+				'tpgb/tp-social-icons'       => array( 'imgField' ),
+				'tpgb/tp-stylist-list'       => array( 'iconImg' ),
+				'tpgb/tp-breadcrumbs'        => array( 'iconsImg', 'sepIconImg' ),
+				'tpgb/tp-google-map'         => array( 'pinIcon' ),
+				'tpgb/tp-hovercard'          => array( 'cntImg' ),
+				'tpgb/tp-video'              => array( 'BannerImg' ),
+				// The header logo. Missing this one cost every kit whose header uses the block
+				// with a raster logo its logo entirely: the file is deferred like any other PNG,
+				// so the block was left holding the authoring site's attachment id, and its
+				// renderer takes the id branch first - wp_get_attachment_image() on an id that
+				// is not here returns nothing, and the block substitutes its OWN
+				// tpgb-placeholder.jpg rather than falling through to the url that works. So the
+				// header came out with a grey placeholder box where the logo should be
+				// (reproduced on the PawFusion Gutenberg kit, whose logo is a .png; kits with an
+				// .svg logo were unaffected because SVGs never defer and keep a real local id).
+				// All three of its image slots read the id first, hover and sticky included.
+				'tpgb/tp-site-logo'          => array( 'imageStore', 'hvrImageStore', 'stickyImg' ),
+				'tpgb/tp-progress-bar'       => array( 'imageName' ),
+				// Pro blocks, same renderer shape.
+				'tpgb/tp-circle-menu'        => array( 'imageStore' ),
+				'tpgb/tp-timeline'           => array( 'StartImage', 'EndImage' ),
+			);
+		}
+
+		/**
+		 * Point the blocks in wdkit_deferred_image_attrs() at their remote url for as long as
+		 * their image is still deferred, by zeroing the foreign attachment id sitting next to it.
+		 *
+		 * Runs on the parsed block array the media walk just returned, so there is no markup
+		 * round trip here at all - no escaping depth to resolve, no re-serialise, no attribute
+		 * count to compare. Only the integer value of one already-present key changes.
+		 *
+		 * Zero specifically, and never '' / null / unset: those all read as "no id" to the
+		 * renderer too, but wdkit_remap_attachment_ids() gates on
+		 * isset( $node['id'] ) && '' !== $node['id'], so only an integer 0 both silences the
+		 * renderer now and still gets picked up and replaced with the real id when the deferred
+		 * cron localises the file. Dropping the key would also shrink the attribute count that
+		 * that pass's own guard compares.
+		 *
+		 * If the cron never runs at all, the id stays 0 and the url stays remote - which renders
+		 * the image rather than nothing, so this is also the safer resting state.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param array $blocks   parsed block array, post media walk.
+		 * @param array $deferred urls this walk chose to localise later.
+		 * @return array The same block array, with unusable deferred ids zeroed.
+		 */
+		private static function wdkit_clear_deferred_attachment_ids( $blocks, $deferred ) {
+
+			if ( empty( $blocks ) || ! is_array( $blocks ) || empty( $deferred ) || ! is_array( $deferred ) ) {
+				return $blocks;
+			}
+
+			$allow    = self::wdkit_deferred_image_attrs();
+			$deferred = array_fill_keys( array_map( 'strval', $deferred ), true );
+
+			$clear_node = function ( &$node ) use ( $deferred ) {
+				if ( ! is_array( $node ) || ! isset( $node['url'], $node['id'] ) ) {
+					return;
+				}
+
+				if ( ! is_string( $node['url'] ) || '' === $node['url'] ) {
+					return;
+				}
+
+				// A dynamic-source image resolves through TPGB Pro's own url helper, and in
+				// several renderers that branch sits ahead of the plain url fallback - so an
+				// empty id would route somewhere else entirely. Leave those untouched.
+				if ( isset( $node['dynamic'] ) ) {
+					return;
+				}
+
+				// Only images this same walk actually deferred. Anything else either imported
+				// synchronously already or was never ours to touch - link fields carry a
+				// url/id pair too, and a menu item's id is a post id, not an attachment.
+				if ( ! isset( $deferred[ (string) $node['url'] ] ) ) {
+					return;
+				}
+
+				// Same list the collector defers and wdkit_remap_attachment_ids() restores: an id
+				// cleared for an extension one of those passes will not revisit would never come
+				// back. This used to omit avif, which the collector already deferred.
+				$ext = strtolower( (string) pathinfo( (string) wp_parse_url( $node['url'], PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+
+				if ( ! in_array( $ext, Wdkit_Image_Guard::deferrable_extensions(), true ) ) {
+					return;
+				}
+
+				// An id that already resolves here is never second-guessed.
+				if ( 0 === $node['id'] || self::wdkit_is_usable_attachment( $node['id'] ) ) {
+					return;
+				}
+
+				$node['id'] = 0;
+			};
+
+			$walk_attrs = function ( &$node, $keys ) use ( &$walk_attrs, $clear_node ) {
+				foreach ( $node as $key => &$value ) {
+					if ( ! is_array( $value ) ) {
+						continue;
+					}
+
+					// The image object itself: clear it and stop. Its own 'sizes' map holds the
+					// source site's other renditions, which are separate files that this import
+					// may never localise - a 0 written in there could never be restored.
+					if ( in_array( (string) $key, $keys, true ) ) {
+						$clear_node( $value );
+						continue;
+					}
+
+					if ( 'sizes' === (string) $key ) {
+						continue;
+					}
+
+					$walk_attrs( $value, $keys );
+				}
+
+				unset( $value );
+			};
+
+			$walk_blocks = function ( &$list ) use ( &$walk_blocks, &$walk_attrs, $allow ) {
+				foreach ( $list as &$block ) {
+					if ( ! is_array( $block ) ) {
+						continue;
+					}
+
+					$name = isset( $block['blockName'] ) ? (string) $block['blockName'] : '';
+
+					if ( '' !== $name && isset( $allow[ $name ] ) && ! empty( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
+						$walk_attrs( $block['attrs'], $allow[ $name ] );
+					}
+
+					if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
+						$walk_blocks( $block['innerBlocks'] );
+					}
+				}
+
+				unset( $block );
+			};
+
+			$walk_blocks( $blocks );
+
+			return $blocks;
+		}
+
+		/**
+		 * Repoint attachment ids left behind by the deferred media pass.
+		 *
+		 * wdkit_async_sideload_page_images() rewrites every source url in post_content to its local
+		 * copy, but a Gutenberg media attribute is a pair - `{"url":…,"id":…}` - and only the url
+		 * half was ever touched. The id keeps pointing at the attachment id from the site the
+		 * template was authored on, which does not exist here. Blocks that render from the url are
+		 * unaffected, which is why this went unnoticed; blocks that resolve the attachment id
+		 * instead (tp-team-listing, tp-testimonials, tp-image, tp-container backgrounds) get
+		 * nothing back and render empty. The synchronous path never had this problem because
+		 * wdkit_Import_media() returns both halves and its caller writes both.
+		 *
+		 * Declines by returning null rather than guessing. Every caller keeps the url-only content
+		 * in that case, so the worst outcome is exactly today's behaviour and never worse than it:
+		 *
+		 * - not block markup, or the escaping depth cannot be resolved unambiguously
+		 * - nothing actually needs remapping (no serialise round trip is attempted at all)
+		 * - the round trip came back with fewer block attributes than it started with
+		 * - the round trip came back empty
+		 *
+		 * Only the id half of a media pair is written, only when the current id resolves to no
+		 * attachment at all, and only to an id this same pass created ($url_map) - so an id that
+		 * already resolves is never touched and no unrelated attribute is rewritten.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $content  post_content with urls already localised.
+		 * @param array  $url_map  source url => array( 'id' => int, 'url' => string ) from this pass.
+		 * @return string|null Rewritten content, or null to keep the caller's own content.
+		 */
+		private function wdkit_remap_attachment_ids( $content, $url_map ) {
+
+			if ( ! is_string( $content ) || false === strpos( $content, '<!-- wp:' ) || empty( $url_map ) ) {
+				return null;
+			}
+
+			// Local url => the attachment id this pass just created for it. This is the primary
+			// mapping: these ids were made moments ago in this same request, so no lookup is needed.
+			$by_url = array();
+
+			foreach ( $url_map as $local ) {
+				// Only ids that are genuinely renderable attachments here - see
+				// wdkit_is_usable_attachment(). Writing an id that does not resolve would trade one
+				// broken reference for another.
+				if ( ! empty( $local['url'] ) && ! empty( $local['id'] ) && self::wdkit_is_usable_attachment( $local['id'] ) ) {
+					$by_url[ (string) $local['url'] ] = (int) $local['id'];
+				}
+			}
+
+			if ( empty( $by_url ) ) {
+				return null;
+			}
+
+			// Same normalisation the relink path uses: an extra level of escaping makes
+			// parse_blocks() read no attributes at all, and serialising that back out would write
+			// every block bare. Null means the depth is ambiguous - decline rather than risk it.
+			$parsable = self::wdkit_parsable_block_content( $content );
+
+			if ( null === $parsable ) {
+				return null;
+			}
+
+			$blocks  = parse_blocks( $parsable );
+			$changed = 0;
+
+			$remap = function ( &$node ) use ( &$remap, $by_url, &$changed ) {
+				if ( ! is_array( $node ) ) {
+					return;
+				}
+
+				if ( isset( $node['url'], $node['id'] ) && is_string( $node['url'] ) && '' !== $node['url'] && '' !== $node['id'] ) {
+					$ext = strtolower( (string) pathinfo( (string) wp_parse_url( $node['url'], PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+
+					// Same list the collector defers and wdkit_blank_deferred_media_ids() clears -
+					// the SVG path imports synchronously and already carries a real id. And only
+					// when the id resolves to nothing: an id that already works is never
+					// second-guessed, whatever the url says.
+					if ( in_array( $ext, Wdkit_Image_Guard::deferrable_extensions(), true ) && ! self::wdkit_is_usable_attachment( $node['id'] ) ) {
+						$new_id = isset( $by_url[ $node['url'] ] ) ? $by_url[ $node['url'] ] : 0;
+
+						// A sized rendition (…-800x600.png) of something this pass localised: the map
+						// is keyed by the full-size url, so try that before any database work.
+						$full = preg_replace( '/-\d+x\d+(?=\.[A-Za-z0-9]+$)/', '', $node['url'] );
+
+						if ( ! $new_id && is_string( $full ) && $full !== $node['url'] && isset( $by_url[ $full ] ) ) {
+							$new_id = $by_url[ $full ];
+						}
+
+						// Defensive last resort for a shape the map does not cover.
+						if ( ! $new_id ) {
+							$probe = (int) attachment_url_to_postid( $node['url'] );
+
+							if ( ! $probe && is_string( $full ) && $full !== $node['url'] ) {
+								$probe = (int) attachment_url_to_postid( $full );
+							}
+
+							// Held to the same bar as the map above.
+							if ( $probe && self::wdkit_is_usable_attachment( $probe ) ) {
+								$new_id = $probe;
+							}
+						}
+
+						if ( $new_id && (int) $node['id'] !== $new_id ) {
+							$node['id'] = $new_id;
+							++$changed;
+						}
+					}
+				}
+
+				foreach ( $node as $key => &$child ) {
+					if ( is_array( $child ) ) {
+						$remap( $child );
+					}
+				}
+
+				unset( $child );
+			};
+
+			$walk_blocks = function ( &$list ) use ( &$walk_blocks, &$remap ) {
+				foreach ( $list as &$block ) {
+					if ( ! empty( $block['attrs'] ) && is_array( $block['attrs'] ) ) {
+						$remap( $block['attrs'] );
+					}
+
+					if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
+						$walk_blocks( $block['innerBlocks'] );
+					}
+				}
+
+				unset( $block );
+			};
+
+			$walk_blocks( $blocks );
+
+			// Nothing to fix: do not serialise at all. A round trip that changes nothing is still a
+			// round trip, and not taking it is strictly safer than taking it.
+			if ( ! $changed ) {
+				return null;
+			}
+
+			$serialised = serialize_blocks( $blocks );
+
+			// serialize_blocks() re-escapes any literal "--" left in attributes, so undo that here
+			// exactly as the relink path does.
+			$serialised = $this->replace_unicode_glitch( $serialised );
+
+			if ( empty( $serialised ) ) {
+				return null;
+			}
+
+			// Last line of defence, same test the relink path applies: fewer attributes out than in
+			// is a broken round trip, not a rewrite. A wrong id is recoverable; gutted content is not.
+			if ( self::wdkit_block_attr_count( $serialised ) < self::wdkit_block_attr_count( $parsable ) ) {
+				return null;
+			}
+
+			return $serialised;
+		}
+
+		/**
+		 * Repoint the `wp-image-{id}` class that the import stamped into rendered <img> tags.
+		 *
+		 * WDKIT_Nexter_Block_Processor::process_image() writes both halves of the tag from the block
+		 * attributes as they stand when it runs - `src` and `class="… wp-image-{id}"`. With deferred
+		 * media that is before the image exists locally, so the class carries the id from the site
+		 * the template was authored on. The deferred pass then repairs the `src` (it is the same url
+		 * string the replace targets) and the attribute id, but the integer inside the class matches
+		 * no url and no attribute, so it is left pointing at an attachment that does not exist here.
+		 *
+		 * Nothing renders wrong as a result - display comes from `src` - but the class is what links
+		 * the block back to a Media Library item, so in the editor the image looks detached from any
+		 * attachment.
+		 *
+		 * Deliberately a targeted string rewrite and NOT a parse_blocks()/serialize_blocks() round
+		 * trip. The change is a run of digits inside one attribute of one tag whose `src` is already
+		 * known, so nothing here needs to understand block structure - and skipping the round trip
+		 * means the escaping-depth and attribute-loss failure modes that guard the sibling id remap
+		 * cannot arise at all.
+		 *
+		 * Declines by returning null - not block-ish content, no mapping, a regex that failed, or
+		 * nothing to change - and the caller then keeps its own content untouched.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $content  post_content with urls and attribute ids already repaired.
+		 * @param array  $url_map  source url => array( 'id' => int, 'url' => string ) from this pass.
+		 * @return string|null Rewritten content, or null to keep the caller's own content.
+		 */
+		private function wdkit_remap_wp_image_classes( $content, $url_map ) {
+
+			if ( ! is_string( $content ) || '' === $content || empty( $url_map ) ) {
+				return null;
+			}
+
+			// Nothing stamped a class in this content - no work, and no reason to run a regex over it.
+			if ( false === stripos( $content, 'wp-image-' ) || false === stripos( $content, '<img' ) ) {
+				return null;
+			}
+
+			// Local url => the attachment id this pass created for it. Same map the id remap uses, so
+			// the class and the attribute cannot end up disagreeing with each other.
+			$by_url = array();
+
+			foreach ( $url_map as $local ) {
+				// Only ids that are genuinely renderable attachments here - see
+				// wdkit_is_usable_attachment(). Writing an id that does not resolve would trade one
+				// broken reference for another.
+				if ( ! empty( $local['url'] ) && ! empty( $local['id'] ) && self::wdkit_is_usable_attachment( $local['id'] ) ) {
+					$by_url[ (string) $local['url'] ] = (int) $local['id'];
+				}
+			}
+
+			if ( empty( $by_url ) ) {
+				return null;
+			}
+
+			// Structural fingerprint taken before the rewrite. The only thing this function may
+			// change is digits inside a class attribute, so every one of these has to come back
+			// identical - anything else means the regex reshaped the markup and the result is refused.
+			$img_before = preg_match_all( '/<img\b/i', $content );
+			$src_before = preg_match_all( '/\ssrc=/i', $content );
+			$changed    = 0;
+
+			// One pass over the <img> tags, rather than one pass per url: a kit page carries dozens of
+			// localised urls and re-scanning the whole document for each of them is needless work.
+			$result = preg_replace_callback(
+				'/<img\b[^>]*>/i',
+				function ( $matches ) use ( $by_url, &$changed ) {
+					$tag = $matches[0];
+
+					if ( false === stripos( $tag, 'wp-image-' ) ) {
+						return $tag;
+					}
+
+					// Only ever act on a tag whose src is exactly a url this pass localised. A tag
+					// pointing anywhere else is left alone, whatever its class says.
+					if ( ! preg_match( '/\ssrc=(["\'])(.*?)\1/i', $tag, $src ) ) {
+						return $tag;
+					}
+
+					if ( ! isset( $by_url[ $src[2] ] ) ) {
+						return $tag;
+					}
+
+					$new_id = $by_url[ $src[2] ];
+
+					$rewritten = preg_replace_callback(
+						'/wp-image-(\d+)/',
+						function ( $class_match ) use ( $new_id, &$changed ) {
+							if ( (int) $class_match[1] === $new_id ) {
+								return $class_match[0];
+							}
+
+							++$changed;
+
+							return 'wp-image-' . $new_id;
+						},
+						$tag
+					);
+
+					return null === $rewritten ? $tag : $rewritten;
+				},
+				$content
+			);
+
+			// preg_replace_callback() returns null on failure (backtrack limit on a large page, for
+			// instance). Never hand a partial result back.
+			if ( null === $result || '' === $result ) {
+				return null;
+			}
+
+			if ( ! $changed ) {
+				return null;
+			}
+
+			// Same tag count, same src count: the rewrite touched classes and nothing structural.
+			if ( preg_match_all( '/<img\b/i', $result ) !== $img_before
+				|| preg_match_all( '/\ssrc=/i', $result ) !== $src_before ) {
+				return null;
+			}
+
+			return $result;
 		}
 
 		/**
@@ -3634,6 +6358,14 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( ! $post_id ) {
 				return false;
+			}
+
+			// Same build, plus the `_block_css` version the front end caches the stylesheets by
+			// (and without the stray term-meta row the generator writes outside the editor) -
+			// see Wdkit_Import_Css::rebuild(). Without the version, the rebuilt file kept its old
+			// URL and browsers went on serving the copy built for the previous content.
+			if ( class_exists( 'Wdkit_Import_Css' ) ) {
+				return Wdkit_Import_Css::rebuild( $post_id );
 			}
 
 			foreach ( get_declared_classes() as $class ) {
@@ -3719,15 +6451,19 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				return $content;
 			}
 
-			$stripped          = wp_unslash( $content );
-			$stripped_attrs    = self::wdkit_block_attr_count( $stripped );
+			// Already parses into real attributes: this is a single, correctly escaped level.
+			// Stripping it again would remove backslashes the JSON itself needs (\n, \", \/, the
+			// -- guard around a literal "--") and corrupt otherwise-valid content -
+			// checking the stripped form is only safe once the as-is form has proven broken.
+			if ( $as_is > 0 ) {
+				return $content;
+			}
+
+			$stripped       = wp_unslash( $content );
+			$stripped_attrs = self::wdkit_block_attr_count( $stripped );
 
 			if ( $stripped_attrs > $as_is ) {
 				return $stripped;
-			}
-
-			if ( $as_is > 0 ) {
-				return $content;
 			}
 
 			// Neither form parses into attributes even though the markup contains JSON: better to
@@ -3750,6 +6486,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		private static function wdkit_relink_block_markup( $block_data ) {
 
+			self::wdkit_require_import_images();
 			$map = Wdkit_Import_Images::get_url_map();
 
 			if ( empty( $map ) ) {
@@ -3792,7 +6529,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @param mixed $node Block attributes, walked recursively.
 		 * @return mixed Attributes with local media.
 		 */
-		private static function wdkit_import_block_media( $node ) {
+		private static function wdkit_import_block_media( $node, $defer_media = false ) {
 
 			if ( ! is_array( $node ) ) {
 				return $node;
@@ -3804,7 +6541,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				&& ( array_key_exists( 'id', $node ) || array_key_exists( 'Id', $node )
 					|| preg_match( '/\.(?:jpe?g|png|gif|svg|webp|avif|bmp)$/i', (string) wp_parse_url( $url, PHP_URL_PATH ) ) )
 			) {
-				$imported = Wdkit_Import_Images::wdkit_Import_media( $node );
+				$imported = Wdkit_Import_Images::wdkit_Import_media( $node, $defer_media );
 
 				// Only accept a real result. The importer returns the node untouched when it
 				// cannot localise the file, and anything falsy here would wipe out the URL and
@@ -3819,7 +6556,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			// site the template came from - which is what the widgets actually render from.
 			foreach ( $node as $key => $value ) {
 				if ( is_array( $value ) ) {
-					$node[ $key ] = self::wdkit_import_block_media( $value );
+					$node[ $key ] = self::wdkit_import_block_media( $value, $defer_media );
 				}
 			}
 
@@ -3881,6 +6618,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'unique_id'   => get_option( 'wdkit_unique_id' ) ?? '',
 			);
 
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$temp_args = wdkit_kit_import_with_site_identity( $temp_args );
+			}
+
 			$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
 			$output   = array();
 
@@ -3931,36 +6672,1899 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			wp_die();
 		}
 
+		/**
+		 * Batched template-JSON fetch for a full AI kit import.
+		 *
+		 * Mirrors wdkit_import_kit_template() but accepts every template of a kit at once and
+		 * forwards their ids to the Laravel `import_template_batch` route in a single request,
+		 * instead of one `import_template` round trip per template. The per-template
+		 * `response`/`args`/`temp_data` shape returned for each item is identical to what
+		 * wdkit_import_kit_template() returns for a single template, so the existing
+		 * import_kit_temps()/import_page_section_content() insertion path on the JS/PHP side
+		 * is unaffected — only the template-fetch round trips are collapsed.
+		 *
+		 * Any failure (network, missing route on an older/self-hosted backend, malformed
+		 * response) returns success=false so the caller falls back to the existing
+		 * one-call-per-template flow.
+		 *
+		 * @since 2.7.0
+		 */
+		protected function wkit_import_kit_bundle() {
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return false;
+			}
+
+			$builder     = isset( $_POST['builder'] ) ? sanitize_text_field( wp_unslash( $_POST['builder'] ) ) : '';
+			$templates   = ! empty( $_POST['template_ids'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['template_ids'] ) ), true ) : array();
+			$email       = ! empty( $_POST['email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : '';
+			$editor      = isset( $_POST['editor'] ) ? sanitize_text_field( wp_unslash( $_POST['editor'] ) ) : '';
+			$website_kit = isset( $_POST['website_kit'] ) ? sanitize_text_field( wp_unslash( $_POST['website_kit'] ) ) : '';
+			$custom_meta = isset( $_POST['custom_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_meta'] ) ) : false;
+
+			if ( empty( $templates ) || ! is_array( $templates ) ) {
+				wp_send_json(
+					array(
+						'message'     => esc_html__( 'Invalid import', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid import: Check your details and try again.', 'wdesignkit' ),
+						'success'     => false,
+					)
+				);
+				wp_die();
+			}
+
+			$ids = array();
+			foreach ( $templates as $temp ) {
+				if ( ! empty( $temp['id'] ) ) {
+					$ids[] = (int) $temp['id'];
+				}
+			}
+
+			if ( empty( $ids ) ) {
+				wp_send_json(
+					array(
+						'message' => esc_html__( 'Invalid import', 'wdesignkit' ),
+						'success' => false,
+					)
+				);
+				wp_die();
+			}
+
+			$token = $this->wdkit_login_user_token( $email );
+
+			$batch_args = array(
+				'token'         => $token,
+				'template_ids'  => $ids,
+				'website_kit'   => $website_kit,
+				'unique_id'     => get_option( 'wdkit_unique_id' ) ?? '',
+			);
+
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$batch_args = wdkit_kit_import_with_site_identity( $batch_args );
+			}
+
+			$response = WDesignKit_Data_Query::get_data( 'import_template_batch', $batch_args );
+
+			if ( is_wp_error( $response ) || empty( $response['success'] ) ) {
+				wp_send_json(
+					array(
+						'message' => is_wp_error( $response ) ? $response->get_error_message() : ( $response['message'] ?? esc_html__( 'Batch import failed', 'wdesignkit' ) ),
+						'success' => false,
+					)
+				);
+				wp_die();
+			}
+
+			$by_id = array();
+			foreach ( (array) $response['templates'] as $tpl_result ) {
+				if ( isset( $tpl_result['id'] ) ) {
+					$by_id[ (int) $tpl_result['id'] ] = $tpl_result;
+				}
+			}
+
+			$results = array();
+			foreach ( $templates as $temp ) {
+				$tid          = ! empty( $temp['id'] ) ? (int) $temp['id'] : 0;
+				$tpl_response = isset( $by_id[ $tid ] ) ? $by_id[ $tid ] : array(
+					'success' => false,
+					'message' => esc_html__( 'Template not found in batch response', 'wdesignkit' ),
+				);
+
+				// import_temp_json() resolves `editor` per template from that template's own
+				// post_builder (Get_temp_builer()), not one value for the whole kit — a kit can
+				// mix builders. The client sends that already-resolved value as `_editor` on
+				// each item; fall back to the request-level $editor if it's missing.
+				$args = array(
+					'editor'      => ! empty( $temp['_editor'] ) ? sanitize_text_field( $temp['_editor'] ) : $editor,
+					'custom_meta' => $custom_meta,
+				);
+
+				$results[] = array(
+					'id'      => $tid,
+					'success' => ! empty( $tpl_response['success'] ),
+					'message' => $tpl_response['message'] ?? '',
+					'data'    => array(
+						'response'  => $tpl_response,
+						'args'      => $args,
+						'id'        => $tid,
+						'temp_data' => $temp,
+					),
+				);
+			}
+
+			do_action( 'wdkit_template_imported', 'kit', sanitize_key( $builder ), count( $ids ) );
+
+			wp_send_json(
+				array(
+					'results' => $results,
+					'success' => true,
+				)
+			);
+			wp_die();
+		}
+
+		/**
+		 * Hand the assembled site bundle to the client without importing it.
+		 *
+		 * The AI import path needs this: personalizing a template runs ~1,600 lines of browser
+		 * logic (replace_elementor_txt and the media/global chain) against site_obj.site_info,
+		 * which only exists in the browser. So an AI kit fetches the bundle, transforms every
+		 * template with the same proven code the per-template path uses, and posts the result
+		 * back to wkit_import_site_bundle(). A non-AI kit never calls this — it lets
+		 * wkit_import_site_bundle() fetch and build in one request, with no payload leaving
+		 * the server.
+		 *
+		 * @since 2.7.0
+		 */
+		protected function wkit_fetch_site_bundle() {
+
+			$t_fetch = microtime( true );
+			$bundle  = $this->wdkit_fetch_site_bundle();
+
+			if ( is_wp_error( $bundle ) ) {
+				wp_send_json(
+					array(
+						'message'     => $bundle->get_error_message(),
+						'description' => $bundle->get_error_message(),
+						'success'     => false,
+					)
+				);
+				wp_die();
+			}
+
+			// Widget manifest only. The non-AI path needs to know what to enable before it
+			// imports, but has no use for the content itself — sending a multi-megabyte kit down
+			// just to count widget names would cost more than the problem it solves. The bundle
+			// stays parked in the cache wdkit_fetch_site_bundle() just filled, so the import call
+			// that follows reuses it instead of assembling the kit a second time.
+			if ( ! empty( $_POST['widgets_only'] ) ) {
+				$manifest = self::wdkit_bundle_widget_manifest( is_array( $bundle ) ? $bundle : array() );
+
+				wp_send_json(
+					array(
+						'success'    => true,
+						'widgets'    => $manifest['widgets'],
+						'extensions' => $manifest['extensions'],
+						'timing_ms'  => array(
+							'cloud_assemble' => isset( $bundle['cloud_assemble_ms'] ) ? (int) $bundle['cloud_assemble_ms'] : 0,
+							'wp_total'       => (int) round( ( microtime( true ) - $t_fetch ) * 1000 ),
+						),
+					)
+				);
+				wp_die();
+			}
+
+			if ( is_array( $bundle ) ) {
+				unset( $bundle['cache_key'] );
+
+				$bundle['timing_ms'] = array(
+					'cloud_assemble' => isset( $bundle['cloud_assemble_ms'] ) ? (int) $bundle['cloud_assemble_ms'] : 0,
+					'wp_total'       => (int) round( ( microtime( true ) - $t_fetch ) * 1000 ),
+					'payload_kb'     => (int) round( strlen( (string) wp_json_encode( $bundle ) ) / 1024 ),
+				);
+			}
+
+			wp_send_json( $bundle );
+			wp_die();
+		}
+
+		/**
+		 * Ingest a pre-assembled kit site bundle in one request.
+		 *
+		 * The cloud half is GenerateKitSiteBundle(): it resolves every template in the kit,
+		 * splits them into pages/sections, and pre-merges the kit's The Plus globals into one
+		 * object. This side builds all of it inside a single PHP request, in place of the
+		 * historical one-AJAX-call-per-template walk.
+		 *
+		 * Per-template insertion is NOT reimplemented here — wdkit_bundle_insert_item() below is
+		 * a port of import_page_section_content(), the canonical shipped import path: Elementor
+		 * templates go through \Elementor\Plugin::$instance->documents->create() plus
+		 * $document->save() rather than hand-written meta, Gutenberg templates through the Nexter
+		 * block processor, and images through wdkit_media_import() under the same $defer_media
+		 * contract. All this method removes is the HTTP round trip that used to sit around each
+		 * one; every legacy route and handler is left untouched.
+		 *
+		 * @since 2.7.0
+		 */
+		protected function wkit_import_site_bundle() {
+			$response = $this->wdkit_import_site_bundle_data();
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * The kit importer itself, reachable without a request.
+		 *
+		 * Extracted from the AJAX action above so the PHP import runner imports through THIS
+		 * engine rather than carrying a second one.
+		 *
+		 * ── Why this extraction is the whole point of the merge ─────────────────────
+		 *
+		 * The runner grew its own content pipeline: one cloud round trip per template, its own
+		 * media handling, its own page store writing `_elementor_data` by hand. Measured on a
+		 * 15-template kit that came to 71-139s against ~8s here, and it also skipped things
+		 * this path does - Elementor's own documents->create()/save(), unique element ids,
+		 * server-side block CSS, the theme-builder remap, the nav menu build. Two pipelines
+		 * meant two sets of behaviour to keep in step, and only one of them was fast.
+		 *
+		 * So the runner now hands its (optionally AI-merged) bundle straight to this method.
+		 * The browser flow reaches the identical code through the action above, so "the fast
+		 * flow" and "the runner" are the same importer, and speed cannot drift between them.
+		 *
+		 * @since 2.7.2
+		 *
+		 * @param array|null $request Request fields to read instead of `$_POST`. The runner
+		 *                            passes its own array - normally carrying `bundle`
+		 *                            directly, already fetched and AI-merged, which is the
+		 *                            same entry tests and WP-CLI have always used.
+		 * @return array The response the AJAX action emits.
+		 */
+		public function wdkit_import_site_bundle_data( $request = null ) {
+
+			// Elementor sideloads every image a page references from inside this request, and a
+			// single oversized source image decodes to more than the whole memory limit. Same
+			// guard import_page_section_content() takes, for the same reason.
+			$this->wdkit_guard_oversized_images();
+
+			// Kit-level millisecond costs for this request, returned in the response.
+			$kit_timing   = array();
+			$t_request    = microtime( true );
+
+			// A whole kit in one request, where import_page_section_content() handled one
+			// template in 120s. Harmless no-op where set_time_limit() is disabled.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 300 );
+			}
+
+			// Whether the fields came off the wire. Only then is the content slashed, and only
+			// then may it be unslashed: running wp_unslash() over a bundle a PHP caller built
+			// would strip the one level of escaping block markup depends on - the
+			// `var(--tpgb-C7)` global references - and every global colour on every
+			// page would silently stop resolving.
+			$from_request = ! is_array( $request );
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the AJAX router verified the nonce before dispatching; the runner supplies its own array.
+			$request = $from_request ? $_POST : $request;
+
+			$raw_bundle = isset( $request['bundle'] ) ? $request['bundle'] : '';
+
+			if ( $from_request ) {
+				$raw_bundle = wp_unslash( $raw_bundle );
+			}
+
+			$bundle = is_array( $raw_bundle ) ? $raw_bundle : json_decode( $raw_bundle, true );
+
+			// Normal path: the client sends only the kit's template ids and the bundle is fetched
+			// here. Sending it down to the browser and straight back up would double the transfer
+			// and put a multi-megabyte kit up against post_max_size on the return trip, so the
+			// assembled JSON never leaves the server. Passing `bundle` directly still works and is
+			// what the import can be driven with directly (tests, WP-CLI, other callers).
+			if ( ( empty( $bundle ) || ! is_array( $bundle ) ) && ! empty( $request['template_ids'] ) ) {
+				// Normally a cache hit: the widgets_only call immediately before this one already
+				// assembled the kit, so this reuses it rather than paying the cloud round trip
+				// again. A cold call (no preceding fetch, or the cache expired) still assembles.
+				$bundle = $this->wdkit_fetch_site_bundle( $request, isset( $request['token'] ) ? (string) $request['token'] : '' );
+
+				// Error check FIRST. This used to sit below the cache-key cleanup, which indexes
+				// $bundle as an array - and on the failure path $bundle is a WP_Error object, so
+				// the cleanup fataled with "Cannot use object of type WP_Error as array" and took
+				// the whole chunk request down. That matters far beyond one lost error message:
+				// a chunk that dies never returns its `imported` entries, so the client never
+				// seeds post_ids with the demo-id -> local-id mapping, and update_section_id()
+				// then silently skips remapping every dynamic widget (tp-switcher, tp-tabs-tours,
+				// tp-accordion...). The final chunk dying also means wdkit_bundle_build_menu()
+				// never runs, so the kit imports with no navigation menu.
+				if ( is_wp_error( $bundle ) ) {
+					return array(
+							'message'     => $bundle->get_error_message(),
+							'description' => $bundle->get_error_message(),
+							'success'     => false,
+						);
+				}
+
+				// Consumed. Holding a whole kit in the options table past the import it was
+				// assembled for is dead weight, and a retry after a failure should get a fresh
+				// copy rather than whatever this attempt was handed.
+				if ( ! empty( $bundle['cache_key'] ) ) {
+					delete_transient( $bundle['cache_key'] );
+				}
+			}
+
+			if ( empty( $bundle ) || ! is_array( $bundle ) ) {
+				return array(
+						'message'     => esc_html__( 'Invalid bundle', 'wdesignkit' ),
+						'description' => esc_html__( 'Invalid bundle payload: nothing to import.', 'wdesignkit' ),
+						'success'     => false,
+					);
+			}
+
+			$builder     = ! empty( $bundle['builder'] ) ? sanitize_key( $bundle['builder'] ) : 'elementor';
+			$pages       = ( ! empty( $bundle['pages'] ) && is_array( $bundle['pages'] ) ) ? $bundle['pages'] : array();
+			$sections    = ( ! empty( $bundle['sections'] ) && is_array( $bundle['sections'] ) ) ? $bundle['sections'] : array();
+			$nav_menu    = ( ! empty( $bundle['nav_menu'] ) && is_array( $bundle['nav_menu'] ) ) ? $bundle['nav_menu'] : array();
+			$defer_media = ! empty( $request['defer_media'] );
+			$custom_meta = ! empty( $request['custom_meta'] );
+			$wireframe   = ! empty( $request['wirefram_import'] );
+
+			// Chunked ingestion, used by the AI path: the browser transforms every template and
+			// posts them back a few at a time so a large kit never meets post_max_size in one
+			// POST. Each chunk carries the same `session`; the last one sets `finalize`. With no
+			// session at all (the non-AI single-call path) this behaves exactly as before —
+			// one request that imports and finalizes.
+			$session     = isset( $request['session'] ) ? sanitize_key( $request['session'] ) : '';
+			$is_final    = empty( $session ) || ! empty( $request['finalize'] );
+			$session_key = $session ? 'wdkit_sb_' . $session : '';
+			$carried     = $session_key ? get_transient( $session_key ) : false;
+			$carried     = is_array( $carried ) ? $carried : array();
+
+			if ( empty( $pages ) && empty( $sections ) ) {
+				return array(
+						'message'     => esc_html__( 'Invalid bundle', 'wdesignkit' ),
+						'description' => esc_html__( 'The bundle contained no templates to import.', 'wdesignkit' ),
+						'success'     => false,
+					);
+			}
+
+			// ── 1. Kit globals, once for the whole kit ──────────────────────────────────────
+			// The cloud already merged every template's globals into this one object (same
+			// dedupe-by-_id rule wdkit_merge_tp_globals() applies), so the presets land before
+			// the first page renders instead of accumulating one template at a time.
+			$site_settings = ( ! empty( $bundle['site_settings'] ) && is_array( $bundle['site_settings'] ) ) ? $bundle['site_settings'] : array();
+
+			// Only on the first chunk: the merge dedupes by `_id` so repeating it is harmless,
+			// but it rewrites kit meta and regenerates the kit stylesheet every time.
+			if ( empty( $carried ) && ! empty( $site_settings['tp_globals'] ) && is_array( $site_settings['tp_globals'] ) ) {
+				$t_globals = microtime( true );
+				$this->wdkit_merge_tp_globals(
+					$site_settings['tp_globals'],
+					( ! empty( $site_settings['tp_global_refs'] ) && is_array( $site_settings['tp_global_refs'] ) )
+						? $site_settings['tp_global_refs']
+						: array()
+				);
+				// This one also regenerates the kit stylesheet, so it is worth its own number.
+				$kit_timing['globals_merge'] = (int) round( ( microtime( true ) - $t_globals ) * 1000 );
+			}
+
+			// ── 2. Sections first, then pages ───────────────────────────────────────────────
+			// Headers, footers and nav are what the pages reference, and a theme-builder
+			// condition attached to a section should exist before the first page renders.
+			$imported          = array();
+			$errors            = array();
+			$widgets_to_enable = array();
+			$deferred_pages    = array();
+			$template_map      = array();
+
+			$groups = array(
+				'section' => $sections,
+				'page'    => $pages,
+			);
+
+			foreach ( $groups as $group => $items ) {
+				foreach ( $items as $item ) {
+					if ( ! is_array( $item ) ) {
+						continue;
+					}
+
+					if ( $wireframe ) {
+						$item = self::wdkit_wireframe_bundle_item( $item );
+					}
+
+					$result = $this->wdkit_bundle_insert_item( $item, $builder, $defer_media, $custom_meta );
+
+					// One template failing (empty content, builder missing, insert error) is
+					// recorded and skipped — it must not cost the rest of the site.
+					if ( empty( $result['success'] ) ) {
+						$errors[] = array(
+							'id'      => isset( $item['id'] ) ? sanitize_text_field( (string) $item['id'] ) : '',
+							'title'   => isset( $item['title'] ) ? sanitize_text_field( (string) $item['title'] ) : '',
+							'message' => ! empty( $result['message'] ) ? $result['message'] : esc_html__( 'Template could not be imported.', 'wdesignkit' ),
+						);
+						continue;
+					}
+
+					// A template that stored fewer widgets than it arrived with imported "successfully"
+					// — the page exists and is linked — but its content is incomplete. Report it as
+					// an error as well as an import so the row fails loudly instead of the kit
+					// looking clean while a page renders empty. Deleting the page instead would
+					// trade a visibly broken page for a silently missing one.
+					if ( ! empty( $result['unregistered'] ) ) {
+						$errors[] = array(
+							'id'      => isset( $item['id'] ) ? sanitize_text_field( (string) $item['id'] ) : '',
+							'title'   => isset( $item['title'] ) ? sanitize_text_field( (string) $item['title'] ) : '',
+							'message' => sprintf(
+								/* translators: %s: comma-separated list of widget type slugs. */
+								esc_html__( 'Imported without these widgets, which are not registered on this site: %s', 'wdesignkit' ),
+								implode( ', ', array_map( 'sanitize_text_field', $result['unregistered'] ) )
+							),
+						);
+					}
+
+					// The loader's progress rows are keyed by cloud template id, not post id.
+					$result['group']       = $group;
+					$result['template_id'] = isset( $item['id'] ) ? $item['id'] : '';
+
+					// Sum each phase across every template in this chunk.
+					if ( ! empty( $result['timing_ms'] ) && is_array( $result['timing_ms'] ) ) {
+						foreach ( $result['timing_ms'] as $phase => $ms ) {
+							$key                 = 'sum_' . $phase;
+							$kit_timing[ $key ]  = ( isset( $kit_timing[ $key ] ) ? $kit_timing[ $key ] : 0 ) + (int) $ms;
+						}
+					}
+					$imported[]            = $result;
+
+					if ( ! empty( $item['id'] ) ) {
+						$template_map[ (string) $item['id'] ] = $result['id'];
+					}
+
+					if ( ! empty( $result['widget_list'] ) ) {
+						$widgets_to_enable = array_unique( array_merge( $widgets_to_enable, $result['widget_list'] ) );
+					}
+
+					// Same payload wkit_schedule_deferred_media_sync() receives from the JS side.
+					// Built here because this request already knows every post id it created, so
+					// the kit needs no extra round trip to register its media work.
+					if ( $defer_media && ! empty( $result['image_urls'] ) ) {
+						$deferred_pages[] = array(
+							'post_id'    => $result['id'],
+							'builder'    => $result['editor'],
+							'image_urls' => $result['image_urls'],
+						);
+					}
+				}
+			}
+
+			// Fold in everything earlier chunks of this session already built, so the finalize
+			// steps below see the whole kit and not just this chunk.
+			if ( ! empty( $carried ) ) {
+				$imported          = array_merge( isset( $carried['imported'] ) ? $carried['imported'] : array(), $imported );
+				$errors            = array_merge( isset( $carried['errors'] ) ? $carried['errors'] : array(), $errors );
+				$widgets_to_enable = array_unique( array_merge( isset( $carried['widgets'] ) ? $carried['widgets'] : array(), $widgets_to_enable ) );
+				$deferred_pages    = array_merge( isset( $carried['deferred'] ) ? $carried['deferred'] : array(), $deferred_pages );
+				// `+` and NOT array_merge(): template ids are numeric keys, and array_merge()
+				// renumbers those into 0,1,2... which silently destroys the id => post_id mapping
+				// the nav menu resolves against. Left operand wins, so this chunk's entries take
+				// precedence over an earlier chunk's.
+				$carried_map       = ( isset( $carried['template_map'] ) && is_array( $carried['template_map'] ) ) ? $carried['template_map'] : array();
+				$template_map      = $template_map + $carried_map;
+			}
+
+			// Not the last chunk: bank what this one made and let the client send the next.
+			if ( ! $is_final ) {
+				set_transient(
+					$session_key,
+					array(
+						'imported'     => $imported,
+						'errors'       => $errors,
+						'widgets'      => array_values( $widgets_to_enable ),
+						'deferred'     => $deferred_pages,
+						'template_map' => $template_map,
+					),
+					15 * MINUTE_IN_SECONDS
+				);
+
+				return array(
+						'message'  => esc_html__( 'Bundle chunk imported.', 'wdesignkit' ),
+						'imported' => $imported,
+						'errors'   => $errors,
+						'partial'  => true,
+						'success'  => true,
+					);
+			}
+
+			if ( $session_key ) {
+				delete_transient( $session_key );
+			}
+
+			if ( empty( $imported ) ) {
+				return array(
+						'message'     => esc_html__( 'Import failed', 'wdesignkit' ),
+						'description' => esc_html__( 'No template in the bundle could be imported.', 'wdesignkit' ),
+						'errors'      => $errors,
+						'success'     => false,
+					);
+			}
+
+			// ── 3. Front page and shop page ─────────────────────────────────────────────────
+			// An explicit flag from the bundle wins; the title heuristic is the same fallback
+			// wdkit_handle_create_full_site() and update_site_setting() already rely on.
+			$front_page_id = 0;
+			$shop_page_id  = 0;
+
+			foreach ( $imported as $entry ) {
+				if ( 'page' !== $entry['group'] ) {
+					continue;
+				}
+
+				$title_lower = strtolower( (string) $entry['title'] );
+
+				if ( ! $front_page_id
+					&& ( ! empty( $entry['is_front_page'] )
+						|| false !== strpos( $title_lower, 'home' )
+						|| false !== strpos( $title_lower, 'landing' ) )
+				) {
+					$front_page_id = $entry['id'];
+				}
+
+				if ( ! $shop_page_id
+					&& ( ! empty( $entry['is_shop_page'] )
+						|| false !== strpos( $title_lower, 'shop' )
+						|| false !== strpos( $title_lower, 'store' ) )
+				) {
+					$shop_page_id = $entry['id'];
+				}
+			}
+
+			if ( $front_page_id ) {
+				update_option( 'show_on_front', 'page' );
+				update_option( 'page_on_front', $front_page_id );
+			}
+
+			if ( $shop_page_id && function_exists( 'wc_get_page_id' ) ) {
+				update_option( 'woocommerce_shop_page_id', $shop_page_id );
+			}
+
+			// ── 4. Primary menu ─────────────────────────────────────────────────────────────
+			$t_menu  = microtime( true );
+			$menu_id = $this->wdkit_bundle_build_menu( $nav_menu, $imported, $template_map );
+			$kit_timing['menu_build'] = (int) round( ( microtime( true ) - $t_menu ) * 1000 );
+
+			// ── 4.5. Remap demo navigation links to actual site URLs ────────────────────────
+			$url_map = self::wdkit_build_nav_url_map( $imported );
+
+			if ( ! empty( $url_map ) ) {
+				foreach ( $imported as $entry ) {
+					$pid  = (int) $entry['id'];
+					$post = get_post( $pid );
+					if ( ! $post ) {
+						continue;
+					}
+
+					$orig_content = $post->post_content;
+					$new_content  = strtr( $orig_content, $url_map );
+					if ( $new_content !== $orig_content ) {
+						// Same reason as the deferred pass: on multisite, and on any host that
+						// defines DISALLOW_UNFILTERED_HTML, an administrator does not hold
+						// `unfiltered_html` either, so this admin-driven write would also lose
+						// <input>/<iframe>/<form> from content the import just produced.
+						self::wdkit_write_post_content( $pid, $new_content );
+
+						// wdkit_bundle_insert_item() already built this page's CSS file once, right
+						// after its own wp_insert_post() - against the pre-remap content, since this
+						// step runs afterward, once every page in the kit exists and every other
+						// page's real permalink is known. The block hashes that CSS was keyed to no
+						// longer line up with what post_content now says (Gutenberg's own class
+						// names embed a hash of the block's attributes), so without this the page
+						// renders with whatever styling the two versions still happen to share and
+						// silently drops the rest - the same class of bug the deferred-media cron
+						// callback was fixed for earlier.
+						self::wdkit_rebuild_block_css( $pid );
+					}
+
+					$elem_data = get_post_meta( $pid, '_elementor_data', true );
+					if ( ! empty( $elem_data ) && is_string( $elem_data ) ) {
+						$new_elem = strtr( $elem_data, $url_map );
+						if ( $new_elem !== $elem_data ) {
+							// get_post_meta() hands back the unslashed JSON, and
+							// update_post_meta() unslashes again on the way in - so writing it
+							// straight back corrupts it. Same reason as the deferred cron's
+							// write above.
+							update_post_meta( $pid, '_elementor_data', wp_slash( $new_elem ) );
+						}
+					}
+				}
+			}
+
+			// ── 5. Every widget the kit uses, enabled in one call ───────────────────────────
+			if ( ! empty( $widgets_to_enable ) && has_filter( 'tpae_enable_selected_widgets' ) ) {
+				apply_filters(
+					'tpae_enable_selected_widgets',
+					array(
+						'widgets'    => array_values( $widgets_to_enable ),
+						'extensions' => array(),
+					)
+				);
+			}
+
+			// ── 6. Deferred image sideloading, off this request ─────────────────────────────
+			$scheduled = 0;
+			$stagger   = 0;
+
+			foreach ( $deferred_pages as $deferred ) {
+				// Stagger so every page's sideload loop does not fire in one wp-cron tick —
+				// see the identical stagger in wkit_schedule_deferred_media_sync().
+				wp_schedule_single_event(
+					time() + 2 + $stagger,
+					'wdkit_async_sideload_page_images',
+					array( $deferred['post_id'], $deferred['builder'], $deferred['image_urls'] )
+				);
+
+				$stagger += 2;
+				++$scheduled;
+			}
+
+			// ── 7. One cache clear for the kit, not one per page ────────────────────────────
+			$t_clear = microtime( true );
+			if ( did_action( 'elementor/loaded' ) ) {
+				\Elementor\Plugin::$instance->files_manager->clear_cache();
+			}
+
+			if ( class_exists( 'Tpgb_Library' ) && method_exists( 'Tpgb_Library', 'remove_backend_dir_files' ) ) {
+				Tpgb_Library()->remove_backend_dir_files();
+			}
+			$kit_timing['cache_clear'] = (int) round( ( microtime( true ) - $t_clear ) * 1000 );
+
+			do_action( 'wdkit_template_imported', 'kit', sanitize_key( $builder ), count( $imported ) );
+
+			if ( isset( $bundle['cloud_assemble_ms'] ) ) {
+				$kit_timing['cloud_assemble'] = (int) $bundle['cloud_assemble_ms'];
+			}
+			$kit_timing['templates']      = count( $imported );
+			$kit_timing['request_total']  = (int) round( ( microtime( true ) - $t_request ) * 1000 );
+			$kit_timing['peak_memory_mb'] = round( memory_get_peak_usage( true ) / 1048576, 1 );
+
+			// Also to the log when debugging, so a staging run leaves a trace even if nobody had
+			// the network tab open.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WDKIT site bundle timing: ' . wp_json_encode( $kit_timing ) );
+			}
+
+			return array(
+					'message'         => esc_html__( 'Successfully Imported.', 'wdesignkit' ),
+					'description'     => esc_html__( 'Yay! Your site has been successfully imported.', 'wdesignkit' ),
+					'timing_ms'       => $kit_timing,
+					'imported'        => $imported,
+					'errors'          => $errors,
+					'front_page_id'   => $front_page_id,
+					'shop_page_id'    => $shop_page_id,
+					'menu_id'         => $menu_id,
+					'media_scheduled' => $scheduled,
+					'site_link'       => get_site_url(),
+					'success'         => true,
+				);
+		}
+
+		/**
+		 * Fetch the assembled site bundle for this kit from the cloud.
+		 *
+		 * Mirrors wkit_import_kit_bundle()'s argument handling: the token is resolved from the
+		 * stored cloud session for $email, never taken from the request. Returns the decoded
+		 * bundle, or a WP_Error the caller reports so the client can fall back to the legacy
+		 * per-template path (an older or self-hosted backend has no v2 route at all).
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array|null $request Request fields to read instead of `$_POST`. The AJAX
+		 *                            actions pass nothing and this behaves exactly as before;
+		 *                            the PHP import runner passes its own array, because it
+		 *                            runs on cron where there is no request to read. Same
+		 *                            shape either way, except `template_ids` may already be an
+		 *                            array rather than a JSON string.
+		 * @param string     $token   Cloud token, for callers that already resolved one. Only
+		 *                            ever supplied in PHP: a token is never read out of
+		 *                            `$request`, so a browser request cannot present its own.
+		 * @return array|WP_Error
+		 */
+		private function wdkit_fetch_site_bundle( $request = null, $token = '' ) {
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the AJAX router verified the nonce before dispatching; the runner supplies its own array.
+			$request = is_array( $request ) ? $request : $_POST;
+
+			$raw_templates = array();
+
+			if ( ! empty( $request['template_ids'] ) ) {
+				$raw_templates = is_array( $request['template_ids'] )
+					? $request['template_ids']
+					: json_decode( wp_unslash( $request['template_ids'] ), true );
+			}
+
+			if ( empty( $raw_templates ) || ! is_array( $raw_templates ) ) {
+				return new WP_Error( 'wdkit_bundle_no_templates', esc_html__( 'No templates supplied for the site bundle.', 'wdesignkit' ) );
+			}
+
+			// Sanitize AFTER decoding — running sanitize_text_field() over the raw JSON strips
+			// `<` and `>` and corrupts any template whose title contains them.
+			$templates = array();
+			foreach ( $raw_templates as $raw ) {
+				if ( is_array( $raw ) ) {
+					$id = ! empty( $raw['id'] ) ? (int) $raw['id'] : 0;
+
+					if ( ! $id ) {
+						continue;
+					}
+
+					$templates[] = array(
+						'id'           => $id,
+						'title'        => isset( $raw['title'] ) ? sanitize_text_field( $raw['title'] ) : '',
+						'wp_post_type' => isset( $raw['wp_post_type'] ) ? sanitize_key( $raw['wp_post_type'] ) : 'page',
+						'_editor'      => isset( $raw['_editor'] ) ? sanitize_text_field( $raw['_editor'] ) : '',
+					);
+				} elseif ( (int) $raw ) {
+					$templates[] = array( 'id' => (int) $raw );
+				}
+			}
+
+			if ( empty( $templates ) ) {
+				return new WP_Error( 'wdkit_bundle_no_templates', esc_html__( 'No usable templates supplied for the site bundle.', 'wdesignkit' ) );
+			}
+
+			$email = ! empty( $request['email'] ) ? strtolower( sanitize_email( wp_unslash( $request['email'] ) ) ) : '';
+
+			$args = array(
+				'token'        => ( is_string( $token ) && '' !== $token ) ? $token : $this->wdkit_login_user_token( $email ),
+				'template_ids' => $templates,
+				'website_kit'  => isset( $request['website_kit'] ) ? sanitize_text_field( wp_unslash( $request['website_kit'] ) ) : '',
+				'editor'       => isset( $request['editor'] ) ? sanitize_text_field( wp_unslash( $request['editor'] ) ) : '',
+				'builder'      => isset( $request['builder'] ) ? sanitize_text_field( wp_unslash( $request['builder'] ) ) : '',
+				// get_option() returns false when unset, which `?? ''` does not catch.
+				'unique_id'    => get_option( 'wdkit_unique_id', '' ),
+			);
+
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$args = wdkit_kit_import_with_site_identity( $args );
+			}
+
+			// Assembling a whole kit reads every template's file server-side, so this needs more
+			// than get_data()'s 60s default.
+			$t_cloud  = microtime( true );
+
+			// The non-AI path asks for this bundle twice in a row - once to learn which widgets
+			// the kit needs (so they can be enabled in their own request, because a widget
+			// enabled mid-request is not registered until the next one), then again to import
+			// it. Assembling it twice would pay the whole cloud round trip twice, so the first
+			// call parks it here for the second. Keyed on the request that produced it, minus
+			// the credentials, so a different kit or a different template set never reads this.
+			$cache_key = 'wdkit_bundle_' . md5(
+				(string) wp_json_encode(
+					array_diff_key( $args, array( 'token' => '', 'poll_token' => '', 'site_url' => '' ) )
+				)
+			);
+			$cached    = get_transient( $cache_key );
+
+			if ( is_array( $cached ) && ! empty( $cached['success'] ) ) {
+				$cached['cloud_assemble_ms'] = 0;
+				$cached['from_cache']        = true;
+				$cached['cache_key']         = $cache_key;
+
+				return $cached;
+			}
+
+			$response = WDesignKit_Data_Query::get_data( 'v2/generate_kit_site_bundle', $args, array(), 180 );
+			$cloud_ms = (int) round( ( microtime( true ) - $t_cloud ) * 1000 );
+
+			// The cloud assembly is its own round trip - credit checks, disk reads and tracking
+			// for every template in the kit - so it gets its own number rather than hiding inside
+			// whatever the caller measures.
+			if ( is_array( $response ) ) {
+				$response['cloud_assemble_ms'] = $cloud_ms;
+			}
+
+			// Thirty minutes, not ten.
+			//
+			// Ten was sized for the browser's two-call sequence, where the gap is seconds. The
+			// runner reads this copy on every stage slice instead, so the window it has to
+			// survive is the WHOLE import — and an import is not always the ~1 minute it takes on
+			// a healthy host. A slow host, a retry, or a person who stops to answer the door
+			// pushes it past ten minutes, and then the cache silently expires mid-run: the next
+			// slice re-assembles the entire kit in the cloud, which is the one round trip the
+			// bundle exists to avoid, and it does it again on the slice after that.
+			//
+			// Still short enough that a kit edited upstream is not served stale for long, and
+			// wkit_import_site_bundle() deletes it as soon as it has consumed it, so the ceiling
+			// is only ever reached by a run that never finished.
+			// Only the widgets_only call parks a copy. The AI path fetches the whole bundle and
+			// posts the personalized content back, so it never re-reads this — caching there
+			// would write a megabyte per import that nothing ever looks at.
+			// The runner asks for the same parking, for the same reason: a stage request that
+			// runs out of time hands the rest of the kit to the next one, and every one of
+			// those must read this copy rather than re-assembling the kit in the cloud.
+			if ( is_array( $response ) && ! empty( $response['success'] ) && ! empty( $request['widgets_only'] ) ) {
+				set_transient( $cache_key, $response, 30 * MINUTE_IN_SECONDS );
+
+				$response['cache_key'] = $cache_key;
+			}
+
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WDKIT bundle cloud assemble: ' . $cloud_ms . 'ms' );
+			}
+
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+
+			if ( empty( $response ) || ! is_array( $response ) || empty( $response['success'] ) ) {
+				// Diagnostic: the client silently falls back to the slower per-template path when
+				// this fails, so without this the only symptom is "the import behaved differently
+				// this time". Log what the cloud actually said.
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log(
+						'WDKIT bundle assemble FAILED: type=' . gettype( $response )
+						. ' keys=' . ( is_array( $response ) ? implode( ',', array_keys( $response ) ) : '-' )
+						. ' body=' . substr( (string) wp_json_encode( $response ), 0, 700 )
+					);
+				}
+
+				return new WP_Error(
+					'wdkit_bundle_failed',
+					! empty( $response['message'] )
+						? $response['message']
+						: esc_html__( 'Could not assemble the site bundle.', 'wdesignkit' )
+				);
+			}
+
+			return $response;
+		}
+
+		/**
+		 * Insert one bundle template — page or section.
+		 *
+		 * A port of import_page_section_content()'s two editor branches with the AJAX plumbing
+		 * stripped out: same Elementor document creation, same media import, same block
+		 * processing, same custom-meta restore. It returns a result array instead of calling
+		 * wp_send_json(), so the caller can record one bad template and carry on with the kit.
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array  $item        One entry from the bundle's pages/sections list.
+		 * @param string $builder     Kit-level builder, used when the item names no editor.
+		 * @param bool   $defer_media Sideload this template's images later, off this request.
+		 * @param bool   $custom_meta Restore the template's nxt-* post meta.
+		 * @return array Result array; `success` false carries a `message`.
+		 */
+		/**
+		 * The widget and extension names an assembled bundle needs enabled.
+		 *
+		 * The server-side twin of the browser's collect_widget_list(): same extension key map, and
+		 * the same union across every template in the kit. It exists because the non-AI path never
+		 * routes template content through the browser, so nothing there can walk it.
+		 *
+		 * Extensions are matched on the settings key being present rather than truthy. Over-
+		 * collecting is harmless — the addon ignores any name outside its own catalogue, and an
+		 * extension enabled but unused costs nothing — whereas under-collecting silently loses the
+		 * styling it drives.
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array $bundle Assembled bundle.
+		 * @return array{widgets: array, extensions: array}
+		 */
+		private static function wdkit_bundle_widget_manifest( array $bundle ) {
+			$extension_keys = array(
+				'sc_link_switch' => 'plus_section_column_link',
+				'scwbf_options'  => 'plus_glass_morphism',
+				'seh_switch'     => 'plus_equal_height',
+			);
+
+			$widgets    = array();
+			$extensions = array();
+
+			foreach ( array( 'sections', 'pages' ) as $group ) {
+				$items = ( ! empty( $bundle[ $group ] ) && is_array( $bundle[ $group ] ) ) ? $bundle[ $group ] : array();
+
+				foreach ( $items as $item ) {
+					if ( ! is_array( $item ) || ! isset( $item['content'] ) ) {
+						continue;
+					}
+
+					$json = is_string( $item['content'] ) ? $item['content'] : (string) wp_json_encode( $item['content'] );
+
+					$widgets = array_merge( $widgets, self::wdkit_widget_types_in( $json ) );
+
+					foreach ( $extension_keys as $key => $extension ) {
+						if ( false !== strpos( $json, '"' . $key . '"' ) ) {
+							$extensions[] = $extension;
+						}
+					}
+				}
+			}
+
+			return array(
+				'widgets'    => array_values( array_unique( $widgets ) ),
+				'extensions' => array_values( array_unique( $extensions ) ),
+			);
+		}
+
+		/**
+		 * Which of $types the addon has not actually recorded as enabled.
+		 *
+		 * This deliberately reads the persisted enable list rather than the live widget registry,
+		 * because within the enable request itself the registry is always stale: TPAE registers on
+		 * `elementor/widgets/register` (priority 100) from whatever `check_elements` held at that
+		 * moment, so a widget enabled later in the same request cannot appear until the NEXT one.
+		 * Measured against the real endpoint: first call reports the just-enabled widgets missing,
+		 * an identical second call reports none. Verifying against the registry here would
+		 * therefore fail every healthy import and trigger a pointless retry every time; the
+		 * persisted list is what the next request will build the registry from, so it is the
+		 * honest answer to "did the enable take".
+		 *
+		 * The registry check still matters — it just belongs in the request that saves, which is a
+		 * later request. See wdkit_unregistered_widget_types().
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array $types Widget type slugs as the client sends them (`tp-post-title`).
+		 * @return array The subset not recorded as enabled, in the same slug form.
+		 */
+		private static function wdkit_not_enabled_widget_types( array $types ) {
+			$types = array_values( array_unique( array_filter( array_map( 'strval', $types ) ) ) );
+
+			if ( empty( $types ) ) {
+				return array();
+			}
+
+			$options = get_option( 'theplus_options' );
+			$enabled = ( is_array( $options ) && ! empty( $options['check_elements'] ) && is_array( $options['check_elements'] ) )
+				? $options['check_elements']
+				: null;
+
+			// Unverifiable — the addon's settings row does not exist yet, which is itself a state
+			// where the enable cannot have worked (tpae_enable_selected_widgets() writes nothing
+			// when that option is empty, and still reports success). Report everything as not
+			// enabled so the caller retries rather than trusting a success it cannot confirm.
+			if ( null === $enabled ) {
+				return $types;
+			}
+
+			// The caller sends every widget a template uses, core Elementor ones included, and the
+			// addon quietly ignores anything outside its own catalogue — so `heading`, `image` and
+			// `divider` are never going to appear in its enabled list no matter how many times we
+			// ask. Scoping to the catalogue is what keeps this from reporting a permanent failure
+			// on every healthy import, which would make the retry fire every time.
+			$managed = null;
+
+			// has_filter() first: it is only true once the addon has constructed its hooks
+			// singleton, so get_instance() below is guaranteed to hand back the existing object
+			// rather than build one — asking a question must not register another plugin's hooks.
+			if ( has_filter( 'tpae_enable_selected_widgets' )
+				&& class_exists( 'Tpae_Hooks' )
+				&& method_exists( 'Tpae_Hooks', 'get_instance' ) ) {
+				$hooks = Tpae_Hooks::get_instance();
+
+				if ( isset( $hooks->all_widgets ) && is_array( $hooks->all_widgets ) ) {
+					$managed = $hooks->all_widgets;
+				}
+			}
+
+			// No catalogue to scope against. The settings row exists, so the enable had somewhere
+			// to write; treat that as verified rather than inventing a failure we cannot support.
+			// The save-time guard still catches anything that really did not register.
+			if ( null === $managed ) {
+				return array();
+			}
+
+			$missing = array();
+
+			foreach ( $types as $type ) {
+				// Same normalisation the addon applies before storing (`tp-post-title` -> `tp_post_title`).
+				$slug = str_replace( '-', '_', $type );
+
+				if ( in_array( $slug, $managed, true ) && ! in_array( $slug, $enabled, true ) ) {
+					$missing[] = $type;
+				}
+			}
+
+			return $missing;
+		}
+
+		/**
+		 * Every widgetType named anywhere in a payload, whatever shape it arrives in.
+		 *
+		 * Scans the serialized form rather than walking the tree so it cannot drift from the
+		 * nesting rules Elementor actually uses (containers, inner sections, nested repeaters).
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param mixed $payload Array, object or JSON string.
+		 * @return array Unique widget type slugs.
+		 */
+		/**
+		 * Drop the redundant "Page" from an imported page's title.
+		 *
+		 * Catalog titles are written for browsing a list of kits ("About Us Page | Taj Bakery"),
+		 * where the word does useful work. On the site itself every entry in Pages is a page, so it
+		 * is noise on every row - and it rides along into the fallback slug too.
+		 *
+		 * Only stripped when it is a standalone word sitting immediately before the kit separator
+		 * or at the end of the title, so a kit or page whose name legitimately contains the word
+		 * ("Page Builder | …", "Landing Pages Bundle") keeps it. Pages only: a theme-builder
+		 * template called "Blog Single Page" is describing what it is, not repeating itself, and
+		 * those live in a different list entirely.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param string $title     Catalog title.
+		 * @param string $post_type Destination post type.
+		 * @return string Title to save.
+		 */
+		private static function wdkit_clean_page_title( $title, $post_type ) {
+
+			if ( 'page' !== $post_type || '' === (string) $title ) {
+				return $title;
+			}
+
+			$clean = preg_replace( '/\s*\bPages?\b(?=\s*(?:\||$))/i', '', (string) $title );
+			$clean = trim( preg_replace( '/\s+/', ' ', (string) $clean ) );
+
+			// A title that was only ever the word itself ("Page", "Page | Kit") would come back
+			// empty or orphaned from its separator; leave those exactly as the catalog wrote them.
+			if ( '' === $clean || 0 === strpos( $clean, '|' ) ) {
+				return $title;
+			}
+
+			/* Drop the kit's name: "About Us | Zion Technology" -> "About Us".
+			 *
+			 * Catalog titles are "<page> | <kit>", and the kit half is the demo brand. Keeping it
+			 * named every imported page after someone else's business — it showed in the browser
+			 * tab and in the theme's page heading ("About Us | Zion Technology" on a freight
+			 * company's site). Both other ways a page can be created already cut here: the
+			 * browser's import_new_temp() does `title.split("|")[0]`, and
+			 * Wdkit_Page_Importer::store() does `explode( '|', … )[0]`. This path — the one-request
+			 * bundle insert, which is the one the runner actually uses — was the only one that
+			 * did not. */
+			$parts = explode( '|', $clean );
+			$name  = trim( $parts[0] );
+
+			return '' !== $name ? $name : $clean;
+		}
+
+		/**
+		 * Point a header's logo at the home page when the template shipped it unlinked.
+		 *
+		 * Kits are inconsistent here: some ship the logo image with `link_to: custom` and the
+		 * authoring site's home URL (which the nav remap then rewrites to this site's), and some
+		 * ship it with no link control at all. Elementor's image widget defaults to `link_to: none`,
+		 * so the second kind renders a bare <img> and the logo is not clickable - which is not a
+		 * choice any of these templates meant to make.
+		 *
+		 * Deliberately narrow, because "which image is the logo" is a guess everywhere else:
+		 *
+		 * - headers only, identified by the theme-builder section meta rather than the title, which
+		 *   is translated and kit-specific;
+		 * - the core `image` widget only;
+		 * - and only when the widget has no link at all. A template that set one - to home or
+		 *   anywhere else - is left exactly as its author wrote it.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param mixed $elements    Elementor `elements` data.
+		 * @param mixed $custom_meta The template's custom_meta (meta_key => array(value)).
+		 * @return mixed Elements, with the logo linked where it was not.
+		 */
+		private static function wdkit_link_header_logo( $elements, $custom_meta ) {
+
+			$meta = is_object( $custom_meta ) ? get_object_vars( $custom_meta ) : $custom_meta;
+
+			if ( ! is_array( $meta ) || empty( $meta['nxt-hooks-layout-sections'] ) ) {
+				return $elements;
+			}
+
+			$section = $meta['nxt-hooks-layout-sections'];
+			$section = is_array( $section ) ? reset( $section ) : $section;
+
+			if ( 'header' !== $section ) {
+				return $elements;
+			}
+
+			$home = home_url( '/' );
+
+			$walk = function ( $node ) use ( &$walk, $home ) {
+				if ( ! is_array( $node ) ) {
+					return $node;
+				}
+
+				if ( isset( $node['elType'], $node['widgetType'] )
+					&& 'widget' === $node['elType'] && 'image' === $node['widgetType'] ) {
+
+					$settings = isset( $node['settings'] ) && is_array( $node['settings'] ) ? $node['settings'] : array();
+					$link_to  = isset( $settings['link_to'] ) ? (string) $settings['link_to'] : '';
+					$link_url = isset( $settings['link']['url'] ) ? (string) $settings['link']['url'] : '';
+
+					if ( '' === $link_url && ( '' === $link_to || 'none' === $link_to ) ) {
+						$settings['link_to'] = 'custom';
+						$settings['link']    = array(
+							'url'               => $home,
+							'is_external'       => '',
+							'nofollow'          => '',
+							'custom_attributes' => '',
+						);
+
+						$node['settings'] = $settings;
+					}
+				}
+
+				if ( ! empty( $node['elements'] ) && is_array( $node['elements'] ) ) {
+					foreach ( $node['elements'] as $i => $child ) {
+						$node['elements'][ $i ] = $walk( $child );
+					}
+				}
+
+				return $node;
+			};
+
+			if ( ! is_array( $elements ) ) {
+				return $elements;
+			}
+
+			foreach ( $elements as $i => $node ) {
+				$elements[ $i ] = $walk( $node );
+			}
+
+			return $elements;
+		}
+
+		private static function wdkit_widget_types_in( $payload ) {
+			$json = is_string( $payload ) ? $payload : (string) wp_json_encode( $payload );
+
+			if ( ! is_string( $json ) || ! preg_match_all( '/"widgetType"\s*:\s*"([^"]+)"/', $json, $matches ) ) {
+				return array();
+			}
+
+			return array_values( array_unique( $matches[1] ) );
+		}
+
+		/**
+		 * Which of $types Elementor cannot resolve right now.
+		 *
+		 * This is the check that makes an unregistered widget visible. Document::save() walks
+		 * every node through Elements_Manager::create_element_instance(), which returns null for a
+		 * widgetType the widgets manager does not know, and get_elements_raw_data() then
+		 * `continue`s past it — the container survives, the widget is dropped, and the save still
+		 * reports success. TPAE documents the same behaviour from the other side (see
+		 * theplus-include-widgets.php: "without a registered type Elementor deletes their saved
+		 * nodes on the next save"). So an unregistered type is silent data loss, not an error, and
+		 * nothing downstream will ever tell us it happened.
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array $types Widget type slugs.
+		 * @return array The subset that has no registered type.
+		 */
+		private static function wdkit_unregistered_widget_types( array $types ) {
+			$types = array_values( array_unique( array_filter( array_map( 'strval', $types ) ) ) );
+
+			if ( empty( $types ) ) {
+				return array();
+			}
+
+			// Nothing can be resolved without the widgets manager, so everything is missing —
+			// which is the honest answer, and the one that stops a stripped save going out quietly.
+			if ( ! did_action( 'elementor/loaded' ) || ! isset( \Elementor\Plugin::$instance->widgets_manager ) ) {
+				return $types;
+			}
+
+			$known = \Elementor\Plugin::$instance->widgets_manager->get_widget_types();
+			$known = is_array( $known ) ? array_keys( $known ) : array();
+
+			return array_values( array_diff( $types, $known ) );
+		}
+
+		/**
+		 * Make sure the media importer class is loaded before it is used.
+		 *
+		 * The class was only required deep inside the two media walks, so any call reached before
+		 * one of those ran hit a fatal - "Class \"Wdkit_Import_Images\" not found". The per-item
+		 * deferred-list clear at the top of wdkit_bundle_insert_item() is exactly such a call: it
+		 * runs before any walk, by design, so that per-item isolation does not depend on which
+		 * branch happens to execute.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return void
+		 */
+		private static function wdkit_require_import_images() {
+			if ( ! class_exists( 'Wdkit_Import_Images' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-import-images.php';
+			}
+		}
+
+		/**
+		 * The four placeholder shapes a wireframe import swaps images for.
+		 *
+		 * Same files the browser uses, so a wireframe site looks identical whichever route
+		 * built it.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @return array<string,string> ratio-name => absolute url.
+		 */
+		private static function wdkit_wireframe_placeholders() {
+
+			$base = WDKIT_SERVER_API_URL . 'images/v2/plugin/template/';
+
+			return array(
+				'hero'     => $base . 'hero-placeholder.png',
+				'long'     => $base . 'long-placeholder.png',
+				'square'   => $base . 'square-placeholder.png',
+				'vertical' => $base . 'vertical-placeholder.png',
+			);
+		}
+
+		/**
+		 * Swap a bundle item's images for wireframe placeholders, server-side.
+		 *
+		 * "Import as Wireframe" was only ever honoured on routes that hand the template content
+		 * to the browser - the AI path, and the legacy per-template path. A dummy import takes
+		 * the one-request route instead (see import_site_bundle() in import_loader.js), where the
+		 * server fetches and builds the whole kit and the content never reaches the browser at
+		 * all, so the client-side swap could not run and the toggle silently did nothing.
+		 *
+		 * It looked intermittent because the fast route only wins when it can: on a site whose
+		 * plugins were just installed it bails and the legacy path takes over, which DOES swap.
+		 * So wireframe worked on a fresh site and stopped working on a warm one - reproduced by
+		 * importing a kit with AI first, then re-importing it as dummy with wireframe on.
+		 *
+		 * Shape is chosen from the WordPress size suffix when the URL carries one
+		 * (`-700x700` -> square); everything else gets the hero 4:3, matching what the browser
+		 * falls back to when it cannot measure a source image. SVGs are deliberately untouched:
+		 * the browser's swap skips them too, so icons and logos survive on both routes.
+		 *
+		 * @since 2.7.1
+		 *
+		 * @param array $item Bundle item, whose `content` holds the template payload.
+		 * @return array The item with its raster image URLs pointed at placeholders.
+		 */
+		private static function wdkit_wireframe_bundle_item( $item ) {
+
+			if ( empty( $item['content'] ) ) {
+				return $item;
+			}
+
+			$is_string = is_string( $item['content'] );
+			$raw       = $is_string ? $item['content'] : wp_json_encode( $item['content'] );
+
+			if ( ! is_string( $raw ) || '' === $raw ) {
+				return $item;
+			}
+
+			$shapes = self::wdkit_wireframe_placeholders();
+
+			// Both spellings, because a url sits raw in markup and slash-escaped inside the
+			// builder's JSON - the same pairing wdkit_replace_url_all_encodings() handles.
+			$flat = str_replace( '\\/', '/', $raw );
+
+			if ( ! preg_match_all( '#https?://[^"\'\s<>()\\\\]+\.(?:jpe?g|png|gif|webp|avif)#i', $flat, $matches ) ) {
+				return $item;
+			}
+
+			$map = array();
+
+			foreach ( array_unique( $matches[0] ) as $url ) {
+				// Already a placeholder (a re-import of an already-wireframed kit) - leave it.
+				if ( preg_match( '/(hero|long|square|vertical)-placeholder/', $url ) ) {
+					continue;
+				}
+
+				$shape = 'hero';
+
+				if ( preg_match( '/-(\d+)x(\d+)\.[A-Za-z0-9]+$/', $url, $dim ) ) {
+					$w = (int) $dim[1];
+					$h = (int) $dim[2];
+
+					if ( $w > 0 && $h > 0 ) {
+						$ratio = $w / $h;
+
+						if ( $ratio >= 1.6 ) {
+							$shape = 'long';
+						} elseif ( $ratio <= 0.75 ) {
+							$shape = 'vertical';
+						} elseif ( $ratio >= 0.9 && $ratio <= 1.1 ) {
+							$shape = 'square';
+						}
+					}
+				}
+
+				$map[ $url ] = $shapes[ $shape ];
+			}
+
+			if ( empty( $map ) ) {
+				return $item;
+			}
+
+			foreach ( $map as $from => $to ) {
+				$raw = str_replace(
+					array( $from, str_replace( '/', '\\/', $from ) ),
+					array( $to, str_replace( '/', '\\/', $to ) ),
+					$raw
+				);
+			}
+
+			$item['content'] = $is_string ? $raw : json_decode( $raw, true );
+
+			return $item;
+		}
+
+		private function wdkit_bundle_insert_item( $item, $builder, $defer_media, $custom_meta ) {
+
+			// Start every item with an empty deferred list, unconditionally.
+			//
+			// Wdkit_Import_Images::$deferred_urls is static, and only the two `if ( $defer_media )`
+			// unions below drain it. Anything recorded on a path that does not reach one of them
+			// stays in the array and is handed to the NEXT item in the batch, which then schedules
+			// a cron event that rewrites a different page's media. Video makes this reachable in
+			// normal use: it defers regardless of $defer_media (see wdkit_Import_media()), so a
+			// non-deferred item carrying one leaves a URL behind. Clearing here means per-item
+			// isolation does not depend on which branch happens to run.
+			self::wdkit_require_import_images();
+			Wdkit_Import_Images::get_and_clear_deferred_urls();
+
+			$raw_content = isset( $item['content'] ) ? $item['content'] : '';
+
+			// The cloud ships each template's file byte-for-byte as the per-template route does,
+			// so this decodes to the same object import_page_section_content() works with.
+			$post_content = is_string( $raw_content )
+				? json_decode( $raw_content )
+				: json_decode( wp_json_encode( $raw_content ) );
+
+			if ( ! is_object( $post_content ) ) {
+				return array(
+					'success' => false,
+					'message' => esc_html__( 'Template content could not be read.', 'wdesignkit' ),
+				);
+			}
+
+			$editor    = ! empty( $item['editor'] ) ? sanitize_text_field( $item['editor'] ) : $builder;
+			$file_type = ! empty( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
+
+			// import_page_section_content() requires file_type to name the editor and falls
+			// through to "Something went wrong" when it does not. Silently dropping a page is
+			// worse in a whole-site import, so fall back to the editor the bundle resolved for
+			// this template rather than bailing.
+			if ( '' === $file_type ) {
+				$file_type = ( 'gutenberg' === $editor ) ? 'wp_block' : 'elementor';
+			}
+
+			$editor = ( 'wp_block' === $file_type ) ? 'gutenberg' : 'elementor';
+
+			$post_title = isset( $post_content->title ) ? sanitize_text_field( $post_content->title ) : '';
+			if ( '' === $post_title ) {
+				$post_title = isset( $item['title'] ) ? sanitize_text_field( (string) $item['title'] ) : '';
+			}
+
+			// Before the slug is derived below, so the fallback slug loses the word too.
+			$post_title = self::wdkit_clean_page_title(
+				$post_title,
+				! empty( $item['wp_post_type'] ) ? sanitize_key( $item['wp_post_type'] ) : 'page'
+			);
+
+			$post_slug = isset( $post_content->slug ) ? sanitize_title( $post_content->slug ) : '';
+
+			// Falling straight back to the title gives every page a slug like
+			// "about-us-page-zion-technology" - the catalog's own display title, kit name and
+			// all, since that title is written for browsing a list of kits, not for a URL. The
+			// page's own path on the demo site (already fetched for the nav-link remap above) is
+			// a real slug someone chose for this exact page, so prefer that - except for the
+			// pages whose whole demo path IS the kit's folder (the homepage, and section-only
+			// entries like Header/Footer with no page of their own), where the segment left after
+			// stripping the kit folder is empty and there is nothing better to use than the title.
+			if ( '' === $post_slug && ! empty( $item['post_url'] ) ) {
+				$path_segments = array_values( array_filter( explode( '/', (string) wp_parse_url( (string) $item['post_url'], PHP_URL_PATH ) ) ) );
+
+				if ( count( $path_segments ) > 1 ) {
+					$post_slug = sanitize_title( end( $path_segments ) );
+				}
+			}
+
+			if ( '' === $post_slug ) {
+				$post_slug = sanitize_title( $post_title );
+			}
+
+			$content   = isset( $post_content->content ) ? wp_slash( $post_content->content ) : '';
+
+			if ( empty( $content ) ) {
+				return array(
+					'success' => false,
+					'message' => esc_html__( 'Content is Empty.', 'wdesignkit' ),
+				);
+			}
+
+			// Whitelist the destination post type against the plugin's own list instead of
+			// trusting whatever the payload names.
+			$enqueue_instance = new Wdkit_Enqueue();
+			$allowed_types    = $enqueue_instance->wdkit_get_post_type_list();
+			$post_type        = ! empty( $item['wp_post_type'] ) ? sanitize_key( $item['wp_post_type'] ) : 'page';
+
+			if ( ! array_key_exists( $post_type, $allowed_types ) ) {
+				$post_type = 'page';
+			}
+
+			$widget_list = ! empty( $post_content->widget_list )
+				? json_decode( wp_json_encode( $post_content->widget_list ), true )
+				: array();
+
+			$image_urls = ( ! empty( $item['image_urls'] ) && is_array( $item['image_urls'] ) )
+				? array_values( array_filter( array_map( 'esc_url_raw', $item['image_urls'] ) ) )
+				: array();
+
+			// Same gate as the pages route - this half of the bundle payload is client-supplied too.
+			$image_urls = self::wdkit_filter_fetchable_urls( $image_urls );
+
+			// Per-template millisecond costs, returned to the client so a staging run can be read
+			// straight off the network tab instead of from a log file.
+			$timing    = array();
+			$t_item    = microtime( true );
+			$inserted_id = 0;
+
+			// Only the Elementor branch can lose widgets this way; Gutenberg blocks are stored
+			// as serialized markup and are not resolved through a type registry on save.
+			$unregistered = array();
+
+			if ( 'gutenberg' === $editor ) {
+
+				$blocks = parse_blocks( stripslashes( $content ) );
+
+				$t_media = microtime( true );
+				$blocks  = $this->wdkit_media_import( $blocks, 'gutenberg', $defer_media );
+				$timing['media_import'] = (int) round( ( microtime( true ) - $t_media ) * 1000 );
+
+				// The cloud's image_urls (from the per-template site_images DB field) is not a
+				// reliable manifest - most templates never have it populated, so the background
+				// sideload pass would otherwise never get scheduled and these images would stay
+				// pointed at the source CDN forever. wdkit_Import_media() already recorded every
+				// URL it deferred while walking $blocks above; union that in here instead of
+				// depending on the cloud field alone.
+				if ( $defer_media ) {
+					$discovered_urls = array_map( 'esc_url_raw', Wdkit_Import_Images::get_and_clear_deferred_urls() );
+					$image_urls      = array_values( array_unique( array_merge( $image_urls, array_filter( $discovered_urls ) ) ) );
+				}
+
+				if ( class_exists( 'WDKIT_Nexter_Block_Processor' ) ) {
+					$t_proc    = microtime( true );
+					$processor = new WDKIT_Nexter_Block_Processor();
+					$blocks    = $processor->run( $blocks );
+					$timing['block_processor'] = (int) round( ( microtime( true ) - $t_proc ) * 1000 );
+				}
+
+				$content = $this->replace_unicode_glitch( serialize_blocks( $blocks ) );
+
+				$t_insert    = microtime( true );
+				$inserted_id = wp_insert_post(
+					array(
+						'post_status'  => 'publish',
+						'post_type'    => $post_type,
+						'post_title'   => $post_title,
+						'post_name'    => $post_slug,
+						'post_content' => $content,
+					)
+				);
+
+				$timing['post_insert'] = (int) round( ( microtime( true ) - $t_insert ) * 1000 );
+
+				if ( is_wp_error( $inserted_id ) ) {
+					return array(
+						'success' => false,
+						'message' => $inserted_id->get_error_message(),
+					);
+				}
+
+				$t_css = microtime( true );
+				self::wdkit_rebuild_block_css( $inserted_id );
+				$timing['block_css'] = (int) round( ( microtime( true ) - $t_css ) * 1000 );
+
+			} else {
+
+				if ( ! did_action( 'elementor/loaded' ) ) {
+					return array(
+						'success' => false,
+						'message' => esc_html__( 'Relevant Page Builder not installed or activated', 'wdesignkit' ),
+					);
+				}
+
+				$content = $this->wdkit_content_remover( $content );
+
+				$post_attributes = array(
+					'post_title'  => $post_title,
+					'post_type'   => $post_type,
+					'post_status' => 'publish',
+					'post_name'   => $post_slug,
+				);
+
+				// documents->create() is what makes this a real Elementor document — it owns
+				// _elementor_data, _elementor_edit_mode, _elementor_version and the template
+				// type. Writing that meta by hand is exactly what leaves a page opening as raw
+				// JSON in the Text Editor, so the canonical path never does.
+				$t_create = microtime( true );
+				if ( 'elementor_library' === $post_type ) {
+					$el_type      = ! empty( $post_content->el_type ) ? sanitize_text_field( $post_content->el_type ) : 'page';
+					$new_document = \Elementor\Plugin::$instance->documents->create( $el_type, $post_attributes );
+				} else {
+					$new_document = \Elementor\Plugin::$instance->documents->create( $post_type, $post_attributes );
+				}
+				$timing['document_create'] = (int) round( ( microtime( true ) - $t_create ) * 1000 );
+
+				if ( is_wp_error( $new_document ) ) {
+					return array(
+						'success' => false,
+						'message' => $new_document->get_error_message(),
+					);
+				}
+
+				$settings = ! empty( $post_content->settings )
+					? json_decode( wp_json_encode( $post_content->settings ), true )
+					: array();
+
+				$elements = wp_json_encode( $content );
+
+				$t_media  = microtime( true );
+				$elements = $this->wdkit_media_import( $elements, 'elementor', $defer_media );
+				$timing['media_import'] = (int) round( ( microtime( true ) - $t_media ) * 1000 );
+
+				// Same union the Gutenberg branch above does, and for the same reason: the cloud's
+				// image_urls is a manifest of the template's *images*, so anything the walk itself
+				// discovered - a video especially, which nothing else lists - is only ever going to
+				// reach the background pass if it is added here. Without this, wdkit_media_import()
+				// recorded those URLs and the schedule then ignored them, leaving the reference
+				// pointing at the authoring site for good.
+				if ( $defer_media ) {
+					$discovered_urls = array_map( 'esc_url_raw', Wdkit_Import_Images::get_and_clear_deferred_urls() );
+					$image_urls      = array_values( array_unique( array_merge( $image_urls, array_filter( $discovered_urls ) ) ) );
+				}
+
+				// A header whose logo the template left unlinked gets one to the home page, before
+				// the save rather than as a second write.
+				$elements = self::wdkit_link_header_logo( $elements, isset( $post_content->custom_meta ) ? $post_content->custom_meta : array() );
+
+				// Read the registry as late as possible — right before the save that consumes it.
+				// Anything named here is about to be dropped on the floor by Document::save()
+				// (see wdkit_unregistered_widget_types()), and this is the only moment the
+				// information still exists: afterwards the row simply looks like a page that was
+				// authored without those widgets.
+				$unregistered = self::wdkit_unregistered_widget_types( self::wdkit_widget_types_in( $elements ) );
+
+				if ( ! empty( $unregistered ) ) {
+					self::get_instance()->wdkit_enable_widgets_data( $unregistered );
+					$unregistered = self::wdkit_unregistered_widget_types( self::wdkit_widget_types_in( $elements ) );
+				}
+
+				$t_save = microtime( true );
+				$new_document->save(
+					array(
+						'elements' => $elements,
+						'settings' => ! empty( $settings ) ? $settings : array(),
+					)
+				);
+				$timing['document_save'] = (int) round( ( microtime( true ) - $t_save ) * 1000 );
+
+				$inserted_id = $new_document->get_main_id();
+			}
+
+			if ( empty( $inserted_id ) ) {
+				return array(
+					'success' => false,
+					'message' => esc_html__( 'Something went wrong', 'wdesignkit' ),
+				);
+			}
+
+			// nxt-* meta: theme-builder display conditions and similar. allowed_classes => false
+			// because the value comes from the imported kit body, where a serialized object could
+			// fire a POP gadget chain in any loaded plugin or theme (CWE-502) — see the identical
+			// restore in import_page_section_content().
+			if ( $custom_meta && ! empty( $post_content->custom_meta ) ) {
+				$meta_list = json_decode( wp_json_encode( $post_content->custom_meta ), true );
+
+				if ( is_array( $meta_list ) ) {
+					foreach ( $meta_list as $meta_key => $meta_val ) {
+						if ( ! isset( $meta_val[0] ) ) {
+							continue;
+						}
+
+						$value = $meta_val[0];
+
+						if ( is_string( $value ) && is_serialized( $value ) ) {
+							$value = unserialize( $value, array( 'allowed_classes' => false ) );
+						}
+
+						if ( '' === get_post_meta( $inserted_id, $meta_key, true ) ) {
+							add_post_meta( $inserted_id, $meta_key, $value );
+						}
+					}
+				}
+			}
+
+			clean_post_cache( $inserted_id );
+
+			// Diagnostic: how many widgets arrived for this template versus how many actually
+			// landed in the row. A template that comes in with content and stores none is a
+			// silent data loss - the page still imports, reports success, and renders empty.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				$in_widgets    = preg_match_all( '/"widgetType":/', (string) wp_json_encode( $post_content ) );
+				$stored_raw    = get_post_meta( $inserted_id, '_elementor_data', true );
+				$stored_widgets = preg_match_all( '/"widgetType":/', is_string( $stored_raw ) ? $stored_raw : (string) wp_json_encode( $stored_raw ) );
+
+				error_log(
+					sprintf(
+						'WDKIT insert: cloud=%s post=%d editor=%s title=%s widgets_in=%d widgets_stored=%d%s',
+						isset( $item['id'] ) ? $item['id'] : '?',
+						(int) $inserted_id,
+						$editor,
+						$post_title,
+						(int) $in_widgets,
+						(int) $stored_widgets,
+						( $in_widgets > 0 && 0 === (int) $stored_widgets ) ? '  <-- LOST' : ''
+					)
+				);
+			}
+
+			$timing['custom_meta'] = isset( $timing['custom_meta'] ) ? $timing['custom_meta'] : 0;
+			$timing['item_total']  = (int) round( ( microtime( true ) - $t_item ) * 1000 );
+
+			// Deliberately not behind WP_DEBUG. The page imported, reported success and renders —
+			// it is simply missing widgets nobody asked it to drop, so a log line the site owner
+			// never enabled is the difference between a caught regression and a silent one.
+			if ( ! empty( $unregistered ) ) {
+				error_log(
+					sprintf(
+						'WDKIT: %s (post %d) was saved without %d widget type(s) Elementor could not resolve: %s',
+						$post_title,
+						(int) $inserted_id,
+						count( $unregistered ),
+						implode( ', ', $unregistered )
+					)
+				);
+			}
+
+			return array(
+				'success'       => true,
+				'timing_ms'     => $timing,
+				// Empty on every healthy import. Non-empty means this template was stored with
+				// content missing — wkit_import_site_bundle() turns it into a reported error.
+				'unregistered'  => ! empty( $unregistered ) ? $unregistered : array(),
+				'id'            => (int) $inserted_id,
+				// The template's id on the source site. wdkit_nxt_thembuilder_update() needs it to
+				// remap nxt_builder display conditions onto the ids this import just created.
+				'old_page_id'   => isset( $post_content->page_id ) ? $post_content->page_id : '',
+				'title'         => get_the_title( $inserted_id ),
+				'edit_link'     => get_edit_post_link( $inserted_id, 'internal' ),
+				'view'          => get_permalink( $inserted_id ),
+				'editor'        => $editor,
+				'post_type'     => $post_type,
+				'widget_list'   => is_array( $widget_list ) ? $widget_list : array(),
+				'image_urls'    => $image_urls,
+				'post_url'      => isset( $item['post_url'] ) ? sanitize_text_field( (string) $item['post_url'] ) : '',
+				'is_front_page' => ! empty( $item['is_front_page'] ),
+				'is_shop_page'  => ! empty( $item['is_shop_page'] ),
+			);
+		}
+
+		/**
+		 * Create — or extend — the primary menu from the bundle's pre-ordered nav list.
+		 *
+		 * Two things here that a naive rebuild gets wrong on a site that is not empty: pages
+		 * already in the menu are skipped, so re-importing a kit does not stack duplicate items;
+		 * and only theme menu locations the site has left EMPTY get filled, so an existing
+		 * menu assignment is never replaced by the imported one.
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param array $nav_menu     Bundle nav entries: template_id, title, position.
+		 * @param array $imported     Results from wdkit_bundle_insert_item().
+		 * @param array $template_map Cloud template id => inserted post id.
+		 * @return int Menu term id, or 0 when no menu was touched.
+		 */
+		private function wdkit_bundle_build_menu( $nav_menu, $imported, $template_map ) {
+
+			// Older bundles (and any kit whose pages are all untitled) carry no nav list — fall
+			// back to the pages this request created, in insertion order.
+			if ( empty( $nav_menu ) ) {
+				foreach ( $imported as $entry ) {
+					if ( 'page' === $entry['group'] && 'page' === $entry['post_type'] ) {
+						$nav_menu[] = array(
+							'post_id' => $entry['id'],
+							'title'   => $entry['title'],
+						);
+					}
+				}
+			}
+
+			if ( empty( $nav_menu ) ) {
+				return 0;
+			}
+
+			// Deliberately untranslated: this string is the menu's identity across re-imports,
+			// so it must not change with the admin locale.
+			$menu_name = 'Primary Menu';
+			$menu_obj  = wp_get_nav_menu_object( $menu_name );
+			$menu_id   = $menu_obj ? (int) $menu_obj->term_id : wp_create_nav_menu( $menu_name );
+
+			if ( is_wp_error( $menu_id ) || empty( $menu_id ) ) {
+				return 0;
+			}
+
+			$existing = wp_get_nav_menu_items( $menu_id, array( 'post_status' => 'any' ) );
+			$existing = is_array( $existing ) ? $existing : array();
+
+			$already = array();
+			foreach ( $existing as $menu_item ) {
+				if ( ! empty( $menu_item->object_id ) ) {
+					$already[ (int) $menu_item->object_id ] = true;
+				}
+			}
+
+			$position = count( $existing );
+
+			foreach ( $nav_menu as $nav_item ) {
+				$post_id = 0;
+
+				if ( ! empty( $nav_item['post_id'] ) ) {
+					$post_id = (int) $nav_item['post_id'];
+				} elseif ( ! empty( $nav_item['template_id'] ) && isset( $template_map[ (string) $nav_item['template_id'] ] ) ) {
+					$post_id = (int) $template_map[ (string) $nav_item['template_id'] ];
+				}
+
+				if ( ! $post_id || isset( $already[ $post_id ] ) ) {
+					continue;
+				}
+
+				++$position;
+
+				wp_update_nav_menu_item(
+					$menu_id,
+					0,
+					array(
+						'menu-item-title'     => ! empty( $nav_item['title'] )
+							? sanitize_text_field( (string) $nav_item['title'] )
+							: get_the_title( $post_id ),
+						'menu-item-object-id' => $post_id,
+						'menu-item-object'    => get_post_type( $post_id ),
+						'menu-item-type'      => 'post_type',
+						'menu-item-status'    => 'publish',
+						'menu-item-position'  => $position,
+					)
+				);
+
+				$already[ $post_id ] = true;
+			}
+
+			// Only ever fill a location the active theme actually registers and the site has
+			// left empty. The old hardcoded primary/main-menu/header-menu write clobbered live
+			// menu assignments on any site that already had them.
+			$registered = function_exists( 'get_registered_nav_menus' ) ? get_registered_nav_menus() : array();
+			$locations  = get_theme_mod( 'nav_menu_locations', array() );
+			$locations  = is_array( $locations ) ? $locations : array();
+			$changed    = false;
+
+			foreach ( array_keys( $registered ) as $location ) {
+				if ( empty( $locations[ $location ] ) ) {
+					$locations[ $location ] = $menu_id;
+					$changed                = true;
+				}
+			}
+
+			if ( $changed ) {
+				set_theme_mod( 'nav_menu_locations', $locations );
+			}
+
+			return (int) $menu_id;
+		}
+
 		public function wdkit_enable_template_widgets() {
 			$widget_list     = ! empty( $_POST['widget_list'] ) ? json_decode( wp_unslash( $_POST['widget_list'] ), true ) : array();
 			$extensions_list = ! empty( $_POST['extensions_list'] ) ? json_decode( wp_unslash( $_POST['extensions_list'] ), true ) : array();
 
+			$res = $this->wdkit_enable_widgets_data( $widget_list, $extensions_list );
+
+			wp_send_json( $res );
+			wp_die();
+		}
+
+		/**
+		 * Enable the widgets and extensions a kit's content actually uses.
+		 *
+		 * Extracted from wdkit_enable_template_widgets() so the PHP import runner can reach it
+		 * without `$_POST`. The lists are derived from imported kit content by the caller — they
+		 * are never accepted from a remote payload.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $widget_list     Widget names used by the kit.
+		 * @param array $extensions_list Extension names used by the kit.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_enable_widgets_data( $widget_list = array(), $extensions_list = array() ) {
+			$widget_list     = is_array( $widget_list ) ? $widget_list : array();
+			$extensions_list = is_array( $extensions_list ) ? $extensions_list : array();
+
 			if ( empty( $widget_list ) && empty( $extensions_list ) ) {
-				$res = array(
+				return array(
 					'massage'     => __( 'Widget array not found', 'wdesignkit' ),
 					'description' => __( 'Widget array not found', 'wdesignkit' ),
 					'success'     => false,
 				);
-				wp_send_json( $res );
-				wp_die();
 			}
+
+			// The widget list is what the caller needs verified; the extensions ride along but
+			// have no registry to check against.
+			$requested = is_array( $widget_list ) ? $widget_list : array();
 
 			if ( ! has_filter( 'tpae_enable_selected_widgets' ) ) {
-				$res = array(
-					'massage'     => __( 'Relevant Plugin not Activated', 'wdesignkit' ),
-					'description' => __( 'Relevant Plugin not Installed / Activated', 'wdesignkit' ),
-					'success'     => false,
-				);
-				wp_send_json( $res );
-				wp_die();
+				if ( class_exists( 'Tpae_Hooks' ) && method_exists( 'Tpae_Hooks', 'get_instance' ) ) {
+					Tpae_Hooks::get_instance();
+				} elseif ( defined( 'L_THEPLUS_PATH' ) && file_exists( L_THEPLUS_PATH . 'includes/admin/tpae_hooks/class-tpae-hooks.php' ) ) {
+					require_once L_THEPLUS_PATH . 'includes/admin/tpae_hooks/class-tpae-hooks.php';
+				} elseif ( defined( 'THEPLUS_PATH' ) && file_exists( THEPLUS_PATH . 'includes/admin/tpae_hooks/class-tpae-hooks.php' ) ) {
+					require_once THEPLUS_PATH . 'includes/admin/tpae_hooks/class-tpae-hooks.php';
+				}
 			}
 
-			$w_list = array(
-				'widgets'    => $widget_list,
-				'extensions' => $extensions_list,
-			);
+			// Ensure theplus_options exists so tpae_enable_selected_widgets does not bail silently
+			// on a fresh install where the option row has not been created yet.
+			$theplus_options = get_option( 'theplus_options', false );
+			if ( empty( $theplus_options ) || ! is_array( $theplus_options ) ) {
+				$theplus_options = array(
+					'check_elements'  => array(),
+					'extras_elements' => array(),
+				);
+				update_option( 'theplus_options', $theplus_options );
+			}
 
-			$result = apply_filters( 'tpae_enable_selected_widgets', $w_list );
+			if ( has_filter( 'tpae_enable_selected_widgets' ) ) {
+				$w_list = array(
+					'widgets'    => $widget_list,
+					'extensions' => $extensions_list,
+				);
+
+				$result = apply_filters( 'tpae_enable_selected_widgets', $w_list );
+			} else {
+				// Fallback: If filter is not loaded in this process (e.g. right after activation or CLI),
+				// directly merge into theplus_options so subsequent requests and Elementor boot find them.
+				$to_add = array();
+				foreach ( $widget_list as $w ) {
+					$to_add[] = str_replace( '-', '_', $w );
+				}
+				$ext_to_add = array();
+				foreach ( $extensions_list as $e ) {
+					$ext_to_add[] = str_replace( '-', '_', $e );
+				}
+
+				$theplus_options['check_elements']  = array_values( array_unique( array_merge( isset( $theplus_options['check_elements'] ) && is_array( $theplus_options['check_elements'] ) ? $theplus_options['check_elements'] : array(), $to_add ) ) );
+				$theplus_options['extras_elements'] = array_values( array_unique( array_merge( isset( $theplus_options['extras_elements'] ) && is_array( $theplus_options['extras_elements'] ) ? $theplus_options['extras_elements'] : array(), $ext_to_add ) ) );
+				update_option( 'theplus_options', $theplus_options );
+
+				$result = array( 'success' => true );
+			}
+
+			// Register newly enabled widgets into Elementor\'s in-memory manager so Document::save()
+			// in the current PHP execution does not silently drop them.
+			if ( did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) && isset( \Elementor\Plugin::$instance->widgets_manager ) ) {
+				try {
+					$widgets_manager = \Elementor\Plugin::$instance->widgets_manager;
+					if ( class_exists( '\TheplusAddons\L_Theplus_Widgets_Include' ) && method_exists( '\TheplusAddons\L_Theplus_Widgets_Include', 'get_instance' ) ) {
+						\TheplusAddons\L_Theplus_Widgets_Include::get_instance()->add_widgets( $widgets_manager );
+					}
+					if ( class_exists( '\TheplusAddons\Theplus_Widgets_Include' ) && method_exists( '\TheplusAddons\Theplus_Widgets_Include', 'get_instance' ) ) {
+						\TheplusAddons\Theplus_Widgets_Include::get_instance()->add_widgets( $widgets_manager );
+					}
+				} catch ( \Throwable $e ) {
+					// Best-effort in-memory registration.
+				}
+			}
+
+			// What the caller actually needs to know. A 200 with success:true only says the filter
+			// ran — tpae_enable_selected_widgets() reports success even when it wrote nothing
+			// (it bails silently if the addon's own settings row is still empty). So answer from
+			// the state it was supposed to write.
+			$not_enabled = self::wdkit_not_enabled_widget_types( $requested );
 
 			if ( ! empty( $result['success'] ) ) {
 				$res = array(
@@ -3980,8 +8584,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			wp_send_json( $res );
-			wp_die();
+			// Authoritative result of the enable, and the only field the caller should retry on.
+			// Both callers need it: the browser importer retries on it, and the runner's
+			// enable_kit_widgets() decides from it whether the content stage may start.
+			$res['not_enabled'] = $not_enabled;
+
+			return $res;
 		}
 
 		/**
@@ -4032,6 +8640,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 						'editor'      => $args['editor'],
 						'unique_id'   => get_option( 'wdkit_unique_id' ) ?? '',
 					);
+
+					if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+						$temp_args = wdkit_kit_import_with_site_identity( $temp_args );
+					}
 
 					$response = WDesignKit_Data_Query::get_data( $api_type, $temp_args );
 
@@ -4119,6 +8731,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			// container background images especially — resolve to nothing and render empty.
 			$content = self::wdkit_repair_attachment_ids( $content );
 
+			$unregistered = self::wdkit_unregistered_widget_types( self::wdkit_widget_types_in( $content ) );
+			if ( ! empty( $unregistered ) ) {
+				self::get_instance()->wdkit_enable_widgets_data( $unregistered );
+			}
+
 			$document->save([
 				'elements' => $content
 			]);
@@ -4162,6 +8779,16 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				// image is fetched or stored twice.
 				$content = $this->wdkit_relink_gutenberg_content( $content );
 
+				// See wdkit_write_post_content(): this endpoint replaces the whole post_content
+				// with markup the import itself produced, so kses here strips legitimate block
+				// markup rather than untrusted input. Kept inline instead of routed through that
+				// helper because this call needs wp_slash() and the WP_Error return.
+				$had_kses = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
+
+				if ( $had_kses ) {
+					kses_remove_filters();
+				}
+
 				$result = wp_update_post(
 					array(
 						'ID'           => $post_id,
@@ -4169,6 +8796,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					),
 					true
 				);
+
+				if ( $had_kses ) {
+					kses_init_filters();
+				}
 
 				if ( is_wp_error( $result ) ) {
 					return array(
@@ -4200,6 +8831,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				// source template's attachment IDs, so repair them or this save undoes the
 				// create-time fix and background images stop rendering.
 				$elements = self::wdkit_repair_attachment_ids( $elements );
+
+				$unregistered = self::wdkit_unregistered_widget_types( self::wdkit_widget_types_in( $elements ) );
+				if ( ! empty( $unregistered ) ) {
+					self::get_instance()->wdkit_enable_widgets_data( $unregistered );
+				}
 
 				$document->save( array( 'elements' => $elements ) );
 			}
@@ -4251,6 +8887,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			if ( isset( $_POST['thumb_image'] ) ) {
 				$thumb_image = ! empty( $_POST['thumb_image'] ) ? esc_url_raw( $_POST['thumb_image'] ) : '';
+				// Capped once here covers both download_url( $thumb_image ) calls below (Elementor
+				// and Gutenberg branches share this variable).
+				$thumb_image = Wdkit_Image_Guard::cap_pexels_source( $thumb_image );
 			}
 
 			if ( isset( $_POST['template_id'] ) ) {
@@ -4258,6 +8897,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			}
 
 			$temp_type = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'normal';
+
+			// AI kit imports send this so the page saves with its source CDN image URLs still in
+			// place - the JS side then registers it for wkit_schedule_deferred_media_sync() once
+			// every page in the kit has been created, and the actual media_sideload_image() work
+			// happens later, off this request. See wdkit_media_import()'s $defer_media branch.
+			$defer_media = ! empty( $_POST['defer_media'] );
 
 			if ( isset( $_POST['data'] ) ) {
 				$data = ! empty( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ) ) : '';
@@ -4294,6 +8939,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				}
 
 				$post_title   = isset( $post_content->title ) ? sanitize_text_field( $post_content->title ) : '';
+
+				// Same title cleanup the bundle path applies, so a kit imported through either
+				// route lists identically in Pages.
+				$post_title   = self::wdkit_clean_page_title( $post_title, $post_type );
+
 				$post_slug    = isset( $post_content->slug ) ? sanitize_text_field( $post_content->slug ) : '';
 				$file_type    = isset( $post_content->file_type ) ? sanitize_text_field( $post_content->file_type ) : '';
 				$content      = isset( $post_content->content ) ? wp_slash( $post_content->content ) : '';
@@ -4311,12 +8961,22 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					} elseif ( ! empty( $content ) && ! empty( $file_type ) && 'wp_block' === $file_type ) {
 
 						$editor  = ( 'wdkit' === $args['editor'] ) ? 'gutenberg' : $args['editor'];
-						$blocks = parse_blocks( stripslashes( $content ) );
 
-						$blocks = $this->wdkit_media_import( $blocks, $editor );
+						$blocks = parse_blocks( stripslashes( $content ) );
+						$blocks = $this->wdkit_media_import( $blocks, $editor, $defer_media );
+
+						// wdkit_media_import() above just skipped every raster image in this section's
+						// own content (the "Blog Detail" dummy template's own decorative images, not a
+						// user-picked stock photo) — this is this method's only chance to learn which
+						// URLs those were, so the deferred-media response field below is built from it
+						// rather than left to the bundle-only image_urls the client already tracks.
+						$deferred_image_urls = $defer_media
+							? array_map( 'esc_url_raw', Wdkit_Import_Images::get_and_clear_deferred_urls() )
+							: array();
 
 						$processor = new WDKIT_Nexter_Block_Processor();
 						$blocks    = $processor->run( $blocks );
+
 						$content = serialize_blocks( $blocks );
 
 						$content =  $this->replace_unicode_glitch( serialize_blocks( $blocks ) );
@@ -4331,6 +8991,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							)
 						);
 
+						if ( ! is_wp_error( $inserted_post ) && $inserted_post ) {
+							self::wdkit_rebuild_block_css( $inserted_post );
+						}
+
 						if ( is_wp_error( $inserted_post ) ) {
 								wp_send_json(
 									array(
@@ -4341,7 +9005,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								wp_die();
 						}
 
-						if ( ! empty( $thumb_image ) && wdesignkit_validate_external_url( $thumb_image ) ) {
+						// A picked stock image is already in the media library by the time the posts
+						// are created, so thumb_image is usually a url on this site rather than a
+						// remote one. That can never go down the download path - the external-url
+						// guard rejects loopback addresses by design, which silently dropped the
+						// featured image - so recognise the existing attachment and point at it.
+						// Anything genuinely remote still takes the untouched branch below.
+						$local_thumb_id = ! empty( $thumb_image ) ? self::wdkit_local_attachment_from_url( $thumb_image ) : 0;
+
+						if ( $local_thumb_id ) {
+							set_post_thumbnail( $inserted_post, $local_thumb_id );
+						} elseif ( ! empty( $thumb_image ) && wdesignkit_validate_external_url( $thumb_image ) ) {
 							// $featured_image_url = esc_url_raw( $thumb_image );
 							$tmp = download_url( $thumb_image );
 							if ( is_wp_error( $tmp ) ) {
@@ -4426,6 +9100,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 								'description' => 'Yay! Your Section has been Successfully Imported.',
 								'message'     => __( 'Successfully Imported.', 'wdesignkit' ),
 								'inserted_id' => $inserted_post,
+								// Raster images this call itself deferred - the caller unions this into
+								// whatever image_urls its own template-fetch response already carries
+								// before scheduling the background sideload pass.
+								'image_urls'  => $deferred_image_urls,
 								'success'     => true,
 							)
 						);
@@ -4513,7 +9191,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							$settings = ( isset( $post_content->settings ) && ! empty( $post_content->settings ) ) ? json_decode( wp_json_encode( $post_content->settings ), true ) : array();
 
 							$content = wp_json_encode( $content );
-							$content = $this->wdkit_media_import( $content, $file_type );
+							$content = $this->wdkit_media_import( $content, $file_type, $defer_media );
+
+							// Same header-logo guarantee the bundle path applies, so a kit imported
+							// through either route ends up with the same clickable logo.
+							$content = self::wdkit_link_header_logo( $content, isset( $post_content->custom_meta ) ? $post_content->custom_meta : array() );
+
+							$widgets_in   = self::wdkit_widget_types_in( $content );
+							$unregistered = self::wdkit_unregistered_widget_types( $widgets_in );
+							if ( ! empty( $unregistered ) ) {
+								$this->wdkit_enable_widgets_data( $unregistered );
+							}
 
 							$new_document->save(
 								array(
@@ -4570,6 +9258,11 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 									'description' => 'Yay! Your Section has been Successfully Imported.',
 									'message'     => __( 'Successfully Imported.', 'wdesignkit' ),
 									'inserted_id' => $inserted_id,
+									// Same contract as the Gutenberg branch: the media this call
+									// chose to defer, for the caller to schedule.
+									'image_urls'  => $defer_media
+										? array_map( 'esc_url_raw', Wdkit_Import_Images::get_and_clear_deferred_urls() )
+										: array(),
 									'success'     => true,
 								)
 							);
@@ -4601,7 +9294,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 *
 		 * @since 2.0.0
 		 */
-		private function replace_unicode_glitch( $content ) {
+		/**
+		 * Widened from private to public in 2.6.5 so the PHP page importer can apply the exact
+		 * same unicode normalisation the AJAX page import applies. Pure string transform, no
+		 * state, no capability implications.
+		 */
+		public function replace_unicode_glitch( $content ) {
 
 			// Fix escaped unicode like \u003c → <
 			$content = preg_replace_callback(
@@ -4631,6 +9329,29 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 */
 		protected function update_plugin_setting() {
 			$temp_id = isset( $_POST['plugin_type'] ) ? sanitize_text_field( $_POST['plugin_type'] ) : '';
+
+			$response = $this->wdkit_apply_plugin_settings_data( $temp_id );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Apply the plugin-side settings an imported kit needs.
+		 *
+		 * Extracted from update_plugin_setting() so the PHP import runner can reach it without
+		 * `$_POST`. The option list is a closed set written by this method alone — there is no
+		 * path here for a caller to name an option, which is the point.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param string $temp_id Plugin identifier; only 'elementor' is recognised.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_apply_plugin_settings_data( $temp_id ) {
+			$temp_id = is_string( $temp_id ) ? $temp_id : '';
 
 			if ( $temp_id == 'elementor' ) {
 				$unfiltered_files  = get_option( 'elementor_unfiltered_files_upload', false );
@@ -4675,8 +9396,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
 		}
 
 		/**
@@ -4814,6 +9534,27 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 2.0.0
 		 */
 		protected function update_theme_setting() {
+			$response = $this->wdkit_apply_theme_settings_data();
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Apply the Nexter theme container settings an imported kit expects.
+		 *
+		 * Extracted from update_theme_setting() so the PHP import runner can reach it without
+		 * `$_POST`. Note that this method takes no input at all and never has: it writes a
+		 * fixed set of `nxt-theme-options` sub-keys, which is why it is inherently idempotent
+		 * and why there is nothing here a caller could steer.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_apply_theme_settings_data() {
 			$theme_db = get_option( 'nxt-theme-options', false );
 
 			$container_type = 'container-fluid';
@@ -4936,8 +9677,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'success'     => true,
 			);
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
 		}
 
 		/**
@@ -4946,13 +9686,76 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 2.0.0
 		 */
 		protected function update_site_setting() {
+
+			// This is the import's "Finalizing Settings" request, and it is not the cheap
+			// bookkeeping call its name suggests: it generates the site logo/icon and then runs
+			// wdkit_sweep_attachment_ids() across every page that was just created, which resolves
+			// attachment ids and can pull WordPress into Imagick subsize generation. Every other
+			// heavy handler here already extends the limit (see the bundle import, the page-section
+			// import, the deferred-media cron); this one did not, so on a kit with a large image it
+			// fataled at PHP's default 30s. The client has no recovery path for that - the step
+			// simply stays on "Finalizing Settings" and polls forever, which is exactly the hang
+			// reported against Elementor kits. Harmless no-op where set_time_limit() is disabled.
+			if ( function_exists( 'set_time_limit' ) ) {
+				@set_time_limit( 300 );
+			}
+
 			$temp_id      = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
 			$shop_id      = isset( $_POST['shop_id'] ) ? sanitize_text_field( wp_unslash( $_POST['shop_id'] ) ) : '';
 			$temp_type    = isset( $_POST['temp_type'] ) ? sanitize_text_field( wp_unslash( $_POST['temp_type'] ) ) : 'page';
 			$site_name    = isset( $_POST['site_name'] ) ? sanitize_text_field( wp_unslash( $_POST['site_name'] ) ) : '';
 			$site_tagline = isset( $_POST['site_tagline'] ) ? sanitize_text_field( wp_unslash( $_POST['site_tagline'] ) ) : '';
 
-			$this->wdkit_nxt_thembuilder_update();
+			$page_information = isset( $_POST['page_information'] ) ? sanitize_text_field( wp_unslash( $_POST['page_information'] ) ) : '';
+			$page_information = json_decode( $page_information, true );
+
+			$response = $this->wdkit_apply_site_settings_data(
+				array(
+					'id'               => $temp_id,
+					'shop_id'          => $shop_id,
+					'temp_type'        => $temp_type,
+					'site_name'        => $site_name,
+					'site_tagline'     => $site_tagline,
+					'page_information' => $page_information,
+				)
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Apply a kit's site settings: front page, shop page, name and tagline.
+		 *
+		 * Extracted from update_site_setting() so the PHP import runner can reach it without
+		 * `$_POST`. The set of options written is closed and hard-coded here —
+		 * `show_on_front`, `page_on_front`, `woocommerce_shop_page_id`, `blogname`,
+		 * `blogdescription`. There is deliberately no way for a caller to name an option.
+		 *
+		 * Theme-builder condition rewriting still runs through
+		 * wdkit_nxt_thembuilder_update(), which now takes its page map as an argument.
+		 *
+		 * The AJAX action above is now a thin adapter over this and its response is unchanged.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $args {id, shop_id, temp_type, site_name, site_tagline, page_information,
+		 *                    defer_attachment_downloads}.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_apply_site_settings_data( $args ) {
+			$args = is_array( $args ) ? $args : array();
+
+			$temp_id      = isset( $args['id'] ) ? sanitize_text_field( (string) $args['id'] ) : '';
+			$shop_id      = isset( $args['shop_id'] ) ? sanitize_text_field( (string) $args['shop_id'] ) : '';
+			$temp_type    = isset( $args['temp_type'] ) ? sanitize_text_field( (string) $args['temp_type'] ) : 'page';
+			$site_name    = isset( $args['site_name'] ) ? sanitize_text_field( (string) $args['site_name'] ) : '';
+			$site_tagline = isset( $args['site_tagline'] ) ? sanitize_text_field( (string) $args['site_tagline'] ) : '';
+
+			$this->wdkit_nxt_thembuilder_update(
+				isset( $args['page_information'] ) ? $args['page_information'] : null,
+				! empty( $args['defer_attachment_downloads'] )
+			);
 
 			if ( ! empty( $shop_id ) ) {
 				update_option( 'woocommerce_shop_page_id', $shop_id );
@@ -4968,6 +9771,26 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				if ( ! empty( $site_tagline ) ) {
 					update_option( 'blogdescription', $site_tagline );
+
+					/* Remembered so a LATER import can tell a tagline this importer wrote from
+					 * one the site's owner wrote. Only the former is ours to clear. */
+					update_option( 'wdkit_applied_tagline', $site_tagline );
+				} else {
+					/* Skipped the tagline question - which is not the same as "leave whatever is
+					 * there". Importing a second kit onto a site that already carries the FIRST
+					 * import's tagline left the new business sitting under the old one's slogan
+					 * (a SaaS kit headed "Golden Crust Melts Inside"), because nothing ever
+					 * cleared it.
+					 *
+					 * Cleared only when the current tagline is character-for-character the one a
+					 * previous import wrote. A tagline the site's own owner typed is left
+					 * completely alone - a kit import has no business wiping it. */
+					$applied = (string) get_option( 'wdkit_applied_tagline', '' );
+
+					if ( '' !== $applied && $applied === (string) get_option( 'blogdescription', '' ) ) {
+						update_option( 'blogdescription', '' );
+						delete_option( 'wdkit_applied_tagline' );
+					}
 				}
 
 				$response = array(
@@ -4984,25 +9807,45 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				);
 			}
 
-			wp_send_json( $response );
-			wp_die();
+			return $response;
 		}
 
 		/**
 		 * update theme builder
 		 *
 		 * @since 2.0.4
+		 *
+		 * @param array|null $page_information Page map; falls back to $_POST when null.
+		 * @param bool       $local_only       Passed straight through to
+		 *                                     wdkit_sweep_attachment_ids() — see its docblock.
 		 */
-		public function wdkit_nxt_thembuilder_update() {
+		public function wdkit_nxt_thembuilder_update( $page_information = null, $local_only = false ) {
 
-			$page_information = isset( $_POST['page_information'] ) ? sanitize_text_field( wp_unslash( $_POST['page_information'] ) ) : '';
-			$page_information = json_decode( $page_information, true );
+			/* Falls back to `$_POST` when called with no argument, so every existing caller —
+			 * and the AJAX path — behaves exactly as before. The PHP runner passes the map in. */
+			if ( null === $page_information ) {
+				$page_information = isset( $_POST['page_information'] ) ? sanitize_text_field( wp_unslash( $_POST['page_information'] ) ) : '';
+				$page_information = json_decode( $page_information, true );
+			}
+
+			$t_finalize = microtime( true );
 
 			if ( ! empty( $page_information ) && is_array( $page_information ) ) {
 
 				// Every page and attachment now exists, so resolve any image ID the per-page
 				// pass could not (siblings import concurrently and share icons).
-				$this->wdkit_sweep_attachment_ids( wp_list_pluck( $page_information, 'inserted_id' ) );
+				$t_sweep = microtime( true );
+				$this->wdkit_sweep_attachment_ids( wp_list_pluck( $page_information, 'inserted_id' ), $local_only );
+
+				// This walks every page's content looking for unresolved attachment ids, so it
+				// scales with kit size and was not covered by the per-template numbers.
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( sprintf(
+						'WDKIT finalize: sweep_attachment_ids %dms over %d pages',
+						(int) round( ( microtime( true ) - $t_sweep ) * 1000 ),
+						count( $page_information )
+					) );
+				}
 
 				// Step 1: banavo mapping [ old_id => new_id ]
 				$id_mapping = array();
@@ -5078,25 +9921,68 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 2.2.2
 		 */
 		public function wdkit_check_user_credit() {
-			$array_data = array(
-				'token' => isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '',
-			);
+			$token = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
+
+			/* The caller sends the token from its own localStorage, which is per browser. The
+			 * SITE's cloud session is not - it lives in a transient written at login and is what
+			 * every import actually authenticates with. Reading only the browser copy meant a
+			 * connected site told a second browser, an incognito window or another WP admin that
+			 * it needed to log in, while an import from that same site would have worked
+			 * (ClickUp 14ynqxywrg4). */
+			if ( '' === $token && function_exists( 'wdkit_kit_import_resolve_token' ) ) {
+				$token = (string) wdkit_kit_import_resolve_token();
+			}
+
+			if ( '' === $token ) {
+				wp_send_json(
+					array(
+						'success'   => false,
+						'reason'    => 'no_session',
+						'logged_in' => false,
+						'message'   => esc_html__( 'Not signed into WDesignKit on this site.', 'wdesignkit' ),
+					)
+				);
+				wp_die();
+			}
+
+			$array_data = array( 'token' => $token );
 
 			$response = $this->wkit_api_call( $array_data, 'ai/credits/get' );
 			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
 
 			if ( empty( $success ) ) {
-				$response = array(
-					'success'     => false,
-					'message'     => esc_html__( 'Data Not Found', 'wdesignkit' ),
-					'description' => esc_html__( 'Data not found', 'wdesignkit' ),
-				);
+				/* Why it failed, not just that it did. The caller used to receive one flat
+				 * "Data Not Found" for every failure and read it as "no credits left", so a
+				 * cloud request that merely timed out was reported to the user as "your site
+				 * limit for today has been reached" - a limit that had not been reached. A
+				 * transport failure says so through wkit_api_call()'s own message. */
+				$massage     = isset( $response['massage'] ) ? (string) $response['massage'] : '';
+				$unreachable = ( '' !== $massage && false !== stripos( $massage, 'API request error' ) );
 
-				wp_send_json( $response );
+				wp_send_json(
+					array(
+						'success' => false,
+						'reason'  => $unreachable ? 'unreachable' : 'rejected',
+
+						/* A token existed and was sent, so whatever went wrong here is not the
+						 * user being signed out. */
+						'logged_in'   => true,
+						'message'     => $unreachable
+							? esc_html__( 'Could not reach WDesignKit.', 'wdesignkit' )
+							: esc_html__( 'Data Not Found', 'wdesignkit' ),
+						'description' => $massage,
+					)
+				);
 				wp_die();
 			}
 
 			$response = json_decode( wp_json_encode( $response['data'] ), true );
+
+			if ( is_array( $response ) ) {
+				/* The cloud answered for this token, so the site is signed in - said plainly so
+				 * the caller does not have to infer it from its own localStorage. */
+				$response['logged_in'] = true;
+			}
 
 			$this->wdkit_cache_cloud_usage( $response );
 
@@ -6216,6 +11102,13 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 				if ( 'session' !== $logout_type ) {
 					delete_transient( 'wdkit_auth_' . wdesignkit_cloud_session_key( $email ) );
+
+					/* Logged out means the site no longer acts for this account - see
+					 * Wdkit_Import_Remote::forget_registration(). */
+					if ( class_exists( 'Wdkit_Import_Remote' ) ) {
+						Wdkit_Import_Remote::forget_registration();
+					}
+
 					// Clear stored license data on logout so banner shows again
 					delete_option( 'wdkit_licence_data' );
 					$response = WDesignKit_Data_Query::get_data( 'logout', $args );
@@ -6421,6 +11314,568 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			wp_send_json( $response );
 			wp_die();
+		}
+
+		/**
+		 * The Gutenberg global-options record a site starts from.
+		 *
+		 * Nexter has no defaults of its own until something writes `tpgb_global_options`, and
+		 * this is what WDesignKit seeds it with: five base colours, the base type scale, the
+		 * gradients, spacing and box-shadow entries, and an empty container width.
+		 *
+		 * Extracted from wdkit_get_global_val() so the PHP import runner can seed the same
+		 * record. The runner appends the kit's palette to whatever the site already has, and on
+		 * a site where nothing had written the option yet it was appending to NOTHING — a
+		 * headless import came out with 13 colours instead of 18, 12 type entries instead of 19
+		 * and no gradients, spacing or box shadows at all, because the baseline it should have
+		 * built on did not exist. The wizard never saw it: the globals screen calls
+		 * wdkit_get_global_val() first, which seeds the option as a side effect.
+		 *
+		 * @since 2.7.2
+		 *
+		 * @return array
+		 */
+		public static function wdkit_default_gutenberg_globals() {
+			return array(
+						'active'          => 'preset1',
+						'darkMode'        => 'none',
+						'presets'         => array(
+							'preset1' => array(
+								'name'       => 'Preset 1',
+								'key'        => 'preset1',
+								'colors'     => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+								),
+								'gradient'   => array(
+									array(
+										'label' => 'Primary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Secondary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Tertiary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Accent',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Background',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+								),
+								'spacing'    => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+											'md'   => 70,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+											'md'   => 40,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+											'md'   => 20,
+											'unit' => 'px',
+										),
+
+									),
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 65,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 75,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 60,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 38,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 25,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 17,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 13,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+								),
+								'boxshadow'  => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 6,
+											'blur'       => 10,
+											'spread'     => 0,
+											'color'      => 'rgba(0,0,0,0.15)',
+										),
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 5,
+											'blur'       => 14,
+											'spread'     => 3,
+											'color'      => 'rgba(0,0,0,0.2)',
+										),
+									),
+								),
+							),
+							'preset2' => array(
+								'name'       => 'Preset 2',
+								'key'        => 'preset2',
+								'colors'     => array(
+									array(
+										'label' => 'Primary',
+										'value' => '#8072FC',
+									),
+									array(
+										'label' => 'Secondary',
+										'value' => '#6FC784',
+									),
+									array(
+										'label' => 'Tertiary',
+										'value' => '#FF5A6E',
+									),
+									array(
+										'label' => 'Accent',
+										'value' => '#F3F3F3',
+									),
+									array(
+										'label' => 'Background',
+										'value' => '#888888',
+									),
+								),
+								'gradient'   => array(
+									array(
+										'label' => 'Primary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Secondary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Tertiary',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Accent',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+
+									array(
+										'label' => 'Background',
+										'value' => 'linear-gradient(135deg,rgb(8,148,229) 0%,rgb(155,81,224) 100%)',
+									),
+								),
+								'spacing'    => array(
+									array(
+										'label' => 'Large',
+										'value' => array(
+											'md'   => 70,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Medium',
+										'value' => array(
+											'md'   => 40,
+											'unit' => 'px',
+										),
+									),
+									array(
+										'label' => 'Small',
+										'value' => array(
+											'md'   => 20,
+											'unit' => 'px',
+										),
+
+									),
+								),
+								'typography' => array(
+									array(
+										'label' => 'Display Text',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 65,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 75,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 60,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 700,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Sub Headline',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 38,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 45,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 1',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 40,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 500,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Title 2',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 25,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 30,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Body',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 17,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 22,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+									array(
+										'label' => 'Captions',
+										'value' => array(
+											'openTypography' => 1,
+											'size'       => array(
+												'md'   => 13,
+												'unit' => 'px',
+											),
+											'height'     => array(
+												'md'   => 16,
+												'unit' => 'px',
+											),
+											'fontFamily' => array(
+												'family' => 'Roboto',
+												'type'   => 'sans-serif',
+												'fontWeight' => 400,
+											),
+											'spacing'    => array(
+												'md'   => 0,
+												'unit' => 'px',
+											),
+										),
+									),
+								),
+								'boxshadow'  => array(
+									array(
+										'label' => 'Normal Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 6,
+											'blur'       => 10,
+											'spread'     => 0,
+											'color'      => 'rgba(0,0,0,0.15)',
+										),
+									),
+									array(
+										'label' => 'Hover Shadow',
+										'value' => array(
+											'openShadow' => 1,
+											'inset'      => 0,
+											'horizontal' => 2,
+											'vertical'   => 5,
+											'blur'       => 14,
+											'spread'     => 3,
+											'color'      => 'rgba(0,0,0,0.2)',
+										),
+									),
+								),
+							),
+						),
+						'globalContainer' => array(
+							'md'   => '',
+							'unit' => 'px',
+						),
+			);
 		}
 	}
 

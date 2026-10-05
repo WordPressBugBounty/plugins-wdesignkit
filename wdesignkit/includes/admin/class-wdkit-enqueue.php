@@ -319,6 +319,10 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 				'wdkitData',
 				array(
 					'ajax_url'                      => admin_url( 'admin-ajax.php' ),
+					// Mirrors the PHP side's WP_DEBUG gate on its own import timing/diagnostic
+					// error_log() calls, so the JS import flow's console diagnostics follow the
+					// same convention instead of always printing in every visitor's console.
+					'debug'                         => (bool) ( defined( 'WP_DEBUG' ) && WP_DEBUG ),
 					'WDKIT_URL'                     => WDKIT_URL,
 					'WDKIT_ASSETS'                  => WDKIT_ASSETS,
 					'wdkit_server_url'              => WDKIT_SERVER_SITE_URL,
@@ -326,6 +330,21 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'wdkit_wp_version'              => get_bloginfo( 'version' ),
 					'home_url'                      => esc_url( home_url( '/' ) ),
 					'kit_nonce'                     => wp_create_nonce( 'wdkit_nonce' ),
+
+					/* Kit Import engine switch. 'yes' => the wizard drives the PHP runner in four
+					 * stage calls; anything else => it falls back to its original ~25-call
+					 * orchestration, which is still fully present. Flip with the
+					 * `wdkit_use_php_runner` filter.
+					 *
+					 * Deliberately 'yes'/'no' rather than a boolean. wp_localize_script() casts
+					 * booleans to "1" and "", and while "" is falsy in JS, relying on that is the
+					 * same PHP/JS truthiness trap that bites elsewhere in the importer — a switch
+					 * that silently failed to switch OFF would be the worst outcome for a
+					 * rollback path. An explicit string compares the same in both languages.
+					 *
+					 * Fully qualified: this file is namespaced, and an unqualified reference here
+					 * resolved to wdkit\WdKit_enqueue\Wdkit_Import_Wizard and fatalled. */
+					'use_php_runner'                => ( class_exists( '\\Wdkit_Import_Wizard' ) && \Wdkit_Import_Wizard::is_enabled() ) ? 'yes' : 'no',
 					'post_id'                       => get_the_ID(),
 					'post_type'                     => get_post_type(),
 					'text_domain'                   => WDKIT_TEXT_DOMAIN,

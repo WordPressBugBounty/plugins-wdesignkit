@@ -76,6 +76,9 @@ if ( class_exists( 'Posimyth_Tracker_WDK' ) ) {
 delete_option( 'wdkit_template_imports' );
 delete_option( 'wdkit_cloud_usage' );
 
+// Bookkeeping for "is the current tagline one an import wrote?" — see wdkit_apply_site_settings_data().
+delete_option( 'wdkit_applied_tagline' );
+
 /*
  * Widget caches — removed UNCONDITIONALLY, like the analytics state above and for the same reason:
  * these are derived caches, not user data, so the "also delete my data" preference does not apply.

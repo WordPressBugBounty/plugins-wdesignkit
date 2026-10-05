@@ -213,6 +213,10 @@ if ( ! class_exists( 'Wdkit_Preset_Ajax' ) ) {
 			}
 
 			$response = WDesignKit_Data_Query::get_data( $api_preset_download_path, $array_data );
+			/* Normalised before any subscript: a failed request returns WP_Error, and in
+			 * PHP 8 even empty() on it is a fatal "Cannot use object of type WP_Error as
+			 * array". */
+			$response = is_array( $response ) ? $response : array();
 			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
 
 			if ( empty( $success ) ) {

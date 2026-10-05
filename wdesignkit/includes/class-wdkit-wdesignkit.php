@@ -269,6 +269,11 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 			require_once WDKIT_INCLUDES . 'admin/class-wdesignkit-data-query.php';
 			require_once WDKIT_INCLUDES . 'admin/class-wdkit-depends-installer.php';
 
+			// PHP importer service layer. Class definitions only - registers no hooks and
+			// instantiates nothing, so this is inert until something calls it. The browser
+			// importer does not, and its AJAX path is unchanged.
+			require_once WDKIT_INCLUDES . 'admin/import/import-load.php';
+
 			// Must load before widget-load-files.php: the Gutenberg/Gutenberg Core loaders
 			// register their widgets synchronously in their own constructor (not on a later
 			// hook), so wdesignkit_get_widget_registry() has to already be defined by the

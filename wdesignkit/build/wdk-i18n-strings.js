@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1140 strings.
+ * 1195 strings.
  */
 
 ( function () {
@@ -16,13 +16,14 @@
 	var __ = i18n.__, _x = i18n._x, _n = i18n._n, _nx = i18n._nx;
 	__( " + ", "wdesignkit" );
 	__( " Create ", "wdesignkit" );
-	__( " Note: We install Nexter Blocks to create these posts", "wdesignkit" );
 	__( " Read Document", "wdesignkit" );
 	__( " Search icons", "wdesignkit" );
 	__( " Watch Video Tutorials", "wdesignkit" );
 	__( " has been successfully duplicated. Customize it as needed.", "wdesignkit" );
 	__( " not installed", "wdesignkit" );
+	__( " pick Dummy or Smart AI content once you're in.", "wdesignkit" );
 	__( "(Only .JPG and .PNG allowed).", "wdesignkit" );
+	__( ".", "wdesignkit" );
 	__( "1000+ Elementor Templates", "wdesignkit" );
 	__( "1000+ Pre-made Starter Templates", "wdesignkit" );
 	__( "12 Hours", "wdesignkit" );
@@ -39,11 +40,11 @@
 	__( "AI Support", "wdesignkit" );
 	__( "AI Templates", "wdesignkit" );
 	__( "AI Widgets", "wdesignkit" );
+	__( "AI blog posts", "wdesignkit" );
 	__( "AI is thinking", "wdesignkit" );
 	__( "AI server request failed", "wdesignkit" );
 	__( "AND", "wdesignkit" );
 	__( "API Error", "wdesignkit" );
-	__( "About Website", "wdesignkit" );
 	__( "Above Header Section", "wdesignkit" );
 	__( "Access advanced design options like Sticky Headers, available only in Elementor Pro. Take your website's user experience to the next level!", "wdesignkit" );
 	__( "Action", "wdesignkit" );
@@ -89,6 +90,8 @@
 	__( "An array of key => value pairs: [ 'key' => 'value', ... ]", "wdesignkit" );
 	__( "An array of ranges for each register size.", "wdesignkit" );
 	__( "An error occurred while updating the widget.", "wdesignkit" );
+	__( "And finally, which language should I write your content in?", "wdesignkit" );
+	__( "Any social profiles to link — Instagram, Facebook, LinkedIn? Paste them in any order, I will work out which is which.", "wdesignkit" );
 	__( "Applied Filter :", "wdesignkit" );
 	__( "Apply Key", "wdesignkit" );
 	__( "Apply", "wdesignkit" );
@@ -96,6 +99,8 @@
 	__( "Are you sure you want to replace this snippet ?", "wdesignkit" );
 	__( "Are you sure you want to replace this template ?", "wdesignkit" );
 	__( "Are you sure you want to sync this widget ?", "wdesignkit" );
+	__( "Attach an image, or paste a link", "wdesignkit" );
+	__( "Attach logo", "wdesignkit" );
 	__( "Attributes", "wdesignkit" );
 	__( "Author Name is too long", "wdesignkit" );
 	__( "Author Name", "wdesignkit" );
@@ -110,16 +115,15 @@
 	__( "Background Color Change", "wdesignkit" );
 	__( "Bad Request", "wdesignkit" );
 	__( "Basic Requirements", "wdesignkit" );
+	__( "Beautiful name! Now, give me a quick description of your business so I can craft content that feels just right.", "wdesignkit" );
+	__( "Beautiful name! Now, give me a quick description of your business so I can write words that truly fit ", "wdesignkit" );
 	__( "Before", "wdesignkit" );
-	__( "Beta", "wdesignkit" );
 	__( "Blur Background", "wdesignkit" );
 	__( "Blur", "wdesignkit" );
 	__( "Bottom Border Styling", "wdesignkit" );
 	__( "Bricks Elements Builder", "wdesignkit" );
 	__( "Bricks Theme", "wdesignkit" );
 	__( "Bricks", "wdesignkit" );
-	__( "Briefly describe how you work or what you offer.", "wdesignkit" );
-	__( "Briefly describe your site, its purpose, audience, and main pages.", "wdesignkit" );
 	__( "Browse Our Templates", "wdesignkit" );
 	__( "Browse Snippets", "wdesignkit" );
 	__( "Browse Templates", "wdesignkit" );
@@ -128,6 +132,7 @@
 	__( "Builder", "wdesignkit" );
 	__( "Business Name", "wdesignkit" );
 	__( "Business Tagline", "wdesignkit" );
+	__( "Business name", "wdesignkit" );
 	__( "Buy Credits", "wdesignkit" );
 	__( "Buy Extra AI Credits", "wdesignkit" );
 	__( "Buy More Credits", "wdesignkit" );
@@ -147,7 +152,7 @@
 	__( "Choose What Your Site Needs", "wdesignkit" );
 	__( "Choose Your Website Images", "wdesignkit" );
 	__( "Choose between Normal or RawHTML output type.", "wdesignkit" );
-	__( "Choose how you want to import content with your template.", "wdesignkit" );
+	__( "Choose colours & fonts", "wdesignkit" );
 	__( "Choose what usage details you share with us.", "wdesignkit" );
 	__( "Classes", "wdesignkit" );
 	__( "Classic", "wdesignkit" );
@@ -155,18 +160,21 @@
 	__( "Click the heart icon on any snippet to add it to your favorites.", "wdesignkit" );
 	__( "Click to know more", "wdesignkit" );
 	__( "Click to refresh and check your login status.", "wdesignkit" );
+	__( "Click to try again.", "wdesignkit" );
 	__( "Close", "wdesignkit" );
 	__( "Cloud Workspace", "wdesignkit" );
 	__( "Code Snippet", "wdesignkit" );
 	__( "Code", "wdesignkit" );
 	__( "Color & Image", "wdesignkit" );
 	__( "Color", "wdesignkit" );
+	__( "Colours & fonts selected ✓", "wdesignkit" );
+	__( "Colours", "wdesignkit" );
 	__( "Coming Soon", "wdesignkit" );
 	__( "Complete login in the new tab first, refresh will enable automatically.", "wdesignkit" );
 	__( "Conditions", "wdesignkit" );
-	__( "Content & Media Setup", "wdesignkit" );
 	__( "Continue via Login Key", "wdesignkit" );
 	__( "Continue with", "wdesignkit" );
+	__( "Continue", "wdesignkit" );
 	__( "Contributors", "wdesignkit" );
 	__( "Controls", "wdesignkit" );
 	__( "Convert to", "wdesignkit" );
@@ -176,6 +184,7 @@
 	__( "Copy to Workspace", "wdesignkit" );
 	__( "Copy to workspace", "wdesignkit" );
 	__( "Core Gutenberg", "wdesignkit" );
+	__( "Couldn’t reach WDesignKit to check your credits. Please try again.", "wdesignkit" );
 	__( "Create ", "wdesignkit" );
 	__( "Create Account", "wdesignkit" );
 	__( "Create New Category", "wdesignkit" );
@@ -184,6 +193,7 @@
 	__( "Create an account", "wdesignkit" );
 	__( "Create and customize your own widgets.", "wdesignkit" );
 	__( "Create your account to get started.", "wdesignkit" );
+	__( "Create your free account to import ", "wdesignkit" );
 	__( "Credit Limit Reached!", "wdesignkit" );
 	__( "Credits used for AI content and image generation during the import process. On average, one page consumes ~20 credits, though usage may vary by template.", "wdesignkit" );
 	__( "Cross Domain Copy/Paste", "wdesignkit" );
@@ -204,7 +214,6 @@
 	__( "Default Value", "wdesignkit" );
 	__( "Default color in RGB, RGBA, or HEX format.", "wdesignkit" );
 	__( "Default", "wdesignkit" );
-	__( "Define Your Brand", "wdesignkit" );
 	__( "Delete Snippet", "wdesignkit" );
 	__( "Delete all WDesignKit plugin data (templates/widgets)", "wdesignkit" );
 	__( "Delete all the WDesignKit promotion related data.", "wdesignkit" );
@@ -214,9 +223,12 @@
 	__( "Description", "wdesignkit" );
 	__( "Design Template", "wdesignkit" );
 	__( "Design Templates", "wdesignkit" );
+	__( "Desktop", "wdesignkit" );
 	__( "Details are not valid", "wdesignkit" );
 	__( "Developer/Agency", "wdesignkit" );
 	__( "Dismissible", "wdesignkit" );
+	__( "Do you have a logo? Attach an image or paste a link, or skip and I'll set up type-based branding for you.", "wdesignkit" );
+	__( "Do you have a tagline that captures your business in one line? I'd love to feature it.", "wdesignkit" );
 	__( "Do you want to load jQuery ?", "wdesignkit" );
 	__( "Do you want to replace this?", "wdesignkit" );
 	__( "Don't have an account?", "wdesignkit" );
@@ -242,9 +254,13 @@
 	__( "E-icons", "wdesignkit" );
 	__( "E.g. +1 (213) 449-4470", "wdesignkit" );
 	__( "E.g. 123 Street....", "wdesignkit" );
-	__( "E.g. Agency Website, NGO ...", "wdesignkit" );
+	__( "E.g. 221B Baker Street, London", "wdesignkit" );
 	__( "E.g. Apple Inc.", "wdesignkit" );
+	__( "E.g. Baked fresh, made with love", "wdesignkit" );
+	__( "E.g. Book a free demo", "wdesignkit" );
+	__( "E.g. Bright Bakery Co.", "wdesignkit" );
 	__( "E.g. Think Different", "wdesignkit" );
+	__( "E.g. We craft handmade pastries daily using organic ingredients.", "wdesignkit" );
 	__( "E.g. admin@gmail.com", "wdesignkit" );
 	__( "Edit Widget Information", "wdesignkit" );
 	__( "Edit in New Tab", "wdesignkit" );
@@ -274,6 +290,7 @@
 	__( "Enable/Disable WDesignKit Copy and WDesignKit Paste inside Gutenberg editor.", "wdesignkit" );
 	__( "Enable/Disable Widget Builder Control access to the No-Code Widget Builder, including widget creation, and upload/download options for Elementor, Gutenberg and Bricks.", "wdesignkit" );
 	__( "End", "wdesignkit" );
+	__( "English", "wdesignkit" );
 	__( "Enter Author Name", "wdesignkit" );
 	__( "Enter Author URL", "wdesignkit" );
 	__( "Enter CSS properties (e.g., color, font-size, background-color) to apply to the selected class or ID.", "wdesignkit" );
@@ -349,8 +366,10 @@
 	__( "Finalized Settings", "wdesignkit" );
 	__( "Finalizing Settings", "wdesignkit" );
 	__( "Finish", "wdesignkit" );
+	__( "First action", "wdesignkit" );
 	__( "Font Style", "wdesignkit" );
 	__( "Font-Awesome", "wdesignkit" );
+	__( "Fonts", "wdesignkit" );
 	__( "For security reasons, only administrator users can download snippets.", "wdesignkit" );
 	__( "Forgot Password", "wdesignkit" );
 	__( "Forgot Password?", "wdesignkit" );
@@ -359,10 +378,6 @@
 	__( "Free/Pro", "wdesignkit" );
 	__( "Full Pages", "wdesignkit" );
 	__( "General Settings", "wdesignkit" );
-	__( "Generate AI Blog Posts", "wdesignkit" );
-	__( "Generate Blog Posts", "wdesignkit" );
-	__( "Get 6 blog posts related to your business information created by AI.", "wdesignkit" );
-	__( "Get 6 blog posts related to your business information.", "wdesignkit" );
 	__( "Get Elementor Pro", "wdesignkit" );
 	__( "Get Free Support", "wdesignkit" );
 	__( "Get Premium Support", "wdesignkit" );
@@ -374,6 +389,7 @@
 	__( "Global Color", "wdesignkit" );
 	__( "Global Settings", "wdesignkit" );
 	__( "Global Style", "wdesignkit" );
+	__( "Global colours and fonts could not be applied.", "wdesignkit" );
 	__( "Global", "wdesignkit" );
 	__( "Go Back", "wdesignkit" );
 	__( "Go to Settings", "wdesignkit" );
@@ -400,12 +416,16 @@
 	/* translators: %s: plugin name, rebranded on a white-labelled install. */
 	__( "Help make %s faster and more stable. Share basic setup info so we can catch conflicts and ship fixes quicker. Never sold, never shared with third parties.", "wdesignkit" );
 	__( "Helpdesk", "wdesignkit" );
+	__( "Hi there! 👋 I'm so excited to help bring your vision to life. What should we call your business?", "wdesignkit" );
 	__( "Hide Header on Scroll Down", "wdesignkit" );
 	__( "Hide Licence Key Tab?", "wdesignkit" );
 	__( "Hide Plugin RollBack Tab?", "wdesignkit" );
 	__( "Hide all Help Links?", "wdesignkit" );
 	__( "Hide all Plugin Updates related News?", "wdesignkit" );
-	__( "Highlight your strengths and what sets you apart.", "wdesignkit" );
+	__( "Hmm, I couldn’t find any valid social profile links. Paste links like instagram.com/name or feel free to skip.", "wdesignkit" );
+	__( "Hmm, that email doesn’t look right. Give it another try, or feel free to skip.", "wdesignkit" );
+	__( "Hmm, that link doesn’t look right. Give it another try, or attach a file instead.", "wdesignkit" );
+	__( "Hmm, that number doesn’t look right. Give it another try, or feel free to skip.", "wdesignkit" );
 	__( "Horizontal", "wdesignkit" );
 	__( "How to Install ?", "wdesignkit" );
 	__( "How to get Login Key?", "wdesignkit" );
@@ -421,6 +441,7 @@
 	__( "Image", "wdesignkit" );
 	__( "Import Dummy Content", "wdesignkit" );
 	__( "Import Failed", "wdesignkit" );
+	__( "Import Method", "wdesignkit" );
 	__( "Import Template", "wdesignkit" );
 	__( "Import Templates", "wdesignkit" );
 	__( "Import Widget", "wdesignkit" );
@@ -435,7 +456,6 @@
 	__( "Importing Products", "wdesignkit" );
 	__( "Importing Site Content", "wdesignkit" );
 	__( "In Progress", "wdesignkit" );
-	__( "Industry Type", "wdesignkit" );
 	__( "Inline", "wdesignkit" );
 	__( "Input Type", "wdesignkit" );
 	__( "Insert CSS Library", "wdesignkit" );
@@ -482,7 +502,10 @@
 	__( "JAVASCRIPT", "wdesignkit" );
 	__( "JS", "wdesignkit" );
 	__( "Join Facebook Community", "wdesignkit" );
+	__( "Just the basics for now. You can always add the rest from your site later.", "wdesignkit" );
 	__( "Justify", "wdesignkit" );
+	__( "Keep & continue", "wdesignkit" );
+	__( "Kept the kit’s own colours & fonts", "wdesignkit" );
 	__( "Key error, check and fix", "wdesignkit" );
 	__( "Key:", "wdesignkit" );
 	__( "Keywords", "wdesignkit" );
@@ -515,6 +538,8 @@
 	__( "Local + Remote", "wdesignkit" );
 	__( "Local Delete", "wdesignkit" );
 	__( "Local", "wdesignkit" );
+	__( "Log in again", "wdesignkit" );
+	__( "Log in to save your progress and use AI credits.", "wdesignkit" );
 	__( "Log in", "wdesignkit" );
 	__( "Logged In", "wdesignkit" );
 	__( "Logged in", "wdesignkit" );
@@ -522,12 +547,14 @@
 	__( "Login Failed", "wdesignkit" );
 	__( "Login With Key", "wdesignkit" );
 	__( "Login required to access this feature.", "wdesignkit" );
+	__( "Login required", "wdesignkit" );
 	__( "Login to use WDesignKit Widgets", "wdesignkit" );
 	__( "Login to use this option.", "wdesignkit" );
 	__( "Login with", "wdesignkit" );
 	__( "Login", "wdesignkit" );
 	__( "Logo Color Change", "wdesignkit" );
 	__( "Logo Shrinking", "wdesignkit" );
+	__( "Logo uploaded ✓", "wdesignkit" );
 	__( "Logo", "wdesignkit" );
 	__( "Logout Complete!", "wdesignkit" );
 	__( "Logout", "wdesignkit" );
@@ -543,10 +570,10 @@
 	__( "Max", "wdesignkit" );
 	__( "Media Types", "wdesignkit" );
 	__( "Media", "wdesignkit" );
-	__( "Mention awards, media features, or success stories.", "wdesignkit" );
 	__( "Min", "wdesignkit" );
 	__( "Minimum 30 credits required to import the full AI kit.", "wdesignkit" );
 	__( "Missing information! Complete all fields.", "wdesignkit" );
+	__( "Mobile", "wdesignkit" );
 	__( "Modern Hover Post", "wdesignkit" );
 	__( "Month", "wdesignkit" );
 	__( "Move to Workspace", "wdesignkit" );
@@ -603,11 +630,13 @@
 	__( "Note: This setup installs the required plugins and theme. It may replace your current settings, so we recommend ", "wdesignkit" );
 	__( "Note: This will apply universal design elements, including typography, colors, spacing, and component styling, across all projects. Ensure compatibility with existing styles to maintain design consistency.", "wdesignkit" );
 	__( "Notice Type", "wdesignkit" );
+	__( "Now pick the images for your site - choose from the library, or upload your own.", "wdesignkit" );
 	__( "Number of rows.", "wdesignkit" );
 	__( "Number", "wdesignkit" );
 	__( "OR CONTINUE WITH", "wdesignkit" );
 	__( "OR", "wdesignkit" );
 	__( "Old", "wdesignkit" );
+	__( "One last thing. What's the first action you want visitors to take, maybe \"Book a free demo\" or \"Get a quote\"?", "wdesignkit" );
 	__( "Only .jpg and .png are allowed", "wdesignkit" );
 	__( "Only Studio and Agency Bundle users can access this feature.", "wdesignkit" );
 	__( "Only letters, numbers, and spaces are allowed", "wdesignkit" );
@@ -639,19 +668,24 @@
 	__( "Page Templates", "wdesignkit" );
 	__( "Page should have some content", "wdesignkit" );
 	__( "Pages", "wdesignkit" );
+	__( "Palettes", "wdesignkit" );
 	__( "Parent Class", "wdesignkit" );
 	__( "Password", "wdesignkit" );
+	__( "Paste one or more profile links", "wdesignkit" );
 	__( "Perform activity inside the loop", "wdesignkit" );
 	__( "Performance Optimized", "wdesignkit" );
 	__( "Performance", "wdesignkit" );
 	__( "Permanently Delete", "wdesignkit" );
 	__( "Pexels Images", "wdesignkit" );
 	__( "Phone Number", "wdesignkit" );
+	__( "Phone", "wdesignkit" );
+	__( "Pick a starting point, you can fine‑tune content and media in the next steps.", "wdesignkit" );
+	__( "Pick from the list, or type a language", "wdesignkit" );
+	__( "Placeholder images", "wdesignkit" );
 	__( "Placeholder", "wdesignkit" );
 	__( "Please activate your WDesignKit Pro license to start using advanced Pro widgets.", "wdesignkit" );
 	__( "Please active WDesignKit PRO license to use this widget.", "wdesignkit" );
 	__( "Please confirm you’ve read the Terms and Conditions by checking the box to continue", "wdesignkit" );
-	__( "Please enter a brief description of your website to continue", "wdesignkit" );
 	__( "Please enter a full URL (e.g., https://www.instagram.com/posimyth, https://x.com/posimyth, https://www.facebook.com/posimyth)", "wdesignkit" );
 	__( "Please enter a snippet name", "wdesignkit" );
 	__( "Please enter a valid author URL.", "wdesignkit" );
@@ -695,6 +729,7 @@
 	__( "Preview", "wdesignkit" );
 	__( "Primary Color", "wdesignkit" );
 	__( "Primary Font", "wdesignkit" );
+	__( "Primary call to action: ", "wdesignkit" );
 	__( "Privacy Policy.", "wdesignkit" );
 	__( "Private", "wdesignkit" );
 	__( "Pro Access Needed", "wdesignkit" );
@@ -745,6 +780,7 @@
 	__( "Reset", "wdesignkit" );
 	__( "Responsive", "wdesignkit" );
 	__( "Restore a previous version easily.", "wdesignkit" );
+	__( "Restores the original global colors and fonts from the kit.", "wdesignkit" );
 	__( "Retry !", "wdesignkit" );
 	__( "Retry Missing Option", "wdesignkit" );
 	__( "Retry Missing Options", "wdesignkit" );
@@ -769,6 +805,7 @@
 	__( "Search CDNs...", "wdesignkit" );
 	__( "Search Presets", "wdesignkit" );
 	__( "Search Templates", "wdesignkit" );
+	__( "Search fonts", "wdesignkit" );
 	__( "Search icons", "wdesignkit" );
 	__( "Search", "wdesignkit" );
 	__( "Search...", "wdesignkit" );
@@ -785,10 +822,12 @@
 	__( "Select Font Pair: ", "wdesignkit" );
 	__( "Select Global Fonts & Colours", "wdesignkit" );
 	__( "Select Images", "wdesignkit" );
-	__( "Select Industry type", "wdesignkit" );
+	__( "Select Logo", "wdesignkit" );
+	__( "Select Team Photo Style", "wdesignkit" );
 	__( "Select Template", "wdesignkit" );
 	__( "Select Version", "wdesignkit" );
 	__( "Select Workspace", "wdesignkit" );
+	__( "Select a language", "wdesignkit" );
 	__( "Select images to use in your website design. You can pick from our library or upload your own.", "wdesignkit" );
 	__( "Select key name", "wdesignkit" );
 	__( "Select or Upload Media", "wdesignkit" );
@@ -796,10 +835,12 @@
 	__( "Select the features you want, and we’ll set them up for you automatically.", "wdesignkit" );
 	__( "Select the type of Alert message.", "wdesignkit" );
 	__( "Select the type of Noitce message.", "wdesignkit" );
-	__( "Selected Images ", "wdesignkit" );
+	__( "Selected Images", "wdesignkit" );
+	__( "Selected — click to remove", "wdesignkit" );
 	__( "Selected", "wdesignkit" );
 	__( "Selectors Value", "wdesignkit" );
 	__( "Selectors", "wdesignkit" );
+	__( "Send", "wdesignkit" );
 	__( "Separator", "wdesignkit" );
 	__( "Server Details", "wdesignkit" );
 	__( "Server did not respond properly. Please try again.", "wdesignkit" );
@@ -811,13 +852,14 @@
 	__( "Setting Up Your Widget", "wdesignkit" );
 	__( "Settings", "wdesignkit" );
 	__( "Share Non-Sensitive Details", "wdesignkit" );
-	__( "Share a few details so we can generate the right content for you.", "wdesignkit" );
-	__( "Share your background and what makes you unique.", "wdesignkit" );
 	__( "Shared with Me", "wdesignkit" );
 	__( "Short Description", "wdesignkit" );
+	__( "Should I import using placeholder images for now instead of the kit's real photos? You can always swap them in later.", "wdesignkit" );
 	__( "Show Label", "wdesignkit" );
 	__( "Show Unit", "wdesignkit" );
 	__( "Showing", "wdesignkit" );
+	__( "Sign Up & Continue", "wdesignkit" );
+	__( "Sign Up to Continue", "wdesignkit" );
 	__( "Sign Up!", "wdesignkit" );
 	__( "Sign Up", "wdesignkit" );
 	__( "Site Info", "wdesignkit" );
@@ -825,6 +867,7 @@
 	__( "Size Unit & Range", "wdesignkit" );
 	__( "Size Unit", "wdesignkit" );
 	__( "Skip", "wdesignkit" );
+	__( "Skipped", "wdesignkit" );
 	__( "Slug must be 100 characters or fewer", "wdesignkit" );
 	__( "Smart AI Content", "wdesignkit" );
 	__( "Snippet Bundle", "wdesignkit" );
@@ -836,6 +879,7 @@
 	__( "Snippets couldn’t be downloaded. Try again.", "wdesignkit" );
 	__( "Snippets", "wdesignkit" );
 	__( "Social Media", "wdesignkit" );
+	__( "Social", "wdesignkit" );
 	__( "Something went wrong while generating the plugin package.", "wdesignkit" );
 	__( "Something went wrong while saving the template.", "wdesignkit" );
 	__( "Something went wrong", "wdesignkit" );
@@ -870,8 +914,9 @@
 	__( "Switcher Label", "wdesignkit" );
 	__( "Sync Widget", "wdesignkit" );
 	__( "TOP", "wdesignkit" );
+	__( "Tablet", "wdesignkit" );
+	__( "Tagline", "wdesignkit" );
 	__( "Tags", "wdesignkit" );
-	__( "Tell Us About Your Website", "wdesignkit" );
 	__( "Template Imported Successfully", "wdesignkit" );
 	__( "Template Imported successfully", "wdesignkit" );
 	__( "Template Name", "wdesignkit" );
@@ -889,6 +934,10 @@
 	__( "Terms of Service", "wdesignkit" );
 	__( "Text Domain", "wdesignkit" );
 	__( "Text", "wdesignkit" );
+	/* translators: 1: business or site name, 2: template kit name, 3: content language. */
+	__( "That's everything I need for %1$s. I'll prepare %2$s in %3$s.", "wdesignkit" );
+	/* translators: 1: business or site name, 2: content language. */
+	__( "That's everything I need for %1$s. I'll prepare your kit in %2$s.", "wdesignkit" );
 	__( "The Elementor Free version does not come with a free Navigation Menu widget. Therefore, by installing The Plus Addons, you can create your Header Menu easily.", "wdesignkit" );
 	__( "The Plus Addons for Elementor Pro Plugin Required", "wdesignkit" );
 	__( "The Plus Addons for Elementor Pro", "wdesignkit" );
@@ -901,6 +950,7 @@
 	__( "The field placeholder that appears when the field has no values.", "wdesignkit" );
 	__( "The following details will help us serve you better, and will not be shared with any third-party or used to spam you in anyway.", "wdesignkit" );
 	__( "The global color and typography you haven't selected will be added as new in your site. Do you want to proceed ?", "wdesignkit" );
+	__( "The import stopped making progress. Use Retry to continue.", "wdesignkit" );
 	__( "The input field type. Available values are all HTML5 supported types.", "wdesignkit" );
 	__( "The intervals value that will be incremented or decremented when using the controls' spinners. Default is empty, the value will be incremented by 1.", "wdesignkit" );
 	__( "The label for the “unchecked” state and “checked” state.", "wdesignkit" );
@@ -912,8 +962,10 @@
 	__( "The name must be unique and should only contain letters, numbers and underscore (_).", "wdesignkit" );
 	__( "The page you're looking for doesn't exist or has been moved from here.", "wdesignkit" );
 	__( "The page you're looking for doesn't exist or has been moved.", "wdesignkit" );
+	__( "The request was answered with a page instead of data - another plugin redirected it.", "wdesignkit" );
 	__( "The request was blocked or failed. If you use a security or firewall plugin, please allowlist admin-ajax.php and reload the page.", "wdesignkit" );
 	__( "The selected workspace has been removed permanently.", "wdesignkit" );
+	__( "The site sent back an unexpected response, so the import paused. Use Retry to continue.", "wdesignkit" );
 	__( "The specific background types to use. Available types are classic, gradient and video. Default is an empty array, including all the types.", "wdesignkit" );
 	__( "The value returned when checked.", "wdesignkit" );
 	__( "The widget has been pushed and is available for use.", "wdesignkit" );
@@ -922,6 +974,7 @@
 	__( "Theme Settings", "wdesignkit" );
 	__( "Theme", "wdesignkit" );
 	__( "Themify", "wdesignkit" );
+	__( "These are the kit’s colours and fonts. Change any of them, or leave them as the designer set them.", "wdesignkit" );
 	__( "This Snippet got disabled until you have more credits to make it active.", "wdesignkit" );
 	__( "This Template got disabled until you have more credits to make it active.", "wdesignkit" );
 	__( "This Widget got disabled until you have more credits to make it active.", "wdesignkit" );
@@ -935,7 +988,6 @@
 	__( "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server.", "wdesignkit" );
 	__( "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it.", "wdesignkit" );
 	__( "Time", "wdesignkit" );
-	__( "Tip", "wdesignkit" );
 	__( "Title can not be empty!", "wdesignkit" );
 	__( "Title field", "wdesignkit" );
 	__( "To Edit fully visit WdesignKit admin and make it live.", "wdesignkit" );
@@ -950,6 +1002,7 @@
 	__( "Turn on for url_options value.", "wdesignkit" );
 	__( "Turn your widget into a ready-to-use WordPress plugin in just a few clicks.", "wdesignkit" );
 	__( "Twitter", "wdesignkit" );
+	__( "Type your answer…", "wdesignkit" );
 	__( "Type", "wdesignkit" );
 	__( "Types", "wdesignkit" );
 	__( "Unable to connect to the Internet !", "wdesignkit" );
@@ -984,6 +1037,7 @@
 	__( "Use client inputs to draft on‑brand website copy and sections using AI.", "wdesignkit" );
 	__( "Use only letters & numbers. Max 50 characters First letter can't be a digit.", "wdesignkit" );
 	__( "Use these images", "wdesignkit" );
+	__( "Use this image", "wdesignkit" );
 	__( "Use this media", "wdesignkit" );
 	__( "Used to change the appearance of the control. There are two options: media or inline. The inline skin's design is based on the Choose Control.", "wdesignkit" );
 	__( "Used with the inline skin only, to hide an option (Icon Library/SVG) from the inline icon control's buttons.", "wdesignkit" );
@@ -1005,6 +1059,7 @@
 	__( "WDesignKit is Ready to Power your WordPress Website", "wdesignkit" );
 	__( "WDesignKit, on the other hand, focuses on unique custom widgets created with its easy-to-use Drag and Drop Widget Builder, Cloud Workspace, and many other added benefits.", "wdesignkit" );
 	__( "Want AI Support or not.", "wdesignkit" );
+	__( "Want me to generate a few AI blog posts for your new site too?", "wdesignkit" );
 	__( "Want to know more?", "wdesignkit" );
 	__( "Warning", "wdesignkit" );
 	__( "Watch Video Tutorials", "wdesignkit" );
@@ -1016,7 +1071,6 @@
 	__( "We're getting everything ready. Please wait while we install the required plugins and import your template.", "wdesignkit" );
 	__( "We're getting everything ready. Please wait while we install the required plugins and import your widget.", "wdesignkit" );
 	__( "We've upgraded the widget from", "wdesignkit" );
-	__( "Website Description", "wdesignkit" );
 	__( "Website URL", "wdesignkit" );
 	__( "Website Upgrade in Progress.", "wdesignkit" );
 	__( "Week", "wdesignkit" );
@@ -1024,9 +1078,9 @@
 	__( "Welcome to WDesignKit", "wdesignkit" );
 	__( "We’re Setting Up Your Website", "wdesignkit" );
 	__( "We’re getting everything ready. Please wait while we install the required plugins and import your template.", "wdesignkit" );
-	__( "What do you want visitors to do after reading?", "wdesignkit" );
+	__( "What's the best email for customers to reach you at?", "wdesignkit" );
 	__( "What’s New?", "wdesignkit" );
-	__( "What’s the main skill or service you provide?", "wdesignkit" );
+	__( "Where can people find you? Share your address so visitors always know right where to go.", "wdesignkit" );
 	__( "Whether to add nofollow attribute.", "wdesignkit" );
 	__( "Whether to allow alpha channel.", "wdesignkit" );
 	__( "Whether to allow multiple value selection.", "wdesignkit" );
@@ -1079,6 +1133,7 @@
 	__( "Workspace Name Required", "wdesignkit" );
 	__( "Workspace Name", "wdesignkit" );
 	__( "Workspace", "wdesignkit" );
+	__( "Would you like to add a phone number too, in case someone wants to call?", "wdesignkit" );
 	__( "Write Using AI", "wdesignkit" );
 	__( "Write Your Note here....", "wdesignkit" );
 	__( "Write a brief summary describing the plugin's functionality.", "wdesignkit" );
@@ -1101,6 +1156,7 @@
 	__( "YouTube", "wdesignkit" );
 	__( "Your AI smart content import quota. Limits reset daily based on your plan. Check the pricing page for details.", "wdesignkit" );
 	__( "Your AI smart content import quota. Limits reset monthly based on your plan. Check the pricing page for details.", "wdesignkit" );
+	__( "Your WDesignKit login has expired on this site, so the import paused. Log in again to continue.", "wdesignkit" );
 	__( "Your changes have been saved successfully.", "wdesignkit" );
 	__( "Your downloaded snippets are now ready to use in your code snippets.", "wdesignkit" );
 	__( "Your selected template is ready. Start customizing and building your page right away.", "wdesignkit" );
@@ -1152,6 +1208,7 @@
 	__( "view widget", "wdesignkit" );
 	__( "widget has been successfully converted to", "wdesignkit" );
 	__( "widget has been updated. You can now customise the new version as you like!", "wdesignkit" );
+	__( "your site", "wdesignkit" );
 	__( "youtube", "wdesignkit" );
 	__( "•", "wdesignkit" );
 	__( "🎉 Success! Your Website is Ready", "wdesignkit" );

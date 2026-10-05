@@ -136,30 +136,71 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		 * @since 2.0.0
 		 */
 		public function wdkit_select_team_img() {
+			$result = $this->wdkit_team_images_data(
+				isset($_POST['folder_id']) ? sanitize_text_field($_POST['folder_id']) : '',
+				isset($_POST['img_type']) ? sanitize_text_field($_POST['img_type']) : 'default',
+				isset($_POST['image_count']) ? intval($_POST['image_count']) : 5,
+				isset($_POST['token']) ? sanitize_text_field($_POST['token']) : ''
+			);
+
+			if ( empty( $result['success'] ) ) {
+				/* Emit exactly the three keys this action has always emitted on failure — the
+				 * service's `data` key is internal and must not reach the AJAX response. */
+				wp_send_json(
+					array(
+						'success'     => false,
+						'message'     => $result['message'],
+						'description' => $result['description'],
+					)
+				);
+				wp_die();
+			}
+
+			return $result['data'];
+		}
+
+		/**
+		 * Fetch team-library images for one collection.
+		 *
+		 * Extracted from wdkit_select_team_img() so the PHP import runner can source team
+		 * photos without `$_POST`. The cloud call, endpoint and payload shape are unchanged.
+		 *
+		 * Returns a wrapper rather than the bare payload because the AJAX adapter has to be
+		 * able to tell "no images" from "images", and the failure response it emits must stay
+		 * byte-for-byte what it was.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param string $folder_id Team collection id.
+		 * @param string $img_type  Collection variant.
+		 * @param int    $count     How many images are needed.
+		 * @param string $token     Cloud auth token.
+		 * @return array{success:bool,data:array,message?:string,description?:string}
+		 */
+		public function wdkit_team_images_data( $folder_id, $img_type = 'default', $count = 5, $token = '' ) {
 			$array_data = array(
-				'id' => isset($_POST['folder_id']) ? sanitize_text_field($_POST['folder_id']) : '',
-				'count' => isset($_POST['image_count']) ? intval($_POST['image_count']) : 5,
-				'type' => isset($_POST['img_type']) ? sanitize_text_field($_POST['img_type']) : 'default',
-				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
+				'id'    => sanitize_text_field( (string) $folder_id ),
+				'count' => (int) $count,
+				'type'  => '' !== $img_type ? sanitize_text_field( (string) $img_type ) : 'default',
+				'token' => sanitize_text_field( (string) $token ),
 			);
 
 			$response = $this->wkit_api_call( $array_data, 'ai/team/image' );
 			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
 
 			if ( empty( $success ) ) {
-				$response = array(
+				return array(
 					'success'      => false,
 					'message'      => esc_html__( 'Data Not Found', 'wdesignkit' ),
 					'description'  => esc_html__( 'Images not found', 'wdesignkit' ),
+					'data'         => array(),
 				);
-
-				wp_send_json( $response );
-				wp_die();
 			}
 
-			$response = json_decode( wp_json_encode( $response['data'] ), true );
-
-			return $response;
+			return array(
+				'success' => true,
+				'data'    => json_decode( wp_json_encode( $response['data'] ), true ),
+			);
 		}
 
 		/**
@@ -171,7 +212,11 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		protected function wkit_ai_desc_keyword (){
             $array_data = array(
 				'site_name' => isset($_POST['site_type']) ? sanitize_text_field($_POST['site_type']) : '',
-				'description' => isset($_POST['site_desc']) ? intval($_POST['site_desc']) : '',
+				// intval() on a prose paragraph. The site description is what the classifier is
+				// meant to categorise from, and intval( 'Indulge in a cheesy pizza...' ) is 0 -
+				// so it has never received one, and every category pick has been made from the
+				// site name alone. sanitize_textarea_field() keeps the newlines the prompt reads.
+				'description' => isset($_POST['site_desc']) ? sanitize_textarea_field(wp_unslash($_POST['site_desc'])) : '',
 				'type' => isset($_POST['api_type']) ? sanitize_text_field($_POST['api_type']) : 'description',
 				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
 			);
@@ -237,13 +282,37 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		 * @since 2.2.7
 		 */
 		protected function wkit_remove_dummy_post (){
+			$response = $this->wdkit_remove_dummy_post_data();
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Remove WordPress's default "Hello world!" post.
+		 *
+		 * Extracted from wkit_remove_dummy_post() so the PHP import runner can reach it without
+		 * `$_POST`. Selection is unchanged and deliberately narrow: post_type `post`, exact
+		 * title `Hello world!`, in the `uncategorized` category, one result. Capability check
+		 * (`delete_posts`) is unchanged, and the delete still skips the trash.
+		 *
+		 * ⚠ The post it removes was created by WordPress, not by the importer, so ownership
+		 * *by this plugin* cannot be proven — a site could in principle have a real post with
+		 * that exact title in Uncategorized. The browser deletes it unconditionally during an
+		 * import; the PHP runner requires an explicit opt-in instead. See Wdkit_Import_Cleanup.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_remove_dummy_post_data() {
 			// Security check (recommended)
 			if ( ! current_user_can( 'delete_posts' ) ) {
-				wp_send_json([
+				return [
 					'success'     => false,
 					'message'     => __( 'Permission denied', 'wdesignkit' ),
 					'description' => 'Permission denied',
-				]);
+				];
 			}
 
 			$args = array(
@@ -273,19 +342,19 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				}
 
 				wp_reset_postdata();
-				wp_send_json([
+
+				return [
 					'success'     => true,
 					'message'     => __( 'Post Removed Successfully !', 'wdesignkit' ),
 					'description' => 'Dummy post successfully removed',
-				]);
+				];
 			}
-				
-			wp_send_json([
+
+			return [
 				'success'     => false,
 				'message'     => __( 'No matching post found', 'wdesignkit' ),
 				'description' => 'Dummy post not found',
-			]);
-			wp_die();
+			];
 		}
 
 		/**
@@ -331,14 +400,60 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		 * @since 2.0.0
 		 */
 		protected function wkit_cteate_product() {
+			$response = $this->wdkit_create_product_data(
+				array(
+					'product_title'    => isset($_POST['product_title']) ? sanitize_text_field($_POST['product_title']) : '',
+					'product_image'    => isset($_POST['product_image']) ? esc_url_raw($_POST['product_image']) : '',
+					// Placeholder attachment the browser sideloaded once for the whole batch.
+					'product_image_id' => isset($_POST['product_image_id']) ? absint($_POST['product_image_id']) : 0,
+					'product_desc'     => isset($_POST['product_desc']) ? sanitize_textarea_field($_POST['product_desc']) : '',
+					'product_price'    => isset($_POST['product_price']) ? floatval($_POST['product_price']) : 0,
+					'product_type'     => isset($_POST['product_type']) ? sanitize_text_field($_POST['product_type']) : '',
+					'product_category' => isset($_POST['product_category']) ? json_decode(wp_unslash($_POST['product_category']), true) : [],
+				)
+			);
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Create one WooCommerce product.
+		 *
+		 * Extracted from wkit_cteate_product() so the PHP import runner can create products
+		 * without `$_POST`. Every WooCommerce call, the hardcoded Red/Green/Blue variation set
+		 * and the price offsets are unchanged — this is the same code, reachable twice.
+		 *
+		 * Note what it does NOT do: there is no duplicate check. Calling it twice with the same
+		 * title creates two products, because the browser has no notion of a product source id.
+		 * That behaviour is preserved here. Wdkit_Import_Products adds the idempotency on top
+		 * by recording a source marker and skipping products it has already created.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $args {product_title, product_image, product_desc, product_price,
+		 *                     product_type, product_category}.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_create_product_data( $args ) {
 
 			try {
-				$product_title   = isset($_POST['product_title']) ? sanitize_text_field($_POST['product_title']) : '';
-				$product_image   = isset($_POST['product_image']) ? esc_url_raw($_POST['product_image']) : '';
-				$product_desc    = isset($_POST['product_desc']) ? sanitize_textarea_field($_POST['product_desc']) : '';
-				$product_price   = isset($_POST['product_price']) ? floatval($_POST['product_price']) : 0;
-				$product_type    = isset($_POST['product_type']) ? sanitize_text_field($_POST['product_type']) : '';
-				$product_category = isset($_POST['product_category']) ? json_decode(wp_unslash($_POST['product_category']), true) : [];
+				$args = is_array( $args ) ? $args : array();
+
+				$product_title    = isset( $args['product_title'] ) ? sanitize_text_field( (string) $args['product_title'] ) : '';
+				$product_image    = isset( $args['product_image'] ) ? esc_url_raw( (string) $args['product_image'] ) : '';
+				// The dummy-product placeholder is the same file for every product in the batch;
+				// the caller sideloads it once and passes the resulting attachment back here so
+				// each of the 6 products reuses it instead of re-downloading/re-resizing it.
+				$product_image_id = isset( $args['product_image_id'] ) ? absint( $args['product_image_id'] ) : 0;
+				$product_desc     = isset( $args['product_desc'] ) ? sanitize_textarea_field( (string) $args['product_desc'] ) : '';
+				$product_price    = isset( $args['product_price'] ) ? floatval( $args['product_price'] ) : 0;
+				$product_type     = isset( $args['product_type'] ) ? sanitize_text_field( (string) $args['product_type'] ) : '';
+				$product_category = isset( $args['product_category'] ) && is_array( $args['product_category'] ) ? $args['product_category'] : [];
+
+				if ( ! class_exists( 'WC_Product_Simple' ) ) {
+					throw new Exception( 'WooCommerce is not available' );
+				}
 
 				if (empty($product_title)) {
 					throw new Exception('Product title is required');
@@ -399,9 +514,11 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 
 					$product->set_attributes([$attribute]);
 
-					if( !empty( $product_image )){
+					if ( $product_image_id ) {
+						$product->set_image_id( $product_image_id );
+					} elseif( !empty( $product_image )){
 						$image_id = $this->upload_image_from_url($product_image);
-	
+
 						if ($image_id) {
 							$product->set_image_id($image_id); // main product image
 						}
@@ -456,10 +573,12 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 					if ($product_type == 'out_of_stock') {
 						$product->set_stock_status('outofstock');
 					}
-					
-					if( !empty( $product_image )){
+
+					if ( $product_image_id ) {
+						$product->set_image_id( $product_image_id );
+					} elseif( !empty( $product_image )){
 						$image_id = $this->upload_image_from_url($product_image);
-	
+
 						if ($image_id) {
 							$product->set_image_id($image_id); // main product image
 						}
@@ -472,20 +591,18 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 					}
 				}
 
-				wp_send_json([
+				return [
 					'success'    => true,
 					'product_id' => $product_id,
 					'message'    => __( 'Product created successfully', 'wdesignkit' ),
-				]);
+				];
 
 			} catch (Exception $e) {
-				wp_send_json([
+				return [
 					'success' => false,
 					'message' => $e->getMessage(),
-				]);
+				];
 			}
-
-			wp_die();
 		}
 
 		/**
@@ -503,7 +620,15 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
 			);
 
-			$response = $this->wkit_api_call( $array_data, 'ai/post/generate' );
+			$t_ai_call = microtime( true );
+			$response  = $this->wkit_api_call( $array_data, 'ai/post/generate' );
+
+			// WP_DEBUG_LOG as well as WP_DEBUG: with WP_DEBUG alone this lands in the PHP
+			// error log, which on some shared hosts is served over HTTP.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( '[WDKIT] AI content timing: ' . wp_json_encode( array( 'route' => 'post/generate', 'ms' => (int) round( ( microtime( true ) - $t_ai_call ) * 1000 ) ) ) );
+			}
+
 			$data = !empty( $response['data'] ) ? $response['data'] : [];
 
 			$success  = ! empty( $data->success ) ? $data->success : false;
@@ -533,34 +658,130 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		 * @since 2.0.0
 		 */
 		protected function wkit_generate_ai_content (){
-            $array_data = array(
-				'text_array' => isset( $_POST['text_array'] ) ? json_decode( wp_unslash( $_POST['text_array'] ), true ) : '',
-				'type' => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
-				'title' => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
-				'language' => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
-				'agency' => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
-				'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
-				'builder' => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
-				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
+			$result = $this->wdkit_generate_ai_content_data(
+				array(
+					'text_array'  => isset( $_POST['text_array'] ) ? json_decode( wp_unslash( $_POST['text_array'] ), true ) : '',
+					'type'        => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
+					'title'       => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
+					'language'    => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
+					'agency'      => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
+					'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
+					'builder'     => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
+					'token'       => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',
+				)
 			);
 
-			$response = $this->wkit_api_call( wp_json_encode($array_data), 'ai/template_import', 'frontside' );
-			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
-
-			if ( empty( $success ) ) {
-				$result = array(
-					'success'      => false,
-					'message'      => !empty ($response['massage']) ? $response['massage'] : esc_html__( 'Data Not Found', 'wdesignkit' ),
-					'description'  => esc_html__( 'Ai data not found', 'wdesignkit' ),
-				);
+			/* Emitted here so this action's output is byte-for-byte what it was: on failure the
+			 * three-key error array and wp_die(), on success the decoded payload returned to
+			 * the router exactly as before. The AI call itself - and its timing log - now live
+			 * in wdkit_generate_ai_content_data(), so both callers are measured. */
+			if ( empty( $result['success'] ) && isset( $result['__ai_failed'] ) ) {
+				unset( $result['__ai_failed'] );
 
 				wp_send_json( $result );
 				wp_die();
 			}
 
-			$response = json_decode( wp_json_encode( $response['data'] ), true );
+			return $result;
+		}
 
-			return $response;
+		/**
+		 * Ask the cloud to generate AI copy for one template's instruction set.
+		 *
+		 * Extracted from wkit_generate_ai_content() so the PHP import runner can generate
+		 * without `$_POST`. Same endpoint (`ai/template_import`), same token, therefore the
+		 * same credit accounting — this is not a second generator, it is the same one reachable
+		 * twice.
+		 *
+		 * Returns the decoded payload on success. On failure it returns the identical
+		 * three-key error array the action emits, plus a private `__ai_failed` marker so the
+		 * adapter above knows to emit-and-die rather than return; the marker is removed before
+		 * anything is sent.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $args {text_array, type, title, language, agency, description, builder, token}.
+		 * @return array
+		 */
+		public function wdkit_generate_ai_content_data( $args ) {
+			$args = is_array( $args ) ? $args : array();
+
+			$array_data = array(
+				'text_array'  => isset( $args['text_array'] ) ? $args['text_array'] : '',
+				'type'        => isset( $args['type'] ) ? sanitize_text_field( (string) $args['type'] ) : '',
+				'title'       => isset( $args['title'] ) ? sanitize_text_field( (string) $args['title'] ) : '',
+				'language'    => isset( $args['language'] ) ? sanitize_text_field( (string) $args['language'] ) : 'english',
+				'agency'      => isset( $args['agency'] ) ? sanitize_text_field( (string) $args['agency'] ) : '',
+				'description' => isset( $args['description'] ) ? sanitize_text_field( (string) $args['description'] ) : '',
+				'builder'     => isset( $args['builder'] ) ? sanitize_text_field( (string) $args['builder'] ) : '',
+				'token'       => isset( $args['token'] ) ? sanitize_text_field( (string) $args['token'] ) : '',
+			);
+
+			/* A sandbox site has no account token - see wdkit_kit_import_with_site_identity()'s
+			 * own note. Carried alongside token rather than instead of it, so a signed-in site's
+			 * request is unchanged; the cloud route this hits does not yet read these two, that
+			 * is the other half of this fix. */
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$identity = wdkit_kit_import_with_site_identity( array() );
+
+				if ( ! empty( $identity['poll_token'] ) ) {
+					$array_data['poll_token'] = (string) $identity['poll_token'];
+				}
+
+				if ( ! empty( $identity['site_url'] ) ) {
+					$array_data['site_url'] = (string) $identity['site_url'];
+				}
+			}
+
+			$t_ai_call = microtime( true );
+			$response  = $this->wkit_api_call( wp_json_encode( $array_data ), 'ai/template_import', 'frontside' );
+
+			// WP_DEBUG_LOG as well as WP_DEBUG: with WP_DEBUG alone this lands in the PHP
+			// error log, which on some shared hosts is served over HTTP.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( '[WDKIT] AI content timing: ' . wp_json_encode( array( 'route' => 'template_import', 'ms' => (int) round( ( microtime( true ) - $t_ai_call ) * 1000 ) ) ) );
+			}
+
+			/* A transport failure — a timeout, DNS, a refused connection — comes back from
+			 * wkit_api_call() as a WP_Error, not an array. Indexing it on the next line is a
+			 * fatal ("Cannot use object of type WP_Error as array"), and under the runner that
+			 * fatal is not confined to one template: it aborts the whole content stage, so a
+			 * single slow cloud response leaves the import stopped with four pages in. Observed
+			 * exactly that on a 15-template run.
+			 *
+			 * Reported through the same `__ai_failed` shape the failure branch below already
+			 * uses, so callers need no new case: the page keeps its template copy, the run
+			 * carries on, and generate_payload() logs `cloud_call_failed` with the reason. */
+			if ( is_wp_error( $response ) ) {
+				return array(
+					'success'     => false,
+					'message'     => $response->get_error_message(),
+					'description' => esc_html__( 'Ai data not found', 'wdesignkit' ),
+					'__ai_failed' => true,
+				);
+			}
+
+			if ( ! is_array( $response ) ) {
+				return array(
+					'success'     => false,
+					'message'     => esc_html__( 'Unexpected response from the AI service.', 'wdesignkit' ),
+					'description' => esc_html__( 'Ai data not found', 'wdesignkit' ),
+					'__ai_failed' => true,
+				);
+			}
+
+			$success = ! empty( $response['success'] ) ? $response['success'] : false;
+
+			if ( empty( $success ) ) {
+				return array(
+					'success'     => false,
+					'message'     => ! empty( $response['massage'] ) ? $response['massage'] : esc_html__( 'Data Not Found', 'wdesignkit' ),
+					'description' => esc_html__( 'Ai data not found', 'wdesignkit' ),
+					'__ai_failed' => true,
+				);
+			}
+
+			return json_decode( wp_json_encode( $response['data'] ), true );
 		}
 
 		/**
@@ -577,7 +798,42 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		protected function wkit_generate_ai_content_batch() {
 			$pages = isset( $_POST['pages'] ) ? json_decode( wp_unslash( $_POST['pages'] ), true ) : array();
 
-			if ( empty( $pages ) || ! is_array( $pages ) ) {
+			return $this->wdkit_generate_ai_content_batch_data(
+				array(
+					'pages'       => $pages,
+					'type'        => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
+					'title'       => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
+					'language'    => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
+					'agency'      => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
+					'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
+					'builder'     => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
+					'token'       => isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '',
+				)
+			);
+		}
+
+		/**
+		 * Ask the cloud to generate AI copy for several templates in one request.
+		 *
+		 * Extracted from wkit_generate_ai_content_batch() so the PHP import runner can generate
+		 * without `$_POST`, exactly as wdkit_generate_ai_content_data() was extracted from
+		 * wkit_generate_ai_content(). Same batched endpoint (`ai/template_import_batch`), which
+		 * fans the per-page OpenAI calls out concurrently server-side, so the caller pays one
+		 * network round trip (bounded by the slowest page) instead of N sequential ones.
+		 *
+		 * @since 2.7.3
+		 *
+		 * @param array $args {pages, type, title, language, agency, description, builder, token}.
+		 *                    `pages` is a list of {id, text_array}.
+		 * @return array {success, results[], message?} — `results` items carry {id, success,
+		 *                response|message, used_credits, real_credit}, keyed by the page's own
+		 *                `id` (not by array index).
+		 */
+		public function wdkit_generate_ai_content_batch_data( $args ) {
+			$args  = is_array( $args ) ? $args : array();
+			$pages = isset( $args['pages'] ) && is_array( $args['pages'] ) ? $args['pages'] : array();
+
+			if ( empty( $pages ) ) {
 				return array(
 					'success' => false,
 					'message' => esc_html__( 'No pages supplied for batch AI generation', 'wdesignkit' ),
@@ -587,17 +843,47 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 
 			$array_data = array(
 				'pages'       => $pages,
-				'type'        => isset( $_POST['site_type'] ) ? sanitize_text_field( $_POST['site_type'] ) : '',
-				'title'       => isset( $_POST['site_title'] ) ? sanitize_text_field( $_POST['site_title'] ) : '',
-				'language'    => isset( $_POST['site_lang'] ) ? sanitize_text_field( $_POST['site_lang'] ) : 'english',
-				'agency'      => isset( $_POST['site_agency'] ) ? sanitize_text_field( $_POST['site_agency'] ) : '',
-				'description' => isset( $_POST['site_desc'] ) ? sanitize_text_field( $_POST['site_desc'] ) : '',
-				'builder'     => isset( $_POST['site_builder'] ) ? sanitize_text_field( $_POST['site_builder'] ) : '',
-				'token'       => isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '',
+				'type'        => isset( $args['type'] ) ? sanitize_text_field( (string) $args['type'] ) : '',
+				'title'       => isset( $args['title'] ) ? sanitize_text_field( (string) $args['title'] ) : '',
+				'language'    => isset( $args['language'] ) ? sanitize_text_field( (string) $args['language'] ) : 'english',
+				'agency'      => isset( $args['agency'] ) ? sanitize_text_field( (string) $args['agency'] ) : '',
+				'description' => isset( $args['description'] ) ? sanitize_text_field( (string) $args['description'] ) : '',
+				'builder'     => isset( $args['builder'] ) ? sanitize_text_field( (string) $args['builder'] ) : '',
+				'token'       => isset( $args['token'] ) ? sanitize_text_field( (string) $args['token'] ) : '',
 			);
 
-			$response = $this->wkit_api_call( wp_json_encode( $array_data ), 'ai/template_import_batch', 'frontside' );
-			$success  = ! empty( $response['success'] ) ? $response['success'] : false;
+			/* Same site-identity carry as wdkit_generate_ai_content_data() - see that one's
+			 * comment. */
+			if ( function_exists( 'wdkit_kit_import_with_site_identity' ) ) {
+				$identity = wdkit_kit_import_with_site_identity( array() );
+
+				if ( ! empty( $identity['poll_token'] ) ) {
+					$array_data['poll_token'] = (string) $identity['poll_token'];
+				}
+
+				if ( ! empty( $identity['site_url'] ) ) {
+					$array_data['site_url'] = (string) $identity['site_url'];
+				}
+			}
+
+			$t_ai_call = microtime( true );
+			$response  = $this->wkit_api_call( wp_json_encode( $array_data ), 'ai/template_import_batch', 'frontside' );
+
+			// WP_DEBUG_LOG as well as WP_DEBUG: with WP_DEBUG alone this lands in the PHP
+			// error log, which on some shared hosts is served over HTTP.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+				error_log( '[WDKIT] AI content timing: ' . wp_json_encode( array( 'route' => 'template_import_batch', 'page_count' => count( $pages ), 'ms' => (int) round( ( microtime( true ) - $t_ai_call ) * 1000 ) ) ) );
+			}
+
+			if ( is_wp_error( $response ) ) {
+				return array(
+					'success' => false,
+					'message' => $response->get_error_message(),
+					'results' => array(),
+				);
+			}
+
+			$success = ! empty( $response['success'] ) ? $response['success'] : false;
 
 			if ( empty( $success ) ) {
 				return array(
@@ -652,6 +938,40 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 		protected function wdkit_remove_header_footer() {
 			$post_id = isset($_POST['post_id']) ? json_decode($_POST['post_id']) : [];
 
+			$response = $this->wdkit_delete_posts_data( $post_id );
+
+			wp_send_json( $response );
+			wp_die();
+		}
+
+		/**
+		 * Force-delete a list of post ids.
+		 *
+		 * Extracted from wdkit_remove_header_footer() so the PHP import runner can reach it
+		 * without `$_POST`. The behaviour is unchanged and the response is unchanged.
+		 *
+		 * ⚠ READ THIS BEFORE CALLING. Despite the handler's name, this deletes whatever ids it
+		 * is given — any post type, published or not — with wp_delete_post( $id, true ), which
+		 * skips the trash and is unrecoverable. It performs NO ownership check of its own.
+		 *
+		 * The browser is safe because of its caller, not because of this method: the wizard
+		 * only ever passes `current_section.current`, which holds nothing but `inserted_id`
+		 * values from posts the same import run just created (import_loader.js — pushed at the
+		 * template-insert site, cleared straight after the retry pass). Ownership is the
+		 * caller's responsibility.
+		 *
+		 * Wdkit_Import_Cleanup is the only PHP caller and it passes only ids recorded in the
+		 * import session, behind an explicit opt-in. Do not call this with ids from anywhere
+		 * else, and never with ids from a remote payload.
+		 *
+		 * @since 2.6.5
+		 *
+		 * @param array $post_id Post ids to delete.
+		 * @return array Response array, exactly as the AJAX action used to emit.
+		 */
+		public function wdkit_delete_posts_data( $post_id ) {
+			$post_id = is_array( $post_id ) ? $post_id : (array) $post_id;
+
 			if (empty($post_id)) {
 				$response = array(
 					'message'     => esc_html__( 'Post id not found', 'wdesignkit' ),
@@ -659,8 +979,7 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 					'success'     => true,
 				);
 
-				wp_send_json($response);
-				wp_die();
+				return $response;
 			}
 
 			foreach ($post_id as $post_id) {
@@ -684,8 +1003,7 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 				}
 			}
 
-			wp_send_json($response);
-			wp_die();
+			return $response;
 		}
 
 		/**
@@ -806,13 +1124,23 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 			//     its decision is overridable via the http_request_host_is_external filter.
 			// Fails closed: if the helper is unavailable the image is skipped rather than fetched
 			// unvalidated (it is loaded well before this hook, so that path is not expected).
-			if ( ! function_exists( 'wdesignkit_validate_external_url' ) || ! wdesignkit_validate_external_url( $image_url ) ) {
-				return false;
-			}
-
 			require_once(ABSPATH . 'wp-admin/includes/file.php');
 			require_once(ABSPATH . 'wp-admin/includes/media.php');
 			require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+			if ( ! class_exists( 'Wdkit_Image_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-image-guard.php';
+			}
+
+			// Rewrite BEFORE validating, so the string that gets fetched is the string that was
+			// checked. The other order validated the caller's URL and then fetched a different
+			// one; harmless while the rewriter only edits the query, but it makes the guard
+			// depend on that staying true, which is not a property worth relying on.
+			$image_url = Wdkit_Image_Guard::cap_pexels_source( $image_url );
+
+			if ( ! function_exists( 'wdesignkit_validate_external_url' ) || ! wdesignkit_validate_external_url( $image_url ) ) {
+				return false;
+			}
 
 			$attachment_id = media_sideload_image($image_url, 0, null, 'id');
 
@@ -879,7 +1207,10 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
 
 			$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
 
-			if ( $body_data['details']['message'] ) {
+			// isset(), because not every error body carries `details`. A bare
+			// { "message": "Token not provided" } made this read an offset on null and emit two
+			// PHP warnings per failed API call before falling through anyway.
+			if ( isset( $body_data['details']['message'] ) ) {
 				return array(
 					'massage' => $body_data['details']['message'],
 					'status'  => $status_code,

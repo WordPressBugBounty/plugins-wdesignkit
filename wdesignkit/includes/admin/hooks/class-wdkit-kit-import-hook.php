@@ -80,7 +80,7 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 	}
 
 	$token = wdkit_kit_import_resolve_token();
-	if ( $token === '' ) {
+	if ( ! wdkit_kit_import_can_authenticate( $token ) ) {
 		return [
 			'success'     => false,
 			'message'     => __( 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login.', 'wdesignkit' ),
@@ -111,13 +111,15 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
 
 	// Mirrors $temp_args in wdkit_import_kit_template() exactly — only these
 	// five keys are sent to the cloud for a kit import.
-	$cloud_args = [
-		'token'       => $token,
-		'template_id' => $template_id,
-		'editor'      => $editor,
-		'website_kit' => $website_kit,
-		'unique_id'   => get_option( 'wdkit_unique_id', '' ),
-	];
+	$cloud_args = wdkit_kit_import_with_site_identity(
+		[
+			'token'       => $token,
+			'template_id' => $template_id,
+			'editor'      => $editor,
+			'website_kit' => $website_kit,
+			'unique_id'   => get_option( 'wdkit_unique_id', '' ),
+		]
+	);
 
 	/**
 	 * Fires just before WDesignKit makes the cloud import request.
@@ -229,8 +231,23 @@ function wdkit_handle_kit_import_hook( array $output, array $args ): array {
  *   @type string   $tagline    Optional site tagline.
  *   @type string[] $skip       Steps to skip: 'reset_site', 'plugin_settings',
  *                              'theme_settings', 'enable_widgets'.
+ *   @type string   $session_id Optional. Pass a session id from a previous response to RESUME
+ *                              that import: templates that already landed are skipped and only
+ *                              the unfinished ones run. Omit to start a fresh import.
+ *
+ *   Optional and additive — omitting all of these gives exactly the previous behaviour:
+ *   @type string   $import_type       'normal_import' | 'ai_import'.
+ *   @type string   $site_type         Business/site type (required when import_type=ai_import).
+ *   @type string   $site_description  Site description (required when import_type=ai_import).
+ *   @type array    $ai_document       Pre-generated AI content: {pages, products, posts, taxonomy}.
+ *   @type array    $images            Chosen stock images: [{url,width,height}].
+ *   @type array    $products          Product records for WooCommerce.
+ *   @type bool     $blog_post         Import blog posts (default true).
+ *   @type array    $plugin_catalogue  Catalogue the templates' plugins_id resolve against.
+ *   @type array    $site_global       Site-level globals (container width, body background).
+ *   @type bool     $allow_destructive_cleanup  Default false. Gates every permanent deletion.
  * }
- * @return array{success:bool,message:string,site_url:string,home_page_id:int,pages:array,steps:array,errors:array}
+ * @return array{success:bool,message:string,site_url:string,home_page_id:int,shop_page_id:int,pages:array,steps:array,errors:array,session_id:string,status:string}
  */
 function wdkit_handle_create_full_site( array $output, array $args ): array {
 
@@ -244,287 +261,70 @@ function wdkit_handle_create_full_site( array $output, array $args ): array {
 	}
 
 	$token = wdkit_kit_import_resolve_token();
-	if ( $token === '' ) {
+	if ( ! wdkit_kit_import_can_authenticate( $token ) ) {
 		return wdkit_site_error( 'Not logged in to WDesignKit cloud. Go to WP Admin → WDesignKit and click Login.' );
 	}
 
-	// ── Sanitize args ────────────────────────────────────────────────────────
-	$kit_id    = sanitize_text_field( (string) ( $args['kit_id'] ?? '' ) );
-	$editor    = sanitize_text_field( (string) ( $args['editor'] ?? 'elementor' ) );
-	$templates = is_array( $args['templates'] ?? null ) ? $args['templates'] : [];
-	$site_name = sanitize_text_field( (string) ( $args['site_name'] ?? '' ) );
-	$tagline   = sanitize_text_field( (string) ( $args['tagline'] ?? '' ) );
-	$skip      = is_array( $args['skip'] ?? null ) ? array_map( 'sanitize_text_field', $args['skip'] ) : [];
-
-	if ( $kit_id === '' ) {
-		return wdkit_site_error( 'kit_id is required.' );
+	if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
+		return wdkit_site_error( 'Import engine is not available.' );
 	}
 
-	if ( empty( $templates ) ) {
-		return wdkit_site_error( 'templates array is required and must not be empty.' );
-	}
-
-	// ── State ────────────────────────────────────────────────────────────────
-	$steps        = [];
-	$errors       = [];
-	$pages        = [];
-	$home_page_id = 0;
-	$shop_page_id = 0;
-
-	// ── Step 1: Reset site — draft all existing published pages ──────────────
-	if ( ! in_array( 'reset_site', $skip, true ) ) {
-		do_action( 'wdkit_site_step', 'reset_site', 'start', [] );
-
-		do_action( 'nxt_update_builder_status', 'all' );
-
-		$existing = get_posts( [
-			'post_type'      => 'page',
-			'post_status'    => 'publish',
-			'numberposts'    => -1,
-			'fields'         => 'ids',
-		] );
-
-		foreach ( $existing as $pid ) {
-			wp_update_post( [ 'ID' => $pid, 'post_status' => 'draft' ] );
-		}
-
-		$steps['reset_site'] = [ 'success' => true ];
-		do_action( 'wdkit_site_step', 'reset_site', 'done', [ 'drafted' => count( $existing ) ] );
-	}
-
-	// ── Step 2: Plugin settings — Elementor options ──────────────────────────
-	if ( ! in_array( 'plugin_settings', $skip, true ) && $editor === 'elementor' ) {
-		do_action( 'wdkit_site_step', 'plugin_settings', 'start', [] );
-
-		update_option( 'elementor_unfiltered_files_upload', 1 );
-		update_option( 'elementor_load_fa4_shim', 'yes' );
-		update_option( 'elementor_experiment-container', 'active' );
-		update_option( 'elementor_experiment-e_font_icon_svg', 'inactive' );
-
-		$steps['plugin_settings'] = [ 'success' => true ];
-		do_action( 'wdkit_site_step', 'plugin_settings', 'done', [] );
-	}
-
-	// ── Step 3: Theme settings — Nexter fluid container ─────────────────────
-	if ( ! in_array( 'theme_settings', $skip, true ) ) {
-		do_action( 'wdkit_site_step', 'theme_settings', 'start', [] );
-
-		$fluid_spacing = [
-			'md'      => [ 'left' => '0', 'right' => '0' ],
-			'sm'      => [ 'left' => '',  'right' => '' ],
-			'xs'      => [ 'left' => '',  'right' => '' ],
-			'md-unit' => 'px',
-			'sm-unit' => 'px',
-			'xs-unit' => 'px',
-		];
-
-		$theme_db = get_option( 'nxt-theme-options', [] );
-		if ( ! is_array( $theme_db ) ) {
-			$theme_db = [];
-		}
-
-		$theme_db['site-header-container'] = 'container-fluid';
-		$theme_db['site-footer-container'] = 'container-fluid';
-		$theme_db['site-layout-container'] = 'container-fluid';
-		$theme_db['site-page-container']   = 'container-fluid';
-		$theme_db['header-fluid-spacing']  = $fluid_spacing;
-		$theme_db['footer-fluid-spacing']  = $fluid_spacing;
-		$theme_db['site-fluid-spacing']    = $fluid_spacing;
-		$theme_db['page-fluid-spacing']    = $fluid_spacing;
-
-		update_option( 'nxt-theme-options', $theme_db );
-
-		$steps['theme_settings'] = [ 'success' => true ];
-		do_action( 'wdkit_site_step', 'theme_settings', 'done', [] );
-	}
-
-	// ── Step 4: Import each template and create WP pages ────────────────────
-	do_action( 'wdkit_site_step', 'import_pages', 'start', [ 'total' => count( $templates ) ] );
-
-	$widgets_to_enable = [];
-
-	foreach ( $templates as $template ) {
-		$tpl_id       = sanitize_text_field( (string) ( $template['id'] ?? '' ) );
-		$tpl_title_raw = (string) ( $template['title'] ?? '' );
-		$tpl_title    = sanitize_text_field( explode( '|', $tpl_title_raw )[0] );
-		$wp_post_type = sanitize_text_field( (string) ( $template['wp_post_type'] ?? 'page' ) );
-
-		if ( $tpl_id === '' ) {
-			continue;
-		}
-
-		// 4a — Fetch content from WDesignKit cloud.
-		$fetch = apply_filters( 'wdkit_import_kit_content', [], [
-			'template_id' => $tpl_id,
-			'editor'      => $editor,
-			'website_kit' => $kit_id,
-			// import_template is the working cloud route; import_kit_template has none (404).
-			'api_type'    => 'import_template',
-			'custom_meta' => false,
-		] );
-
-		if ( empty( $fetch['success'] ) || empty( $fetch['response']['content'] ) ) {
-			$errors[] = [
-				'template_id' => $tpl_id,
-				'title'       => $tpl_title,
-				'message'     => $fetch['message'] ?? 'Failed to fetch template from cloud.',
-			];
-			continue;
-		}
-
-		// 4b — Decode content JSON.
-		$decoded = json_decode( $fetch['response']['content'], true );
-		if ( ! is_array( $decoded ) ) {
-			$errors[] = [
-				'template_id' => $tpl_id,
-				'title'       => $tpl_title,
-				'message'     => __( 'Cloud returned invalid JSON content.', 'wdesignkit' ),
-			];
-			continue;
-		}
-
-		$content = $decoded['content'] ?? '';
-
-		// 4c — Create the WordPress post.
-		$post_data = [
-			'post_title'   => $tpl_title !== '' ? $tpl_title : 'Imported Page',
-			'post_name'    => sanitize_title( $tpl_title ),
-			'post_status'  => 'publish',
-			'post_type'    => $wp_post_type,
-			'post_content' => $editor === 'gutenberg' ? (string) $content : '',
-		];
-
-		$inserted_id = wp_insert_post( $post_data, true );
-
-		if ( is_wp_error( $inserted_id ) ) {
-			$errors[] = [
-				'template_id' => $tpl_id,
-				'title'       => $tpl_title,
-				'message'     => $inserted_id->get_error_message(),
-			];
-			continue;
-		}
-
-		// 4d — Save Elementor data when editor is Elementor.
-		if ( $editor === 'elementor' ) {
-			update_post_meta( $inserted_id, '_elementor_data', wp_slash( (string) $content ) );
-			update_post_meta( $inserted_id, '_elementor_edit_mode', 'builder' );
-			update_post_meta( $inserted_id, '_elementor_template_type', 'page' );
-		}
-
-		// 4e — Restore nxt-* custom meta (theme builder conditions, etc.).
-		if ( ! empty( $decoded['custom_meta'] ) && is_array( $decoded['custom_meta'] ) ) {
-			foreach ( $decoded['custom_meta'] as $meta_key => $meta_val ) {
-				$value = $meta_val[0] ?? null;
-				if ( is_string( $value ) && is_serialized( $value ) ) {
-					// See the note on the identical restore loop earlier in this file: an options
-					// array cannot be passed to maybe_unserialize(), so this uses unserialize()
-					// with allowed_classes => false (CWE-502, ClickUp 86d41zauw).
-					$value = unserialize( $value, array( 'allowed_classes' => false ) );
-				}
-				update_post_meta( $inserted_id, $meta_key, $value );
-			}
-		}
-
-		// 4f — Track homepage and shop page.
-		$title_lower = strtolower( $tpl_title );
-		if ( $home_page_id === 0 && ( str_contains( $title_lower, 'home' ) || str_contains( $title_lower, 'landing' ) ) ) {
-			$home_page_id = $inserted_id;
-		}
-		if ( $shop_page_id === 0 && ( str_contains( $title_lower, 'shop' ) || str_contains( $title_lower, 'store' ) ) ) {
-			$shop_page_id = $inserted_id;
-		}
-
-		// 4g — Collect widgets used in this page for bulk enable later.
-		if ( ! empty( $decoded['widget_list'] ) && is_array( $decoded['widget_list'] ) ) {
-			$widgets_to_enable = array_unique( array_merge( $widgets_to_enable, $decoded['widget_list'] ) );
-		}
-
-		$page_entry = [
-			'template_id' => $tpl_id,
-			'post_id'     => $inserted_id,
-			'title'       => $tpl_title,
-			'url'         => get_permalink( $inserted_id ),
-			'success'     => true,
-		];
-		$pages[] = $page_entry;
-
-		do_action( 'wdkit_site_step', 'import_pages', 'progress', $page_entry );
-	}
-
-	$steps['import_pages'] = [
-		'success' => count( $pages ) > 0,
-		'count'   => count( $pages ),
-		'errors'  => count( $errors ),
-	];
-
-	do_action( 'wdkit_site_step', 'import_pages', 'done', [
-		'pages'  => $pages,
-		'errors' => $errors,
-	] );
-
-	// ── Step 5: Enable required widgets ─────────────────────────────────────
-	if ( ! in_array( 'enable_widgets', $skip, true ) && has_filter( 'tpae_enable_selected_widgets' ) ) {
-		do_action( 'wdkit_site_step', 'enable_widgets', 'start', [] );
-
-		if ( ! empty( $widgets_to_enable ) ) {
-			apply_filters( 'tpae_enable_selected_widgets', [
-				'widgets'    => $widgets_to_enable,
-				'extensions' => [],
-			] );
-		}
-
-		$steps['enable_widgets'] = [ 'success' => true ];
-		do_action( 'wdkit_site_step', 'enable_widgets', 'done', [ 'widgets' => $widgets_to_enable ] );
-	}
-
-	// ── Step 6: Finalize — set homepage, site name, tagline ─────────────────
-	do_action( 'wdkit_site_step', 'finalize', 'start', [] );
-
-	$finalize_success = false;
-
-	if ( $home_page_id > 0 ) {
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $home_page_id );
-		$finalize_success = true;
-	}
-
-	if ( $shop_page_id > 0 ) {
-		update_option( 'woocommerce_shop_page_id', $shop_page_id );
-	}
-
-	if ( $site_name !== '' ) {
-		update_option( 'blogname', $site_name );
-	}
-
-	if ( $tagline !== '' ) {
-		update_option( 'blogdescription', $tagline );
-	}
-
-	$steps['finalize'] = [ 'success' => $finalize_success ];
-
-	do_action( 'wdkit_site_step', 'finalize', 'done', [
-		'home_page_id' => $home_page_id,
-		'shop_page_id' => $shop_page_id,
-		'site_url'     => get_site_url(),
-	] );
-
-	// ── Return ───────────────────────────────────────────────────────────────
-	return [
-		'success'      => count( $pages ) > 0,
-		'message'      => count( $pages ) > 0 ? 'Site created successfully.' : 'Site creation completed with errors.',
-		'site_url'     => get_site_url(),
-		'home_page_id' => $home_page_id,
-		'shop_page_id' => $shop_page_id,
-		'pages'        => $pages,
-		'steps'        => $steps,
-		'errors'       => $errors,
-	];
+	// ── Delegate ─────────────────────────────────────────────────────────────
+	// The three guards above are unchanged and still run first, in the same order, so an
+	// unauthenticated or under-privileged caller gets the same refusal it always got.
+	//
+	// Everything after them used to be ~280 lines of inline sequence here. It is now
+	// Wdkit_Import_Runner, reached through Wdkit_Import_Bridge, which preserves this
+	// function's args, its `wdkit_site_step` events and its return shape. What the caller
+	// gains is the work the inline version could not do: AI merge, image substitution and
+	// sideload, taxonomy, WooCommerce products, blog posts, navigation rewriting, global
+	// colours and typography, theme-builder conditions, and resume after a failure.
+	//
+	// Resume: the response now carries `session_id`. Passing it back as `session_id` on a
+	// later call re-runs only the templates that did not finish.
+	return Wdkit_Import_Bridge::create_full_site( $args );
 }
 
 // ════════════════════════════════════════════════════════════════════════════
 // Shared helpers
 // ════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Add this site's own credential to a kit-content request.
+ *
+ * Kit content is normally authenticated with the signed-in account's JWT. A sandbox has no
+ * signed-in account — it is created for the user, not by them — so the cloud accepts the site's
+ * poll token instead, which already identifies both the site and the account that owns it.
+ *
+ * Sent alongside the JWT rather than in place of it: when both are present the cloud prefers the
+ * JWT, so an ordinary logged-in site behaves exactly as before.
+ *
+ * @param array $args Cloud request arguments.
+ * @return array The same arguments, with poll_token and site_url added when this site has one.
+ */
+function wdkit_kit_import_with_site_identity( array $args ): array {
+	if ( ! class_exists( 'Wdkit_Import_Remote' ) ) {
+		return $args;
+	}
+
+	return array_merge( $args, Wdkit_Import_Remote::cloud_identity() );
+}
+
+/**
+ * Whether a kit-content request can be authenticated at all.
+ *
+ * Either credential is enough: an account JWT, or this site's own poll token.
+ *
+ * @param string $token Resolved cloud JWT, possibly ''.
+ * @return bool
+ */
+function wdkit_kit_import_can_authenticate( string $token ): bool {
+	if ( '' !== $token ) {
+		return true;
+	}
+
+	return class_exists( 'Wdkit_Import_Remote' ) && array() !== Wdkit_Import_Remote::cloud_identity();
+}
 
 /**
  * Resolve an active WDesignKit cloud token without depending on the abilities system.
