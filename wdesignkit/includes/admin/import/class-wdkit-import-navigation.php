@@ -250,6 +250,8 @@ if ( ! class_exists( 'Wdkit_Import_Navigation' ) ) {
 			'fp_content_template',
 			'protected_content_template',
 			'blockTemp',
+			// tp-product-listout's custom skin: the "Product Template Design" saved template.
+			'skin_template',
 		);
 
 		/**

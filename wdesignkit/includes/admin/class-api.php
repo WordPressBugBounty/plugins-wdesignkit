@@ -7220,9 +7220,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				update_option( 'page_on_front', $front_page_id );
 			}
 
-			if ( $shop_page_id && function_exists( 'wc_get_page_id' ) ) {
-				update_option( 'woocommerce_shop_page_id', $shop_page_id );
-			}
+			// The kit's Shop page is deliberately NOT made the WooCommerce shop page; see
+			// wdkit_release_imported_shop_page().
+			$this->wdkit_release_imported_shop_page();
 
 			// ── 4. Primary menu ─────────────────────────────────────────────────────────────
 			$t_menu  = microtime( true );
@@ -7585,6 +7585,36 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		}
 
 		/**
+		 * Plus Addons widgets whose Elementor widget type is not their enable key spelled with dashes.
+		 *
+		 * The addon enables a widget by turning the type's dashes into underscores and looking the
+		 * result up in its catalogue (`tp-post-title` -> `tp_post_title`). For two widgets the type
+		 * and the catalogue key were named independently, so that lookup never matches and the
+		 * widget stays off: Elementor then cannot resolve it and the page is saved without it
+		 * (the Mailchimp subscribe form in the Newsletter Popup and Coming Soon pages). The pairs
+		 * are the ones where the addon's own key => widget-type map (plus-library.php) disagrees
+		 * with that rule.
+		 *
+		 * @var array<string,string> Elementor widget type => the dashed form of the addon's key.
+		 */
+		private static $widget_enable_aliases = array(
+			'tp-mailchimp-subscribe' => 'tp-mailchimp',
+			'tp-gravityt-form'       => 'tp-gravity-form',
+		);
+
+		/**
+		 * The name to hand the addon's enabler for a given Elementor widget type.
+		 *
+		 * @param string $type Elementor widget type.
+		 * @return string
+		 */
+		private static function wdkit_widget_enable_name( $type ) {
+			$type = (string) $type;
+
+			return isset( self::$widget_enable_aliases[ $type ] ) ? self::$widget_enable_aliases[ $type ] : $type;
+		}
+
+		/**
 		 * Which of $types the addon has not actually recorded as enabled.
 		 *
 		 * This deliberately reads the persisted enable list rather than the live widget registry,
@@ -7656,7 +7686,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			foreach ( $types as $type ) {
 				// Same normalisation the addon applies before storing (`tp-post-title` -> `tp_post_title`).
-				$slug = str_replace( '-', '_', $type );
+				$slug = str_replace( '-', '_', self::wdkit_widget_enable_name( $type ) );
 
 				if ( in_array( $slug, $managed, true ) && ! in_array( $slug, $enabled, true ) ) {
 					$missing[] = $type;
@@ -8497,6 +8527,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 			// have no registry to check against.
 			$requested = is_array( $widget_list ) ? $widget_list : array();
 
+			// What the addon's enabler is given: widget types renamed to the key it knows them by.
+			// $requested keeps the real types, which is what verification and Elementor use.
+			$widget_list = array_values( array_unique( array_map( array( __CLASS__, 'wdkit_widget_enable_name' ), $widget_list ) ) );
+
 			if ( ! has_filter( 'tpae_enable_selected_widgets' ) ) {
 				if ( class_exists( 'Tpae_Hooks' ) && method_exists( 'Tpae_Hooks', 'get_instance' ) ) {
 					Tpae_Hooks::get_instance();
@@ -8552,8 +8586,17 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					if ( class_exists( '\TheplusAddons\L_Theplus_Widgets_Include' ) && method_exists( '\TheplusAddons\L_Theplus_Widgets_Include', 'get_instance' ) ) {
 						\TheplusAddons\L_Theplus_Widgets_Include::get_instance()->add_widgets( $widgets_manager );
 					}
-					if ( class_exists( '\TheplusAddons\Theplus_Widgets_Include' ) && method_exists( '\TheplusAddons\Theplus_Widgets_Include', 'get_instance' ) ) {
-						\TheplusAddons\Theplus_Widgets_Include::get_instance()->add_widgets( $widgets_manager );
+					// The Pro add-on loads each widget file with a plain `require` (the Lite one uses
+					// require_once), so Pro's add_widgets() must run exactly once per request: a second
+					// pass redeclares the widget classes, a fatal ("Cannot declare class ...") that
+					// try/catch cannot intercept and that aborts the import at "Installing Plugins & Theme".
+					// Calling it by hand is also what trips it the first time: register() makes Elementor
+					// lazily run init_widgets(), which fires `elementor/widgets/register`, and Pro's own
+					// hook then loads the same files again. So let Elementor initialise the manager itself
+					// (Pro registers through that hook, against the options saved above) and never call
+					// Pro's add_widgets() directly.
+					if ( ! did_action( 'elementor/widgets/register' ) && method_exists( $widgets_manager, 'get_widget_types' ) ) {
+						$widgets_manager->get_widget_types();
 					}
 				} catch ( \Throwable $e ) {
 					// Best-effort in-memory registration.
@@ -9725,12 +9768,44 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		}
 
 		/**
+		 * Keep an imported Shop page from being the WooCommerce shop page.
+		 *
+		 * WooCommerce loads whichever page is set as the shop page as a PRODUCT ARCHIVE, and on an
+		 * archive Elementor does not render that page's design: the page's own document is absent
+		 * from the output and only its raw text shows, unstyled. The kit's Shop page is built as an
+		 * ordinary Elementor page (filters, product grid, breadcrumb), so it is left as one, and
+		 * is reached by the kit's own links.
+		 *
+		 * An earlier import (or an earlier version of this importer) may already have pointed the
+		 * option at a Shop page of ours. That page is drafted by the next reset, so the stale id is
+		 * cleared too. A shop page the site owner chose, which is published and not ours, is left
+		 * exactly as it is.
+		 *
+		 * @return void
+		 */
+		private function wdkit_release_imported_shop_page() {
+			$current = (int) get_option( 'woocommerce_shop_page_id' );
+
+			if ( $current <= 0 ) {
+				return;
+			}
+
+			$page = get_post( $current );
+			$ours = $page && class_exists( 'Wdkit_Import_Session' )
+				&& get_post_meta( $current, Wdkit_Import_Session::POST_OWNER_META, true );
+
+			if ( ! $page || 'publish' !== $page->post_status || $ours ) {
+				update_option( 'woocommerce_shop_page_id', 0 );
+			}
+		}
+
+		/**
 		 * Apply a kit's site settings: front page, shop page, name and tagline.
 		 *
 		 * Extracted from update_site_setting() so the PHP import runner can reach it without
 		 * `$_POST`. The set of options written is closed and hard-coded here —
-		 * `show_on_front`, `page_on_front`, `woocommerce_shop_page_id`, `blogname`,
-		 * `blogdescription`. There is deliberately no way for a caller to name an option.
+		 * `show_on_front`, `page_on_front`, `blogname`, `blogdescription`, plus clearing a
+		 * `woocommerce_shop_page_id` that points at an imported page (never setting it). There is deliberately no way for a caller to name an option.
 		 *
 		 * Theme-builder condition rewriting still runs through
 		 * wdkit_nxt_thembuilder_update(), which now takes its page map as an argument.
@@ -9757,9 +9832,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				! empty( $args['defer_attachment_downloads'] )
 			);
 
-			if ( ! empty( $shop_id ) ) {
-				update_option( 'woocommerce_shop_page_id', $shop_id );
-			}
+			// $shop_id is accepted for compatibility but no longer applied; see
+			// wdkit_release_imported_shop_page().
+			$this->wdkit_release_imported_shop_page();
 
 			if ( $temp_id ) {
 				update_option( 'show_on_front', $temp_type );
