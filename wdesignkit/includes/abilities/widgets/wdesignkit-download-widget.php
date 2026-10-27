@@ -86,7 +86,7 @@ wp_register_ability('wdesignkit/download-widget', [
 
 function wdesignkit_mcp_download_widget(array $input): array {
     // Timeout guard: cloud download uses a 60s HTTP timeout + optional 30s thumbnail fetch.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

@@ -200,7 +200,7 @@ wp_register_ability('wdesignkit/save-template-full', [
 ]);
 
 function wdesignkit_mcp_save_template_full(array $input): array {
-    set_time_limit(150);
+    wdesignkit_mcp_set_time_limit(150);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {

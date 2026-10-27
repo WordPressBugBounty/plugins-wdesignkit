@@ -331,14 +331,39 @@ if ( ! class_exists( 'Wdkit_Import_Dependencies' ) ) {
 				try {
 					$response = $api->wdkit_install_dependency_data( $dependency );
 
+					/* The installer answers success for a plugin that is already on disk without
+					 * checking that activating it worked (no capability, a fatal on activation, an
+					 * unmet "Requires Plugins" header). Counting that as installed misreported it,
+					 * and every resume "installed" it again, so a run yielding for fresh installs
+					 * could restart forever. Active is what installed has to mean here. */
+					$checkable = ( isset( $dependency['type'] ) && 'theme' === $dependency['type'] ) || ! empty( $dependency['plugin_slug'] );
+
+					if ( ! empty( $response['success'] ) && $checkable && ! self::is_satisfied( $dependency ) ) {
+						$response = array(
+							'success'     => false,
+							'reason'      => 'not_activated',
+							'description' => __( 'It was installed but could not be activated.', 'wdesignkit' ),
+						);
+					}
+
 					if ( ! empty( $response['success'] ) ) {
 						$result['installed'][] = $label;
 
 						$row( $dependency, $label, 'active' );
 					} else {
+						/* The plugin installer reports its reason in `message` (e.g. "Pro Plugin",
+						 * a plugins_api or upgrader error), not `description`. */
+						$reason = '';
+						if ( ! empty( $response['description'] ) ) {
+							$reason = (string) $response['description'];
+						} elseif ( ! empty( $response['message'] ) ) {
+							$reason = is_array( $response['message'] ) ? implode( ' ', array_map( 'strval', array_filter( $response['message'], 'is_scalar' ) ) ) : (string) $response['message'];
+						}
+
 						$result['failed'][] = array(
 							'slug'    => $label,
-							'message' => isset( $response['description'] ) ? (string) $response['description'] : '',
+							'message' => $reason,
+							'reason'  => isset( $response['reason'] ) ? (string) $response['reason'] : 'install_failed',
 						);
 
 						$row( $dependency, $label, 'fail' );

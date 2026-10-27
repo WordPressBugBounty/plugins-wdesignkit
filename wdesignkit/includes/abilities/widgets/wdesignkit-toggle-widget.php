@@ -220,7 +220,7 @@ function wdesignkit_mcp_find_widget_by_id(string $widget_id): ?array {
 }
 
 function wdesignkit_mcp_activate_widget(array $input): array {
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $widget_id = sanitize_text_field($input['widget_id'] ?? '');
 
@@ -292,7 +292,7 @@ function wdesignkit_mcp_activate_widget(array $input): array {
 }
 
 function wdesignkit_mcp_deactivate_widget(array $input): array {
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $widget_id = sanitize_text_field($input['widget_id'] ?? '');
     $builder   = sanitize_text_field($input['builder'] ?? '');

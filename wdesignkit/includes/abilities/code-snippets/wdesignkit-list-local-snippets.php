@@ -63,7 +63,7 @@ wp_register_ability('wdesignkit/list-local-snippets', [
 ]);
 
 function wdesignkit_mcp_list_local_snippets(array $input): array {
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $status_filter = sanitize_text_field((string) ($input['status'] ?? ''));
     $search        = strtolower(sanitize_text_field((string) ($input['search'] ?? '')));

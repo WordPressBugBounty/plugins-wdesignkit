@@ -149,7 +149,7 @@ wp_register_ability('wdesignkit/update-snippet-details', [
 
 function wdesignkit_mcp_save_snippet(array $input): array {
     // Timeout guard: cloud snippet upload uses the default 60s HTTP timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL') || !defined('WDKIT_VERSION')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -303,7 +303,7 @@ function wdesignkit_mcp_save_snippet(array $input): array {
 
 function wdesignkit_mcp_update_snippet_details(array $input): array {
     // Timeout guard: local file write + optional WP post update.
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $post_id     = (int) ($input['post_id'] ?? 0);
     $file_id     = sanitize_text_field((string) ($input['file_id'] ?? ''));

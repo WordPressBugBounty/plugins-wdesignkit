@@ -169,7 +169,7 @@ wp_register_ability('wdesignkit/favourite-snippet', [
 
 function wdesignkit_mcp_get_my_snippets(array $input): array {
     // Timeout guard: cloud HTTP call uses the default 60s timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -200,7 +200,7 @@ function wdesignkit_mcp_get_my_snippets(array $input): array {
 
 function wdesignkit_mcp_get_my_favourite_snippets(array $input): array {
     // Timeout guard: cloud HTTP call uses the default 60s timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -231,7 +231,7 @@ function wdesignkit_mcp_get_my_favourite_snippets(array $input): array {
 
 function wdesignkit_mcp_favourite_snippet(array $input): array {
     // Timeout guard: cloud HTTP call uses the default 60s timeout; guards both favorite and unfavorite paths.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

@@ -76,7 +76,7 @@ wp_register_ability('wdesignkit/replace-template', [
 ]);
 
 function wdesignkit_mcp_replace_template(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {

@@ -251,7 +251,7 @@ wp_register_ability('wdesignkit/set-template-link', [
 ]);
 
 function wdesignkit_mcp_set_template_link(array $input): array {
-    set_time_limit(120);
+    wdesignkit_mcp_set_time_limit(120);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {

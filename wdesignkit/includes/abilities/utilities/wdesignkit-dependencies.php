@@ -205,7 +205,7 @@ function wdesignkit_mcp_dependency_manifest(): array {
 
 function wdesignkit_mcp_check_dependencies(array $input): array {
     // Guard against slow filesystem scans timing out on all-builders calls.
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     if (!function_exists('is_plugin_active')) {
         include_once ABSPATH . 'wp-admin/includes/plugin.php';

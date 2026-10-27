@@ -79,7 +79,7 @@ wp_register_ability('wdesignkit/get-my-cloud-widgets', [
 
 function wdesignkit_mcp_get_my_cloud_widgets(array $input): array {
     // Timeout guard: cloud HTTP call uses the default 60s timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

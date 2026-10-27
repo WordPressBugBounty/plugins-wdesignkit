@@ -944,6 +944,24 @@ if ( ! function_exists( 'wdesignkit_cloud_session_key' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wdesignkit_mcp_set_time_limit' ) ) {
+	/**
+	 * Raise the PHP time limit for a long ability call, where the host allows it.
+	 *
+	 * Hosts that list set_time_limit in disable_functions remove it entirely on PHP 8, so a
+	 * bare call is a fatal "Call to undefined function" that fails the whole ability. Same
+	 * guard as the admin AJAX handlers in includes/admin/class-api.php.
+	 *
+	 * @param int $seconds Time limit in seconds.
+	 * @return void
+	 */
+	function wdesignkit_mcp_set_time_limit( $seconds ) {
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( (int) $seconds ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
+	}
+}
+
 if ( ! function_exists( 'wdesignkit_mcp_remember_session' ) ) {
 	/**
 	 * Record which cloud account the stored session belongs to.
@@ -1231,11 +1249,28 @@ if ( ! class_exists( 'Wdk_Ability_Main' ) ) {
 		}
 
 		/**
+		 * Whether the "Abilities" switch in Features Manager is on.
+		 *
+		 * Defaults to on: sites that never saved the setting keep their abilities.
+		 *
+		 * @return bool
+		 */
+		public static function wdk_abilities_enabled() {
+			$settings = get_option( 'wkit_settings_panel', false );
+
+			return ! is_array( $settings ) || ! isset( $settings['abilities'] ) || ! empty( $settings['abilities'] );
+		}
+
+		/**
 		 * Register the WDesignKit ability category.
 		 *
 		 * @since 2.3.0
 		 */
 		public function wdk_register_ability_category() {
+			if ( ! self::wdk_abilities_enabled() ) {
+				return;
+			}
+
 			if ( ! function_exists( 'wp_has_ability_category' ) || ! function_exists( 'wp_register_ability_category' ) ) {
 				return;
 			}
@@ -1256,6 +1291,10 @@ if ( ! class_exists( 'Wdk_Ability_Main' ) ) {
 		 * @since 2.3.0
 		 */
 		public function wdk_register_abilities() {
+			if ( ! self::wdk_abilities_enabled() ) {
+				return;
+			}
+
 			if ( ! function_exists( 'wp_register_ability' ) || ! function_exists( 'wp_has_ability_category' ) ) {
 				return;
 			}

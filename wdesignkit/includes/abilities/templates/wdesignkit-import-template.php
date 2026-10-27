@@ -20,8 +20,9 @@ wp_register_ability('wdesignkit/import-template', [
         'type'       => 'object',
         'properties' => [
             'template_id' => [
-                'type'        => 'string',
-                'description' => 'Template ID to import (from wdesignkit/list-templates, wdesignkit/find-template, or wdesignkit/browse-presets).',
+                // Search abilities return ids as integers; accept them as-is.
+                'type'        => ['string', 'integer'],
+                'description' => 'Template ID to import (from wdesignkit/list-templates, wdesignkit/find-template, wdesignkit/browse-presets, wdesignkit/find-marketplace-templates, or wdesignkit/browse-kit-pages).',
             ],
             'editor' => [
                 'type'        => 'string',
@@ -90,6 +91,7 @@ wp_register_ability('wdesignkit/import-template', [
             'instructions' => implode("\n", [
                 'Imports a template\'s content (returns it; insertion into a builder must be done by the caller).',
                 'Requires WDesignKit cloud login.',
+                'Pass editor from the marketplace result. If the returned payload declares a different builder, the ability returns an error and removes the mismatched content from the response.',
                 'with_dummy_data covers the "Import Template — Dummy Data" flow; the corresponding "Import Template — AI Import" flow lives in wdesignkit/ai-import-template.',
                 'custom_meta only takes effect when a current post context exists (e.g. running inside an editor request).',
             ]),
@@ -101,7 +103,7 @@ wp_register_ability('wdesignkit/import-template', [
 ]);
 
 function wdesignkit_mcp_import_template(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {
@@ -141,7 +143,30 @@ function wdesignkit_mcp_import_template(array $input): array {
         'plugins'            => $plugins,
     ];
 
+    // Same as wdkit_import_template() in includes/admin/class-api.php: the cloud answers
+    // "Login Error" to an import without the site identity, even with a valid token.
+    if (function_exists('wdkit_kit_import_with_site_identity')) {
+        $args = wdkit_kit_import_with_site_identity($args);
+    }
+
     $response = wdesignkit_mcp_template_cloud_call($api_type, $args, 'json');
+
+    // The cloud may return a valid template even when the caller names the wrong editor.
+    // Detect formats that identify themselves so the caller does not insert Elementor data
+    // into Gutenberg (or block markup into Elementor) as if the import succeeded.
+    $content_builder = wdesignkit_mcp_template_content_builder($response['content'] ?? '');
+    if ($editor !== '' && $content_builder !== '' && $editor !== $content_builder) {
+        $response['content'] = '';
+        $response['content_builder'] = $content_builder;
+        // The cloud's own success:true no longer holds once the content is withheld.
+        $response['success'] = false;
+
+        return [
+            'success'  => false,
+            'message'  => sprintf('This template contains %s content. Retry with editor="%s".', $content_builder, $content_builder),
+            'response' => $response,
+        ];
+    }
 
     if ($custom_meta && !empty($response['content'])) {
         $current_post_id = get_the_ID();
@@ -175,4 +200,46 @@ function wdesignkit_mcp_import_template(array $input): array {
         'message'  => $response['message'] ?? '',
         'response' => $response,
     ];
+}
+
+/**
+ * Identify a returned marketplace payload's builder when its content declares one.
+ * Unknown/legacy formats return an empty string and retain their existing behavior.
+ *
+ * @param mixed $content Cloud response content.
+ * @return string 'elementor', 'gutenberg', or '' when not identifiable.
+ */
+function wdesignkit_mcp_template_content_builder($content): string {
+    if (!is_string($content) || $content === '') {
+        return '';
+    }
+
+    $decoded = $content;
+    for ($depth = 0; $depth < 2 && is_string($decoded); $depth++) {
+        $json = json_decode($decoded, true);
+        if (!is_array($json)) {
+            break;
+        }
+        $decoded = $json;
+    }
+
+    if (is_array($decoded)) {
+        $file_type = strtolower((string) ($decoded['file_type'] ?? ''));
+        if ($file_type === 'elementor') {
+            return 'elementor';
+        }
+        if (in_array($file_type, ['gutenberg', 'wp_block', 'wp_template', 'wp_template_part', 'block'], true)) {
+            return 'gutenberg';
+        }
+    }
+
+    if (preg_match('/<!--\s*wp:/', $content)) {
+        return 'gutenberg';
+    }
+    // Also matches JSON-escaped Elementor data (\"elType\":), as nested payloads arrive.
+    if (preg_match('/\\\\?"(?:elType|widgetType)\\\\?"\s*:/', $content)) {
+        return 'elementor';
+    }
+
+    return '';
 }

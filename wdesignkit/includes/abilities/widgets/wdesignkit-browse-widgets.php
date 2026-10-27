@@ -92,7 +92,7 @@ wp_register_ability('wdesignkit/browse-widgets', [
 
 function wdesignkit_mcp_browse_widgets(array $input): array {
     // Timeout guard: marketplace HTTP call uses a 30s timeout; guard PHP execution with a comfortable buffer.
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

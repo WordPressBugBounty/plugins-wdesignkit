@@ -96,6 +96,16 @@ if ( ! class_exists( 'Wdkit_Depends_Installer' ) ) {
 					'success' => false,
 				);
 
+				/* The AJAX gate only checks manage_options. A multisite sub-site admin holds
+				 * that but not install_plugins, and DISALLOW_FILE_MODS is enforced only through
+				 * this capability, so check it as the import runner and dependencies ability do. */
+				if ( ! current_user_can( 'install_plugins' ) ) {
+					$status['status']  = 'missing_install_plugins_capability';
+					$status['message'] = __( 'You do not have permission to install plugins on this site.', 'wdesignkit' );
+
+					return $status;
+				}
+
 				$plugin_api = plugins_api(
 					'plugin_information',
 					array(

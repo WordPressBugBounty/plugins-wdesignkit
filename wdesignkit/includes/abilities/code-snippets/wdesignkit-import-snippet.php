@@ -104,7 +104,7 @@ wp_register_ability('wdesignkit/import-snippet', [
 ]);
 
 function wdesignkit_mcp_import_snippet(array $input): array {
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     $payload = is_array($input['snippet_payload'] ?? null) ? $input['snippet_payload'] : [];
 

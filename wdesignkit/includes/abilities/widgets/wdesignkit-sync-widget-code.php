@@ -83,7 +83,7 @@ wp_register_ability('wdesignkit/sync-widget-code', [
 ]);
 
 function wdesignkit_mcp_sync_widget_code(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_BUILDER_PATH')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

@@ -154,7 +154,7 @@ if ( ! class_exists( 'Wdkit_Plugin_Page' ) ) {
 						'join-community'   => '<a href="' . esc_url( 'https://www.facebook.com/groups/wdesignkit' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Join Community', 'wdesignkit' ) . '</a>',
 						'whats-new?'       => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/updates' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( "What's New?", 'wdesignkit' ) . '</a>',
 						'request-feature'  => '<a href="' . esc_url( 'https://roadmap.wdesignkit.com/boards/feature-requests' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request Feature', 'wdesignkit' ) . '</a>',
-						'rate-stars'       => '<a href="' . esc_url( 'https://wordpress.org/support/plugin/wdesignkit/reviews/?filter=5' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Rate 5 Stars', 'wdesignkit' ) . '</a>',
+						'rate-stars'       => '<a href="' . esc_url( 'https://wordpress.org/support/plugin/wdesignkit/reviews/?utm_source=wdesignkit-plugin&utm_medium=plugins_page&utm_campaign=wdesignkit_2_7_2#new-post' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Rate 5 Stars', 'wdesignkit' ) . '</a>',
 					);
 
 					$plugin_meta = array_merge( $plugin_meta, $new_links );

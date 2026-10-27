@@ -68,7 +68,7 @@ wp_register_ability('wdesignkit/get-snippet-kit', [
 
 function wdesignkit_mcp_get_snippet_kit(array $input): array {
     // Timeout guard: cloud kit-bundle HTTP call uses the default 60s timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

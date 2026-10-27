@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 removeReviewPopup();
-                window.open('https://wordpress.org/support/plugin/wdesignkit/reviews/#new-post', '_blank');
+                window.open('https://wordpress.org/support/plugin/wdesignkit/reviews/?utm_source=wdesignkit-plugin&utm_medium=review_popup&utm_campaign=wdesignkit_2_7_2#new-post', '_blank');
             } else if (e.target.closest('.wkit-minus-review')) {
 
                 if (e.target.closest('.wkit-rating-one')) {

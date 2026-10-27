@@ -79,7 +79,7 @@ wp_register_ability('wdesignkit/delete-snippet-everywhere', [
 ]);
 
 function wdesignkit_mcp_delete_snippet_everywhere(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     $snippet_id = sanitize_text_field((string) ($input['snippet_id'] ?? ''));
     $file_id    = sanitize_text_field((string) ($input['file_id'] ?? ''));

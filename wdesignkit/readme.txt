@@ -5,7 +5,7 @@ Tags: ai website builder, website templates, gutenberg blocks, bricks builder, e
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.7.1
+Stable tag: 2.7.2
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -106,6 +106,13 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 5. Model Context Protocol (MCP) : The AI Widget Builder, AI Code Snippets, and MCP Workflow features connect WDesignKit to a third-party AI tool of your choice (such as Claude) over the Model Context Protocol. Your prompts, and where applicable your existing widget/template code, are sent to that AI tool to generate the result. This only happens when you actively connect and use an AI tool via MCP; review the privacy policy and terms of the AI tool you connect, in addition to WDesignKit's [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 
 == Changelog ==
+
+2.7.2 - 27 Oct 2026
+New: Added Find Marketplace Templates so AI assistants can search and import marketplace pages and sections.
+New: A short "What next?" guide after your first kit import, with quick links to import a full kit, try the AI widget builder and save to Workspace.
+Improved: Marketplace kit search returns clearer results and surfaces exact matches from other plans when the selected free/pro tier has no matches.
+Improved: Full kit imports can resume after plugin installation and report plugins that could not be installed.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.7.1 - 12 Oct 2026
 Fixed: The WooCommerce kit import could stop at "Installing Plugins & Theme".

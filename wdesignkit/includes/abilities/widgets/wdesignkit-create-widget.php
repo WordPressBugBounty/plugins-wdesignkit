@@ -1665,7 +1665,7 @@ function wdesignkit_mcp_help_html(string $helper_link = ''): string {
          . '<a class="wdk-docs-link" style="' . $ls . '" href="https://www.facebook.com/wdesignkit" target="_blank" rel="noopener noreferrer">Join Facebook Community</a>'
          . '</div>'
          . '<div class="need-help" id="elementor-panel__editor__help">'
-         . '<a id="elementor-panel__editor__help__link" href="https://wordpress.org/support/plugin/wdesignkit/" target="_blank" style="' . $bs . '">Need Help <i class="eicon-help-o" aria-hidden="true"></i></a>'
+         . '<a id="elementor-panel__editor__help__link" href="https://wordpress.org/support/plugin/wdesignkit/?utm_source=wdesignkit-plugin&amp;utm_medium=widget_editor&amp;utm_campaign=wdesignkit_2_7_2" target="_blank" style="' . $bs . '">Need Help <i class="eicon-help-o" aria-hidden="true"></i></a>'
          . '</div>'
          . '</div>';
 }

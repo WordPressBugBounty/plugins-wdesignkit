@@ -63,7 +63,7 @@ wp_register_ability('wdesignkit/export-widget', [
 
 function wdesignkit_mcp_export_widget(array $input): array {
     // Timeout guard: local ZipArchive creation — purely filesystem, should be fast.
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_PATH')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

@@ -287,7 +287,7 @@ function wdesignkit_mcp_dl_prefix_js(string $js): string {
 
 function wdesignkit_mcp_download_plugin(array $input): array {
     // Timeout guard: the cloud builds and zips the plugin during this request.
-    set_time_limit(120);
+    wdesignkit_mcp_set_time_limit(120);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

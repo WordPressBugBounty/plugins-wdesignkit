@@ -75,7 +75,7 @@ wp_register_ability('wdesignkit/browse-template-images', [
 ]);
 
 function wdesignkit_mcp_browse_template_images(array $input): array {
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

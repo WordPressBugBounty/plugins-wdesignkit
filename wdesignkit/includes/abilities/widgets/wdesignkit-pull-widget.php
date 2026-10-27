@@ -85,7 +85,7 @@ wp_register_ability('wdesignkit/pull-widget', [
 ]);
 
 function wdesignkit_mcp_pull_widget(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

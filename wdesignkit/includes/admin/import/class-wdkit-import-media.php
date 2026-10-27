@@ -399,9 +399,16 @@ if ( ! class_exists( 'Wdkit_Import_Media' ) ) {
 			}
 
 			$relative = ltrim( substr( $url, strlen( $uploads['baseurl'] ) ), '/' );
-			$path     = trailingslashit( $uploads['basedir'] ) . $relative;
 
-			return file_exists( $path ) ? $path : null;
+			// Strip any query/fragment, then refuse "../" so the path stays inside uploads.
+			$relative = substr( $relative, 0, strcspn( $relative, '?#' ) );
+			if ( '' === $relative || 0 !== validate_file( $relative ) ) {
+				return null;
+			}
+
+			$path = trailingslashit( $uploads['basedir'] ) . $relative;
+
+			return is_file( $path ) ? $path : null;
 		}
 
 		/**

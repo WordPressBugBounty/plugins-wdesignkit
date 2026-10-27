@@ -359,6 +359,9 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'WDKIT_SERVER_PATH'             => WDKIT_SERVER_PATH,
 					'WDKIT_VERSION'                 => WDKIT_VERSION,
 
+					/** One-time in-app prompts: review request and the first-import "What next" panel. */
+					'user_prompts'                  => class_exists( '\\Wdkit_User_Prompts' ) ? \Wdkit_User_Prompts::get_flags() : array(),
+
 					'gutenberg_template'            => Wdkit_Wdesignkit::wdkit_is_compatible( 'gutenberg_template', 'template' ),
 
 					/**

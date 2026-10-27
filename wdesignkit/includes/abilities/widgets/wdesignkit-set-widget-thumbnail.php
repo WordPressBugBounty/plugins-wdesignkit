@@ -86,7 +86,7 @@ wp_register_ability('wdesignkit/set-widget-thumbnail', [
 ]);
 
 function wdesignkit_mcp_set_widget_thumbnail(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_PATH')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

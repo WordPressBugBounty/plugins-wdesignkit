@@ -69,7 +69,7 @@ wp_register_ability('wdesignkit/push-widget', [
 
 function wdesignkit_mcp_push_widget(array $input): array {
     // Timeout guard: cloud push uses a 60s HTTP timeout; set PHP limit beyond that.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_BUILDER_PATH') || !defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

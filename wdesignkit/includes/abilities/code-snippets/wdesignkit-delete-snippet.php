@@ -62,7 +62,7 @@ wp_register_ability('wdesignkit/delete-snippet', [
 
 function wdesignkit_mcp_delete_snippet(array $input): array {
     // Timeout guard: cloud delete call uses the default 60s HTTP timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

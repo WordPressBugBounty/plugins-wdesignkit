@@ -118,7 +118,7 @@ wp_register_ability('wdesignkit/get-existing-snippet', [
 
 function wdesignkit_mcp_get_snippet_info(array $input): array {
     // Timeout guard: local DB query + optional file-based class call.
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $post_id = (int) ($input['post_id'] ?? 0);
     $file_id = sanitize_text_field((string) ($input['file_id'] ?? ''));
@@ -221,7 +221,7 @@ function wdesignkit_mcp_get_snippet_info(array $input): array {
 
 function wdesignkit_mcp_get_existing_snippet(array $input): array {
     // Timeout guard: cloud HTTP call uses the default 60s timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

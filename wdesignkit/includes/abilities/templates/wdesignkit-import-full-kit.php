@@ -24,7 +24,8 @@ wp_register_ability('wdesignkit/import-full-kit', [
         'type'       => 'object',
         'properties' => [
             'kit_id' => [
-                'type'        => 'string',
+                // wdesignkit/browse-kits returns ids as integers; accept them as-is.
+                'type'        => ['string', 'integer'],
                 'description' => 'WDesignKit kit ID (from wdesignkit/browse-kits).',
             ],
             'editor' => [
@@ -34,7 +35,7 @@ wp_register_ability('wdesignkit/import-full-kit', [
             ],
             'templates' => [
                 'type'        => 'array',
-                'description' => 'The kit\'s page templates (from wdesignkit/browse-kit-pages). Each item: {"id": "<template id>", "title": "Home", "type": "page", "wp_post_type": "page"}. id and title are used; a title containing "home"/"landing" becomes the front page.',
+                'description' => 'The kit\'s page templates — pass wdesignkit/browse-kit-pages "results" unchanged. Each item: {"id": "<template id>", "title": "Home", "type": "page", "wp_post_type": "page", "post_url": "...", "plugins_id": [...], "global_data": {...}}. post_url, plugins_id and global_data drive internal-link rewriting, plugin installs and the kit palette; a title containing "home"/"landing" becomes the front page.',
                 'items'       => ['type' => 'object'],
                 'minItems'    => 1,
             ],
@@ -45,6 +46,10 @@ wp_register_ability('wdesignkit/import-full-kit', [
             'tagline' => [
                 'type'        => 'string',
                 'description' => 'Optional site tagline (blogdescription).',
+            ],
+            'session_id' => [
+                'type'        => 'string',
+                'description' => 'Resume handle. Leave empty on the first call. When a result has restart:true (plugins were just installed and need a fresh request) or status "partial", call again with the same kit_id/templates and this session_id: finished steps are skipped and only what is left runs.',
             ],
             'skip' => [
                 'type'        => 'array',
@@ -69,6 +74,14 @@ wp_register_ability('wdesignkit/import-full-kit', [
             'pages'        => ['type' => 'array'],
             'steps'        => ['type' => ['object', 'array']],
             'errors'       => ['type' => 'array'],
+            'restart'      => ['type' => 'boolean'],
+            'session_id'   => ['type' => 'string'],
+            'status'       => ['type' => 'string'],
+            'needs_attention' => ['type' => 'boolean'],
+            'styling_pending' => [
+                'type'        => 'boolean',
+                'description' => 'True when the pages were imported but the Gutenberg design tokens (plus-global.css) could not be built without a browser: colours, fonts and spacing stay undefined until the site is opened once in the block editor.',
+            ],
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_import_full_kit',
@@ -83,7 +96,11 @@ wp_register_ability('wdesignkit/import-full-kit', [
                 'Requires WDesignKit cloud login.',
                 'Flow: wdesignkit/browse-kits (find the kit → kit_id) → wdesignkit/browse-kit-pages (list the kit\'s pages → templates) → this ability.',
                 'templates is the array of the kit\'s pages; each needs at least an id and title.',
-                'Returns per-page results plus a per-step breakdown; a page in "errors" failed to import.',
+                'Returns per-page results plus a per-step breakdown; a page in "errors" failed to import, and a "dependency_failed" error names a plugin that could not be installed (its widgets are missing from the pages that use it).',
+                'If the result has restart:true, the import is NOT finished: required plugins were just installed and only load in a new request. Call this ability again with the same arguments plus session_id from the result, and repeat until restart is false. Do not report the import as done before that. While restart is true, success is false only because no page exists yet - it is not a failure; check restart before success.',
+                'styling_pending:true means the pages exist but their design tokens were not built (that needs a browser). Tell the user to open the site, or any imported page, once in the WordPress block editor to finish the styling.',
+                'status "partial" means some items failed: call again with session_id ONCE to retry only those (a failed download can succeed on retry). If the same errors come back, stop and tell the user - a Pro plugin without a licence, a plugin that will not activate, or one this user may not install does not clear by retrying.',
+                'needs_attention:true means "errors" holds something to tell the user even when the import finished. A "reimport_needed" error means a plugin was installed only after the pages were saved, so those pages are still missing its widgets; retrying does not fix it - tell the user, and re-import the affected pages if they want them restored.',
             ]),
             'readonly'    => false,
             'destructive' => true,
@@ -93,7 +110,7 @@ wp_register_ability('wdesignkit/import-full-kit', [
 ]);
 
 function wdesignkit_mcp_import_full_kit(array $input): array {
-    set_time_limit(300);
+    wdesignkit_mcp_set_time_limit(300);
 
     if (!defined('WDKIT_BUILDER_PATH') || !class_exists('WDesignKit_Data_Query')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -135,6 +152,13 @@ function wdesignkit_mcp_import_full_kit(array $input): array {
         'skip'      => $skip,
     ];
 
+    // Resume an earlier run (see the session_id input). The hook hands it to
+    // Wdkit_Import_Bridge::create_full_site(), which re-runs only unfinished steps.
+    $session_id = sanitize_text_field((string) ($input['session_id'] ?? ''));
+    if ($session_id !== '') {
+        $args['session_id'] = $session_id;
+    }
+
     // The master hook (wdkit_create_full_site) does all six steps and returns a fully-formed
     // result array. It is registered in class-wdkit-kit-import-hook.php.
     if (!has_filter('wdkit_create_full_site')) {
@@ -156,5 +180,10 @@ function wdesignkit_mcp_import_full_kit(array $input): array {
         'pages'        => is_array($result['pages'] ?? null) ? $result['pages'] : [],
         'steps'        => is_array($result['steps'] ?? null) ? $result['steps'] : [],
         'errors'       => is_array($result['errors'] ?? null) ? $result['errors'] : [],
+        'restart'      => !empty($result['restart']),
+        'session_id'   => (string) ($result['session_id'] ?? ''),
+        'status'       => (string) ($result['status'] ?? ''),
+        'needs_attention' => !empty($result['needs_attention']),
+        'styling_pending' => !empty($result['styling_pending']),
     ];
 }

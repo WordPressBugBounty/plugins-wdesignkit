@@ -74,6 +74,7 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 					'gutenberg_template' => true,
 					'elementor_template' => true,
 					'code_snippet'       => true,
+					'abilities'          => true,
 					'cross_copy_paste'   => false,
 					'cross_copy_paste_elementor' => true,
 					'cross_copy_paste_gutenberg' => true,

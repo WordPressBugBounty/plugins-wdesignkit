@@ -78,7 +78,7 @@ wp_register_ability('wdesignkit/import-widget', [
 
 function wdesignkit_mcp_import_widget(array $input): array {
     // Timeout guard: local filesystem write + optional 30s thumbnail download.
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     if (!defined('WDKIT_BUILDER_PATH')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

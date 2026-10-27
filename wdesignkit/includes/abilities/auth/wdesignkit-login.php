@@ -344,6 +344,38 @@ wp_register_ability('wdesignkit/get-social-login-url', [
 
 // === Callback implementations ===
 
+/**
+ * Register this site for imports with the session just stored, as the WP Admin login does
+ * (Wdkit_Login_Ajax::wdkit_set_time_out()). Imports send the site's poll token as its
+ * identity and the cloud answers "Invalid Login Details" without it. The only other
+ * registration runs on admin_init, which never fires for an MCP / WP-CLI caller.
+ */
+function wdesignkit_mcp_register_site_after_login(): bool {
+    // register_after_login() returns early, without setting the backoff, for a user who cannot
+    // manage options - so check that here or the result below would read as a success.
+    if (!class_exists('Wdkit_Import_Remote') || !current_user_can('manage_options')) {
+        return false;
+    }
+
+    Wdkit_Import_Remote::register_after_login();
+
+    // register_after_login() clears the backoff first and sets it again only on failure.
+    return false === get_transient(Wdkit_Import_Remote::REGISTER_BACKOFF_KEY);
+}
+
+/**
+ * Login-response fields that report the import registration, so a failure is not silent:
+ * admin_init retries it only after a 15-minute backoff, which an MCP-only site never runs.
+ */
+function wdesignkit_mcp_import_registration_fields(bool $registered): array {
+    return $registered
+        ? ['import_registered' => true]
+        : [
+            'import_registered' => false,
+            'import_note'       => 'Logged in, but this site could not be registered for imports yet, so template and kit imports may fail with a login error. Log in again, or open WP Admin -> WDesignKit once.',
+        ];
+}
+
 function wdesignkit_mcp_login(array $input): array {
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -399,12 +431,13 @@ function wdesignkit_mcp_login(array $input): array {
     // cloud email, which rarely matches the WP user's email, so without the pointer
     // the session can only be found by scanning wp_options.
     wdesignkit_mcp_remember_session($user_key);
+    $import_registered = wdesignkit_mcp_register_site_after_login();
 
     return [
         'success' => true,
         'message' => $response['message'] ?? 'Logged in successfully.',
         'email'   => $email,
-    ];
+    ] + wdesignkit_mcp_import_registration_fields($import_registered);
 }
 
 function wdesignkit_mcp_login_api_key(array $input): array {
@@ -438,6 +471,7 @@ function wdesignkit_mcp_login_api_key(array $input): array {
     $user_email = strtolower(sanitize_email((string) ($user_data['user_email'] ?? '')));
     $user_key   = $user_email !== '' ? wdesignkit_cloud_session_key($user_email) : '';
 
+    $import_registered = false;
     if ($user_key !== '') {
         // $user_data already extracted above: $response['user'] ?? []
         $cloud_user_id_api = (string) ($user_data['id'] ?? $user_data['user_id'] ?? $response['user_id'] ?? $response['id'] ?? '');
@@ -448,13 +482,14 @@ function wdesignkit_mcp_login_api_key(array $input): array {
         ], 7776000); // 90 days
 
         wdesignkit_mcp_remember_session($user_key);
+        $import_registered = wdesignkit_mcp_register_site_after_login();
     }
 
     return [
         'success' => true,
         'message' => 'Logged in with API key successfully.',
         'email'   => $user_email ?: null,
-    ];
+    ] + wdesignkit_mcp_import_registration_fields($import_registered);
 }
 
 function wdesignkit_mcp_social_login(array $input): array {
@@ -488,6 +523,7 @@ function wdesignkit_mcp_social_login(array $input): array {
     $token      = sanitize_text_field((string) ($response['token'] ?? ''));
     $user_key   = $user_email !== '' ? wdesignkit_cloud_session_key($user_email) : '';
 
+    $import_registered = false;
     if ($user_key !== '' && $token !== '') {
         $cloud_user_id_social = (string) ($user_data['id'] ?? $user_data['user_id'] ?? $response['user_id'] ?? $response['id'] ?? '');
         set_transient('wdkit_auth_' . $user_key, [
@@ -497,6 +533,7 @@ function wdesignkit_mcp_social_login(array $input): array {
         ], 7776000); // 90 days
 
         wdesignkit_mcp_remember_session($user_key);
+        $import_registered = wdesignkit_mcp_register_site_after_login();
     }
 
     return [
@@ -504,7 +541,7 @@ function wdesignkit_mcp_social_login(array $input): array {
         'message'  => $response['message'] ?? 'Logged in via social account successfully.',
         'email'    => $user_email ?: null,
         'response' => $response,
-    ];
+    ] + wdesignkit_mcp_import_registration_fields($import_registered);
 }
 
 function wdesignkit_mcp_signup(array $input): array {
@@ -548,6 +585,7 @@ function wdesignkit_mcp_signup(array $input): array {
 
     $token = sanitize_text_field((string) ($response['token'] ?? ''));
 
+    $import_registered = false;
     if ($token !== '') {
         $signup_user_data  = $response['user'] ?? [];
         $cloud_user_id_sig = (string) ($signup_user_data['id'] ?? $signup_user_data['user_id'] ?? $response['user_id'] ?? $response['id'] ?? '');
@@ -558,13 +596,14 @@ function wdesignkit_mcp_signup(array $input): array {
         ], 86400); // 1-day session after signup
 
         wdesignkit_mcp_remember_session($user_key);
+        $import_registered = wdesignkit_mcp_register_site_after_login();
     }
 
     return [
         'success' => true,
         'message' => $response['message'] ?? 'Account created and logged in successfully.',
         'email'   => $email,
-    ];
+    ] + wdesignkit_mcp_import_registration_fields($import_registered);
 }
 
 function wdesignkit_mcp_forgot_password(array $input): array {

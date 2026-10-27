@@ -96,7 +96,7 @@ wp_register_ability('wdesignkit/browse-presets', [
 
 function wdesignkit_mcp_browse_presets(array $input): array {
     // Timeout guard: preset browse is a read-only marketplace call; cap execution and HTTP timeout.
-    set_time_limit(30);
+    wdesignkit_mcp_set_time_limit(30);
 
     $preset_id = sanitize_text_field((string) ($input['preset_id'] ?? ''));
     if ($preset_id === '') {

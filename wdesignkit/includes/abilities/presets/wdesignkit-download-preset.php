@@ -73,7 +73,7 @@ wp_register_ability('wdesignkit/download-preset', [
 ]);
 
 function wdesignkit_mcp_download_preset(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     $id           = (int) ($input['id'] ?? 0);
     $builder      = sanitize_text_field((string) ($input['builder'] ?? ''));

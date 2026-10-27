@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1195 strings.
+ * 1209 strings.
  */
 
 ( function () {
@@ -32,7 +32,9 @@
 	__( "2 Users", "wdesignkit" );
 	__( "2 Widgets", "wdesignkit" );
 	__( "90+ WordPress Blocks", "wdesignkit" );
+	__( "A quick rating on WordPress.org helps other people find it.", "wdesignkit" );
 	__( "A", "wdesignkit" );
+	__( "AI Abilities", "wdesignkit" );
 	__( "AI Chat", "wdesignkit" );
 	__( "AI Compatible", "wdesignkit" );
 	__( "AI Credits", "wdesignkit" );
@@ -62,6 +64,7 @@
 	__( "Add Section", "wdesignkit" );
 	__( "Add Your Images Here (Supported: PNG, JPEG, WebP, AVIF| Limit: 20 MB)", "wdesignkit" );
 	__( "Add a CSS class (e.g., .my-class) or ID (e.g., #my-id) to target and style elements.", "wdesignkit" );
+	__( "Add a section", "wdesignkit" );
 	__( "Add common questions and answers related to your plugin.", "wdesignkit" );
 	__( "Add custom classes to control wrapper in the panel. ", "wdesignkit" );
 	__( "Add more information to get even better first version of website. This might useful in AI Content Import templates. Few templates doesn't support those fields for now. These information are just for your content for template. We do not store any of those information on our side.", "wdesignkit" );
@@ -220,6 +223,7 @@
 	__( "Delete all the Widget Builder widget data.", "wdesignkit" );
 	__( "Delete the selected database permanently.", "wdesignkit" );
 	__( "Delete", "wdesignkit" );
+	__( "Describe a widget and let AI build it.", "wdesignkit" );
 	__( "Description", "wdesignkit" );
 	__( "Design Template", "wdesignkit" );
 	__( "Design Templates", "wdesignkit" );
@@ -249,6 +253,7 @@
 	__( "Drag & Drop or Upload Widget ZIP File Here", "wdesignkit" );
 	__( "Drag & drop or upload an image file here", "wdesignkit" );
 	__( "Drop Down Value", "wdesignkit" );
+	__( "Drop in ready pricing, FAQ or contact blocks.", "wdesignkit" );
 	__( "Duplicate", "wdesignkit" );
 	__( "Dynamic", "wdesignkit" );
 	__( "E-icons", "wdesignkit" );
@@ -277,6 +282,7 @@
 	__( "Email:", "wdesignkit" );
 	__( "Enable any one feature to continue!", "wdesignkit" );
 	__( "Enable copy and paste between different domains.", "wdesignkit" );
+	__( "Enable or disable WDesignKit Abilities. When off, WDesignKit does not register its abilities with the WordPress Abilities API, so AI tools and MCP clients cannot use them.", "wdesignkit" );
 	__( "Enable or disable the Code Snippet feature. Disabling it will also turn off Browse Snippets, My Snippets, and workspace snippet options.", "wdesignkit" );
 	__( "Enable this if you want us to append unique class at all possible places in your CSS file. If Disabled, You will need to manage it manually from your end.", "wdesignkit" );
 	__( "Enable/Disable Bricks Widget builder and all Bricks Widgets.", "wdesignkit" );
@@ -291,6 +297,7 @@
 	__( "Enable/Disable Widget Builder Control access to the No-Code Widget Builder, including widget creation, and upload/download options for Elementor, Gutenberg and Bricks.", "wdesignkit" );
 	__( "End", "wdesignkit" );
 	__( "English", "wdesignkit" );
+	__( "Enjoying WDesignKit?", "wdesignkit" );
 	__( "Enter Author Name", "wdesignkit" );
 	__( "Enter Author URL", "wdesignkit" );
 	__( "Enter CSS properties (e.g., color, font-size, background-color) to apply to the selected class or ID.", "wdesignkit" );
@@ -505,6 +512,7 @@
 	__( "Just the basics for now. You can always add the rest from your site later.", "wdesignkit" );
 	__( "Justify", "wdesignkit" );
 	__( "Keep & continue", "wdesignkit" );
+	__( "Keep your designs in the cloud and reuse them.", "wdesignkit" );
 	__( "Kept the kit’s own colours & fonts", "wdesignkit" );
 	__( "Key error, check and fix", "wdesignkit" );
 	__( "Key:", "wdesignkit" );
@@ -619,6 +627,7 @@
 	__( "Normal", "wdesignkit" );
 	__( "Not Result Found", "wdesignkit" );
 	__( "Not Valid", "wdesignkit" );
+	__( "Not now", "wdesignkit" );
 	__( "Note : Replacing the snippet will erase the current design. This action cannot be undone, and the old design will be permanently lost.", "wdesignkit" );
 	__( "Note : This new widget will have unique class, So It will work independently from previous widget.", "wdesignkit" );
 	__( "Note :", "wdesignkit" );
@@ -745,6 +754,8 @@
 	__( "Push", "wdesignkit" );
 	__( "Quick Support", "wdesignkit" );
 	__( "RIGHT", "wdesignkit" );
+	__( "Rate Us ★★★★★", "wdesignkit" );
+	__( "Rate WDesignKit", "wdesignkit" );
 	__( "RawHTML", "wdesignkit" );
 	__( "Read Document", "wdesignkit" );
 	__( "Read Documentation", "wdesignkit" );
@@ -799,6 +810,7 @@
 	__( "Save Snippet", "wdesignkit" );
 	__( "Save Template", "wdesignkit" );
 	__( "Save in WDesignKit", "wdesignkit" );
+	__( "Save to Workspace", "wdesignkit" );
 	__( "Save", "wdesignkit" );
 	__( "Saved", "wdesignkit" );
 	__( "Search ", "wdesignkit" );
@@ -998,6 +1010,7 @@
 	__( "Transferring all your HTML,CSS and JS to New one", "wdesignkit" );
 	__( "Transparent Header Background", "wdesignkit" );
 	__( "Trusted by 150K+ Users", "wdesignkit" );
+	__( "Try the AI widget builder", "wdesignkit" );
 	__( "Turn on for dynamic value", "wdesignkit" );
 	__( "Turn on for url_options value.", "wdesignkit" );
 	__( "Turn your widget into a ready-to-use WordPress plugin in just a few clicks.", "wdesignkit" );
@@ -1078,6 +1091,7 @@
 	__( "Welcome to WDesignKit", "wdesignkit" );
 	__( "We’re Setting Up Your Website", "wdesignkit" );
 	__( "We’re getting everything ready. Please wait while we install the required plugins and import your template.", "wdesignkit" );
+	__( "What next?", "wdesignkit" );
 	__( "What's the best email for customers to reach you at?", "wdesignkit" );
 	__( "What’s New?", "wdesignkit" );
 	__( "Where can people find you? Share your address so visitors always know right where to go.", "wdesignkit" );

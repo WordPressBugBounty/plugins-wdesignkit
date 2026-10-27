@@ -110,7 +110,7 @@ wp_register_ability('wdesignkit/ai-import-template', [
 ]);
 
 function wdesignkit_mcp_ai_import_template(array $input): array {
-    set_time_limit(150);
+    wdesignkit_mcp_set_time_limit(150);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {

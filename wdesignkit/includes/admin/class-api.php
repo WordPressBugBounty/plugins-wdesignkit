@@ -9619,8 +9619,12 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'xs-unit' => 'px',
 			);
 
+			/* get_option() returns false when the option is unset and isset( false ) is true, so
+			 * this branch has always run, for an unset option too - keep that shipped behaviour,
+			 * but start from an array: writing keys onto false is deprecated in PHP 8.1 and
+			 * an error in PHP 9. */
 			if ( isset( $theme_db ) ) {
-				$nexter_setting                          = $theme_db;
+				$nexter_setting                          = is_array( $theme_db ) ? $theme_db : array();
 				$nexter_setting['site-header-container'] = $container_type;
 				$nexter_setting['site-footer-container'] = $container_type;
 				$nexter_setting['site-layout-container'] = $container_type;
@@ -10860,6 +10864,7 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				'gutenberg_template'         => isset( $get_setting['gutenberg_template'] ) ? $get_setting['gutenberg_template'] : true,
 				'elementor_template'         => isset( $get_setting['elementor_template'] ) ? $get_setting['elementor_template'] : true,
 				'code_snippet'               => isset( $get_setting['code_snippet'] ) ? $get_setting['code_snippet'] : true,
+				'abilities'                  => isset( $get_setting['abilities'] ) ? $get_setting['abilities'] : true,
 				'cross_copy_paste'           => isset( $get_setting['cross_copy_paste'] ) ? $get_setting['cross_copy_paste'] : false,
 				'cross_copy_paste_elementor' => isset( $get_setting['cross_copy_paste_elementor'] ) ? $get_setting['cross_copy_paste_elementor'] : false,
 				'cross_copy_paste_gutenberg' => isset( $get_setting['cross_copy_paste_gutenberg'] ) ? $get_setting['cross_copy_paste_gutenberg'] : false,

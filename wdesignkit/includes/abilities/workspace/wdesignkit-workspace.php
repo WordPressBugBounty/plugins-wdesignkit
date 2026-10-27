@@ -270,7 +270,7 @@ wp_register_ability('wdesignkit/get-shared-with-me', [
 
 function wdesignkit_mcp_create_workspace(array $input): array {
     // Timeout guard: cloud create call uses the default timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -335,7 +335,7 @@ function wdesignkit_mcp_create_workspace(array $input): array {
 
 function wdesignkit_mcp_delete_workspace(array $input): array {
     // Timeout guard: cloud delete call uses the default timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -379,7 +379,7 @@ function wdesignkit_mcp_delete_workspace(array $input): array {
 
 function wdesignkit_mcp_update_workspace(array $input): array {
     // Timeout guard: cloud update call uses the default timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -434,7 +434,7 @@ function wdesignkit_mcp_update_workspace(array $input): array {
 
 function wdesignkit_mcp_get_workspace_data(array $input): array {
     // Timeout guard.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -500,7 +500,7 @@ function wdesignkit_mcp_get_workspace_data(array $input): array {
 
 function wdesignkit_mcp_get_shared_with_me(array $input): array {
     // Timeout guard: cloud shared-with-me call uses the default timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];

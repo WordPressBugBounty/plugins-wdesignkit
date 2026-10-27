@@ -419,8 +419,9 @@ if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
 			$results = ! empty( $session['results'] ) ? $session['results'] : array();
 			$failed  = ! empty( $session['failed'] ) ? $session['failed'] : array();
 
-			$pages  = array();
-			$errors = array();
+			$pages         = array();
+			$errors        = array();
+			$still_missing = array();
 
 			foreach ( $results as $step => $record ) {
 				if ( ! is_array( $record ) || 0 !== strpos( (string) $step, 'page_' ) ) {
@@ -441,7 +442,49 @@ if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
 			}
 
 			foreach ( $failed as $step => $record ) {
-				/* Stage-level "some items failed" markers are bookkeeping, not something a
+				/* The dependency stage keeps no per-item records, so its marker is the only
+				 * place a failed plugin install is recorded. Reported one error per plugin -
+				 * a kit whose addon did not install imports with that addon's widgets missing,
+				 * and the caller has to be able to say which. */
+				if ( is_array( $record ) && isset( $record['code'] ) && 'stage_incomplete' === $record['code']
+					&& Wdkit_Import_Runner::STAGE_DEPENDENCIES === (string) $step
+					&& ! empty( $record['context']['items'] ) && is_array( $record['context']['items'] ) ) {
+					foreach ( $record['context']['items'] as $item ) {
+						$slug   = is_array( $item ) && isset( $item['slug'] ) ? (string) $item['slug'] : '';
+						$reason = is_array( $item ) && isset( $item['message'] ) ? trim( (string) $item['message'] ) : '';
+
+						/* Dependencies are deduped by catalogue id, but reported by slug: two ids
+						 * sharing a slug would otherwise list the same plugin twice. */
+						if ( '' !== $slug && in_array( $slug, $still_missing, true ) ) {
+							continue;
+						}
+
+						if ( '' !== $slug ) {
+							$still_missing[] = $slug;
+						}
+
+						$not_activated = is_array( $item ) && isset( $item['reason'] ) && 'not_activated' === $item['reason'];
+
+						$errors[] = array(
+							'step'    => (string) $step,
+							'code'    => 'dependency_failed',
+							'message' => trim(
+								sprintf(
+									$not_activated
+										/* translators: %s: plugin or theme slug. */
+										? __( '%s is installed but could not be activated, so pages that use it are missing its widgets.', 'wdesignkit' )
+										/* translators: %s: plugin or theme slug. */
+										: __( 'Could not install %s, so pages that use it are missing its widgets.', 'wdesignkit' ),
+									'' !== $slug ? $slug : __( 'a required plugin', 'wdesignkit' )
+								) . ( ( '' !== $reason && ! $not_activated ) ? ' ' . $reason : '' )
+							),
+						);
+					}
+
+					continue;
+				}
+
+				/* Other stage-level "some items failed" markers are bookkeeping, not something a
 				 * caller can act on — the per-item records below carry the real reasons. */
 				if ( ! is_array( $record ) || ( isset( $record['code'] ) && 'stage_incomplete' === $record['code'] ) ) {
 					continue;
@@ -452,6 +495,57 @@ if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
 					'code'    => isset( $record['code'] ) ? $record['code'] : '',
 					'message' => isset( $record['message'] ) ? $record['message'] : '',
 				);
+			}
+
+			/* A dependency stage that COMPLETED can still have skipped plugins this user may not
+			 * install (DISALLOW_FILE_MODS, no install_plugins) - nothing failed, so nothing above
+			 * reported them, yet the pages were saved without their widgets. */
+			$completed_deps = isset( $results[ Wdkit_Import_Runner::STAGE_DEPENDENCIES ] ) && is_array( $results[ Wdkit_Import_Runner::STAGE_DEPENDENCIES ] )
+				? $results[ Wdkit_Import_Runner::STAGE_DEPENDENCIES ]
+				: array();
+			if ( empty( $failed[ Wdkit_Import_Runner::STAGE_DEPENDENCIES ] ) && ! empty( $completed_deps['skipped'] ) && is_array( $completed_deps['skipped'] ) ) {
+				foreach ( $completed_deps['skipped'] as $item ) {
+					$slug = is_array( $item ) && isset( $item['slug'] ) ? (string) $item['slug'] : '';
+
+					if ( '' !== $slug && in_array( $slug, $still_missing, true ) ) {
+						continue;
+					}
+
+					if ( '' !== $slug ) {
+						$still_missing[] = $slug;
+					}
+
+					$errors[] = array(
+						'step'    => Wdkit_Import_Runner::STAGE_DEPENDENCIES,
+						'code'    => 'dependency_failed',
+						'message' => sprintf(
+							/* translators: %s: plugin or theme slug. */
+							__( 'Could not install %s, so pages that use it are missing its widgets.', 'wdesignkit' ),
+							'' !== $slug ? $slug : __( 'a required plugin', 'wdesignkit' )
+						) . ' ' . __( 'This user is not allowed to install it on this site.', 'wdesignkit' ),
+					);
+				}
+			}
+
+			/* A plugin that was missing when the pages were saved and has been installed by a
+			 * later resume. Its widgets were dropped on save, so installing it now does not bring
+			 * them back - without this the finished run would read as a clean success. */
+			if ( ! empty( $results['content_missing_dependencies'] ) && is_array( $results['content_missing_dependencies'] ) ) {
+				foreach ( $results['content_missing_dependencies'] as $slug ) {
+					if ( in_array( (string) $slug, $still_missing, true ) ) {
+						continue;
+					}
+
+					$errors[] = array(
+						'step'    => Wdkit_Import_Runner::STAGE_DEPENDENCIES,
+						'code'    => 'reimport_needed',
+						'message' => sprintf(
+							/* translators: %s: plugin slug. */
+							__( '%s was installed after the pages were imported, so pages that use it are still missing its widgets. Re-import those pages to restore them.', 'wdesignkit' ),
+							(string) $slug
+						),
+					);
+				}
 			}
 
 			$steps = self::step_summary( $results, $failed, $skip, $pages );
@@ -480,7 +574,9 @@ if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
 
 				'message'      => ! empty( $run['restart'] )
 					? 'Plugins installed. Resume to finish the import.'
-					: ( $success ? 'Site created successfully.' : 'Site creation completed with errors.' ),
+					: ( $success
+						? ( empty( $errors ) ? 'Site created successfully.' : 'Site created, but some things need attention - see errors.' )
+						: 'Site creation completed with errors.' ),
 				'site_url'     => get_site_url(),
 				'home_page_id' => $home_page_id,
 				'shop_page_id' => $shop_page_id,
@@ -491,6 +587,12 @@ if ( ! class_exists( 'Wdkit_Import_Bridge' ) ) {
 				/* Additive. The handle for a resume. */
 				'session_id'   => $session_id,
 				'status'       => isset( $session['status'] ) ? $session['status'] : '',
+
+				/* Additive. True whenever `errors` holds something the user should hear about,
+				 * including what a retry cannot fix (a plugin installed only after its pages were
+				 * saved, or one this user may not install) - so `status` can stay the session's
+				 * own word for whether retrying has anything left to do. */
+				'needs_attention' => ! empty( $errors ),
 
 				/* Additive, and the honest half of `success`.
 				 *

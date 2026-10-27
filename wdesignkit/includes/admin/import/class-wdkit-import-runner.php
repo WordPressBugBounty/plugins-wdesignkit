@@ -265,6 +265,21 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 
 				Wdkit_Import_Session::set_stage( $this->session_id, $stage );
 
+				/* Remember which of the kit's plugins were missing when its pages were saved.
+				 * Elementor drops the widgets of an unregistered plugin on save, so those pages
+				 * stay without them even if a later resume installs the plugin - and once that
+				 * install succeeds the dependency stage holds no failure to report it by. */
+				if ( self::STAGE_CONTENT === $stage && ! Wdkit_Import_Session::is_step_complete( $this->session_id, 'content_missing_dependencies' ) ) {
+					$session_now = Wdkit_Import_Session::get( $this->session_id );
+					$missing     = ( null !== $session_now && ! empty( $session_now['failed'][ self::STAGE_DEPENDENCIES ]['context']['items'] ) )
+						? wp_list_pluck( (array) $session_now['failed'][ self::STAGE_DEPENDENCIES ]['context']['items'], 'slug' )
+						: array();
+
+					if ( ! empty( $missing ) ) {
+						Wdkit_Import_Session::mark_step_complete( $this->session_id, 'content_missing_dependencies', array_values( array_filter( array_map( 'strval', $missing ) ) ) );
+					}
+				}
+
 				/**
 				 * Fires as a runner stage begins / ends / fails.
 				 *
@@ -316,6 +331,8 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 					 * stage open is safe because every item inside has its own guard, so a
 					 * re-entry re-does only what is still missing. */
 					if ( ! empty( $result['failed'] ) || $this->outstanding_failures( $stage ) > 0 ) {
+						$failed_items = ! empty( $result['failed'] ) && is_array( $result['failed'] ) ? $result['failed'] : array();
+
 						Wdkit_Import_Session::mark_step_failed(
 							$this->session_id,
 							$stage,
@@ -326,7 +343,14 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 								'class'     => 'retryable',
 								'retryable' => true,
 								'skippable' => true,
-								'context'   => array( 'failed' => count( $result['failed'] ) ),
+
+								/* The dependency stage writes no per-item records of its own, so
+								 * this is the only place a caller can learn WHICH plugin failed
+								 * and why - Wdkit_Import_Bridge::response() reports them. */
+								'context'   => array(
+									'failed' => count( $failed_items ),
+									'items'  => self::STAGE_DEPENDENCIES === $stage ? self::dependency_problems( $result ) : array(),
+								),
 							)
 						);
 
@@ -339,6 +363,29 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 						);
 
 						do_action( 'wdkit_import_runner_stage', $stage, 'fail', $result, $this->session_id );
+
+						/* Same yield as the completed path below, for the same reason: one plugin
+						 * failing does not make the ones that DID install usable in this request.
+						 * Without it a single stalled download sent the content stage on with Nexter
+						 * Extension half-loaded (Header/Footer: "Type nxt_builder does not exist")
+						 * and The Plus Addons' widgets unregistered, so Elementor dropped every tp-*
+						 * node on save. The resume re-enters this stage, because it is not complete,
+						 * which also retries whatever failed. */
+						/* Bounded by the stage's own attempt budget (mark_step_failed() just counted
+						 * this one), so even an installer that keeps answering "installed" cannot
+						 * make a resume restart forever. */
+						if ( self::STAGE_DEPENDENCIES === $stage && ! empty( $result['installed'] )
+							&& ! Wdkit_Import_Session::is_step_exhausted( $this->session_id, $stage ) ) {
+							/* A deliberate yield, not a dead request: without this the shutdown
+							 * watcher marked the session `interrupted` on the way out. */
+							Wdkit_Import_Session::unwatch();
+
+							return array(
+								'success' => true,
+								'restart' => true,
+								'session' => Wdkit_Import_Session::get( $this->session_id ),
+							);
+						}
 
 						/* No stage-level result is written: every item inside already recorded its
 						 * own, and a stage summary that says "3 of 4" would go stale the moment
@@ -374,6 +421,8 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 					 * here reproduces that, using the resume the session already supports —
 					 * every completed stage is skipped, so nothing is repeated. */
 					if ( self::STAGE_DEPENDENCIES === $stage && ! empty( $result['installed'] ) ) {
+						Wdkit_Import_Session::unwatch();
+
 						return array(
 							'success' => true,
 							'restart' => true,
@@ -2276,6 +2325,66 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 		}
 
 		/**
+		 * The kit's dependencies that did not end up usable, for the caller to report: the
+		 * ones that failed to install or activate, and the ones skipped because this user may
+		 * not install plugins/themes (e.g. DISALLOW_FILE_MODS) - both leave pages without the
+		 * widgets they need.
+		 *
+		 * @param array $result Dependency stage result.
+		 * @return array<int,array{slug:string,message:string}>
+		 */
+		private static function dependency_problems( $result ) {
+			$items = array();
+
+			foreach ( ( isset( $result['failed'] ) && is_array( $result['failed'] ) ) ? $result['failed'] : array() as $item ) {
+				$items[] = array(
+					'slug'    => is_array( $item ) && isset( $item['slug'] ) ? (string) $item['slug'] : '',
+					'message' => is_array( $item ) && isset( $item['message'] ) ? (string) $item['message'] : '',
+					'reason'  => is_array( $item ) && isset( $item['reason'] ) ? (string) $item['reason'] : 'install_failed',
+				);
+			}
+
+			foreach ( ( isset( $result['skipped'] ) && is_array( $result['skipped'] ) ) ? $result['skipped'] : array() as $item ) {
+				$items[] = array(
+					'slug'    => is_array( $item ) && isset( $item['slug'] ) ? (string) $item['slug'] : '',
+					'message' => __( 'This user is not allowed to install it on this site.', 'wdesignkit' ),
+					'reason'  => 'not_allowed',
+				);
+			}
+
+			return $items;
+		}
+
+		/**
+		 * Per-post results recorded during the content stage (`post_` steps): the kit's own
+		 * post templates and the blog posts imported for it.
+		 *
+		 * Kept apart from page_records(), whose callers (front page, menus, CSS) are about
+		 * pages only.
+		 *
+		 * @return array[]
+		 */
+		private function post_records() {
+			$session = Wdkit_Import_Session::get( $this->session_id );
+
+			if ( null === $session || empty( $session['results'] ) ) {
+				return array();
+			}
+
+			$posts = array();
+
+			foreach ( $session['results'] as $step => $result ) {
+				/* A reused post existed before this run (an earlier import the user may have
+				 * edited since), so it is left alone. */
+				if ( 0 === strpos( (string) $step, 'post_' ) && is_array( $result ) && ! empty( $result['post_id'] ) && empty( $result['reused'] ) ) {
+					$posts[] = $result;
+				}
+			}
+
+			return $posts;
+		}
+
+		/**
 		 * Ids of the blog posts this run created (or adopted on a resume).
 		 *
 		 * @return int[]
@@ -2491,7 +2600,9 @@ if ( ! class_exists( 'Wdkit_Import_Runner' ) ) {
 			 * reports an unfinished page loop - `pending` > 0 keeps this stage OPEN so the
 			 * wizard calls it again, picking up only the pages `demo_link_<id>` has not already
 			 * marked done. */
-			$links = $this->finalize_demo_links( $pages );
+			/* Posts too, not only pages: a kit's single-post template ("Blog details") is stored
+			 * as a `post_` step, so with pages alone its links kept pointing at the demo site. */
+			$links = $this->finalize_demo_links( array_merge( $pages, $this->post_records() ) );
 
 			if ( ! empty( $links['pending'] ) ) {
 				return array(

@@ -67,6 +67,7 @@ if ( ! class_exists( 'Wdkit_Notice_Main' ) ) {
 				/**Remove Key In Databash*/
 				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-notices-remove.php';
 				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-plugin-page.php';
+				include WDKIT_PATH . 'includes/admin/notices/class-wdkit-user-prompts.php';
 			}
 
 			/*

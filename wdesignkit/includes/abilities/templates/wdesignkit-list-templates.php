@@ -513,7 +513,7 @@ wp_register_ability('wdesignkit/list-templates', [
 ]);
 
 function wdesignkit_mcp_list_templates(array $input): array {
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     $auth = wdesignkit_mcp_template_get_auth();
     if (empty($auth['logged_in'])) {

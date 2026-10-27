@@ -236,7 +236,7 @@ wp_register_ability('wdesignkit/licence-overview', [
 
 function wdesignkit_mcp_activate_licence(array $input): array {
     // Timeout guard: cloud activation call uses the default HTTP timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -312,7 +312,7 @@ function wdesignkit_mcp_activate_licence(array $input): array {
 
 function wdesignkit_mcp_delete_licence(array $input): array {
     // Timeout guard: cloud delete call uses the default HTTP timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -422,7 +422,7 @@ function wdesignkit_mcp_delete_licence(array $input): array {
 
 function wdesignkit_mcp_sync_licence(array $input): array {
     // Timeout guard: cloud sync call uses the default HTTP timeout.
-    set_time_limit(90);
+    wdesignkit_mcp_set_time_limit(90);
 
     if (!defined('WDKIT_SERVER_API_URL')) {
         return ['success' => false, 'message' => 'WDesignKit plugin is not active.'];
@@ -483,7 +483,7 @@ function wdesignkit_mcp_licence_overview(array $input): array {
 
     if ($refresh) {
         // Timeout guard: cloud credit fetch uses the default HTTP timeout.
-        set_time_limit(60);
+        wdesignkit_mcp_set_time_limit(60);
 
         if (!defined('WDKIT_SERVER_API_URL')) {
             return [

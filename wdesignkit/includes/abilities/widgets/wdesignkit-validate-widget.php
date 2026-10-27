@@ -248,7 +248,7 @@ function wdesignkit_mcp_find_conflicting_block_files(string $block_name, string 
 }
 
 function wdesignkit_mcp_validate_widget(array $input): array {
-    set_time_limit(60);
+    wdesignkit_mcp_set_time_limit(60);
 
     $builder   = sanitize_text_field((string) ($input['builder'] ?? ''));
     $folder    = sanitize_file_name((string) ($input['folder'] ?? ''));
