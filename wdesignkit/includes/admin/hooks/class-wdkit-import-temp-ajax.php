@@ -250,8 +250,6 @@ if ( ! class_exists( 'Wdkit_Import_temp_Ajax' ) ) {
             $array_data = array(
 				'kit_id' => isset($_POST['kit_id']) ? sanitize_text_field($_POST['kit_id']) : '',
 				'site_url' => isset($_POST['site_url']) ? sanitize_text_field($_POST['site_url']) : '',
-				'used_credit' => isset($_POST['used_credit']) ? intval($_POST['used_credit']) : '',
-				'real_credit' => isset($_POST['real_credit']) ? intval($_POST['real_credit']) : '',
 				'ids_failed' => isset($_POST['ids_failed']) ? sanitize_text_field($_POST['ids_failed']) : '',
 				'ids_success' => isset($_POST['ids_success']) ? sanitize_text_field($_POST['ids_success']) : '',
 				'token' => isset($_POST['token']) ? sanitize_text_field($_POST['token']) : '',

@@ -39,6 +39,14 @@ if ( ! class_exists( 'Wdkit_User_Prompts' ) ) {
 		);
 
 		/**
+		 * User meta counting the widgets this user has created in the widget builder.
+		 *
+		 * @since 2.8.0
+		 * @var string
+		 */
+		const WIDGETS_CREATED_META = 'wdkit_widgets_created';
+
+		/**
 		 * Instance
 		 *
 		 * @since 2.7.2
@@ -84,6 +92,8 @@ if ( ! class_exists( 'Wdkit_User_Prompts' ) ) {
 				$flags[ $flag ] = ( $user_id && get_user_meta( $user_id, $meta_key, true ) ) ? 'yes' : 'no';
 			}
 
+			$flags['widgets_created'] = $user_id ? (int) get_user_meta( $user_id, self::WIDGETS_CREATED_META, true ) : 0;
+
 			return $flags;
 		}
 
@@ -100,6 +110,14 @@ if ( ! class_exists( 'Wdkit_User_Prompts' ) ) {
 			}
 
 			$flag = isset( $_POST['flag'] ) ? sanitize_key( wp_unslash( $_POST['flag'] ) ) : '';
+
+			// Widget builder counts creations so the review request waits for the user's own third widget.
+			if ( 'widget_created' === $flag ) {
+				$count = (int) get_user_meta( get_current_user_id(), self::WIDGETS_CREATED_META, true ) + 1;
+				update_user_meta( get_current_user_id(), self::WIDGETS_CREATED_META, $count );
+
+				wp_send_json_success( array( 'widgets_created' => $count ) );
+			}
 			if ( ! isset( self::FLAGS[ $flag ] ) ) {
 				wp_send_json_error( array( 'message' => __( 'Invalid request.', 'wdesignkit' ) ), 400 );
 			}

@@ -118,7 +118,10 @@ wp_register_ability('wdesignkit/create-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_create_widget',
-    'permission_callback' => 'wdesignkit_mcp_permission_callback',
+    // Puts executing PHP on disk (writes the generated widget class), so this gates on
+    // can_edit_php() rather than bare manage_options — a multisite sub-site
+    // admin holds manage_options but may not author code that runs network-wide.
+    'permission_callback' => 'wdesignkit_mcp_php_permission_callback',
     'meta' => [
         'public'       => true,
         'show_in_rest' => true,
@@ -431,12 +434,6 @@ function wdesignkit_mcp_create_widget(array $input): array {
         return ['success' => false, 'message' => 'Invalid widget path.'];
     }
 
-    // --- Create directories ---
-    if (!is_dir($builder_path)) {
-        wp_mkdir_p($builder_path);
-    }
-    wp_mkdir_p($widget_dir);
-
     // PHP class name: PascalCase (e.g. "My Custom Card" → "MyCustomCard")
     $class_name = preg_replace('/[^a-zA-Z0-9]/', '', ucwords($name, ' -_'));
 
@@ -517,6 +514,34 @@ function wdesignkit_mcp_create_widget(array $input): array {
             }
         }
     }
+    // Every control name becomes a `let g_<name>` in the Gutenberg block script and a
+    // settings key in Elementor, so a name reused anywhere in section_data (e.g. a
+    // section copied between the Layout and Style tabs) breaks the widget. Reject it.
+    if (is_array($custom_section_data)) {
+        $seen_names = [];
+        $dup_names  = [];
+        $collect    = function ($node) use (&$collect, &$seen_names, &$dup_names) {
+            if (!is_array($node)) {
+                return;
+            }
+            if (isset($node['type'], $node['name']) && is_string($node['name']) && $node['name'] !== '') {
+                if (isset($seen_names[$node['name']])) {
+                    $dup_names[$node['name']] = true;
+                }
+                $seen_names[$node['name']] = true;
+            }
+            foreach ($node as $child) {
+                $collect($child);
+            }
+        };
+        $collect($custom_section_data);
+        if (!empty($dup_names)) {
+            return [
+                'success' => false,
+                'message' => 'Duplicate control name(s) in section_data: ' . implode(', ', array_keys($dup_names)) . '. Every control needs a unique name.',
+            ];
+        }
+    }
     $custom_editor_html = isset($input['editor_html']) && is_string($input['editor_html']) && $input['editor_html'] !== ''
         ? $input['editor_html']
         : null;
@@ -533,6 +558,69 @@ function wdesignkit_mcp_create_widget(array $input): array {
         $php_for_parse, $cdn_js, $cdn_css
     );
 
+    // --- Validate the PHP before writing anything ---
+    // This ability accepts caller-supplied php_code and the builder loaders
+    // require_once the result on every request, so it is the same execution path
+    // as the PHP Editor and needs the same gate. Checked before the first write so
+    // a rejected call leaves any existing widget untouched.
+    if (!class_exists('Wdkit_Php_Guard')) {
+        require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+    }
+
+    if (!empty($input['php_code'])) {
+        // Caller-authored PHP: the full gate — capability, then lint and scan.
+        $php_error = Wdkit_Php_Guard::gate_php_write($php_code);
+
+        if (is_wp_error($php_error)) {
+            // A capability or licence refusal is not a statement about the code, so
+            // wrapping it in "the PHP was rejected" would misdescribe the failure.
+            return [
+                'success' => false,
+                'message' => Wdkit_Php_Guard::is_authz_error($php_error)
+                    ? $php_error->get_error_message()
+                    : sprintf(
+                        /* translators: %s: reason the PHP was rejected */
+                        __('Widget not created — the PHP was rejected: %s', 'wdesignkit'),
+                        $php_error->get_error_message()
+                    ),
+            ];
+        }
+    } else {
+        // Generated boilerplate. Still linted and scanned, because a broken
+        // generated file is just as fatal, but the user did not author it so
+        // the capability check does not belong here.
+        $php_error = Wdkit_Php_Guard::inspect($php_code);
+
+        if (is_wp_error($php_error)) {
+            return [
+                'success' => false,
+                'message' => sprintf(
+                    /* translators: %s: reason the PHP was rejected */
+                    __('Widget not created — the generated PHP was rejected: %s', 'wdesignkit'),
+                    $php_error->get_error_message()
+                ),
+            ];
+        }
+    }
+
+    // --- Create directories ---
+    // Deliberately the last thing before the first write, and after every check
+    // that can return early. The folder name carries a fresh random hash on each
+    // call, so the duplicate-name check above never blocks a retry: creating the
+    // directory ahead of the guard left one empty folder behind per rejected
+    // call, each one listing as a real widget and adding a scandir to every
+    // front-end request. This mirrors the ordering the AJAX handler already uses.
+    if (!is_dir($builder_path)) {
+        wp_mkdir_p($builder_path);
+    }
+
+    if (!is_dir($widget_dir) && !wp_mkdir_p($widget_dir)) {
+        return [
+            'success' => false,
+            'message' => "Could not create the widget folder: {$builder}/{$folder_name_full}. Check directory permissions.",
+        ];
+    }
+
     // --- Write files ---
     $widget_file_base = $widget_dir . '/' . $file_name_full;
     $write_errors     = [];
@@ -542,6 +630,8 @@ function wdesignkit_mcp_create_widget(array $input): array {
     // The uploads directory is always writable by PHP, so this is safe.
     if (file_put_contents($widget_file_base . '.php', $php_code) === false) {
         $write_errors[] = 'PHP';
+    } else {
+        Wdkit_Php_Guard::after_php_write($widget_file_base . '.php', $folder_name_full, $php_code, 'ability:create-widget');
     }
     if (file_put_contents($widget_file_base . '.json', wp_json_encode($json_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) === false) {
         $write_errors[] = 'JSON';
@@ -568,6 +658,13 @@ function wdesignkit_mcp_create_widget(array $input): array {
     }
 
     if (!empty($write_errors)) {
+        // Same orphan symptom by another route: a partial write would leave a
+        // folder that lists as a widget but cannot load. Safe to remove outright
+        // — the is_dir() check above returned early if anything was already here,
+        // so every file in this folder was written by this call.
+        array_map('unlink', (array) glob($widget_dir . '/*'));
+        @rmdir($widget_dir);
+
         return [
             'success' => false,
             'message' => 'Failed to write files: ' . implode(', ', $write_errors) . '. Check directory permissions.',

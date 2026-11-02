@@ -5,7 +5,7 @@ Tags: ai website builder, website templates, gutenberg blocks, bricks builder, e
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.7.2
+Stable tag: 2.8.0
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
@@ -97,6 +97,24 @@ Only if you turn it on. Usage analytics are off by default; a few days after ins
 
 You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability](https://patchstack.com/database/vdp/wdesignkit).
 
+= I run Nginx. Do I need to block direct access to the Widget Builder files? =
+
+Widgets you build are written as PHP and JSON files under `wp-content/uploads/wdesignkit/`. The JSON holds the widget's source, including any custom PHP. WDesignKit writes an `.htaccess` there that denies direct HTTP access to `.php` and `.json` files, but Nginx does not read `.htaccess`, so on Nginx that file has no effect.
+
+Add this to your server block and reload Nginx:
+
+`location ~* /wp-content/uploads/wdesignkit/.*\.(php|json)$ { deny all; }`
+
+Place it before any generic PHP `location` block so it takes precedence. This does not affect the widgets themselves: WordPress loads them from disk, not over HTTP.
+
+= Is the widget PHP editor sandboxed? Is it safe to give any user? =
+
+No. The widget PHP editor executes PHP with the site's normal WordPress and PHP privileges — the same as code in a theme's functions.php or a plugin. It is intended only for trusted administrators.
+
+WDesignKit scans submitted PHP and blocks common dangerous constructs (shell execution, `eval`, filesystem writes, and similar). Treat that scan as a guard-rail against accidental or opportunistic mistakes, not as a sandbox or a security boundary: it does not and cannot prevent a determined administrator from writing harmful PHP, because authored code runs with full privileges by design.
+
+Access is restricted to administrators with the `manage_options` capability; on multisite, to network administrators only; and the feature is disabled by default on any site that sets `DISALLOW_FILE_EDIT`. A site owner can turn it off entirely with the `wdkit_can_edit_php` filter, or re-enable it under `DISALLOW_FILE_EDIT` with the `wdkit_allow_php_when_file_edit_disabled` filter.
+
 == External services ==
 
 1. wdesignkit.com API : This API is used to fetch plugin-related data for onboarding and updates. It sends the plugin version and identifier during activation, updates, or specific plugin-related requests. For more details, you can review the [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
@@ -107,9 +125,18 @@ You can report security bugs through the Patchstack Vulnerability Disclosure Pro
 
 == Changelog ==
 
+2.8.0 - 02 Nov 2026
+New: PHP Editor in the Widget Builder for Elementor and Bricks widgets, with syntax and unsafe-function checks before save.
+Improved: The WordPress.org review request now appears after you have created a few widgets, not on the first one.
+Improved: The kit import site limit now always matches your plan on WDesignKit.
+Fixed: Widget PHP and JSON files in the uploads folder can no longer be opened directly in a browser.
+Fixed: Widgets that carry PHP can no longer be imported, pulled or duplicated without the required access.
+Fixed: Kit import could show a blank page.
+Fixed: Minor Bug Fixes & Improvements.
+
 2.7.2 - 27 Oct 2026
 New: Added Find Marketplace Templates so AI assistants can search and import marketplace pages and sections.
-New: A short "What next?" guide after your first kit import, with quick links to import a full kit, try the AI widget builder and save to Workspace.
+New: A short "What next?" guide after your first kit import, with quick links to add a section, try the AI widget builder and save to Workspace.
 Improved: Marketplace kit search returns clearer results and surfaces exact matches from other plans when the selected free/pro tier has no matches.
 Improved: Full kit imports can resume after plugin installation and report plugins that could not be installed.
 Fixed: Minor Bug Fixes & Improvements.

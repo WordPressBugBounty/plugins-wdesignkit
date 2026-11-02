@@ -335,35 +335,62 @@ function wdesignkit_mcp_validate_widget(array $input): array {
         $syntax_status = 'pass';
         $syntax_msg    = 'PHP syntax is valid.';
 
+        if (!class_exists('Wdkit_Php_Guard')) {
+            require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+        }
+
+        // One syntax checker for the whole plugin: php -l where the CLI is
+        // available, falling back to token_get_all( TOKEN_PARSE ). The inline
+        // tokenizer check this replaces was correct as far as it went, but it
+        // could only ever see parse errors — the compile errors TOKEN_PARSE
+        // accepts and the compiler rejects (positional-after-named args, a
+        // duplicate default clause) reported clean here and then took the site
+        // to a 500 when the loaders required the file. Routing through the guard
+        // also means this and the write paths cannot disagree about one string.
+        $lint = Wdkit_Php_Guard::lint($php_code);
+
         if (strpos($php_code, '<?php') === false && strpos($php_code, '<?') === false) {
-            // Not a parse error — a file with no PHP tag is valid inline HTML — but a widget
-            // whose code never enters PHP cannot register anything, so it stays a failure.
+            // Not a parse error — a file with no PHP tag is valid inline HTML, and
+            // lint() tolerates it by prepending a tag — but a widget whose code
+            // never enters PHP cannot register anything, so it stays a failure.
             $syntax_status = 'fail';
             $syntax_msg    = 'PHP code is missing opening <?php tag.';
-        } elseif (!function_exists('token_get_all') || !defined('TOKEN_PARSE')) {
-            // The tokenizer extension is what does the checking here. If it is unavailable,
-            // say the syntax is unverified rather than reporting a clean pass — silently
-            // claiming "valid" when nothing was checked is the defect this check just had.
+        } elseif (is_wp_error($lint) && 'wdkit_php_no_validator' === $lint->get_error_code()) {
+            // Neither the tokenizer nor the PHP CLI is available, so nothing was
+            // actually checked. Report that rather than a clean pass — silently
+            // claiming "valid" when nothing was verified is the defect this check
+            // just had.
             $syntax_status = 'warning';
-            $syntax_msg    = 'PHP syntax could not be verified: the tokenizer extension is unavailable on this server. Review the code manually before writing it.';
-        } else {
-            try {
-                // Parses without executing. @ suppresses lexer warnings (e.g. unterminated
-                // comment) that are reported separately from the ParseError below.
-                @token_get_all($php_code, TOKEN_PARSE);
-            } catch (\ParseError $e) {
-                $syntax_status = 'fail';
-                $syntax_msg    = 'PHP parse error on line ' . $e->getLine() . ': ' . $e->getMessage();
-            } catch (\Throwable $e) {
-                $syntax_status = 'fail';
-                $syntax_msg    = 'PHP could not be parsed: ' . $e->getMessage();
-            }
+            $syntax_msg    = 'PHP syntax could not be verified: no PHP validator is available on this server. Review the code manually before writing it.';
+        } elseif (is_wp_error($lint)) {
+            $syntax_status = 'fail';
+            $syntax_msg    = $lint->get_error_message();
         }
 
         $checks[] = [
             'rule'    => 'php_syntax',
             'status'  => $syntax_status,
             'message' => $syntax_msg,
+        ];
+
+        /**
+         * Blocked-call scan, reported as its own rule.
+         *
+         * Syntax was already routed through the guard, but nothing here reported on
+         * the other half of what the guard checks — the code-execution primitives —
+         * so a snippet calling shell_exec() passed validation cleanly. Kept as a
+         * separate rule rather than folded into php_syntax via inspect(): a parse
+         * error and a forbidden call are different problems with different fixes,
+         * and collapsing them would report one as the other.
+         */
+        $blocked = Wdkit_Php_Guard::scan($php_code);
+
+        $checks[] = [
+            'rule'    => 'no_blocked_calls',
+            'status'  => is_wp_error($blocked) ? 'fail' : 'pass',
+            'message' => is_wp_error($blocked)
+                ? $blocked->get_error_message()
+                : 'No forbidden code-execution calls found.',
         ];
     }
 

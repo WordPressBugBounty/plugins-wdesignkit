@@ -125,8 +125,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 * */
 		public function wdkit_error_msg( $data = null, $status = null ) {
-			wp_send_json_error( $data );
-			wp_die();
+			// wp_send_json_error() terminates the request itself.
+			wp_send_json_error( $data, $status );
 		}
 
 		/**
@@ -138,8 +138,8 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 		 * @since 1.0.0
 		 * */
 		public function wdkit_success_msg( $data = null, $status = null ) {
+			// wp_send_json_success() terminates the request itself.
 			wp_send_json_success( $data, $status );
-			wp_die();
 		}
 
 
@@ -458,6 +458,10 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 				case 'wkit_create_widget':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_create_widget' );
 					break;
+				case 'wkit_validate_php':
+					// Terminates via wp_send_json_*; nothing after this runs.
+					$this->wdkit_validate_php_syntax();
+					break;
 				case 'wkit_import_widget':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_import_widget' );
 					break;
@@ -475,6 +479,9 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 					break;
 				case 'wkit_plugin_download_get':
 					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_plugin_download_get' );
+					break;
+				case 'wkit_get_widget_json':
+					$data = apply_filters( 'wp_wdkit_widget_ajax', 'wkit_get_widget_json' );
 					break;
 				case 'wkit_manage_widget_workspace':
 					$data = $this->wdkit_manage_widget_workspace();
@@ -851,13 +858,16 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 
 			$response = WDesignKit_Data_Query::get_data( 'get_user_info', $args );
 
+			// Handle WP_Error response from API call
 			if ( is_wp_error( $response ) ) {
-				wp_send_json( array(
+				$error_response = array(
 					'success'     => false,
-					'message'     => $response->get_error_message(),
+					'message'     => esc_html__( 'API Error', 'wdesignkit' ),
 					'description' => $response->get_error_message(),
-				) );
-				wp_die();
+					'login_reset' => 'yes',
+				);
+
+				wp_send_json( $error_response );
 			}
 
 			$status   = ( ! empty( $response['status'] ) ) ? sanitize_text_field( $response['status'] ) : 'error';
@@ -11956,6 +11966,89 @@ if ( ! class_exists( 'Wdkit_Api_Call' ) ) {
 							'unit' => 'px',
 						),
 			);
+		}
+
+		/**
+		 * Pre-flight PHP check for the builder's PHP Editor.
+		 *
+		 * Convenience only — it exists so the editor can surface a syntax error
+		 * next to the cursor before the user saves. It is NOT the security
+		 * boundary: every check here runs again inside wkit_create_widget()
+		 * immediately before anything is written, because a client is always
+		 * free to skip this call.
+		 *
+		 * @since 2.6.4
+		 */
+		public function wdkit_validate_php_syntax() {
+			// Defence-in-depth: the outer AJAX handler already requires manage_options,
+			// but guard again here in case this method is ever called from another path.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				$this->wdkit_error_msg( array( 'message' => __( 'Insufficient permissions to validate PHP code.', 'wdesignkit' ) ) );
+				return;
+			}
+
+			if ( ! class_exists( 'Wdkit_Php_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+			}
+
+			// No authorisation check beyond the manage_options gate above.
+			//
+			// This endpoint only reports whether the code parses. Answering "you
+			// are not allowed" here made the builder treat a permission decision
+			// as a syntax error: the banner read "PHP Error" and the widget was
+			// silently downgraded to Draft. Authorisation belongs to the write
+			// path in wkit_create_widget(), where a refusal is reported as a save
+			// failure and nothing is written.
+
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP source code; validated by Wdkit_Php_Guard and never executed here.
+			$raw = isset( $_POST['php_code'] ) ? wp_unslash( $_POST['php_code'] ) : '';
+
+			if ( ! is_string( $raw ) ) {
+				$this->wdkit_error_msg( array( 'message' => __( 'Expected PHP code as a string.', 'wdesignkit' ) ) );
+				return;
+			}
+
+			// Decode BEFORE testing for emptiness. Testing the raw payload first
+			// let '""' through — it is a non-empty two-character string — and it
+			// decoded to '', which lints clean, so the endpoint answered "PHP
+			// syntax is valid" for no code at all.
+			//
+			// The editor value arrives JSON-encoded, so decoding is the whole of
+			// the unescaping. The trim( $code, '"\'' ) and stripslashes() that
+			// used to follow corrupted every backslash the author wrote, which
+			// meant the code being linted was not the code being saved.
+			$php_code = $raw;
+			$decoded  = json_decode( $raw, true );
+
+			if ( JSON_ERROR_NONE === json_last_error() ) {
+				// Valid JSON that is not a string is a caller mistake, not PHP.
+				// Falling through used to lint the raw JSON text and report a
+				// parse error on "line 2" of something the user never wrote.
+				if ( ! is_string( $decoded ) ) {
+					$this->wdkit_error_msg( array( 'message' => __( 'Expected PHP code as a string.', 'wdesignkit' ) ) );
+					return;
+				}
+
+				$php_code = $decoded;
+			}
+
+			// Not valid JSON: treat the payload as literal PHP source, so a caller
+			// posting plain code still works.
+			if ( '' === trim( $php_code ) ) {
+				$this->wdkit_error_msg( array( 'message' => __( 'No PHP code to validate.', 'wdesignkit' ) ) );
+				return;
+			}
+
+			// Checked as it runs - inside render() - so the verdict matches the
+			// saved file and line numbers are the pane's own.
+			$error = Wdkit_Php_Guard::inspect_pane( $php_code );
+
+			if ( is_wp_error( $error ) ) {
+				$this->wdkit_error_msg( array( 'message' => $error->get_error_message() ) );
+				return;
+			}
+
+			$this->wdkit_success_msg( array( 'message' => __( 'PHP syntax is valid', 'wdesignkit' ) ) );
 		}
 	}
 

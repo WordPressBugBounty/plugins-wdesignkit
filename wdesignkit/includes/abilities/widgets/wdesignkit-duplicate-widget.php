@@ -48,7 +48,10 @@ wp_register_ability('wdesignkit/duplicate-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_duplicate_widget',
-    'permission_callback' => 'wdesignkit_mcp_permission_callback',
+    // Puts executing PHP on disk (copies the source widget's PHP), so this gates on
+    // can_edit_php() rather than bare manage_options — a multisite sub-site
+    // admin holds manage_options but may not author code that runs network-wide.
+    'permission_callback' => 'wdesignkit_mcp_php_permission_callback',
     'meta' => [
         'public'       => true,
         'show_in_rest' => true,
@@ -104,6 +107,21 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
         return ['success' => false, 'message' => 'Invalid widget path.'];
     }
 
+    // Capability + DISALLOW_FILE_EDIT enforced in the body too, mirroring this
+    // ability's permission_callback. Duplication copies the source widget's PHP
+    // class verbatim, so it writes an executable file to disk — the same act the
+    // callback already gates over REST. Kept here as defence in depth so the
+    // authorisation sits next to the write, matching create/update/sync.
+    if (!class_exists('Wdkit_Php_Guard')) {
+        require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+    }
+
+    $php_allowed = Wdkit_Php_Guard::can_edit_php();
+
+    if (is_wp_error($php_allowed)) {
+        return ['success' => false, 'message' => $php_allowed->get_error_message()];
+    }
+
     // Read source JSON to get existing metadata
     $src_files   = array_diff(@scandir($src_dir) ?: [], ['.', '..']);
     $json_path   = null;
@@ -132,6 +150,13 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
 
     if ($orig_json === null) {
         return ['success' => false, 'message' => "Could not read JSON config from {$builder}/{$folder}"];
+    }
+
+    // The copy is a new widget, so its PHP pane counts as authored: without this a
+    // user who may not edit PHP could copy PHP into a new widget.
+    $php_gate = Wdkit_Php_Guard::gate_php_json_import($orig_json);
+    if (is_wp_error($php_gate)) {
+        return ['success' => false, 'message' => $php_gate->get_error_message()];
     }
 
     $new_name   = sanitize_text_field((string) ($input['new_name'] ?? ($orig_name . ' - Copy')));
@@ -220,6 +245,14 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
         $src_file = $src_dir . '/' . $f;
         $ext      = pathinfo($f, PATHINFO_EXTENSION);
 
+        // Export archives are build artefacts, not widget content. Copying one
+        // would hand the duplicate a .zip whose JSON still names the source
+        // widget, so importing it would recreate the original rather than the
+        // copy. Re-exporting the duplicate produces a correct archive.
+        if ($ext === 'zip') {
+            continue;
+        }
+
         // Rename the file to the new base.
         $new_filename = ($orig_file_base !== '') ? str_replace($orig_file_base, $new_file_base, $f) : $f;
         if ($new_filename === $f) {
@@ -245,8 +278,16 @@ function wdesignkit_mcp_duplicate_widget(array $input): array {
                 if ($ext === 'php') {
                     $content = $rewrite_php_class($content);
                 }
-                if (file_put_contents($dst_file, $apply_rewrites($content)) === false) {
+                $out = $apply_rewrites($content);
+
+                if (file_put_contents($dst_file, $out) === false) {
                     @copy($src_file, $dst_file);
+                } elseif ($ext === 'php') {
+                    if (!class_exists('Wdkit_Php_Guard')) {
+                        require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+                    }
+
+                    Wdkit_Php_Guard::after_php_write($dst_file, $new_folder, $out, 'ability:duplicate-widget');
                 }
             }
         } else {

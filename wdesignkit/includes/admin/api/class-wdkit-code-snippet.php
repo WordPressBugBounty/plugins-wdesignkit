@@ -684,6 +684,32 @@ if ( ! class_exists( 'Wdkit_Code_Snippet' ) ) {
 					);
 				}
 
+				// PHP snippets are executed by Nexter, so importing one is authoring PHP.
+				// Checked on the type the cloud returned, before anything is written.
+				if ( 'php' === strtolower( (string) ( $snippet['type'] ?? '' ) ) ) {
+					if ( ! class_exists( 'Wdkit_Php_Guard' ) ) {
+						require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+					}
+
+					$php_allowed = Wdkit_Php_Guard::can_import_php_snippet();
+
+					if ( is_wp_error( $php_allowed ) ) {
+						return array(
+							'success' => false,
+							'data'    => array(
+								'message' => $php_allowed->get_error_message(),
+							),
+						);
+					}
+
+					// Cloud-supplied PHP never goes live on import: the status in the
+					// payload is not the site owner's decision. Same rule the
+					// import-snippet ability applies. 0 is the value that ability hands
+					// the same Nexter import function, and the post-based fallback
+					// below reads it too.
+					$snippet['status'] = 0;
+				}
+
 				// Initialize file_based handler if available.
 				$file_based = null;
 				if ( class_exists( 'Nexter_Code_Snippets_File_Based' ) ) {

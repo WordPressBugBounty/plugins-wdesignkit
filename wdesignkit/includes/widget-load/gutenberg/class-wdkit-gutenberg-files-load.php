@@ -92,7 +92,10 @@ if ( ! class_exists( 'Wdkit_Gutenberg_Files_Load' ) ) {
 			}
 
 			foreach ( wdesignkit_get_widget_registry( 'gutenberg' ) as $entry ) {
-				if ( file_exists( $entry['file'] ) ) {
+				// Skip a widget that does not parse; see wdkit_php_loadable(). The registry
+				// list is cached until the widget tree changes, but this verdict follows the
+				// PHP file's own mtime, so it stays correct after an out-of-band edit.
+				if ( file_exists( $entry['file'] ) && Wdkit_Widget_Load_Files::wdkit_php_loadable( $entry['file'] ) ) {
 					include $entry['file'];
 				}
 			}

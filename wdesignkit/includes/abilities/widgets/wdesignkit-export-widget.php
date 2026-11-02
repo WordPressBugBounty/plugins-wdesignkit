@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 wp_register_ability('wdesignkit/export-widget', [
     'label'       => __('Export WDesignKit Widget', 'wdesignkit'),
     'description' => __(
-        'Packages a local widget\'s JSON config (and thumbnail image if present) into a ZIP archive inside the same builder directory and returns the download URL. The resulting .zip can be imported on another site via wdesignkit/import-widget.',
+        'Packages a local widget\'s JSON config (and thumbnail image if present) into a ZIP archive inside the widget\'s own folder and returns the download URL. The resulting .zip can be imported on another site via wdesignkit/import-widget.',
         'wdesignkit',
     ),
     'category'    => 'wdesignkit',
@@ -114,7 +114,16 @@ function wdesignkit_mcp_export_widget(array $input): array {
     }
 
     $archive_name = str_replace('-', '_', $folder) . '.zip';
-    $archive_path = WDKIT_BUILDER_PATH . '/' . $builder . '/' . $archive_name;
+
+    // Inside the widget's own folder, not the shared builder directory. Written
+    // alongside the files it contains, so an export is scoped to its widget
+    // instead of leaving one .zip per exported widget mixed in among the widget
+    // folders. Safe to keep here: every consumer of a widget folder selects by
+    // extension — the loaders act on .php only, the thumbnail lookups on
+    // jpg/jpeg/png/webp, this exporter on .json — so a .zip is inert to all of
+    // them. ZipArchive::OVERWRITE plus a name derived from the folder means one
+    // archive per widget at most, so repeated exports replace rather than pile up.
+    $archive_path = $widget_dir . '/' . $archive_name;
 
     $zip = new ZipArchive();
     if ($zip->open($archive_path, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -129,7 +138,7 @@ function wdesignkit_mcp_export_widget(array $input): array {
 
     $zip->close();
 
-    $download_url = WDKIT_SERVER_PATH . '/' . $builder . '/' . $archive_name;
+    $download_url = WDKIT_SERVER_PATH . '/' . $builder . '/' . $folder . '/' . $archive_name;
 
     return [
         'success'      => true,

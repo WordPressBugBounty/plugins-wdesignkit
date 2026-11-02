@@ -62,7 +62,10 @@ wp_register_ability('wdesignkit/sync-widget-code', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_sync_widget_code',
-    'permission_callback' => 'wdesignkit_mcp_permission_callback',
+    // Puts executing PHP on disk (rewrites register_controls() in the PHP), so this gates on
+    // can_edit_php() rather than bare manage_options — a multisite sub-site
+    // admin holds manage_options but may not author code that runs network-wide.
+    'permission_callback' => 'wdesignkit_mcp_php_permission_callback',
     'meta' => [
         'public'       => true,
         'show_in_rest' => true,
@@ -482,10 +485,45 @@ function wdesignkit_mcp_sync_widget_code(array $input): array {
             ];
         }
 
+        if (!class_exists('Wdkit_Php_Guard')) {
+            require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+        }
+
+        // Capability + DISALLOW_FILE_EDIT enforced in the function body too, not
+        // just at the ability's permission_callback. The callback is the primary
+        // gate over REST/MCP, but this writes a file the loaders execute, so the
+        // authorisation lives next to the write as well — matching create-widget
+        // and update-widget. Separate from the filter above: that is the site
+        // owner turning the feature off, this is who is asking. No Pro/licence
+        // gate here: this regenerates register_controls() from the widget's own
+        // stored section_data rather than accepting authored PHP.
+        $php_allowed = Wdkit_Php_Guard::can_edit_php();
+
+        if (is_wp_error($php_allowed)) {
+            return ['success' => false, 'message' => $php_allowed->get_error_message()];
+        }
+
+        // Inspected before the write, not after: a malformed regenerated file is a
+        // site-wide 500 that no try/catch inside render() can contain.
+        $php_error = Wdkit_Php_Guard::inspect($new_php_code);
+
+        if (is_wp_error($php_error)) {
+            return [
+                'success' => false,
+                'message' => sprintf(
+                    /* translators: %s: reason the PHP was rejected */
+                    __('Sync aborted — the regenerated PHP was rejected: %s', 'wdesignkit'),
+                    $php_error->get_error_message()
+                ),
+            ];
+        }
+
         $written = @file_put_contents($php_path, $new_php_code);
         if ($written === false) {
             return ['success' => false, 'message' => "Failed to write updated PHP file to disk for {$builder}/{$folder}."];
         }
+
+        Wdkit_Php_Guard::after_php_write($php_path, $folder, $new_php_code, 'ability:sync-widget-code');
 
         return [
             'success'                     => true,
@@ -650,7 +688,12 @@ function wdesignkit_mcp_generate_php_controls_from_section_data(array $section_d
                             $tab_label = ucfirst($tab_type);
                             $out[]     = "        \$this->start_controls_tab(";
                             $out[]     = "            '" . addslashes((string) ($tab['name'] ?? ('tab_' . $tab_type))) . "',";
-                            $out[]     = "            array( 'label' => esc_html__( '" . $tab_label . "', 'wdesignkit' ) )";
+                            // addslashes() to match the twelve sibling interpolations in
+                            // this generator. $tab_label derives from $tab['type'], which
+                            // arrives as caller-supplied section_data, so without it a
+                            // crafted type closes the single-quoted literal and appends
+                            // arbitrary PHP to the file this function writes.
+                            $out[]     = "            array( 'label' => esc_html__( '" . addslashes($tab_label) . "', 'wdesignkit' ) )";
                             $out[]     = "        );";
                             $out[]     = "";
                             $tab_ctrls = $tab['inner_sec'] ?? [];

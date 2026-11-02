@@ -58,7 +58,22 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'wdkit_admin_scripts' ), 10, 1 );
 			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_admin_scripts' ), 10, 1 );
-			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_enqueue_styles' ), 10 );
+
+			/**
+			 * wdkit_enqueue_styles() is deliberately NOT hooked to
+			 * enqueue_block_editor_assets on its own.
+			 *
+			 * It used to be, with no screen check, so build/index.css — 970 KB, the
+			 * whole dashboard app's stylesheet — loaded on every block-editor screen.
+			 * On widgets.php, customize.php and site-editor.php that meant shipping
+			 * the CSS with none of the JS it styles, so it could not have been doing
+			 * anything.
+			 *
+			 * The screens that do need it already get it: wdkit_admin_scripts()
+			 * calls wdkit_enqueue_styles() itself, on both this hook and
+			 * admin_enqueue_scripts, behind its own allowlist. So the app's own
+			 * screen and the post editor are unaffected.
+			 */
 
 			// Gutenberg editor styles
 			add_action( 'enqueue_block_editor_assets', array( $this, 'wdkit_gutenberg_editor_style' ), 10 );
@@ -408,7 +423,11 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			if ( 'toplevel_page_wdesign-kit' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'builder', 'widget' ) ) {
 				wp_enqueue_script( 'widgetBuilder-script-editor-js', WDKIT_URL . 'assets/js/extra/ace.min.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 				wp_enqueue_script( 'widgetBuilder-script-editor-cobalt', WDKIT_URL . 'assets/js/extra/theme-cobalt.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
-				wp_enqueue_script( 'widgetBuilder-script-editor-html', WDKIT_URL . 'assets/js/extra/mode-html.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+				// mode-php.min.js also defines ace/mode/html, ace/mode/css and
+				// ace/mode/javascript — PHP highlighting embeds all three — so the
+				// separate mode-html.js (60 KB) it replaces was duplicate module
+				// definitions.
+				wp_enqueue_script( 'widgetBuilder-script-editor-php', WDKIT_URL . 'assets/js/extra/mode-php.min.js', array( 'wp-element' ), WDKIT_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 			}
 
 			if ( 'elementor' === $hook && Wdkit_Wdesignkit::wdkit_is_compatible( 'elementor_template', 'template' ) ) {

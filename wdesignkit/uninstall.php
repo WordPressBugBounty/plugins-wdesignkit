@@ -14,44 +14,141 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+/**
+ * Orphaned cache, removed unconditionally.
+ *
+ * The opt-in checks below guard the user's own data. These four rows are neither
+ * data nor live cache: _transient_wdkit_registered_widgets_{builder} was written
+ * with autoload on and no expiry by an earlier version, nothing reads them any
+ * more, and once the plugin is gone nothing ever will. Leaving them would autoload
+ * dead weight on every request forever.
+ */
+foreach ( array( 'elementor', 'bricks', 'gutenberg', 'gutenberg_core' ) as $wdkit_builder ) {
+	delete_option( '_transient_wdkit_registered_widgets_' . $wdkit_builder );
+	delete_option( '_transient_timeout_wdkit_registered_widgets_' . $wdkit_builder );
+}
+
+delete_option( 'wdkit_cleanup_version' );
+delete_option( 'wdkit_php_write_log' );
+delete_option( 'wdkit_widget_meta_cache' );
+delete_option( 'wdkit_broken_widgets' );
+
+/**
+ * Remove the rating-banner meta for every user in one statement.
+ *
+ * Replaces a get_users() call with no arguments — which loaded every WP_User on
+ * the site into memory — followed by one delete_user_meta() per user. On a
+ * membership site that is tens of thousands of objects and queries during an
+ * uninstall request that has no way to report progress or resume.
+ *
+ * @since 2.6.4
+ *
+ * @return void
+ */
+function wdkit_uninstall_delete_rating_meta() {
+	global $wpdb;
+
+	$wpdb->delete( $wpdb->usermeta, array( 'meta_key' => 'wdkit_rating_banner_start_date' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.DirectDatabaseQuery
+}
+
+/**
+ * Recursively delete the directory the builder writes generated widgets into.
+ *
+ * These files are executable PHP in the web root, so leaving them after the
+ * plugin is gone leaves code nothing is left to govern. Only called from the
+ * opt-in branches below: the .php/.json pairs are the user's authored widgets,
+ * and discarding them without being asked would destroy work that cannot be
+ * recovered from anywhere else.
+ *
+ * WDKIT_BUILDER_PATH is not available here — uninstall.php runs without the
+ * plugin bootstrap — so the path is recomputed the same way wdesignkit.php
+ * defines it, then checked to be inside the uploads directory before anything
+ * is unlinked.
+ *
+ * @since 2.6.4
+ *
+ * @return void
+ */
+function wdkit_uninstall_delete_builder_files() {
+	$uploads = wp_upload_dir();
+
+	if ( empty( $uploads['basedir'] ) ) {
+		return;
+	}
+
+	$base = wp_normalize_path( realpath( $uploads['basedir'] ) );
+	$dir  = wp_normalize_path( $uploads['basedir'] . '/wdesignkit' );
+
+	if ( ! $base || ! is_dir( $dir ) ) {
+		return;
+	}
+
+	// Refuse to walk anything that did not resolve inside uploads, so a symlink
+	// or a filtered upload path cannot turn this into an arbitrary delete.
+	$real = wp_normalize_path( (string) realpath( $dir ) );
+
+	if ( '' === $real || 0 !== strpos( $real . '/', trailingslashit( $base ) ) ) {
+		return;
+	}
+
+	$items = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $real, RecursiveDirectoryIterator::SKIP_DOTS ),
+		RecursiveIteratorIterator::CHILD_FIRST
+	);
+
+	foreach ( $items as $item ) {
+		if ( $item->isDir() ) {
+			@rmdir( $item->getPathname() ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rmdir_rmdir
+		} else {
+			@unlink( $item->getPathname() ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink
+		}
+	}
+
+	@rmdir( $real ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rmdir_rmdir
+}
+
 // Get the plugin setting and remove entries before unistall plugin.
 $get_setting = get_option( 'wkit_settings_panel', false );
 
 if ( ! empty( $get_setting['remove_db']['remove_entries'] ) && $get_setting['remove_db']['remove_entries'] == 'on' ) {
 
 	if ( ! empty( $get_setting['remove_db']['promotion_data'] ) && $get_setting['remove_db']['promotion_data'] == true ) {
-		$users = get_users();
-
-		if ( ! empty( $users ) ) {
-			foreach ( $users as $user ) {
-				$user_id = $user->ID;
-
-				delete_user_meta( $user_id, 'wdkit_rating_banner_start_date' );
-			}
-		}
+		wdkit_uninstall_delete_rating_meta();
 	}
 
 	if ( ! empty( $get_setting['remove_db']['widget_builder_data'] ) && $get_setting['remove_db']['widget_builder_data'] == true ) {
 		delete_option( 'wkit_deactivate_widgets' );
 		delete_option( 'wkit_builder' );
+
+		// The generated widget files are widget-builder data too, and they are the
+		// part that is executable.
+		wdkit_uninstall_delete_builder_files();
 	}
 
 	if ( ! empty( $get_setting['remove_db']['all_data'] ) && $get_setting['remove_db']['all_data'] == true ) {
-		delete_option( 'wkit_deactivate_widgets' );
-		delete_option( 'wkit_builder' );
-		delete_option( 'wkit_settings_panel' );
-		delete_option( 'wkit_onbording_end' );
-		delete_option( 'wdkit_dark_mode' );
-		delete_option( 'wdkit_wintersale_notice_dismissed' );
+		wdkit_uninstall_delete_builder_files();
+		wdkit_uninstall_delete_rating_meta();
 
-		$users = get_users();
-		if ( ! empty( $users ) ) {
-			foreach ( $users as $user ) {
-				$user_id = $user->ID;
+		/**
+		 * Sweep every option this plugin owns rather than naming them one by one.
+		 *
+		 * The explicit list missed wdkit_unique_id, wdkit_licence_data,
+		 * wkit_white_label and the wdkit_auth transients, so a site that had
+		 * asked for all data to be removed kept its licence record and auth
+		 * tokens in wp_options indefinitely. A prefix sweep cannot go stale the
+		 * next time an option is added.
+		 */
+		global $wpdb;
 
-				delete_user_meta( $user_id, 'wdkit_rating_banner_start_date' );
-			}
-		}
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( 'wdkit_' ) . '%',
+				$wpdb->esc_like( 'wkit_' ) . '%',
+				'%' . $wpdb->esc_like( '_transient_wdkit_' ) . '%',
+				'%' . $wpdb->esc_like( '_transient_timeout_wdkit_' ) . '%'
+			)
+		);
 	}
 }
 

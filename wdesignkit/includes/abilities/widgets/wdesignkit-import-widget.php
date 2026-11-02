@@ -107,6 +107,16 @@ function wdesignkit_mcp_import_widget(array $input): array {
         return ['success' => false, 'message' => "Unsupported builder type: {$builder}."];
     }
 
+    // A JSON carrying hand-written PHP needs the same PHP permission as the builder's
+    // save; otherwise the next save would generate and run PHP this user may not write.
+    if (!class_exists('Wdkit_Php_Guard')) {
+        require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+    }
+    $php_gate = Wdkit_Php_Guard::gate_php_json_import($widget_json);
+    if (is_wp_error($php_gate)) {
+        return ['success' => false, 'message' => $php_gate->get_error_message()];
+    }
+
     $overwrite   = !empty($input['overwrite']);
     // Canonical helpers: they replace spaces BEFORE sanitize_file_name(). Sanitising first
     // (as this did) already collapsed spaces to hyphens, so the underscore pass was a no-op
@@ -243,7 +253,9 @@ function wdesignkit_mcp_import_widget(array $input): array {
 
     $thumb_note = $image_saved
         ? ($image_source === 'bundled' ? ' Bundled thumbnail imported.' : ' Thumbnail downloaded.')
-        : '';
+        // Say so rather than failing silently: the widget still imported, and the
+        // caller should know their thumbnail was not what it claimed to be.
+        : ($img_bytes !== '' ? ' Thumbnail rejected — the supplied data is not a PNG, JPEG, GIF or WebP image.' : '');
 
     if (function_exists('wdesignkit_invalidate_widget_registry')) {
         wdesignkit_invalidate_widget_registry($builder);

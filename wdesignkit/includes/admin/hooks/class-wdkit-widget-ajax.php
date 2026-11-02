@@ -45,7 +45,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		public $wdkit_api = WDKIT_SERVER_API_URL . 'api/wp/';
 
 		/**
-		 * Member Variable
+		 * Member Variable for widget folder URL
 		 *
 		 * @var string $widget_folder_u_r_l
 		 */
@@ -80,6 +80,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
 				wp_send_json_error( array( 'content' => __( 'Insufficient permissions.', 'wdesignkit' ) ) );
+			}
+
+			// The guard is lazy-loaded, and export and delete use it too; loading it
+			// only inside wkit_create_widget() made those two a fatal error.
+			if ( ! class_exists( 'Wdkit_Php_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
 			}
 
 			if ( ! $type ) {
@@ -117,10 +123,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				case 'wkit_plugin_download_get':
 					$response = $this->wkit_plugin_download_get();
 					break;
+				case 'wkit_get_widget_json':
+					$response = $this->wkit_get_widget_json();
+					break;
 			}
 
 			wp_send_json( $response );
-			wp_die();
 		}
 
 		/**
@@ -155,7 +163,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $response );
-				wp_die();
 			}
 
 			$response = json_decode( wp_json_encode( $response['data'] ), true );
@@ -195,7 +202,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			}
 
 			$response = json_decode( wp_json_encode( $response['data'] ), true );
@@ -225,7 +231,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 								'message' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
 							)
 						);
-						wp_die();
 					}
 
 					// Canonical helpers replace spaces BEFORE sanitize_file_name(). $title above is
@@ -252,7 +257,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 								'message' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
 							)
 						);
-						wp_die();
 					}
 
 					if ( ! empty( $img_url ) ) {
@@ -287,7 +291,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			}
 
 			wp_send_json( $response );
-			wp_die();
 		}
 
 		/**
@@ -318,10 +321,43 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			}
 
 			return $response['data'];
+		}
+
+		/**
+		 * Return a builder widget's JSON to the admin builder.
+		 *
+		 * The JSON carries the widget's source, PHP included, so the builder folder
+		 * denies it over HTTP and the builder reads it here instead, behind the nonce
+		 * and manage_options check in wdkit_widget_ajax_call().
+		 *
+		 * @since 2.8.0
+		 */
+		public function wkit_get_widget_json() {
+			$builder = isset( $_POST['builder'] ) ? sanitize_key( wp_unslash( $_POST['builder'] ) ) : '';
+			$folder  = isset( $_POST['folder_name'] ) ? sanitize_file_name( wp_unslash( $_POST['folder_name'] ) ) : '';
+			$file    = isset( $_POST['file_name'] ) ? sanitize_file_name( wp_unslash( $_POST['file_name'] ) ) : '';
+
+			if ( ! in_array( $builder, array( 'elementor', 'gutenberg', 'gutenberg_core', 'bricks' ), true ) || '' === $folder || '' === $file ) {
+				wp_send_json_error( array( 'content' => __( 'Invalid widget.', 'wdesignkit' ) ) );
+			}
+
+			$base = realpath( trailingslashit( WDKIT_BUILDER_PATH ) . $builder );
+			$path = realpath( trailingslashit( WDKIT_BUILDER_PATH ) . "{$builder}/{$folder}/{$file}.json" );
+
+			if ( false === $base || false === $path || 0 !== strpos( $path, trailingslashit( $base ) ) ) {
+				wp_send_json_error( array( 'content' => __( 'Widget not found.', 'wdesignkit' ) ) );
+			}
+
+			$data = json_decode( (string) file_get_contents( $path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+			if ( ! is_array( $data ) ) {
+				wp_send_json_error( array( 'content' => __( 'Widget not found.', 'wdesignkit' ) ) );
+			}
+
+			wp_send_json_success( $data );
 		}
 
 		/**
@@ -381,7 +417,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			}
 
 			return $response['data'];
@@ -433,12 +468,22 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $responce );
-				wp_die();
 			}
 
-			$file_name     = ! empty( $all_val->file_name ) ? sanitize_text_field( $all_val->file_name ) : '';
-			$folder_name   = ! empty( $all_val->folder_name ) ? sanitize_text_field( $all_val->folder_name ) : '';
-			$old_widget    = ! empty( $all_val->old_folder ) ? sanitize_text_field( $all_val->old_folder ) : '';
+			// Loaded by class-wdkit-dashboard-main.php in the normal request; this
+			// only covers a direct include of this file. It has to come before the
+			// first Wdkit_Php_Guard call below, not after it.
+			if ( ! class_exists( 'Wdkit_Php_Guard' ) ) {
+				require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+			}
+
+			// sanitize_text_field() leaves "/" and ".." intact — it is documented as
+			// unsuitable for filenames. These three values are concatenated straight
+			// into a filesystem path below, so they are reduced to single path
+			// segments first (CWE-22).
+			$file_name     = ! empty( $all_val->file_name ) ? Wdkit_Php_Guard::safe_segment( $all_val->file_name ) : '';
+			$folder_name   = ! empty( $all_val->folder_name ) ? Wdkit_Php_Guard::safe_segment( $all_val->folder_name ) : '';
+			$old_widget    = ! empty( $all_val->old_folder ) ? Wdkit_Php_Guard::safe_segment( $all_val->old_folder ) : '';
 			$description   = ! empty( $all_val->description ) ? sanitize_text_field( $all_val->description ) : '';
 			$json_file     = ! empty( $all_val->json_file ) ? $all_val->json_file : '';
 			$function_call = ! empty( $all_val->call ) ? sanitize_text_field( $all_val->call ) : '';
@@ -461,14 +506,17 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$bricks_css      = ! empty( $all_val->bricks_css ) ? $all_val->bricks_css : '';
 
 			$old_folder  = ! empty( $old_widget ) ? str_replace( ' ', '-', $old_widget ) : '';
-			$widget_type = ! empty( $data->widget_data->widgetdata->type ) ? sanitize_text_field( $data->widget_data->widgetdata->type ) : '';
+			$widget_type = ! empty( $data->widget_data->widgetdata->type ) ? sanitize_key( $data->widget_data->widgetdata->type ) : '';
 
 			// For gutenberg_core plugin, use the plugin value as widget_type for folder path
 			if ( 'gutenberg_core' === $plugin ) {
 				$widget_type = 'gutenberg_core';
 			}
 
-			if ( empty( $widget_type ) ) {
+			// $widget_type is a directory name too. Constrain it to the builders
+			// that actually exist rather than trusting the posted JSON, matching
+			// the allowlist wkit_import_widget() already applies.
+			if ( empty( $widget_type ) || ! Wdkit_Php_Guard::is_valid_builder( $widget_type ) ) {
 				$responce = array(
 					'message'     => esc_html__( 'Builder Type not found', 'wdesignkit' ),
 					'description' => esc_html__( 'something went wrong! please try again later.', 'wdesignkit' ),
@@ -476,7 +524,16 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $responce );
-				wp_die();
+			}
+
+			if ( empty( $file_name ) || empty( $folder_name ) ) {
+				$responce = array(
+					'message'     => esc_html__( 'Invalid widget name', 'wdesignkit' ),
+					'description' => esc_html__( 'The widget name could not be used as a file name.', 'wdesignkit' ),
+					'success'     => false,
+				);
+
+				wp_send_json( $responce );
 			}
 
 			// $file_name, $folder_name and $widget_type arrive from the request body and were only
@@ -502,6 +559,108 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$file_name         = $safe_path['file'];
 			$builder_type_path = trailingslashit( $safe_path['builder_dir'] );
 			$widget_file_url   = $safe_path['dir'];
+
+			// Belt and braces: refuse to touch anything that resolved outside the
+			// builder directory even after the segment sanitising above.
+			if ( ! Wdkit_Php_Guard::path_within( WDKIT_BUILDER_PATH, $widget_file_url ) ) {
+				$responce = array(
+					'message'     => esc_html__( 'Operation Failed!', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+					'success'     => false,
+				);
+
+				wp_send_json( $responce );
+			}
+
+			/**
+			 * Validate every PHP file BEFORE anything is created or deleted.
+			 *
+			 * This is the real gate for the PHP Editor. The builder also calls
+			 * wkit_validate_php first, but that is a separate request a client can
+			 * simply skip, so the checks have to happen here — on the exact bytes
+			 * about to be written, ahead of the destructive rmdir() loops below so
+			 * a rejected save leaves the previous working widget untouched.
+			 *
+			 * A file that fails to parse would be a site-wide fatal: the builder
+			 * loaders require_once these files on every request, and a compile
+			 * error cannot be caught by the try/catch inside render().
+			 */
+			// Only widgets carrying hand-written PHP need the stricter capability;
+			// ordinary HTML widgets keep saving under manage_options as before.
+			//
+			// Keyed on the PHP in the payload and the PHP already on disk — never
+			// on widgetdata.editor. That flag is UI state the caller controls, so
+			// gating on it meant a request could disable its own checks simply by
+			// declaring itself an HTML widget.
+			$existing_json = trailingslashit( $widget_file_url ) . $file_name . '.json';
+
+			$touches_php = Wdkit_Php_Guard::touches_php( $json_file, $existing_json );
+
+			if ( $touches_php ) {
+				$allowed = Wdkit_Php_Guard::can_edit_php();
+
+				if ( is_wp_error( $allowed ) ) {
+					$responce = array(
+						'message'     => esc_html__( 'PHP not allowed', 'wdesignkit' ),
+						'description' => $allowed->get_error_message(),
+						'success'     => false,
+					);
+
+					wp_send_json( $responce );
+				}
+
+				// Check the authored pane on its own first, the way it runs inside
+				// render(): errors then point at the pane's lines instead of the
+				// generated file's, and declarations that fatal on a second render
+				// are refused even if the client skipped its own check. {{name}}
+				// placeholders become $settings lookups, as the generators do.
+				$pane = preg_replace( '/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/', '$settings[\'$1\']', Wdkit_Php_Guard::php_from_json( $json_file ) );
+
+				$pane_error = '' !== trim( $pane ) ? Wdkit_Php_Guard::inspect_pane( $pane ) : null;
+
+				if ( is_wp_error( $pane_error ) ) {
+					wp_send_json(
+						array(
+							'message'     => esc_html__( 'PHP error — widget not saved', 'wdesignkit' ),
+							'description' => $pane_error->get_error_message(),
+							'php_error'   => $pane_error->get_error_message(),
+							'error_code'  => $pane_error->get_error_code(),
+							'success'     => false,
+						)
+					);
+				}
+			}
+
+			foreach ( array( $elementor_php_file, $gutenberg_php_file, $bricks_php_file ) as $php_source ) {
+				if ( empty( $php_source ) ) {
+					continue;
+				}
+
+				$php_error = Wdkit_Php_Guard::inspect( $php_source );
+
+				// The gate above keys on the PHP in the JSON, but the file written is a
+				// separate field. A widget that declares no hand-written PHP must
+				// therefore ship a file that stays inside what the generators emit, or
+				// hand-written code could ride in through the side field.
+				// A user who may not edit PHP (multisite sub-site admin,
+				// DISALLOW_FILE_EDIT) is held to the profile strictly; otherwise an
+				// empty pane plus a hand-written file field skips can_edit_php().
+				if ( ! is_wp_error( $php_error ) && ! $touches_php ) {
+					$php_error = Wdkit_Php_Guard::check_generated_profile( $php_source, $folder_name, 'ajax:' . $plugin, is_wp_error( Wdkit_Php_Guard::can_edit_php() ) );
+				}
+
+				if ( is_wp_error( $php_error ) ) {
+					$responce = array(
+						'message'     => esc_html__( 'PHP error — widget not saved', 'wdesignkit' ),
+						'description' => $php_error->get_error_message(),
+						'php_error'   => $php_error->get_error_message(),
+						'error_code'  => $php_error->get_error_code(),
+						'success'     => false,
+					);
+
+					wp_send_json( $responce );
+				}
+			}
 
 			if ( ! is_dir( $widget_file_url ) ) {
 				wp_mkdir_p( $widget_file_url );
@@ -530,17 +689,17 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$widget_file_list = array_diff( $widget_file_list, array( '.', '..' ) );
 
 				foreach ( $widget_file_list as $sub_dir_value ) {
-					$file      = new SplFileInfo( $sub_dir_value );
-					$check_ext = $file->getExtension();
 					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 
 					if ( 'js' === $extiona || 'css' === $extiona || 'json' === $extiona || 'php' === $extiona ) {
-						$wp_filesystem->rmdir( "$widget_file_url/$sub_dir_value", true );
+						$wp_filesystem->delete( "$widget_file_url/$sub_dir_value", false, 'f' );
 					}
 				}
 
 				if ( ! empty( $elementor_php_file ) ) {
-					$wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $elementor_php_file );
+					if ( $wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $elementor_php_file ) ) {
+					Wdkit_Php_Guard::after_php_write( "$widget_folder_u_r_l.php", $folder_name, $elementor_php_file, 'ajax:' . $plugin );
+				}
 				}
 				if ( ! empty( $json_file ) ) {
 					$wp_filesystem->put_contents( "$widget_folder_u_r_l.json", $json_file );
@@ -557,16 +716,16 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$widget_file_list = array_diff( $widget_file_list, array( '.', '..' ) );
 
 				foreach ( $widget_file_list as $sub_dir_value ) {
-					$file      = new SplFileInfo( $sub_dir_value );
-					$check_ext = $file->getExtension();
 					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 
 					if ( 'js' === $extiona || 'css' === $extiona || 'json' === $extiona || 'php' === $extiona ) {
-						$wp_filesystem->rmdir( "$widget_file_url/$sub_dir_value", true );
+						$wp_filesystem->delete( "$widget_file_url/$sub_dir_value", false, 'f' );
 					}
 				}
 
-				$wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $bricks_php_file );
+				if ( $wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $bricks_php_file ) ) {
+					Wdkit_Php_Guard::after_php_write( "$widget_folder_u_r_l.php", $folder_name, $bricks_php_file, 'ajax:' . $plugin );
+				}
 				$wp_filesystem->put_contents( "$widget_folder_u_r_l.json", $json_file );
 
 				if ( ! empty( $bricks_css ) ) {
@@ -582,19 +741,19 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$widget_file_list = array_diff( $widget_file_list, array( '.', '..' ) );
 
 				foreach ( $widget_file_list as $sub_dir_value ) {
-					$file      = new SplFileInfo( $sub_dir_value );
-					$check_ext = $file->getExtension();
 					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 
 					if ( 'js' === $extiona || 'css' === $extiona || 'json' === $extiona || 'php' === $extiona ) {
-						$wp_filesystem->rmdir( "$widget_file_url/$sub_dir_value", true );
+						$wp_filesystem->delete( "$widget_file_url/$sub_dir_value", false, 'f' );
 					}
 				}
 
 				if ( ! empty( $external_js_file ) ) {
 					$wp_filesystem->put_contents( "$widget_file_url/index.js", $external_js_file );
 				}
-				$wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $gutenberg_php_file );
+				if ( $wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $gutenberg_php_file ) ) {
+					Wdkit_Php_Guard::after_php_write( "$widget_folder_u_r_l.php", $folder_name, $gutenberg_php_file, 'ajax:' . $plugin );
+				}
 				$wp_filesystem->put_contents( "$widget_folder_u_r_l.json", $json_file );
 				if ( ! empty( $gutenberg_css ) ) {
 					$wp_filesystem->put_contents( "$widget_folder_u_r_l.css", $gutenberg_css );
@@ -606,19 +765,19 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$widget_file_list = array_diff( $widget_file_list, array( '.', '..' ) );
 
 				foreach ( $widget_file_list as $sub_dir_value ) {
-					$file      = new SplFileInfo( $sub_dir_value );
-					$check_ext = $file->getExtension();
 					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 
 					if ( 'js' === $extiona || 'css' === $extiona || 'json' === $extiona || 'php' === $extiona ) {
-						$wp_filesystem->rmdir( "$widget_file_url/$sub_dir_value", true );
+						$wp_filesystem->delete( "$widget_file_url/$sub_dir_value", false, 'f' );
 					}
 				}
 
 				if ( ! empty( $external_js_file ) ) {
 					$wp_filesystem->put_contents( "$widget_file_url/index.js", $external_js_file );
 				}
-				$wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $gutenberg_php_file );
+				if ( $wp_filesystem->put_contents( "$widget_folder_u_r_l.php", $gutenberg_php_file ) ) {
+					Wdkit_Php_Guard::after_php_write( "$widget_folder_u_r_l.php", $folder_name, $gutenberg_php_file, 'ajax:' . $plugin );
+				}
 				$wp_filesystem->put_contents( "$widget_folder_u_r_l.json", $json_file );
 				if ( ! empty( $gutenberg_css ) ) {
 					$wp_filesystem->put_contents( "$widget_folder_u_r_l.css", $gutenberg_css );
@@ -631,7 +790,7 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				$img_type = array( 'jpg', 'png' );
 
 				foreach ( $img_type as $imgext ) {
-					$wp_filesystem->rmdir( "$widget_folder_u_r_l . $imgext", true );
+					$wp_filesystem->delete( "{$widget_folder_u_r_l}.{$imgext}", false, 'f' );
 				}
 
 				$ext     = $image['type'];
@@ -724,6 +883,26 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				wdesignkit_invalidate_widget_registry( $widget_type );
 			}
 
+			// Pages that rendered this widget while it was broken or a Draft keep that
+			// render in Elementor's element cache for up to a day. Clear it on the
+			// pages that use the widget - only those, never the site-wide cache.
+			$widget_id = ! empty( $data->widget_data->widgetdata->widget_id ) ? sanitize_key( $data->widget_data->widgetdata->widget_id ) : '';
+
+			if ( 'elementor' === $plugin && $widget_id && method_exists( 'Wdkit_Api_Call', 'wdkit_invalidate_elementor_page_cache' ) ) {
+				global $wpdb;
+
+				$post_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->prepare(
+						"SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND meta_value LIKE %s",
+						'%' . $wpdb->esc_like( '"widgetType":"wb-' . $widget_id . '"' ) . '%'
+					)
+				);
+
+				foreach ( $post_ids as $post_id ) {
+					Wdkit_Api_Call::wdkit_invalidate_elementor_page_cache( $post_id );
+				}
+			}
+
 			$responce = array(
 				'message'     => esc_html__( 'Updates Saved!', 'wdesignkit' ),
 				'description' => esc_html__( 'Your changes have been saved successfully.', 'wdesignkit' ),
@@ -747,11 +926,12 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$zip = new ZipArchive();
 
 			$zipname = '';
-			if ( ! empty( $_FILES['zipName']['tmp_name'] ) ) {
-				$zipname = $this->wdkit_file_sanitizer_bypass( $_FILES, 'zipName', 'name' );
+			if ( ! empty( $_FILES['zipName']['tmp_name'] ) && is_uploaded_file( $_FILES['zipName']['tmp_name'] ) ) {
+				$zipname = wp_normalize_path( $_FILES['zipName']['tmp_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-generated temp path, checked by is_uploaded_file().
 			}
 
-			$res = $zip->open( $zipname );
+			// ZipArchive::open('') throws a ValueError on PHP 8; treat a missing upload as a failed open.
+			$res = '' !== $zipname ? $zip->open( $zipname ) : false;
 
 			if ( true === $res ) {
 				$widget_name = $image = $json_file = '';
@@ -760,8 +940,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 					$sub_dir_value = $zip->getNameIndex( $i );
 
-					$file      = new SplFileInfo( $sub_dir_value );
-					$check_ext = $file->getExtension();
 					$extiona   = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 					if ( 'json' === $extiona ) {
 						$json_file = $zip->getFromName( $sub_dir_value );
@@ -799,7 +977,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 									);
 
 									wp_send_json( $responce );
-									wp_die();
 								}
 							}
 						}
@@ -811,7 +988,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						);
 
 						wp_send_json( $responce );
-						wp_die();
 					}
 
 					// .wdk zip import. Same ordering bug as the download path above: $widget_name
@@ -831,7 +1007,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						);
 
 						wp_send_json( $responce );
-						wp_die();
 					}
 
 					if ( ! is_dir( WDKIT_BUILDER_PATH . "/{$widget_type}" ) ) {
@@ -850,7 +1025,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						);
 
 						wp_send_json( $responce );
-						wp_die();
 					}
 
 					if ( ! empty( $imageData ) ) {
@@ -886,7 +1060,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $responce );
-				wp_die();
 			}
 		}
 
@@ -900,17 +1073,15 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			$data = isset( $_POST['info'] ) ? wp_unslash( $_POST['info'] ) : '';
 			$data = json_decode( stripslashes( $data ) );
 
-			// Sanitize as filenames before they are used to build the export path
-			// (CWE-22). sanitize_file_name()/sanitize_key() strip path separators
-			// and dots so a crafted widget_name/widget_type cannot escape WDKIT_BUILDER_PATH.
-			$widget_name_temp = isset( $data->widget_name ) ? sanitize_file_name( $data->widget_name ) : '';
+			// Both end up in the read paths and the written .zip path below.
+			$widget_name_temp = isset( $data->widget_name ) ? Wdkit_Php_Guard::safe_segment( $data->widget_name ) : '';
 			$widget_type      = isset( $data->widget_type ) ? sanitize_key( $data->widget_type ) : '';
 
 			$widget_name    = str_replace( ' ', '_', $widget_name_temp );
 			$folder         = str_replace( ' ', '-', $widget_name_temp );
 			$unique_version = $this->wdkit_generate_unique_id();
 
-			if ( empty( $widget_type ) ) {
+			if ( empty( $widget_name_temp ) || ! Wdkit_Php_Guard::is_valid_builder( $widget_type ) ) {
 				$result = (object) array(
 					'success'     => false,
 					'url'         => '',
@@ -919,7 +1090,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			}
 
 			$downlod_path = WDKIT_BUILDER_PATH . "/{$widget_type}/";
@@ -955,6 +1125,23 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				}
 				$zip->close();
 
+				// Send the archive through this request and delete it, so the
+				// widget's PHP source never sits at a public uploads URL. Older
+				// callers that do not ask for a stream still get the URL below.
+				if ( ! empty( $_POST['stream'] ) && is_readable( $tmp_file ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked by the get_wdesignkit dispatcher.
+					// Stray output from other plugins would corrupt the archive.
+					while ( ob_get_level() ) {
+						ob_end_clean();
+					}
+					nocache_headers();
+					header( 'Content-Type: application/zip' );
+					header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( "{$widget_name}.zip" ) . '"' );
+					header( 'Content-Length: ' . filesize( $tmp_file ) );
+					readfile( $tmp_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+					wp_delete_file( $tmp_file );
+					exit;
+				}
+
 				$result = (object) array(
 					'success'     => true,
 					'url'         => $download_url,
@@ -963,7 +1150,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			} else {
 				$result = (object) array(
 					'success'     => false,
@@ -1009,31 +1195,36 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					);
 
 					wp_send_json( $result );
-					wp_die();
 				}
 			}
 
-			$dir_name    = isset( $data->name ) ? sanitize_text_field( $data->name ) : '';
-			$widget_type = isset( $data->builder ) ? sanitize_text_field( $data->builder ) : '';
+			// Both values are concatenated into a path handed to a recursive
+			// rmdir(). sanitize_text_field() keeps "../" intact, which made this an
+			// arbitrary directory-deletion primitive (CWE-22).
+			$dir_name    = isset( $data->name ) ? Wdkit_Php_Guard::safe_segment( $data->name ) : '';
+			$widget_type = isset( $data->builder ) ? sanitize_key( $data->builder ) : '';
 
-			// Same missing guards as wkit_create_widget, but the sink here is a RECURSIVE rmdir:
-			// sanitize_text_field() leaves traversal intact, so a crafted name/builder could
-			// delete any directory the web user owns (CWE-22, ClickUp 86d41cckh). Require a
-			// builder from the allowlist and a name that is a single path segment.
-			$safe_path = wdesignkit_widget_path_guard( $widget_type, $dir_name );
-			if ( false === $safe_path || '' === $safe_path['folder'] ) {
-				wp_send_json(
-					(object) array(
-						'success'     => false,
-						'message'     => esc_html__( 'Widget Not Deleted', 'wdesignkit' ),
-						'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
-					)
+			if ( empty( $dir_name ) || ! Wdkit_Php_Guard::is_valid_builder( $widget_type ) ) {
+				$result = (object) array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget Not Deleted', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
 				);
-				wp_die();
+
+				wp_send_json( $result );
 			}
 
-			$widget_type = $safe_path['builder'];
-			$dir         = $safe_path['dir'];
+			$dir = trailingslashit( WDKIT_BUILDER_PATH ) . "{$widget_type}/{$dir_name}";
+
+			if ( ! Wdkit_Php_Guard::path_within( WDKIT_BUILDER_PATH, $dir ) ) {
+				$result = (object) array(
+					'success'     => false,
+					'message'     => esc_html__( 'Widget Not Deleted', 'wdesignkit' ),
+					'description' => esc_html__( 'Invalid widget path.', 'wdesignkit' ),
+				);
+
+				wp_send_json( $result );
+			}
 
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			global $wp_filesystem;
@@ -1053,7 +1244,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 			if ( 'plugin_server' === $delete_type ) {
 				wp_send_json( $response['data'] );
-				wp_die();
 			} else {
 				$result = (object) array(
 					'success'     => true,
@@ -1083,7 +1273,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json($response);
-				wp_die();
 			}
 
 			$widget_name = !empty( $widget_data['widget_name'] ) ? sanitize_text_field( $widget_data['widget_name'] ) : ''; 
@@ -1163,7 +1352,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 						);
 
 						wp_send_json($response);
-						wp_die();
 					}
 			
 					update_post_meta($page_id, '_edit_lock', time() . ':1');
@@ -1178,7 +1366,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					);
 	
 					wp_send_json($response);
-					wp_die();
 				}
 			
 				$blocks = [
@@ -1207,7 +1394,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 
 				// Bug G fix: $response was undefined here — should send $result (set 3 lines above).
 				wp_send_json($result);
-				wp_die();
 			}
 				
 			$response = array(
@@ -1216,7 +1402,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			);
 
 			wp_send_json($response);
-			wp_die();
 		}
 
 		/**
@@ -1237,7 +1422,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $response );
-				wp_die();
 			}
 
 			$array_data = array(
@@ -1259,7 +1443,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 				);
 
 				wp_send_json( $result );
-				wp_die();
 			}
 
 			$versions = json_decode( wp_json_encode( $response['data'] ), true );
@@ -1272,7 +1455,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 			);
 
 			wp_send_json($result);
-			wp_die();
 		}
 		public function wdkit_update_elementor_data($page_id, $page_data, $widget_id, $widget_name) {
 			$experiments_manager = Elementor\Plugin::$instance->experiments;
@@ -1436,22 +1618,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		}
 
 		/**
-		 * Parse args $_POST
-		 *
-		 * @since 1.1.4
-		 *
-		 * @param string $data send all post data.
-		 * @param string $type store text data.
-		 * @param string $condition store text data.
-		 */
-		public function wdkit_file_sanitizer_bypass( $data, $type, $condition = 'none' ) {
-
-			if ( 'name' === $condition ) {
-				return wp_normalize_path( $data[ $type ]['tmp_name'] );
-			}
-		}
-
-		/**
 		 * Get list local Widget List
 		 *
 		 * @since 1.1.4
@@ -1500,8 +1666,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 					$sub     = array_diff( $sub_dir, array( '.', '..' ) );
 
 					foreach ( $sub as $sub_dir_value ) {
-						$file      = new SplFileInfo( $sub_dir_value );
-						$check_ext = $file->getExtension();
 						$ext       = pathinfo( $sub_dir_value, PATHINFO_EXTENSION );
 
 						if ( 'json' === $ext ) {
@@ -1526,7 +1690,6 @@ if ( ! class_exists( 'Wdkit_Widget_Ajax' ) ) {
 		 * */
 		public function wdkit_error_msg( $data = null ) {
 			wp_send_json_error( $data );
-			wp_die();
 		}
 
 		/**

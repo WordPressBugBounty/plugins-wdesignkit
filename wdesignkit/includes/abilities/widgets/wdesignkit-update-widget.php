@@ -64,7 +64,7 @@ wp_register_ability('wdesignkit/update-widget', [
             ],
             'validate' => [
                 'type'        => 'boolean',
-                'description' => 'When true, runs wdesignkit/validate-widget inline first and refuses the update if validation checks fail.',
+                'description' => 'Optional extra diagnostics: when true, runs wdesignkit/validate-widget inline first and refuses the update if any of its rules fail (naming, namespace, structure). NOT a security control and not required for one — the PHP security guard (capability check, syntax lint and blocked-call scan) always runs on php_code regardless of this flag.',
             ],
         ],
         'required' => ['builder', 'folder'],
@@ -81,7 +81,10 @@ wp_register_ability('wdesignkit/update-widget', [
         ],
     ],
     'execute_callback'    => 'wdesignkit_mcp_update_widget',
-    'permission_callback' => 'wdesignkit_mcp_permission_callback',
+    // Puts executing PHP on disk (writes caller-supplied php_code), so this gates on
+    // can_edit_php() rather than bare manage_options — a multisite sub-site
+    // admin holds manage_options but may not author code that runs network-wide.
+    'permission_callback' => 'wdesignkit_mcp_php_permission_callback',
     'meta' => [
         'public'       => true,
         'show_in_rest' => true,
@@ -244,6 +247,14 @@ function wdesignkit_mcp_update_widget(array $input): array {
         }
         if ($wp_filesystem->put_contents($path, $new_content)) {
             $files_updated[] = basename($path);
+
+            if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'php') {
+                if (!class_exists('Wdkit_Php_Guard')) {
+                    require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+                }
+
+                Wdkit_Php_Guard::after_php_write($path, basename(dirname($path)), $new_content, 'ability:update-widget');
+            }
         } else {
             $write_errors[] = strtoupper(pathinfo($path, PATHINFO_EXTENSION));
         }
@@ -269,6 +280,44 @@ function wdesignkit_mcp_update_widget(array $input): array {
         $php_for_write = function_exists('wdesignkit_mcp_strip_php_namespace')
             ? wdesignkit_mcp_strip_php_namespace((string) $input['php_code'])
             : (string) $input['php_code'];
+
+        /**
+         * Guard enforcement, unconditional and not tied to the 'validate' input.
+         *
+         * The only pre-write check here used to be behind !empty($input['validate']),
+         * which defaults to false — so the usual call wrote caller-supplied PHP to a
+         * file the builder loaders require_once on every request with no check at
+         * all. Even with the flag set it routed through validate-widget, which
+         * reports rule results rather than refusing, and had no scan() equivalent.
+         *
+         * An opt-in security check is not a security check: the caller who would
+         * skip it is exactly the caller it exists to stop. This mirrors the gate
+         * create-widget already applies, on the exact bytes about to be written and
+         * before the first write, so a refusal leaves the existing widget untouched.
+         */
+        if (!class_exists('Wdkit_Php_Guard')) {
+            require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+        }
+
+        // Same write gate as the AJAX save path.
+        $php_error = Wdkit_Php_Guard::gate_php_write($php_for_write, $file_base . '.php');
+
+        if (is_wp_error($php_error)) {
+            // A capability or licence refusal already reads as a complete sentence
+            // and says nothing about the code, so only a code rejection gets the
+            // "PHP was rejected" prefix.
+            return [
+                'success' => false,
+                'message' => Wdkit_Php_Guard::is_authz_error($php_error)
+                    ? $php_error->get_error_message()
+                    : sprintf(
+                        /* translators: %s: reason the PHP was rejected */
+                        __('Widget not updated — the PHP was rejected: %s', 'wdesignkit'),
+                        $php_error->get_error_message()
+                    ),
+            ];
+        }
+
         $maybe_write($file_base . '.php', $php_for_write);
     }
 

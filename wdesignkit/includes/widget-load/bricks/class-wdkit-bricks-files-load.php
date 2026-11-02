@@ -72,7 +72,12 @@ if ( ! class_exists( 'Wdkit_Bricks_Files_Load' ) ) {
 			}
 
 			foreach ( wdesignkit_get_widget_registry( 'bricks' ) as $entry ) {
-				if ( file_exists( $entry['file'] ) ) {
+				// Bricks includes the file when it registers the element, so the same
+				// containment applies here as in the other loaders: a widget that does not
+				// parse is skipped rather than taking every page of the site to HTTP 500.
+				// Verdict is cached on the file's mtime, so this parses nothing in a
+				// steady-state request.
+				if ( file_exists( $entry['file'] ) && Wdkit_Widget_Load_Files::wdkit_php_loadable( $entry['file'] ) ) {
 					Bricks\Elements::register_element( $entry['file'] );
 				}
 			}

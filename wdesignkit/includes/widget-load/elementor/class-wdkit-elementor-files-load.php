@@ -97,6 +97,16 @@ if ( ! class_exists( 'Wdkit_Elementor_Files_Load' ) ) {
 					continue;
 				}
 
+				// Containment: a widget that does not parse is skipped rather than taking
+				// every page of the site to HTTP 500. Kept in the loader rather than folded
+				// into wdesignkit_get_widget_registry(), because that list is cached until
+				// the widget tree is mutated while this verdict has to follow the PHP
+				// file's own mtime — an FTP edit changes parseability without changing the
+				// registry. Cached on that mtime, so a steady-state request parses nothing.
+				if ( ! Wdkit_Widget_Load_Files::wdkit_php_loadable( $entry['file'] ) ) {
+					continue;
+				}
+
 				require_once $entry['file'];
 
 				if ( class_exists( $entry['class'] ) ) {

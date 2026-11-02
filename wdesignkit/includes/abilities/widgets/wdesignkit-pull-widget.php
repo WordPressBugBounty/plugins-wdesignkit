@@ -278,6 +278,16 @@ function wdesignkit_mcp_pull_widget(array $input): array {
         return ['success' => false, 'message' => 'Widget JSON from cloud could not be decoded.', 'response' => wdesignkit_mcp_ensure_object($data, $body)];
     }
 
+    // A JSON carrying hand-written PHP needs the same PHP permission as the builder's
+    // save; otherwise the next save would generate and run PHP this user may not write.
+    if (!class_exists('Wdkit_Php_Guard')) {
+        require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+    }
+    $php_gate = Wdkit_Php_Guard::gate_php_json_import($json_raw);
+    if (is_wp_error($php_gate)) {
+        return ['success' => false, 'message' => $php_gate->get_error_message()];
+    }
+
     $widgetdata     = $json_raw['widget_data']['widgetdata'] ?? [];
     $cloud_title    = sanitize_text_field((string) ($widgetdata['name'] ?? ''));
     $cloud_builder  = sanitize_key((string) ($widgetdata['type'] ?? ''));

@@ -120,6 +120,8 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 		 * @return void
 		 */
 		public static function wdkit_activation() {
+			self::wdkit_protect_builder_dir();
+
 			do_action( 'wdkit_admin_create_default' );
 
 			if ( function_exists( 'wdesignkit_harden_builder_dir' ) && defined( 'WDKIT_BUILDER_PATH' ) ) {
@@ -187,6 +189,53 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 		}
 
 		/**
+		 * Deny HTTP access to the directory the builder writes executable PHP into.
+		 *
+		 * Defence in depth, not the primary control. The builder loaders require
+		 * these files server-side, so the real gate is the write-path validation in
+		 * Wdkit_Php_Guard — this only stops the generated .php being fetched
+		 * directly over HTTP.
+		 *
+		 * Two caveats worth being honest about:
+		 *
+		 *  - .htaccess is inert on Nginx, which is a large share of hosts. The
+		 *    equivalent location rule is documented in readme.txt; there is nothing
+		 *    a plugin can write to the filesystem that Nginx will read.
+		 *  - Generated widget files already carry an ABSPATH guard and exit when
+		 *    loaded directly, so this closes a gap that was mostly theoretical.
+		 *
+		 * file_put_contents() rather than WP_Filesystem(): the latter wants
+		 * credentials that are not available during activation.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @return void
+		 */
+		public static function wdkit_protect_builder_dir() {
+			$dir = WDKIT_BUILDER_PATH;
+
+			if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+				return;
+			}
+
+			// The rules, and when to rewrite them, live in wdesignkit_harden_builder_dir().
+			if ( ! function_exists( 'wdesignkit_harden_builder_dir' ) ) {
+				require_once WDKIT_INCLUDES . 'abilities/class-wdk-ability-main.php';
+			}
+
+			if ( function_exists( 'wdesignkit_harden_builder_dir' ) ) {
+				wdesignkit_harden_builder_dir( $dir );
+				return;
+			}
+
+			$index = trailingslashit( $dir ) . 'index.php';
+
+			if ( ! file_exists( $index ) ) {
+				file_put_contents( $index, "<?php\n// Silence is golden.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			}
+		}
+
+		/**
 		 * Plugin deactivation.
 		 *
 		 * @return void
@@ -232,7 +281,64 @@ if ( ! class_exists( 'Wdkit_Wdesignkit' ) ) {
 		 */
 		public function wdkit_plugin_loaded() {
 			$this->load_textdomain();
+			$this->wdkit_maybe_upgrade();
 			$this->wdkit_load_dependencies();
+		}
+
+		/**
+		 * One-time cleanup that runs after the plugin version changes.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @return void
+		 */
+		private function wdkit_maybe_upgrade() {
+			if ( WDKIT_VERSION === get_option( 'wdkit_cleanup_version' ) ) {
+				return;
+			}
+
+			$this->wdkit_delete_orphaned_widget_manifests();
+
+			// Drop the widget metadata cache on every version change. Entries are
+			// mtime-keyed so they cannot go stale on their own, but a release that
+			// changes the entry shape would otherwise read the old one back.
+			delete_option( 'wdkit_widget_meta_cache' );
+			delete_option( 'wdkit_broken_widgets' );
+
+			// Also on update, not just activation: activation never fires again for
+			// a site that is already running the plugin, so an install predating
+			// this would otherwise never get the directory hardened.
+			self::wdkit_protect_builder_dir();
+
+			// Stored with autoload off — a flag that tracks autoload cleanup has no
+			// business being autoloaded itself.
+			update_option( 'wdkit_cleanup_version', WDKIT_VERSION, false );
+		}
+
+		/**
+		 * Remove the widget-manifest transients left behind by an earlier version.
+		 *
+		 * _transient_wdkit_registered_widgets_{builder} was written with autoload on
+		 * and no expiry, so the rows load on every request and never age out. No
+		 * shipping code reads or writes them any more, and the payload is a list of
+		 * absolute filesystem paths that is wrong the moment a site is moved.
+		 *
+		 * delete_option() rather than delete_transient(): these are plain autoloaded
+		 * rows, so the value has to come out of wp_options whether or not an external
+		 * object cache is in play. The timeout row is removed too in case a variant
+		 * was written with an expiry.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @return void
+		 */
+		private function wdkit_delete_orphaned_widget_manifests() {
+			$builders = array( 'elementor', 'bricks', 'gutenberg', 'gutenberg_core' );
+
+			foreach ( $builders as $builder ) {
+				delete_option( '_transient_wdkit_registered_widgets_' . $builder );
+				delete_option( '_transient_timeout_wdkit_registered_widgets_' . $builder );
+			}
 		}
 
 		/**

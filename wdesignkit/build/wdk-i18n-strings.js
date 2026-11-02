@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1209 strings.
+ * 1231 strings.
  */
 
 ( function () {
@@ -142,6 +142,7 @@
 	__( "Buy Now", "wdesignkit" );
 	__( "By accepting this you agree to our", "wdesignkit" );
 	__( "By clicking continue, you agree to our ", "wdesignkit" );
+	__( "CSS code editor. Press Escape, then Tab, to leave the editor.", "wdesignkit" );
 	__( "CSS", "wdesignkit" );
 	__( "Can Not Find Widget, Please Try Again Later!", "wdesignkit" );
 	__( "Cancel", "wdesignkit" );
@@ -180,6 +181,7 @@
 	__( "Continue", "wdesignkit" );
 	__( "Contributors", "wdesignkit" );
 	__( "Controls", "wdesignkit" );
+	__( "Conversion Not Available", "wdesignkit" );
 	__( "Convert to", "wdesignkit" );
 	__( "Convert", "wdesignkit" );
 	__( "Converting your widget", "wdesignkit" );
@@ -270,6 +272,7 @@
 	__( "Edit Widget Information", "wdesignkit" );
 	__( "Edit in New Tab", "wdesignkit" );
 	__( "Edit", "wdesignkit" );
+	__( "Editor Type", "wdesignkit" );
 	__( "Elementor Page Builder", "wdesignkit" );
 	__( "Elementor Plugin", "wdesignkit" );
 	__( "Elementor Pro", "wdesignkit" );
@@ -412,6 +415,7 @@
 	__( "H4", "wdesignkit" );
 	__( "H5", "wdesignkit" );
 	__( "H6", "wdesignkit" );
+	__( "HTML code editor. Press Escape, then Tab, to leave the editor.", "wdesignkit" );
 	__( "HTML tags are not allowed.", "wdesignkit" );
 	__( "HTML", "wdesignkit" );
 	__( "Header Effects", "wdesignkit" );
@@ -508,6 +512,7 @@
 	__( "I’ve read this and want to continue.", "wdesignkit" );
 	__( "JAVASCRIPT", "wdesignkit" );
 	__( "JS", "wdesignkit" );
+	__( "JavaScript code editor. Press Escape, then Tab, to leave the editor.", "wdesignkit" );
 	__( "Join Facebook Community", "wdesignkit" );
 	__( "Just the basics for now. You can always add the rest from your site later.", "wdesignkit" );
 	__( "Justify", "wdesignkit" );
@@ -516,6 +521,7 @@
 	__( "Kept the kit’s own colours & fonts", "wdesignkit" );
 	__( "Key error, check and fix", "wdesignkit" );
 	__( "Key:", "wdesignkit" );
+	__( "Keyboard: press Escape, then Tab, to move focus out of the code editor.", "wdesignkit" );
 	__( "Keywords", "wdesignkit" );
 	__( "Kits", "wdesignkit" );
 	__( "LEFT", "wdesignkit" );
@@ -539,6 +545,7 @@
 	__( "LinkedIn", "wdesignkit" );
 	__( "List plugin updates, improvements, and bug fixes for each version.", "wdesignkit" );
 	__( "Live Demo", "wdesignkit" );
+	__( "Live preview is disabled due to errors in the widget code. Please fix the errors first.", "wdesignkit" );
 	__( "Live preview is unavailable for draft widgets. Publish the widget to enable live preview.", "wdesignkit" );
 	__( "Live preview requires the relevant plugin. Please install it first.", "wdesignkit" );
 	__( "Load More", "wdesignkit" );
@@ -665,7 +672,13 @@
 	__( "Our  website is undergoing a transformation to serve you better.", "wdesignkit" );
 	__( "Our Pagekits can only be imported from the plugin dashboard,", "wdesignkit" );
 	__( "Our system will import your selected templates images soon.", "wdesignkit" );
+	__( "PHP + HTML", "wdesignkit" );
+	__( "PHP Error", "wdesignkit" );
 	__( "PHP Version", "wdesignkit" );
+	__( "PHP code editor. Press Escape, then Tab, to leave the editor.", "wdesignkit" );
+	__( "PHP could not be validated (the request failed). Saved as Draft.", "wdesignkit" );
+	__( "PHP error — widget not saved", "wdesignkit" );
+	__( "PHP syntax error detected", "wdesignkit" );
 	__( "PNG, JPEG, WebP, AVIF", "wdesignkit" );
 	__( "PRO", "wdesignkit" );
 	__( "Packed with Everything You Need for Exceptional Websites", "wdesignkit" );
@@ -894,6 +907,7 @@
 	__( "Social", "wdesignkit" );
 	__( "Something went wrong while generating the plugin package.", "wdesignkit" );
 	__( "Something went wrong while saving the template.", "wdesignkit" );
+	__( "Something went wrong! please try again later.", "wdesignkit" );
 	__( "Something went wrong", "wdesignkit" );
 	__( "Something went wrong.", "wdesignkit" );
 	__( "Space Around", "wdesignkit" );
@@ -918,6 +932,7 @@
 	__( "Successfully Uploaded", "wdesignkit" );
 	__( "Suggest New Features", "wdesignkit" );
 	__( "Suggested Keywords", "wdesignkit" );
+	__( "Suggestion", "wdesignkit" );
 	__( "Supported media types. Available values are image, video, and svg.", "wdesignkit" );
 	__( "Svg", "wdesignkit" );
 	__( "Switch is off", "wdesignkit" );
@@ -925,6 +940,7 @@
 	__( "Switch to Mobile, Laptop, Tablet mode", "wdesignkit" );
 	__( "Switcher Label", "wdesignkit" );
 	__( "Sync Widget", "wdesignkit" );
+	__( "Syntax error detected in PHP code", "wdesignkit" );
 	__( "TOP", "wdesignkit" );
 	__( "Tablet", "wdesignkit" );
 	__( "Tagline", "wdesignkit" );
@@ -997,6 +1013,7 @@
 	__( "This sticky header template is built using Elementor Pro's Navigation Menu widget, which is only available with the Pro version. To use this template and unlock its full potential, you'll need to have Elementor Pro installed and activated.", "wdesignkit" );
 	__( "This template is deactivated or unavailable and could not be imported.", "wdesignkit" );
 	__( "This template works best with the following plugins. Please install them to continue.", "wdesignkit" );
+	__( "This widget uses PHP editor, which is not supported by Nexter Widget Builder. Please enable Elementor or Bricks builder to convert this widget.", "wdesignkit" );
 	__( "This will remove your Widget from your current website. If you need to use it in the future, you can simply download it again from the server.", "wdesignkit" );
 	__( "This will remove your widget from cloud and local system both. Make sure you download it as a ZIP as then you will not be able to get access of it.", "wdesignkit" );
 	__( "Time", "wdesignkit" );
@@ -1007,7 +1024,8 @@
 	__( "To download this snippet, you will need to install below listed plugin", "wdesignkit" );
 	__( "To download this widget, you will need to install below listed requirements.", "wdesignkit" );
 	__( "To use live preview, install the required plugin and publish the widget.", "wdesignkit" );
-	__( "Transferring all your HTML,CSS and JS to New one", "wdesignkit" );
+	__( "Transferring all your HTML + PHP, CSS and JS to New one", "wdesignkit" );
+	__( "Transferring all your HTML, CSS and JS to New one", "wdesignkit" );
 	__( "Transparent Header Background", "wdesignkit" );
 	__( "Trusted by 150K+ Users", "wdesignkit" );
 	__( "Try the AI widget builder", "wdesignkit" );
@@ -1020,6 +1038,7 @@
 	__( "Types", "wdesignkit" );
 	__( "Unable to connect to the Internet !", "wdesignkit" );
 	__( "Unable to load WDesignKit", "wdesignkit" );
+	__( "Unable to load your credit balance.", "wdesignkit" );
 	__( "Unfavorite", "wdesignkit" );
 	__( "Unlock This Sticky Header Template with Elementor Pro!", "wdesignkit" );
 	__( "Unlock all Premium Block Designs with Nexter Blocks Pro", "wdesignkit" );
@@ -1123,6 +1142,8 @@
 	__( "Widget Deactivated", "wdesignkit" );
 	__( "Widget Downloaded Successfully", "wdesignkit" );
 	__( "Widget Downloading", "wdesignkit" );
+	__( "Widget Exported Fail", "wdesignkit" );
+	__( "Widget Exported", "wdesignkit" );
 	__( "Widget Icon", "wdesignkit" );
 	__( "Widget Imported", "wdesignkit" );
 	__( "Widget Library", "wdesignkit" );
@@ -1178,6 +1199,7 @@
 	__( "Your site limit for this month has been reached.", "wdesignkit" );
 	__( "Your site limit for today has been reached.", "wdesignkit" );
 	__( "Your widget Downloaded Successfully", "wdesignkit" );
+	__( "Your widget has been exported successfully.", "wdesignkit" );
 	__( "Your widget has been imported successfully.", "wdesignkit" );
 	__( "Your", "wdesignkit" );
 	__( "You’ve been signed out. Remember your credentials for your next login.", "wdesignkit" );

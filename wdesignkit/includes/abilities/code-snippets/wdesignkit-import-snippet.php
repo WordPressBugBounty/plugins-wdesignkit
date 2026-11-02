@@ -144,6 +144,29 @@ function wdesignkit_mcp_import_snippet(array $input): array {
     }
     $status_str = ($status_int === 1) ? 'publish' : 'draft';
 
+    // Importing a PHP snippet is authoring PHP: the abilities permission callback is
+    // plain manage_options, which every multisite sub-site admin holds.
+    if ($type === 'php') {
+        if (!class_exists('Wdkit_Php_Guard')) {
+            require_once WDKIT_INCLUDES . 'admin/class-wdkit-php-guard.php';
+        }
+
+        $php_allowed = Wdkit_Php_Guard::can_import_php_snippet();
+
+        if (is_wp_error($php_allowed)) {
+            return [
+                'success' => false,
+                'message' => $php_allowed->get_error_message(),
+                'storage' => '',
+                'file_id' => null,
+                'post_id' => null,
+                'name'    => $name,
+                'type'    => $type,
+                'status'  => $status_str,
+            ];
+        }
+    }
+
     $allowed_types = ['php', 'css', 'js', 'html'];
     if ($name === '' || $type === '' || !in_array($type, $allowed_types, true) || $code === '') {
         return [
