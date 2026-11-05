@@ -1,60 +1,81 @@
-=== WDesignKit - AI Templates, Widget Builder & MCP Workflow ===
+=== WDesignKit – AI Website Builder for WordPress with MCP, Elementor AI & AI Widget Builder ===
 Contributors: posimyththemes, pareshchavda, sagarpatel124
 Donate link: https://wdesignkit.com/
-Tags: ai website builder, website templates, gutenberg blocks, bricks builder, elementor widgets
+Tags: ai website builder, wordpress mcp, elementor ai, elementor templates, widget builder
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8.0
+Stable tag: 2.8.1
 License: GPLv3
 License URI: https://opensource.org/licenses/GPL-3.0
 
-3000+ Elementor & Gutenberg Templates, AI Widget Builder, AI Code Snippets, MCP Workflow, Cloud Workspace & Figma Files, 220+ Widgets Library
+AI website builder for WordPress. Connect Claude, ChatGPT or Cursor via MCP to build Elementor, Gutenberg and Bricks templates, widgets and snippets.
 
 == Description ==
 
-[WDesignKit](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) is the ultimate designer tool for WordPress, empowering designers to create stunning websites in minutes. It's the fastest way to build a WordPress website, making it a must-have tool for every WordPress designer or agency owner. Build faster with AI Templates, build widgets and code snippets with your favorite AI tool via MCP, and connect WDesignKit to compatible AI assistants through the Model Context Protocol (MCP) to streamline your WordPress workflow.
+[WDesignKit](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) is an AI website builder for WordPress. Connect your AI assistant to your site through the WordPress MCP (Model Context Protocol), then describe what you need in plain language: a full website from an AI template kit, a custom Elementor, Gutenberg or Bricks widget, or a WordPress code snippet. WDesignKit builds it inside your site, using your page builder.
+
+Works with the AI tools you already use, including Claude Code, ChatGPT, Gemini, Cursor, Windsurf and Visual Studio Code.
+
+https://www.youtube.com/watch?v=BdjX7-s1-UA
+
+https://www.youtube.com/watch?v=b4B3w5nOoK4
 
 <strong>[VISIT WDESIGNKIT WEBSITE](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>
 
 ### <strong>Quick Navigation Links</strong>
 
-[Visit Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials](https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1) | [Documentations](https://learn.wdesignkit.com/docs/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Roadmap](https://roadmap.wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Join Facebook Community](https://www.facebook.com/groups/884892449594153) | [Free Support](https://wordpress.org/support/plugin/wdesignkit/) | [Premium Support](https://store.posimyth.com/helpdesk/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [AI Chat (Instant Answers)](https://wdesignkit.com/chat/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)
+[Website](https://wdesignkit.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Docs](https://wdesignkit.com/docs?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Pricing](https://wdesignkit.com/pricing?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) | [Video Tutorials](https://www.youtube.com/c/POSIMYTHInnovations/?sub_confirmation=1)
 
-### Complete WDesignKit Features Explained Under 4 Mins <a href="https://www.youtube.com/watch?v=Bw5IHPxr0Nc">Watch Now</a>
+### WordPress MCP Server For Your AI Assistant
 
-https://www.youtube.com/watch?v=Bw5IHPxr0Nc
+* <strong>[MCP Workflow](https://wdesignkit.com/mcp-workflows?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> turns WDesignKit into a WordPress MCP server your AI assistant can work with. Instead of clicking through dashboards, you ask in chat and the assistant runs the task on your site.
 
-https://www.youtube.com/watch?v=4RhZwuyFd8k&t=101s
+* <strong>[Widget Builder abilities](https://wdesignkit.com/docs/wdesignkit-mcp-abilities?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Create, edit, duplicate and convert widgets from chat.
+* <strong>[Template Cloud abilities](https://wdesignkit.com/docs/wdesignkit-mcp-abilities?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Find, import and save templates and kits.
+* <strong>[Code Snippet abilities](https://wdesignkit.com/docs/wdesignkit-mcp-abilities?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Generate and manage WordPress code snippets.
+* <strong>[Workspace and Preset abilities](https://wdesignkit.com/docs/wdesignkit-mcp-abilities?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Organise team assets in the cloud.
 
-## What is WDesignKit ?
+[Setup takes a few minutes](https://wdesignkit.com/docs/mcp-works-in-wdesignkit-wordpress-mcp?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks): install the plugin, connect WDesignKit, enable permissions, and add the MCP configuration to your AI assistant, such as Claude (Claude MCP for WordPress) or Cursor.
 
-* <strong>[AI Templates](https://wdesignkit.com/ai-template?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Import Elementor & Gutenberg Templates Pre-Populated with AI-Generated Content, No More Replacing Placeholder Text Line by Line
-* <strong>[AI Widget Builder](https://wdesignkit.com/ai-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Describe the widget you need in plain language, and your favorite AI tool, connected via MCP, builds a production-ready Elementor, Gutenberg, or Bricks widget.
-* <strong>[AI Code Snippets](https://wdesignkit.com/ai-code-snippet?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Generate custom WordPress code snippets through a conversation with your favorite AI tool, connected via MCP, no manual coding or copy-pasting required.
-* <strong>[MCP Workflow](https://wdesignkit.com/mcp-workflows?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Connect WDesignKit to AI Assistants via Model Context Protocol (MCP) so You Can Design, Build, and Manage WordPress Sites Through a Chat Workflow
-* <strong>[1600+ Elementor Page Templates, Kit & Sections](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Ready-Made, Professionally Designed Pages, Kits & Sections You Can Import into Elementor in One Click
-* <strong>[1500+ Gutenberg Templates & Patterns](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1002&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Full Page Layouts & Reusable Patterns Built for the Native WordPress Block Editor
-* <strong>[110+ Elementor Widgets Library](https://wdesignkit.com/widgets?builder=1&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Ready-to-Use Elementor Widgets Covering Sliders, Forms, Galleries, Content Blocks & More
-* <strong>[30+ Gutenberg Blocks Library](https://wdesignkit.com/widgets?builder=2&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Pre-Built Gutenberg Blocks to Extend the Native Block Editor Without Extra Plugins
-* <strong>[80+ Bricks Elements Library](https://wdesignkit.com/widgets?builder=3&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Pre-Built Elements Ready to Drop into Any Bricks Builder Layout
-* <strong>[Elementor Widget Builder](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom HTML, CSS & JS Code into a Fully Working Elementor Widget, No Elementor Widget Development Experience Needed
-* <strong>[Gutenberg Blocks Builder](https://wdesignkit.com/widget-builder/gutenberg-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Native Gutenberg Block Ready to Use in the Block Editor
-* <strong>[Nexter Blocks Builder](https://wdesignkit.com/widget-builder/nexter-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Reusable Nexter Block
-* <strong>[Bricks Elements Builder](https://wdesignkit.com/widget-builder/bricks-elements-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn Your Custom Code into a Reusable Bricks Element
-* <strong>[1-Click Widget Converter](https://wdesignkit.com/widgets/page-builder-widgets-converter?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Easily Convert Elementor Widgets to Gutenberg Blocks or Bricks Elements & Vice Versa, No Rebuilding from Scratch When You Switch Builders
-* <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Collaborate with your Team & Store Page Templates, Figma Designs or Custom Widgets on Cloud
-* <strong>[60+ Figma Designed Websites](https://wdesignkit.com/figma-kits?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Editable Figma Website Kits with Auto Layout, Ready to Hand Off to Design Directly into a Live Build
+### AI Website Builder With AI Templates
+
+* <strong>[AI Templates](https://wdesignkit.com/ai-template?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Describe your site and import the template kit that fits, pre-filled with AI-written content for your business. No more replacing placeholder text line by line. Your AI assistant can also search the template library and import pages and sections for you.
+
+### AI Widget Builder For Elementor, Gutenberg & Bricks
+
+* <strong>[AI Widget Builder](https://wdesignkit.com/ai-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Describe a widget, such as a SaaS hero, logo cloud, testimonial carousel, stats counter or FAQ accordion, and your AI tool builds it as a production-ready widget.
+
+* <strong>[Elementor AI](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Generate full Elementor widgets with editable controls, or convert existing ones.
+* <strong>[Gutenberg](https://wdesignkit.com/widget-builder/gutenberg-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Build core blocks and [Nexter blocks](https://wdesignkit.com/widget-builder/nexter-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) from a single prompt.
+* <strong>[Bricks](https://wdesignkit.com/widget-builder/bricks-elements-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Create custom Bricks elements without leaving your AI assistant.
+
+### AI Code Generator For WordPress Snippets
+
+* <strong>[AI Code Snippets](https://wdesignkit.com/ai-code-snippet?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Generate custom WordPress code snippets through a conversation with your AI tool. No manual coding or copy-pasting into functions.php.
+
+### Templates & Widgets Your AI Can Build On
+
+Every AI workflow draws on the WDesignKit library, which you can also browse and use by hand:
+
+* <strong>[1600+ Elementor Templates, Kits & Sections](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1001&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> and <strong>[1500+ Gutenberg Templates & Patterns](https://wdesignkit.com/templates?temp_type_req=all&builder_req=1002&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>.
+* <strong>220+ ready-made widgets</strong>: [110+ Elementor widgets](https://wdesignkit.com/widgets?builder=1&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks), [30+ Gutenberg blocks](https://wdesignkit.com/widgets?builder=2&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) and [80+ Bricks elements](https://wdesignkit.com/widgets?builder=3&utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks).
+* <strong>[Widget Builder](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Turn your own HTML, CSS and JS into [Elementor](https://wdesignkit.com/widget-builder/elementor-widget-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks), [Gutenberg](https://wdesignkit.com/widget-builder/gutenberg-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks), [Nexter](https://wdesignkit.com/widget-builder/nexter-blocks-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) or [Bricks](https://wdesignkit.com/widget-builder/bricks-elements-builder?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) widgets, and convert between builders with the [1-Click Widget Converter](https://wdesignkit.com/widgets/page-builder-widgets-converter?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks).
+* <strong>[Cloud Workspace](https://wdesignkit.com/cloud-workspace?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> and <strong>[60+ Figma Website Kits](https://wdesignkit.com/figma-kits?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong>: Store and share templates, widgets and designs with your team.
 
 ###🔍 OUR PRODUCTS
 
-💰 <strong>[The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - 120+ Elementor Widgets to create Elementor Widgets Easily.
+💰 <strong>[The Plus Addons for Elementor](https://theplusaddons.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - 120+ Elementor widgets.
 
-💰 <strong>[NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Best Starter Theme for WordPress with 22+ WordPress Extension & 90+ Gutenberg Blocks.
+💰 <strong>[NexterWP Theme, Blocks & Extensions](https://nexterwp.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Starter theme, 90+ Gutenberg blocks and 22+ extensions.
 
-💰 <strong>[UiChemy - Figma to Elementor & Bricks Convertor](https://uichemy.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Convert your Figma Templates In Live Elementor Website using our [FREE Figma Plugin](https://www.figma.com/community/plugin/1265873702834050352/).
+💰 <strong>[UiChemy](https://uichemy.com/?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks)</strong> - Convert Figma designs into Elementor and Bricks websites.
 
 == Installation ==
+
+1. In your WordPress admin, go to Plugins > Add New and search for "WDesignKit".
+2. Click Install Now, then Activate.
+3. Open WDesignKit from the admin menu and follow the [MCP Workflow setup](https://wdesignkit.com/docs/mcp-works-in-wdesignkit-wordpress-mcp?utm_source=wordpress&utm_medium=readmepage&utm_campaign=widgetslinks) to connect your AI assistant.
 
 == Screenshots ==
 
@@ -68,6 +89,18 @@ https://www.youtube.com/watch?v=4RhZwuyFd8k&t=101s
 8. One Click Widget Converter
 
 == Frequently Asked Questions ==
+
+= What is WordPress MCP and why does WDesignKit use it? =
+
+MCP (Model Context Protocol) is an open standard that lets AI assistants use tools on other systems. WDesignKit exposes its templates, widget builder, code snippets and workspaces as MCP abilities, so an assistant such as Claude, ChatGPT or Cursor can build and manage them on your WordPress site from a chat.
+
+= Which AI tools work with WDesignKit? =
+
+Any AI tool that supports MCP, including Claude Code, ChatGPT, Gemini, Cursor, Windsurf and Visual Studio Code.
+
+= Can I use WDesignKit without AI? =
+
+Yes. You can import templates, use the ready-made widgets and build widgets from your own code by hand, without connecting an AI tool.
 
 = Does it Work with Any WordPress Theme? =
 
@@ -124,6 +157,10 @@ Access is restricted to administrators with the `manage_options` capability; on 
 5. Model Context Protocol (MCP) : The AI Widget Builder, AI Code Snippets, and MCP Workflow features connect WDesignKit to a third-party AI tool of your choice (such as Claude) over the Model Context Protocol. Your prompts, and where applicable your existing widget/template code, are sent to that AI tool to generate the result. This only happens when you actively connect and use an AI tool via MCP; review the privacy policy and terms of the AI tool you connect, in addition to WDesignKit's [Privacy Policy](https://wdesignkit.com/privacy-policy) and [Terms of Service](https://wdesignkit.com/terms).
 
 == Changelog ==
+
+2.8.1 - 05 Nov 2026
+Fixed: Theme Builder templates and Code Snippets now work properly inside the Nexter dashboard.
+Fixed: Minor Bug Fixes & Improvements.
 
 2.8.0 - 02 Nov 2026
 New: PHP Editor in the Widget Builder for Elementor and Bricks widgets, with syntax and unsafe-function checks before save.

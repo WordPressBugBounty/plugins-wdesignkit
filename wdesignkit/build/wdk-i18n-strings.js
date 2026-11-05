@@ -7,7 +7,7 @@
  * is named *.min.js). Also loads the JS translations at runtime via
  * wp_set_script_translations().
  *
- * 1231 strings.
+ * 1233 strings.
  */
 
 ( function () {
@@ -897,6 +897,7 @@
 	__( "Smart AI Content", "wdesignkit" );
 	__( "Snippet Bundle", "wdesignkit" );
 	__( "Snippet Description", "wdesignkit" );
+	__( "Snippet Download Failed", "wdesignkit" );
 	__( "Snippet Name", "wdesignkit" );
 	__( "Snippet Type", "wdesignkit" );
 	__( "Snippet saved successfully to cloud!", "wdesignkit" );
@@ -905,6 +906,7 @@
 	__( "Snippets", "wdesignkit" );
 	__( "Social Media", "wdesignkit" );
 	__( "Social", "wdesignkit" );
+	__( "Something went wrong while downloading this snippet. Please try again.", "wdesignkit" );
 	__( "Something went wrong while generating the plugin package.", "wdesignkit" );
 	__( "Something went wrong while saving the template.", "wdesignkit" );
 	__( "Something went wrong! please try again later.", "wdesignkit" );

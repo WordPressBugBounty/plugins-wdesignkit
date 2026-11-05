@@ -106,7 +106,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			// apply here. Kept as a separate handle from 'wdkit-library-preview' — both point at the
 			// same stylesheet, and deduplicating the handles is a separate change.
 			$is_nexter_page        = isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_code_snippets';
-			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_builder' );
+			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && in_array( sanitize_key( wp_unslash( $_GET['page'] ) ), array( 'nxt_builder', 'nexter_welcome' ), true ) );
 
 			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && ! $is_nexter_page && ! $is_theme_builder_page ) {
 				return;
@@ -257,7 +257,7 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 			$is_nexter_page = isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_code_snippets';
 
 			// Check if we're on a Theme Builder page (via post_type or page parameter)
-			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && sanitize_key( wp_unslash( $_GET['page'] ) ) === 'nxt_builder' );
+			$is_theme_builder_page = ( isset( $_GET['post_type'] ) && sanitize_key( wp_unslash( $_GET['post_type'] ) ) === 'nxt_builder' ) || ( isset( $_GET['page'] ) && in_array( sanitize_key( wp_unslash( $_GET['page'] ) ), array( 'nxt_builder', 'nexter_welcome' ), true ) );
 
 			if ( ! in_array( $hook, array( 'toplevel_page_wdesign-kit', 'elementor', 'post-new.php', 'post.php' ), true ) && !$is_nexter_page && !$is_theme_builder_page ) {
 				return;
@@ -364,6 +364,8 @@ if ( ! class_exists( 'Wdkit_Enqueue' ) ) {
 					'post_type'                     => get_post_type(),
 					'text_domain'                   => WDKIT_TEXT_DOMAIN,
 					'use_editor'                    => $this->wdkit_use_editor(),
+					// Default Page Builder filter for the Theme Builder popup when the host passes none (Nexter dashboard).
+					'theme_builder_default'         => did_action( 'elementor/loaded' ) ? '1001' : '1002', // Builder filter ids: 1001 Elementor, 1002 Gutenberg.
 					'post_type_list'                => $this->wdkit_get_post_type_list(),
 					'WDKIT_onbording_end'           => $onbording_end,
 					'wdkit_white_label'             => $white_label,

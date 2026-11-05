@@ -69,7 +69,8 @@ if ( ! class_exists( 'Wdkit_Data_Hooks' ) ) {
 					'gutenberg_builder'  => true,
 					'gutenberg_core_builder' => false,
 					'elementor_builder'  => true,
-					'bricks_builder'     => true,
+					// Bricks is a theme, so only default it on when it is the active parent theme.
+					'bricks_builder'     => 'bricks' === get_template(),
 					'debugger_mode'      => false,
 					'gutenberg_template' => true,
 					'elementor_template' => true,
